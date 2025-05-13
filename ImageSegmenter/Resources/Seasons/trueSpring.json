@@ -1,0 +1,145 @@
+{
+  "True Spring": {
+    "tagline": "Warm and bright, like a fresh spring morning with golden sunlight",
+    "introduction": "True Spring is warm and bright. This season's colour palette is reminiscent of a set of colouring pencils—warm and highly saturated. Even though the colours may appear intense on the palette, they offer freshness to a True Spring's clear appearance.\n\nTrue Spring is the original Spring season in the four seasons colour analysis and sits between Bright Spring and Light Spring on the seasonal flow chart. Its opposite season is True Autumn. In contrast to True Autumn's earthy and muted tones, True Spring's appearance is bright and fresh instead of earthy and muted.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a True Spring if the primary colour aspect of your overall appearance is warm, and the secondary aspect is bright. When you look in the mirror, the first thing you notice about your colouring is its warmth. Golden and honey hues dominate your features. Your skin, eyes and hair have a fresh, clear appearance. Instead of blending, they contrast each other, and there is no muddiness or greyness about them. Overall, the contrast between your features is medium.",
+      "features": {
+        "eyes": {
+          "description": "True Spring eyes are medium-light with enhanced brightness and warmth. They range from warm blue to warm green and light hazel; light brown or topaz are also common. You may notice a sunburst pattern around the pupil, characteristic of Spring eyes.",
+          "eyeColors": [
+            "blue",
+            "green",
+            "light hazel",
+            "topaz"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b885bf274767dcdadb6d10_True%20Spring%20Eyes.webp"
+        },
+        "skin": {
+          "description": "True Spring skin has warm, golden undertones. Gold flatters your skin, whereas silver looks disharmonious. Skin tones range from fair to dark, and many True Springs have freckles.",
+          "skinTones": {
+            "1": ["warm"],
+            "2": ["warm"],
+            "3": ["warm"],
+            "4": ["warm"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b885d8c7855142b8527a0d_True%20Spring%20Skin.png"
+        },
+        "hair": {
+          "description": "True Spring hair is dominated by warm, golden tones—from medium golden blonde through strawberry blonde and coppery red to light golden brown. Darker ethnicities often have light or medium golden brown shades.",
+          "hairColors": {
+            "blonde": ["medium golden", "strawberry"],
+            "red": ["copper"],
+            "brown": ["light golden", "medium golden"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b886010051e62b11a054f6_True%20Spring%20Hair.webp"
+        },
+        "contrast": {
+          "value": "medium",
+          "description": "True Spring has a medium level of contrast between features. The features contrast each other rather than blending, creating a fresh and clear appearance. This is reflected in the combination of warm skin tones with varying hair colors, creating a balanced but noticeable contrast."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c873acd9098b0ac00b8ffa_True%20Spring%20Colour%20Palette.webp",
+      "description": "True Spring is reminiscent of sunshine, tropical islands with turquoise water, yellow sand, lush green leaves and juicy fruit. The colours are warm and fresh, taking in the light of the warming spring sun. The palette contains the saturated colours of spring flowers, freshly grown grass and green leaves—spring at its peak. True Spring is the original Spring season of the four seasons colour analysis and is the 'standard' Spring palette. The other two Spring palettes have been modified to accommodate the respective Winter and Summer influence. True Spring colouring combines warmth with brightness. This season falls at the warmest, most golden end of Spring. Therefore, the colours are warm with a clear yellow undertone. There is not a hint of coolness in this palette. The True Spring palette contains warm greens, yellows, orangey reds, peachy pinks and every shade of light brown from beige to tan. These colours are naturally yellow-based and warm. Although Spring is, in general, a season of lighter colours, True Spring's colours go deeper and are more saturated than might be expected.",
+      "hue": {
+        "value": "warm",
+        "explanation": "True Spring sits at the warmest end of the hue scale. That means the colours contain yellow undertones but no blue ones. As a result, you will find very few shades of blue (which is the coolest colour of all) on the palette. And you will only see warmer shades of blue – such as turquoise, mint, or pastel blue – that contain a tint of yellow. Instead, there are more yellows, peachy pinks and warm greens that are naturally yellow-based."
+      },
+      "value": {
+        "value": "light‑medium",
+        "explanation": "The colour palette is quite broad, but it is lighter in value because of the greater concentration of yellow undertones. There are no extremely dark colours on the palette. But you may find darker shades of blue or purple, which are supportive colours for the lighter tints."
+      },
+      "chroma": {
+        "value": "High",
+        "explanation": "In line with True Spring's secondary colour aspect, the colours are high in chroma. That means they are saturated and bright rather than faded."
+      },
+      "sisterPalettes": {
+        "description": "True Spring sits between Bright Spring and Light Spring on the seasonal flow chart. As the heart of Spring, the colours are bright, medium in value and very warm. With their opposite season True Autumn, the colours share the same warmth but are brighter and lighter. True Autumn colours are muted and appear earthier. Compared to Bright Spring, the colours are warmer, softer and slightly lighter. True Spring is not influenced by Winter. Compared to the third Spring season Light Spring, the colours are warmer, brighter and slightly darker. As sister palettes, Bright Spring and Light Spring both share True Spring's aspects of bright and warm, respectively. Depending on where you fall on the True Spring spectrum, you can borrow some colours from your sister palettes since they are close enough to the True Spring colour palette. If you lean more towards Bright Spring, opt for the gentler shades on the Bright Spring palette – such as Artisan's Gold, Persimmon or Tropical green. Whereas if you lean more towards Light Spring, choose the darker colours on the Light Spring palette – such as Hot Coral, Teaberry or Poison Green.",
+        "sisters": [
+          "Bright Spring",
+          "Light Spring"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b89ef5df17410e88877d76_True%20Spring%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "True black and white (two Winter colours) are not on the True Spring colour palette. These colours are too cool and harsh for your colouring and can make you look sallow. To replace black, you have warm chocolate browns and greenish greys, which you can use as dark neutrals. For your light neutrals, you have light yellows and greens instead of whites. These are warmer and gentler than pure white. In general, browns and even beiges (if they are bright enough) are the best True Spring neutrals, because they are naturally warmer hues.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b89f4a0bcd7ea344e0e587_True%20Spring%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since the main colour aspects of True Spring are brightness and warmth, your worst colours are muted and cool. Desaturated, toned-down colours, such as dusty blues and muddy browns, will dampen your natural brightness and make you look muddy. Very cool colours, such as icy blues and greys, will clash with your naturally warmer colouring.",
+        "colors": [
+          "Dusty pastels",
+          "Muddy browns",
+          "Cool greys"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b89f600179db2ff934b0ab_True%20Spring%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the True Spring palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level that is naturally present in your appearance. True Spring's natural appearance is medium contrasting because of its brightness. Therefore, the best colour combinations for your outfits are similarly contrasting. The obvious way to create contrast is by pairing a dark colour with a light colour, such as dark blue and light blue. This is called value contrast. However, this may not be enough contrast for a True Spring. Instead of value contrast, aim for hue contrast. Don't be afraid to combine unlike colours – particularly those sitting opposite each other on the colour wheel, such as pink and green. The more unusual the combination, the more striking. The other way you can create a high contrast is by combining a neutral with a bright accent colour. Either pair a dark neutral with a lighter, brighter accent colour or a light neutral and a different darker accent colour. Make sure to select different hues to create additional hue contrast. In general, always aim for at least one bright colour in your outfit. Avoid neutrals-only combinations, monochromatic looks and low contrast combinations. These will diminish your naturally vibrant colouring.",
+        "Combinations": [
+          ["dark neutral", "bright accent"],
+          ["neighbouring hues"],
+          ["opposite hues"]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b89fa917dcb96ba63a84c9_True%20Spring%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain True Spring colours.",
+        "color": {
+          "description": "If a pattern contains some but not much colour from a True Spring palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., muted cool greys). Since your natural colouring is medium contrasted, opt for patterns with medium contrast between the elements rather than ones which blend too much. Great patterns for True Spring are dotty, busy, creative, and geometric patterns. Hand-drawn elements are also good.",
+          "combinations": {
+            "bad": ["True Spring pattern", "True Summer background"],
+            "good": ["True Spring pattern", "True Summer accents"],
+            "great": "True Spring pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8a03010f77f8f6b0514fa_True%20Spring%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring is medium contrasted, opt for patterns with medium contrast between the elements rather than ones which blend too much. In the example below, both patterns contain only True Spring colours and are wearable. However, the second pattern displays a higher contrast between the elements and is consequently more flattering.",
+          "combinations": {
+            "good": "low-contrast pattern",
+            "great": "medium-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b898410bcd7e4964e0d034_Bright%20Spring%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for True Spring are dotty, busy, creative, and geometric patterns. Hand-drawn elements are also good. Since this sub-season borders on Autumn, natural floral patterns are best avoided. If you want to wear floral patterns, opt for stylised flowers. Elements should be bigger and not too dense. Avoid small elements, very loose and very dense arrangements - like the first example.",
+          "combinations": {
+            "bad": ["small", "natural florals", "dense", "loose arrangement", "bad"],
+            "good": ["small", "natural florals", "dense", "loose arrangement", "bad"],
+            "great": ["big", "hand-drawn", "stylised elements", "loose arrangement"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8a0ad320b6483a5996f36_True%20Spring%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "Although True Spring is warm, gold is not the only metal that works for this season. Since your skin's undertones are warm, rose gold, white gold, and even silver may work for you. Make sure that metals have a shiny or polished finish. Matte finishes will clash with your naturally bright colouring.",
+        "metals": {
+          "type": {
+            "gold": "great",
+            "rose gold": "good",
+            "white gold": "good",
+            "silver": "bad"
+          },
+          "finish": {
+            "polished": "great",
+            "matte": "bad"
+          }
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8a0d510f77f2c670516cb_True%20Spring%20Metals.png"
+      },
+      "stones": {
+        "description": "The best stones for True Spring are amber and citrine. These stones complement the season's warm and fresh characteristics.",
+        "stones": [
+          "amber",
+          "citrine"
+        ]
+      }
+    }
+  }
+}

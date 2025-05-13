@@ -1,0 +1,162 @@
+{
+  "Dark Autumn": {
+    "tagline": "Deep and warm, like the last rays of autumn sun casting long shadows",
+    "introduction": "Dark Autumn is one of the three Autumn seasons and sits between True Autumn and Dark Winter on the seasonal flow chart. Unlike Dark Winter, this season is warm. However, both sister seasons are a blend of Winter and Autumn, with Dark Winter leaning more towards the Winter palette and Dark Autumn leaning more towards the Autumn palette.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a Dark Autumn if the primary colour aspect of your overall appearance is dark, and the secondary aspect is warm – meaning warm colours suit you better than cooler ones. When you look in the mirror, the first thing you notice about your colouring is that your hair and eyes are dark. Your skin may be dark too, or it may be lighter. Regardless of the colouring of your skin, there is always a high contrast between the features. This is because the whites of the eyes and the teeth provide plenty of contrast against the dark eyes, hair (and skin). In addition, your colouring has warmer undertones, meaning gold flatters your skin more than silver.",
+      "features": {
+        "eyes": {
+          "description": "The most common colours for Dark Autumn eyes are dark hazel, dark green, warm dark brown and warm black. Though very rare, eyes of this colour season can also be muted dark blue. You may notice swirling and erratic borders around the pupil and freckles on the iris, which are characteristic of Autumn eyes.",
+          "eyeColors": [
+            "dark hazel",
+            "dark green",
+            "dark brown",
+            "black",
+            "dark blue"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e61d5d731f7a2f13176a_Dark%20Autumn%20Eyes.webp"
+        },
+        "skin": {
+          "description": "The skin is either neutral or neutral-warm – meaning both gold and silver look good against it, but gold looks better. Dark Autumn skin comes in a variety of shades ranging from light to deep. Skin undertones are golden or bronze. The skin can appear pale in winter and may also have freckles.",
+          "skinTones": {
+            "1": ["neutral"],
+            "2": ["neutral-warm", "neutral"],
+            "3": ["neutral-warm", "neutral"],
+            "4": ["neutral-warm", "neutral"],
+            "5": ["warm", "neutral-warm", "neutral"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e63dcbd467b31cb9bbb9_Dark%20Autumn%20Skin.png"
+        },
+        "hair": {
+          "description": "Dark Autumn hair is typically medium to dark golden brown, dark auburn, dark brown or black-brown but with warm undertones. Regardless of the colour, Dark Autumn hair has a rich, warm and deep glow to it and may develop golden or red highlights when in the sun.",
+          "hairColors": {
+            "red": ["dark auburn"],
+            "brown": ["medium golden", "dark golden", "dark"],
+            "black": ["warm brown-black"]
+            
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e654cbd467782eb9bbe4_Dark%20Autumn%20Hair.webp"
+        },
+        "contrast": {
+            "value": "high",
+            "description": "A dark value can be achieved in two ways: (1) all dark features or (2) dark hair and eyes paired with light skin. In either case, Dark Autumn is a colour season of high contrast between hair, eyes and skin. There is even a high contrast between the iris and the whites of the eye. This is particularly true for individuals with overall dark features."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c8529b2c253c5b8fa2972d_Dark%20Autumn%20Colour%20Palette.png",
+      "description": "Dark Autumn is the colour season reminiscent of late autumn evenings. The last rays of the sun fall on the land, and shadows become long, but some warmth of the passing day remains. These colours are rich and dark, like the last brown leaves falling from the thinning treetops.",
+      "hue": {
+        "value": "nuetral-warm",
+        "explanation": "The colours lean towards the warm end of the scale but are not extremely warm. This means they contain more yellow than blue undertones. Even if you choose blue (which is the coolest colour of all), you will find only warmer shades, like turquoise and greenish blues that have a tint of yellow."
+      },
+      "value": {
+        "value": "dark",
+        "explanation": "In keeping with Dark Autumn's primary colour aspect, most colours have a lot of depth. However, there are also lighter and medium colours on the palette. These are required to create highly contrasted outfits."
+      },
+      "chroma": {
+        "value": "medium",
+        "explanation": "The colours are medium in chroma; meaning they are neither extremely soft and muted, nor extremely bright and vibrant. They do, however, appear rich due to their warmth."
+      },
+      "sisterPalettes": {
+        "description": "Dark Autumn sits between True Autumn and Dark Winter on the seasonal flow chart. It falls at the Winter end of the Autumn palette. Therefore, the colours are more saturated, cooler and darker than those of True Autumn. Compared to Dark Winter, the colours are similarly dark but more muted and warmer. Winter's effect on Dark Autumn is to cool the colours somewhat. Winter also turns up the brightness, so that Dark Autumns can get away with higher contrast combinations than Soft and True Autumns. Compared to the third Autumn season Soft Autumn, the colours share the same neutral-warm hue but are darker and more saturated.",
+        "sisters": [
+          "True Autumn",
+          "Dark Winter"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e7d5bd91d553cfa57143_Dark%20Autumn%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "Even though black is a dark colour, the cool, icy black of Winter will not flatter you. Instead, there is a warmer black with a subtle greenish undertone on the Dark Autumn colour palette as well as dark chocolate browns. These are your dark neutrals, and they will complement your warmer colouring more than true black. The same applies to white. A pure white is too cool and too harsh against Dark Autumn skin. Instead, you have different shades of beige and yellow that are warmer and much more suitable. You can use these as light neutrals.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e7f463d766dab4841e9c_Dark%20Autumn%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since Dark Autumn's main colour aspects are depth and warmth, your worst colours are light and cool. White, pastel and other toned-down colours, such as dusty blues and pinks, will make your naturally rich colouring look off and washed out. Very cool, frosty colours, like intense pinks and blueish greys, will also clash with your naturally warm appearance.",
+        "colors": [
+          "White",
+          "Pastel pink",
+          "Dusty blue",
+          "Intense pink",
+          "Blueish grey"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e80abd91d5957ba5719a_Dark%20Autumn%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the Dark Autumn palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the level of contrast naturally present in your appearance. Dark Autumn's natural appearance is highly contrasting. Therefore, the best colour combinations for your outfits are similarly contrasting. Specifically, Dark Autumn's contrast is a contrast in value rather than hue. This means pairing light with dark colours is the best way for you to create contrast. You can pair darker colours with lighter, brighter accent colours. If you have dark skin, you can create contrast by wearing outfits in lighter colours and accenting them with darker ones. If you want to create even more contrast, you can also opt for hue contrast. Pair hues that sit opposite each other on the colour wheel, such as yellow and blue. Less flattering colour combinations for Dark Autumn are those that have very little contrast, such as monochromatic looks. If you want to go down that road, make sure to combine the very lightest with the very darkest shade of your chosen hue; otherwise, your naturally contrasting appearance will look dull behind your gentle outfit. Similarly, neutrals-only combinations may look a bit bland on you.",
+        "Combinations": [
+          ["dark neutral", "light accent"],
+          ["light neutral", "dark accent"],
+          ["opposite hues"]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e82d8e70e063eae437b7_Dark%20Autumn%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain Dark Autumn colours.",
+        "color": {
+          "description": "If a pattern contains some, but not much colour from a disharmonious palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., Light Summer mint green). Since your natural colouring is highly contrasted, opt for patterns that reflect this natural level of contrast rather than ones which are too timid.",
+          "combinations": {
+            "bad": ["Dark Autumn pattern", "Light Summer background"],
+            "good": ["Dark Autumn pattern", "Light Summer accents"],
+            "great": "Dark Autumn pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e853c5e15135168cec48_Dark%20Autumn%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring is highly contrasted, opt for patterns that reflect this natural level of contrast rather than ones which are too timid. In the example below, both patterns are in Dark Autumn colours and wearable. However, the second pattern displays a higher contrast between the elements and is therefore more flattering.",
+          "combinations": {
+            "bad": "low-contrast pattern",
+            "good": "medium-contrast pattern",
+            "great": "high-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e86bcbd4674426b9c43c_Dark%20Autumn%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for Dark Autumn are bold, highly stylised forms of natural autumn elements – such as oval shapes, leaves, and wood structures. Geometric shapes are less common in Autumn patterns – with the exception of retro patterns. Natural floral patterns are not YOUR best choice. If you want to wear floral patterns, the flowers should be highly stylised – as in paisley and oriental patterns. Elements should be big and loosely arranged. Avoid stiff geometric patterns and small, dense patterns – like in the first example.",
+          "combinations": {
+            "bad": ["small", "dense", "stiff", "natural floral"],
+            "good": ["medium", "loose", "retro geometric", "highly stylised floral"],
+            "great": ["big","bold" , "oval shapes", "leaves", "wood structures","paisley", "oriental", "stylised"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e8ad40aec033367ca102_Dark%20Autumn%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "Since Dark Autumn has neutral-warm colouring, a large range of metals will look flattering on you. From bronze, brass, gold to copper and pewter, all will work for you. Silver may also work on you, but make sure to select a warmer shade rather than a very cool, blue one. Metals are generally better with less shine and more depth – like antiqued, oxidised and hammered metals. Warm, reddish stones are perfect for Dark Autumn, such as carnelian, garnet and jasper. Another great stone is emerald. Framed in yellow or pink gold, this green stone turns into a flattering ornament.",
+        "metals": {
+          "type": {
+            "bronze": "great",
+            "brass": "great",
+            "gold": "great",
+            "yellow gold": "great",
+            "rose gold": "great",
+            "copper": "great",
+            "pewter": "great",
+            "warm silver": "good",
+            "cool silver": "bad",
+            "platinum": "bad"
+          },
+          "finish": {
+            "antiqued": "great",
+            "oxidised": "great",
+            "hammered": "great",
+            "matte": "good",
+            "shiny": "bad"
+          },
+          "stones": {
+            "description": "The best stones for Dark Autumn are carnelian, garnet, jasper, and emerald. These stones complement the season's rich and warm characteristics.",
+            "stones": [
+              "carnelian",
+              "garnet",
+              "jasper",
+              "emerald"
+            ]
+          }
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e8d03465c66d68d4cadc_Dark%20Autumn%20Metals.png"
+      }
+    }
+  }
+}

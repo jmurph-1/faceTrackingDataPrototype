@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines a comprehensive plan for implementing video processing in colorAnalysisApp using Google's MediaPipe solutions. The proposed approach leverages MediaPipe's image segmentation and face landmark detection capabilities to extract accurate LAB color values for skin, hair, and eyes from video sources while correcting for lighting variations.
+This document outlines a comprehensive plan for implementing video processing in colorAnalysisApp using Google's MediaPipe solutions. The proposed approach leverages MediaPipe's face landmark detection for real-time tracking and strategic screenshot capture, with image segmentation performed as a separate process afterward. This separation optimizes performance while extracting accurate LAB color values for skin, hair, and eyes from video sources and correcting for lighting variations.
 
 ## Table of Contents
 
@@ -26,6 +26,7 @@ Extracting accurate color values from video presents several challenges:
 3. **Region Identification**: Accurately identifying skin, hair, and eye regions
 4. **Color Space Conversion**: Converting from RGB to LAB color space while preserving accuracy
 5. **Temporal Consistency**: Maintaining consistent color readings across video frames
+6. **Performance Constraints**: Running multiple ML models simultaneously can degrade user experience
 
 ## MediaPipe Solutions Overview
 
@@ -40,7 +41,7 @@ MediaPipe's Image Segmenter provides multi-class segmentation capabilities that 
 - Clothes
 - Accessories
 
-This segmentation works on both single images and continuous video streams, making it ideal for our use case. The multi-class selfie segmentation model can precisely isolate the regions of interest (skin, hair) needed for color extraction.
+This segmentation works on both single images and continuous video streams. The multi-class selfie segmentation model can precisely isolate the regions of interest (skin, hair) needed for color extraction.
 
 ### Face Landmark Detection
 
@@ -58,12 +59,13 @@ These landmarks enable tracking specific facial points throughout a video, which
 
 ## Proposed Workflow
 
-The proposed video processing workflow combines both MediaPipe solutions to achieve accurate LAB color extraction:
+The revised video processing workflow separates real-time face landmark tracking from image segmentation to optimize performance:
 
 ```
-[Video Input] → [Frame Extraction] → [Face Detection] → [Face Landmark Detection] → 
-[Image Segmentation] → [Region Identification] → [Color Sampling] → 
-[Lighting Correction] → [RGB to LAB Conversion] → [Temporal Averaging] → [Final LAB Values]
+[Video Input] → [Frame Extraction] → [Face Detection] → [Face Landmark Tracking] → 
+[Strategic Screenshot Capture] → [Skin Color Analysis] → [Screenshot Processing] → 
+[Image Segmentation] → [Hair/Eye Color Analysis] → [Lighting Correction] → 
+[RGB to LAB Conversion] → [Final LAB Values]
 ```
 
 ### Workflow Diagram
@@ -75,23 +77,22 @@ The proposed video processing workflow combines both MediaPipe solutions to achi
                                                    │
                                                    ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────────┐
-│Final LAB Values │◀────│Temporal Average │◀────│MediaPipe Face Landmk│
-└─────────────────┘     └─────────────────┘     └──────────┬──────────┘
-                                                           │
-                                                           ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────────┐
-│RGB→LAB Convert  │◀────│Light Correction │◀────│MediaPipe Img Segment│
-└─────────────────┘     └─────────────────┘     └──────────┬──────────┘
-                                                           │
-                                                           ▼
-                                                 ┌─────────────────────┐
-                                                 │Region Identification│
-                                                 └──────────┬──────────┘
-                                                           │
-                                                           ▼
-                                                 ┌─────────────────────┐
-                                                 │Color Sampling Points│
-                                                 └─────────────────────┘
+│Strategic        │◀────│Real-time        │◀────│MediaPipe Face Landmk│
+│Screenshot       │     │Skin Analysis    │     └──────────┬──────────┘
+│Capture          │     └─────────────────┘                │
+└───────┬─────────┘                                        │
+        │                                                  │
+        ▼                                                  ▼
+┌───────────────────┐                           ┌─────────────────────┐
+│Image Segmentation │                           │Light/Position       │
+│(Post-Processing)  │                           │Quality Assessment   │
+└───────┬───────────┘                           └─────────────────────┘
+        │
+        ▼
+┌───────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│Hair/Eye Color     │────▶│RGB→LAB Convert  │────▶│Final LAB Values │
+│Analysis           │     └─────────────────┘     └─────────────────┘
+└───────────────────┘
 ```
 
 ## Implementation Details
@@ -99,12 +100,12 @@ The proposed video processing workflow combines both MediaPipe solutions to achi
 ### 1. Video Input and Frame Extraction
 
 - Process video at 15-30 fps depending on device capabilities
-- Extract key frames for processing to balance accuracy and performance
+- Extract key frames for face landmark processing
 - Implement frame buffering to handle varying processing times
 
-### 2. Face Detection and Landmark Tracking
+### 2. Face Detection and Landmark Tracking (Real-time Phase)
 
-- Use MediaPipe Face Landmarker to detect and track facial features
+- Use MediaPipe Face Landmarker to detect and track facial features in real-time
 - Track specific landmarks for:
   - Forehead (landmarks 10, 67, 109)
   - Cheeks (landmarks 123, 352)
@@ -113,41 +114,69 @@ The proposed video processing workflow combines both MediaPipe solutions to achi
   - Lips (landmarks 0, 17, 61, 291)
   - Jawline (landmarks 140, 367, 397)
 - Use these landmarks to:
+  - Provide real-time feedback to guide user positioning
   - Establish reference points for lighting normalization
-  - Track consistent regions across frames
-  - Define boundaries for color sampling
+  - Track consistent regions for skin color sampling
+  - Calculate a frame quality score based on:
+    - Face positioning (centered, proper size)
+    - Lighting conditions
+    - Stability (minimal motion blur)
+    - Confidence scores of landmark detection
 
-### 3. Image Segmentation
+### 3. Strategic Screenshot Capture
 
-- Apply MediaPipe Image Segmenter with multi-class selfie segmentation model
-- Extract segmentation masks for:
-  - Hair (category 1)
-  - Body-skin (category 2)
-  - Face-skin (category 3)
-- Create binary masks for each region of interest
-- Apply morphological operations to refine masks if needed
+- Capture 5-8 high-quality screenshots at strategic moments:
+  - When quality score exceeds predetermined threshold
+  - At different head angles to capture varied lighting conditions
+  - When the face is properly centered and well-lit
+  - With minimal motion blur
+- Store screenshots in memory for post-processing
+- Tag each screenshot with metadata:
+  - Head position (angle, orientation)
+  - Lighting quality assessment
+  - Face landmark positions
+  - Timestamp
 
-### 4. Region Identification and Color Sampling
+### 4. Real-time Skin Color Analysis
 
-- Combine face landmarks with segmentation masks to identify optimal sampling regions
-- For skin color:
+- While tracking landmarks, perform preliminary skin color analysis:
   - Sample from cheek regions (using landmarks 123, 352)
   - Avoid areas near nose and mouth
-  - Use face-skin segmentation mask to ensure sampling only from skin regions
+  - Collect data across frames with varied head positions
+  - Apply temporal averaging for stability
+
+### 5. Post-processing Image Segmentation
+
+- After video capture phase is complete, process the stored screenshots:
+  - Apply MediaPipe Image Segmenter with multi-class selfie segmentation model
+  - Extract segmentation masks for:
+    - Hair (category 1)
+    - Body-skin (category 2)
+    - Face-skin (category 3)
+  - Create binary masks for each region of interest
+  - Process in background thread to maintain app responsiveness
+
+### 6. Hair and Eye Color Analysis
+
 - For hair color:
+  - Use hair segmentation mask from screenshots
   - Sample from top and sides of head
-  - Use hair segmentation mask to ensure sampling only from hair regions
+  - Account for highlights/lowlights with multi-point sampling
+  - Compare results across multiple screenshots
+
 - For eye color:
   - Use eye landmarks (33, 133, 362, 263) to locate eye regions
   - Apply additional processing to isolate iris from sclera
+  - Sample from multiple screenshots for consistency
 
-### 5. Color Sampling Strategy
+### 7. Color Sampling Strategy
 
 For each region of interest:
 1. Define sampling grid within the region
 2. Extract RGB values from multiple points within the grid
 3. Filter outliers to remove noise
 4. Calculate weighted average based on confidence scores
+5. Compare results across different screenshots
 
 ## Lighting Correction Methodology
 
@@ -162,8 +191,8 @@ Lighting correction is crucial for accurate color extraction. The proposed appro
    - Calculate illumination correction factor by comparing with expected values
 
 3. **Cross-Frame Consistency**:
-   - Track lighting changes across frames
-   - Apply temporal smoothing to correction factors
+   - Compare lighting across different screenshots
+   - Use metadata about head position to understand lighting variations
 
 4. **Adaptive Correction**:
    - Adjust correction strength based on confidence scores
@@ -191,38 +220,42 @@ After lighting correction, RGB values are converted to LAB color space:
 
 This conversion allows for more perceptually accurate color representation and better matches human color perception.
 
-### Temporal Averaging
+### Multi-Screenshot Consistency
 
-To ensure stability across video frames:
+To ensure stability across different screenshots:
 
-1. Maintain a sliding window of color values (5-10 frames)
-2. Apply weighted averaging with higher weights for:
-   - Frames with higher confidence scores
-   - Frames with better lighting conditions
-   - Frames with less motion blur
-
-3. Calculate final LAB values as weighted average across the window
+1. Apply color extraction to each screenshot individually
+2. Weight results based on:
+   - Quality score of the screenshot
+   - Confidence in segmentation results
+   - Lighting conditions
+3. Calculate final LAB values as weighted average across screenshots
 
 ## Accuracy Assessment
 
 Based on our research, the accuracy of this approach is expected to be high due to:
 
-1. **MediaPipe's Segmentation Accuracy**:
+1. **Performance Optimization**:
+   - Separating real-time tracking from intensive image segmentation improves performance
+   - Allows for more thorough processing of segmentation on selected high-quality frames
+   - Strategic screenshot selection ensures only the best frames are used for critical color analysis
+
+2. **MediaPipe's Segmentation Accuracy**:
    - The multi-class selfie segmentation model has demonstrated high precision in identifying hair and skin regions
    - Segmentation works well across different skin tones and hair colors
 
-2. **Face Landmark Precision**:
+3. **Face Landmark Precision**:
    - 478 landmarks provide highly detailed facial mapping
    - Landmarks maintain stability across frames even with movement
 
-3. **Combined Approach Benefits**:
-   - Using both segmentation and landmarks provides redundancy
-   - Allows for cross-validation between different detection methods
-   - Enables more precise region targeting than either method alone
+4. **Combined Approach Benefits**:
+   - Using landmarks for real-time tracking improves user experience
+   - Processing multiple screenshots allows cross-validation between different captures
+   - Enables more precise region targeting without performance penalties
 
-4. **Lighting Correction Effectiveness**:
-   - Reference-based correction handles various lighting conditions
-   - Temporal averaging reduces the impact of momentary lighting changes
+5. **Lighting Correction Effectiveness**:
+   - Multiple screenshots at different head positions provide varied lighting samples
+   - Comparison across these positions improves lighting normalization
 
 ## Integration with colorAnalysisApp
 
@@ -235,11 +268,12 @@ Since colorAnalysisApp uses Swift 6.1, the implementation will require:
    - Implement through Swift wrappers around MediaPipe's C++ core
 
 2. **Processing Pipeline**:
-   - Implement as a modular pipeline with clear separation of concerns
-   - Use Swift's concurrency features for parallel processing where possible
+   - Implement as a two-phase process: real-time tracking and post-capture analysis
+   - Use Swift's concurrency features for background processing of screenshots
+   - Provide user feedback during the capture phase
 
 3. **Memory Management**:
-   - Implement efficient buffer management for video frames
+   - Implement efficient screenshot storage using compressed formats
    - Use Swift's ARC (Automatic Reference Counting) to manage resources
 
 ### API Design
@@ -252,11 +286,25 @@ class VideoColorProcessor {
     // Initialize with configuration
     init(config: ProcessorConfig)
     
-    // Process video frame and return color values
-    func processFrame(frame: CVPixelBuffer) -> ColorResults
+    // Process real-time video frame and return preliminary skin analysis
+    func processFrame(frame: CVPixelBuffer) -> FrameQualityResult
     
-    // Reset state (e.g., when switching video sources)
+    // Capture strategic screenshot when quality threshold is met
+    func captureScreenshot(frame: CVPixelBuffer) -> Bool
+    
+    // Process captured screenshots (call after video session)
+    func processScreenshots() async -> ColorResults
+    
+    // Reset state (e.g., when starting a new session)
     func reset()
+}
+
+// Frame quality assessment
+struct FrameQualityResult {
+    let qualityScore: Float
+    let preliminarySkinRGB: RGB?
+    let facePosition: FacePosition
+    let isGoodForCapture: Bool
 }
 
 // Results structure
@@ -279,35 +327,36 @@ struct LABColor {
 
 ### Potential Limitations
 
-1. **Processing Performance**:
-   - MediaPipe models can be computationally intensive
-   - **Mitigation**: Implement frame skipping and adaptive processing based on device capabilities
+1. **Processing Flow**:
+   - Two-phase approach requires clear user guidance during video capture
+   - **Mitigation**: Implement intuitive UI with real-time feedback on face positioning and screenshot capture
 
-2. **Extreme Lighting Conditions**:
-   - Very dark or very bright environments may reduce accuracy
+2. **Screenshot Storage**:
+   - Multiple high-quality screenshots could use significant memory
+   - **Mitigation**: Use compressed formats and discard screenshots after processing
+
+3. **Extreme Lighting Conditions**:
+   - Very dark or very bright environments may still reduce accuracy
    - **Mitigation**: Implement detection of poor lighting conditions and provide feedback to users
 
-3. **Unusual Hair Colors**:
+4. **Unusual Hair Colors**:
    - Non-natural hair colors may affect segmentation accuracy
    - **Mitigation**: Implement additional validation checks for unusual color values
 
-4. **Occlusions**:
+5. **Occlusions**:
    - Glasses, masks, or other face coverings may affect results
-   - **Mitigation**: Detect occlusions and adjust sampling regions accordingly
-
-5. **Multiple Faces**:
-   - Videos with multiple faces may cause confusion
-   - **Mitigation**: Implement face tracking to maintain focus on the primary subject
+   - **Mitigation**: Detect occlusions and adjust sampling regions or provide guidance to users
 
 ## Conclusion
 
-The proposed video processing workflow leverages MediaPipe's image segmentation and face landmark detection capabilities to extract accurate LAB color values for skin, hair, and eyes from video sources. By combining these technologies with custom lighting correction and temporal averaging, we can achieve high accuracy even in challenging conditions.
+The revised video processing workflow leverages MediaPipe's face landmark detection for real-time tracking and strategic screenshot capture, with image segmentation performed separately afterward. This separation optimizes performance while maintaining high accuracy for extracting LAB color values.
 
 This approach offers several advantages over traditional methods:
 
-1. **Precision**: Accurate identification of regions of interest
-2. **Robustness**: Handles variations in lighting and movement
-3. **Efficiency**: Leverages optimized MediaPipe models for mobile performance
-4. **Flexibility**: Modular design allows for future enhancements
+1. **Performance**: Separating compute-intensive processes improves real-time responsiveness
+2. **Precision**: Strategic screenshot capture ensures high-quality inputs for color analysis
+3. **Robustness**: Multiple screenshots at different angles improve lighting correction
+4. **Efficiency**: Resources are focused on processing only the highest quality frames
+5. **User Experience**: Real-time landmark tracking provides immediate feedback while maintaining app responsiveness
 
-The implementation will require integration with colorAnalysisApp's Swift codebase, but the benefits in terms of accuracy and reliability make this approach highly recommended for the project's needs.
+The implementation will require integration with colorAnalysisApp's Swift codebase, but the benefits in terms of accuracy, reliability, and performance make this approach highly recommended for the project's needs.

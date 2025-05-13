@@ -1,0 +1,183 @@
+{
+  "Light Summer": {
+    "tagline": "Light and cool, with a gentle freshness like a summer morning breeze",
+    "introduction": "Light Summer is one of the three Summer seasons and sits between Light Spring and True Summer on the seasonal flow chart. Unlike Light Spring, this season is cool. However, both sister seasons are a blend of Spring and Summer, with Light Spring leaning more towards the Spring palette and Light Summer leaning more towards the Summer palette.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a Light Summer if the primary colour aspect of your overall appearance is light, and the secondary aspect is cool – meaning cooler colours suit you better than warmer ones. When you look in the mirror, the first thing you notice about your colouring is the low contrast between skin, eyes, and hair. All of your features are very light. This means that if you have dark eyes or dark hair, but you aren't a person of colour, then you are most likely one of the darker seasons. If you are a person of colour, but you have very light colouring for your ethnicity, you may be a Light Summer. In addition, your features have mainly cool (blue and grey) undertones, meaning silver flatters you more than gold.",
+      "features": {
+        "eyes": {
+          "description": "Light Summer eyes can be light grey, light blue, light azure or a light green tone. There is no darkness about them, and they generally have a cool, greyish undertone. Typical of the Summer eye, you may notice a crackled glass pattern and a soft separation between the iris and the whites of the eye.",
+          "eyeColors": [
+            "light grey",
+            "light blue",
+            "light azure",
+            "light green"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8be24c072a36a554f2dcd_Light%20Summer%20Eyes.webp"
+        },
+        "skin": {
+          "description": "Light Summer skin is either neutral or neutral-cool with beige or pinkish undertones. It ranges from fair to medium. You know you have neutral-cool skin if both gold and silver look good on you, but silver looks better.",
+          "skinTones": {
+            "1": [
+              "neutral-cool",
+              "neutral"
+            ],
+            "2": [
+              "neutral-cool",
+              "neutral"
+            ],
+            "3": [
+              "neutral-cool",
+              "neutral"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b9d77e5418ccc6e5fa1e_Light%20Summer%20Skin.png"
+        },
+        "hair": {
+          "description": "Like the rest of the features, this colour season's hair is light. It can range from icy light to medium ash blonde or light ash brown. Typically, the hair does not have natural highlights. Many Light Summers were blonde as children, but their hair has darkened with age. Individuals of darker ethnicities may have a lighter shade of brown, which stands in low contrast to their other features.",
+          "hairColors": {
+            "blonde": [
+              "very light ash",
+              "light ash",
+              "medium ash",
+              "dark ash"
+            ],
+            "brown": [
+              "light ash"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ba33488e4676486cf733_Light%20Summer%20Hair.webp"
+        },
+        "contrast": {
+          "value": "low",
+          "description": "Light Summer has a low level of contrast between features. All features are very light, with minimal contrast between skin, eyes, and hair. This creates a delicate and harmonious appearance that is characteristic of the Light Summer season."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bac1f61b0d6525007d72_Light%20Summer%20Colour%20Palette.png",
+      "description": "Light Summer is the colour season reminiscent of mild summer mornings full of coolness and gentleness. But there is also a hint of freshness. The sun's rays only touch the dew drops on the awakened foliage and flowers. The sky is of the most muted tones with floating, fluffy clouds. These colours are gentle and light, yet refreshing – like an early morning breeze at the beach.",
+      "hue": {
+        "value": "cool",
+        "explanation": "The colours lean towards the cool end of the scale but are not very cool. That means they contain more blue than yellow undertones. So even if you choose yellow (which is the warmest colour of all), you will find only cooler yellows that contain a tint of blue."
+      },
+      "value": {
+        "value": "light",
+        "explanation": "In line with Light Summer's primary aspect, the colours are light. Although you may find some medium shades, these are just supporting colours for the lighter tints. There are no dark colours on the palette. However, the palette does not include the very lightest colours. Those are Winter's icy lights, which are closer to white than the colours of Light Summer."
+      },
+      "chroma": {
+        "value": "medium",
+        "explanation": "The colours are medium in chroma, meaning they are neither very muted nor extremely vibrant. The colours are, however, brighter and more saturated than those of the other two Summer seasons because of Spring's influence on them. But they don't have the same intensity as Light Spring colours."
+      },
+      "sisterPalettes": {
+        "description": "Light Summer sits between Light Spring and True Summer on the seasonal flow chart. It falls at the Spring end of the Summer palette, making the colours are lighter, brighter and warmer than those of True Summer. In fact, they are surprisingly un-summery in their level of saturation – almost bright enough to rival Light and True Spring's palettes. Compared to Light Spring, the colours are cooler, gentler and slightly darker. Spring's effect on Light Summer is added warmth and brightness. Spring also lightens the colours a little compared to the other two Summer palettes. The colours are neutral-cool like those of the third Summer season Soft Summer, but they are brighter and lighter.",
+        "sisters": [
+          "Light Spring",
+          "True Summer"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bbb03465c6c3f1d3c258_Light%20Spring%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "Due to the lightness of your natural colouring, your least flattering colours are dark. That means true black (a Winter colour) is very unflattering on Light Summers. Black near your face will make you look older and will make your delicate colouring disappear. The closest you have to black is a dark ash brown and dark greyish blues, which you can use as dark neutrals. Even though Light Summer is light, the pure whites of Winter are too harsh for you. Instead, you have a light, muted beige, light greys and light, cool browns.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bbf03f5d2334a7b1c3b8_Light%20Summer%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since Light Summer's main colour aspects are lightness and coolness, your worst colours are dark and warm. Black, white and other dark colours, such as deep greens and reds, will age you and make you look unhealthy. Similarly, very bright and vibrant colours, such as intense oranges, will overpower your natural delicacy and swallow you up. Finally, stay away from very warm colours, such as warm yellows, oranges, and reds, as these will clash with your natural coolness.",
+        "colors": [
+          "Black",
+          "Deep greens",
+          "Deep reds",
+          "Intense oranges",
+          "Warm yellows"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc067e54188025e6033b_Light%20Summer%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the Light Summer palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level that is naturally present in your appearance. Light Summer sits between colourful, vibrant Spring and gentle, muted Summer. This season's colours are brighter than those of the other two Summer seasons, but its appearance is also delicate. Therefore, the best colour combinations for your outfits are somewhat contrasting. One way to achieve a delicate, yet brighter look is through monochromatic combinations. You can combine slightly different tints of one hue, such as a light blue with a medium blue, which have little value contrast between them. Hue contrast can also be flattering on Light Summers. And you can combine neighbouring hues, such as a pink and a lavender purple, or even colours that sit further apart on the colour wheel. Another way to achieve some contrast is by pairing a neutral with a brighter colour, such as a medium grey with a brighter rose. In general, aim to incorporate at least one brighter colour into your outfits to keep your look colourful. Avoid neutrals-only combinations, which look very bland on Light Summers.",
+        "Combinations": [
+          [
+            "monochromatic"
+          ],
+          [
+            "neighbouring hues"
+          ],
+          [
+            "light nuetral",
+            "dark accent"
+          ]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc2cc7855152b4537a7e_Light%20Summer%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain Light Summer colours.",
+        "color": {
+          "description": "If a pattern contains some but not much colour from a Light Summer palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., muted warm golds). Since your natural colouring has low contrast, opt for patterns that reflect this naturally low contrast level rather than ones which are too bold. Great patterns for Light Summer are gentle and delicate – such as watercolour and floral textures, floral drawings, hand-drawn elements, and brush strokes.",
+          "combinations": {
+            "bad": [
+              "Light Summer pattern",
+              "Dark Autumn background"
+            ],
+            "good": [
+              "Light Summer pattern",
+              "Dark Autumn accents"
+            ],
+            "great": "Light Summer pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc5a0bfdaebac35061c2_Light%20Summer%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring has low contrast, opt for patterns that reflect this naturally low contrast level rather than ones which are too bold. In the example below, both patterns are in Light Summer colours and wearable. However, the second pattern displays a higher contrast between the elements and is thus less flattering.",
+          "combinations": {
+            "bad": "high-contrast pattern",
+            "good": "low-contrast pattern",
+            "great": "medium-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc7a10f77f3bdc05aa78_Light%20Summer%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for Light Summer are gentle and delicate – such as watercolour and floral textures, floral drawings, hand-drawn elements, and brush strokes. The elements of the pattern should be small, dense, and loosely arranged. Avoid ordered arrangements, big elements, and stiff geometric patterns – like in the first example.",
+          "combinations": {
+            "bad": [
+              "big",
+              "stiff",
+              "geometric"
+            ],
+            "great": [
+              "small",
+              "delicate",
+              "watercolour",
+              "floral",
+              "hand-drawn"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bcb83cc3522e97df2a5f_Light%20Summer%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "Since Light Summer flows from Spring into Summer, you may be able to wear both warm and cool metals as long as they are light. Since you are on the cool side of neutral, though, silver is the more foolproof choice. Golds are better in lighter shades, and also more yellow than orange. Dark, rich golds will appear too heavy on you and orange ones too warm. Pearls in silver and white gold are also great. In fact, the pearl embodies this season, incorporating its properties and shades and is thus the best ornament for Light Summer. A beautiful stone for Light Summer is rose quartz. It is gentle, has a light pastel mist and is diverse in its structure and shades. Make sure not to select a rose quartz with reddish tones, that may highlight the pinkish undertone or potential redness in your skin.",
+        "metals": {
+          "type": {
+            "silver": "great",
+            "light gold": "good",
+            "dark gold": "bad",
+            "orange gold": "bad"
+          },
+          "finish": {
+            "all": "great"
+          }
+        },
+        "stones": {
+          "description": "The best stones for Light Summer are rose quartz and pearls. These stones complement the season's soft and cool characteristics.",
+          "stones": [
+            "rose quartz",
+            "pearl"
+          ]
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bce03237380f4dd7ee49_Light%20Spring%20Metals.png"
+      }
+    }
+  }
+}

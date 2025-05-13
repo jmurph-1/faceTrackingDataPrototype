@@ -1,0 +1,201 @@
+{
+  "True Winter": {
+    "tagline": "The original winter. Cool and bright, extremes of light and dark, winter at its peak",
+    "introduction": "True Winter is the original Winter season in the four seasons colour analysis and sits between Dark Winter and Bright Winter on the seasonal flow chart. Its opposite season is True Summer. And in contrast to the latter, True Winter's appearance is brilliant and highly contrasted.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a True Winter if the primary colour aspect of your overall appearance is cool, and the secondary aspect is bright. When you look in the mirror, the first thing you notice about your colouring is its frosty coolness. There is no warm quality in any of your features, and blue undertones dominate your skin, hair, and eyes. In addition, your skin, eyes, and hair have a brilliant and clear appearance – there is no muddiness or softness in them. Overall, the contrast between your features is high.",
+      "features": {
+        "eyes": {
+          "description": "True Winter eyes are cool with blue undertones. They come in a variety of shades, ranging from cool blue to icy hazel, cool browns and black. Characteristic of Winter eyes, you may notice a border defining iris and possible spokes on the iris.",
+          "eyeColors": [
+            "cool blue",
+            "icy hazel",
+            "cool brown",
+            "dark brown",
+            "black"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f3eddf174147168933d6_True%20Winter%20Eyes.webp"
+        },
+        "skin": {
+          "description": "True Winter skin has clear cool, blue undertones. This means that while silver makes the skin look healthy, gold makes it look off. Regardless of its colour, True Winter skin always stands in contrast to hair and eyes or the whites of the eyes and the teeth.",
+          "skinTones": {
+            "1": [
+              "cool"
+            ],
+            "2": [
+              "cool"
+            ],
+            "3": [
+              "cool"
+            ],
+            "4": [
+              "cool"
+            ],
+            "5": [
+              "cool"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f40b6526af360bb273a3_True%20Winter%20Skin.png"
+        },
+        "hair": {
+          "description": "The hair is typically dark, ranging from dark ash brown to black. This colour season's hair does not have any natural highlights, and the hair is either neutral or ashy.",
+          "hairColors": {
+            "brown": [
+              "dark ash",
+              "dark"
+            ],
+            "black": [
+              "cool brown-black",
+              "black"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f4428e70e057b6e48ac0_True%20Winter%20Hair.webp"
+        },
+        "contrast": {
+          "value": "high",
+          "description": "True Winter has a stark contrast between the features. There is also a high contrast between the iris and whites of the eye. So even if the skin is dark, a contrast between the whites of the eyes, the teeth and the rest of the features remains. In the images below, you can see the clear differences in shades in both cases."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c84b9affc1fe7ff47e349b_True%20Winter%20Colour%20Palette.png",
+      "description": "True Winter is the colour season reminiscent of winter in its prime. White, snowy landscapes contrast with bare trees and the darkest of nights. These colours play at the extremes of light, dark and bright. True Winter colours are also present in the moonless night sky and at the Earth's poles.",
+      "hue": {
+        "value": "cool",
+        "explanation": "True to this season's primary aspect, the colours are very cool, meaning they contain blue undertones but no yellow undertones. So even if you choose yellow (which is the warmest colour of all), you will find only cool shades. In addition, there are very few yellow-based colours on the palette and more shades of blue and icy pinks, which are naturally cool-based."
+      },
+      "value": {
+        "value": "medium-dark",
+        "explanation": "The palette ranges from the lightest value (true white) to the darkest (true black). Overall, the palette is on the darker side because bright blue – the undertone of this palette – is medium-dark."
+      },
+      "chroma": {
+        "value": "high",
+        "explanation": "The colours are fairly high in chroma, meaning they are saturated, bright and vibrant – in keeping with this season's secondary colour aspect."
+      },
+      "sisterPalettes": {
+        "description": "True Winter sits between Dark Winter and Bright Winter on the seasonal flow chart. It is the heart of the Winter palette, and the colours are brighter, cooler and slightly lighter than those of Dark Winter. With its opposite season True Summer, the colours share the same cool value but are darker and brighter. And unlike True Summer, the colours are cleaner and mixed with blue and black. The contrast between them is much higher. Compared to the third Winter season, Bright Winter, the palette is cooler, slightly darker and not quite as bright. This is because Bright Winter turns the saturation up to the maximum.",
+        "sisters": [
+          "Dark Winter",
+          "Bright Winter"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f55892d47e4bd1d01a1e_True%20Winter%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "True Winter is the original Winter season. As such, the palette contains both true black and white. You also have dark blues and browns, which you can use as dark neutrals. And apart from true white, you have light beiges and greys, which can act as light neutrals. On that note, black and white is the classic True Winter combination and will look truly striking on you.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f57d92d47e26f4d01acf_True%20Winter%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since True Winter's main colour aspects are coolness and brightness, your worst colours are warm and muted. Avoid warm, earthy colours, such as golden browns and rusty oranges, as they will clash with your naturally cool colouring. Soft, muted colours, such as dusty blues and lavender, will wash you out since they are not intense enough. If you want to wear pastel colours, use the icy versions on your palette as accent colours and combine them with dark neutrals.",
+        "colors": [
+          "Golden brown",
+          "Rusty orange",
+          "Dusty blue",
+          "Lavender"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f5982f71a8bece66236b_True%20Winter%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the True Winter palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level that is naturally present in your appearance. The classic colour combination of True Winter is black and white. No other season can pull this combination off. But you can also pair other darker neutrals with lighter accent colours, such as dark blue and bright blue. Or you can combine lighter neutrals with brighter accents, such as light grey with bright pink. A True Winter will also look okay in an all-dark or all-light monochromatic look. However, contrast is always the better option. Another thing to bear in mind is that even though your natural colour contrast is high, it is not as extreme as that of a Bright Winter. So pairing colours that sit opposite each other on the colour wheel, such as yellow and purple, can be overpowering. Instead, always opt for a neutral and an accent colour.",
+        "Combinations": [
+          [
+            "black",
+            "white"
+          ],
+          [
+            "dark neutral",
+            "light accent"
+          ],
+          [
+            "light neutral",
+            "bright accent"
+          ]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f5bc5ce71ecf2694d95c_True%20Winter%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain True Winter colours – like in the first example below. If a pattern contains some but not much colour from a disharmonious palette – like in the second example, you can also wear it.",
+        "color": {
+          "description": "The best patterns are those that only contain True Winter colours – like in the first example below. If a pattern contains some but not much colour from a disharmonious palette – like in the second example, you can also wear it.",
+          "combinations": {
+            "bad": [
+              "DTrueark Winter pattern",
+              "True Autumn background"
+            ],
+            "good": [
+              "True Winter pattern",
+              "True Autumn accents"
+            ],
+            "great": "True Winter pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f640281858dc4f0194fd_True%20Winter%20Patterns%20%26%20Prints%20Elements.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring is highly contrasted, opt for patterns that reflect this natural high contrast level rather than ones which blend too much together. In the example below, both patterns are in True Winter colours and wearable. However, the second pattern displays a higher contrast between the elements and is therefore more flattering.",
+          "combinations": {
+            "bad": "low-contrast pattern",
+            "good": "medium-contrast pattern",
+            "great": "high-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ec67b460683ab856d400_Dark%20Winter%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for True Winter are bold, highly contrasted, and contain unusual and unexpected elements. Look for patterns with geometric shapes or round and rectangular shapes mixed together. Abstract prints are great too; as are stylised versions of natural elements. Natural floral patterns are best avoided. If you want to wear floral patterns, opt for highly stylised flowers. Also avoid small elements in dense arrangements and anything faded or blended (such as watercolour prints).",
+          "combinations": {
+            "bad": [
+              "small",
+              "dense",
+              "faded",
+              "floral"
+            ],
+            "good": [
+              "medium",
+              "stylised floral"
+              
+            ],
+            "great": [
+                "big",
+                "bold",
+                "highly contrasted",
+                "black and white",
+                "neon",
+              "round or rectangular geometric",
+                "abstract"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f640281858dc4f0194fd_True%20Winter%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "Since True Winter requires absolute coolness, your best metals are silver and platinum. Gold, on the other hand, will clash with your cool appearance and make you look off. Shiny metals usually go better with your intense, bright colouring rather than antiqued, matte or brushed metals. Diamonds, rubies and sapphires are great stone choices for True Winter, as their colouring is bright and cool.",
+        "metals": {
+          "type": {
+            "silver": "great",
+            "platinum": "great",
+            "gold": "bad",
+            "copper": "bad",
+            "brass": "bad",
+            "white gold": "bad"
+          },
+          "finish": {
+            "shiny": "great",
+            "matte": "bad",
+            "brushed": "bad",
+            "antique": "bad"
+          }
+        },
+        "stones": {
+          "description": "The best stones for True Winter are diamonds, rubies and sapphires. They are all bright and cool, which is perfect for this season. Avoid warm stones, such as amber, topaz and citrine.",
+          "stones": [
+            "diamond",
+            "ruby",
+            "sapphire"
+          ]
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f65f33da244254af6491_True%20Winter%20Metals.webp"
+      }
+    }
+  }
+}

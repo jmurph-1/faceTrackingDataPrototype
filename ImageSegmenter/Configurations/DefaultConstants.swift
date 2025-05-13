@@ -18,24 +18,19 @@ import MediaPipeTasksVision
 
 // MARK: Define default constants
 struct DefaultConstants {
-  static let model: Model = .deeplabV3
-  static let delegate: Delegate = .CPU
+  static let model: Model = .multiClassSegmentation
+  static let delegate: Delegate = .GPU
 }
 
 // MARK: Model
 enum Model: Int, CaseIterable {
     
-    case selfieSegmenter
-    case deeplabV3
-    case multiClassSegmentation
-    
+    case multiClassSegmentation = 0
+    // Face landmark detection is now handled by a separate toggle
+    // and has been removed from the model selection dropdown
 
   var name: String {
     switch self {
-    case .selfieSegmenter:
-      return "Selfie segmenter"
-    case .deeplabV3:
-      return "Deeplab V3"
     case .multiClassSegmentation:
       return "Multi-class segmentation"
     }
@@ -43,12 +38,6 @@ enum Model: Int, CaseIterable {
 
   var modelPath: String? {
     switch self {
-    case .selfieSegmenter:
-      return Bundle.main.path(
-        forResource: "selfie_segmenter", ofType: "tflite")
-    case .deeplabV3:
-      return Bundle.main.path(
-        forResource: "deeplab_v3", ofType: "tflite")
     case .multiClassSegmentation:
       return Bundle.main.path(
       forResource: "selfie_multiclass_256x256", ofType: "tflite")
@@ -57,12 +46,8 @@ enum Model: Int, CaseIterable {
 
   init?(name: String) {
     switch name {
-    case "Selfie segmenter":
-      self.init(rawValue: 0)
-    case "Deeplab V3":
-      self.init(rawValue: 1)
     case "Multi-class segmentation":
-      self.init(rawValue: 2)
+      self.init(rawValue: 0)
     default:
       return nil
     }

@@ -292,29 +292,55 @@ class PreviewMetalView: MTKView {
     guard let drawable = currentDrawable,
           let currentRenderPassDescriptor = currentRenderPassDescriptor,
           let previewPixelBuffer = pixelBuffer else {
+      #if DEBUG
+      print("Draw failed: drawable=\(currentDrawable != nil), renderPassDescriptor=\(currentRenderPassDescriptor != nil), pixelBuffer=\(pixelBuffer != nil)")
+      #endif
       return
     }
 
     // Create a Metal texture from the image buffer.
     let width = CVPixelBufferGetWidth(previewPixelBuffer)
     let height = CVPixelBufferGetHeight(previewPixelBuffer)
+    let format = CVPixelBufferGetPixelFormatType(previewPixelBuffer)
+    
+    #if DEBUG
+    let formatStr: String
+    switch format {
+    case kCVPixelFormatType_32BGRA: formatStr = "32BGRA"
+    case kCVPixelFormatType_32RGBA: formatStr = "32RGBA"
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange: formatStr = "420YpCbCr8BiPlanarVideoRange"
+    default: formatStr = String(format: "Unknown (0x%08x)", format)
+    }
+    print("Creating texture from pixel buffer: \(width)x\(height) \(formatStr)")
+    #endif
 
     if textureCache == nil {
       createTextureCache()
     }
     var cvTextureOut: CVMetalTexture?
-    CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                              textureCache!,
-                                              previewPixelBuffer,
-                                              nil,
-                                              .bgra8Unorm,
-                                              width,
-                                              height,
-                                              0,
-                                              &cvTextureOut)
+    let textureCreateResult = CVMetalTextureCacheCreateTextureFromImage(
+        kCFAllocatorDefault,
+        textureCache!,
+        previewPixelBuffer,
+        nil,
+        .bgra8Unorm,
+        width,
+        height,
+        0,
+        &cvTextureOut)
+        
+    if textureCreateResult != kCVReturnSuccess {
+      #if DEBUG
+      print("Failed to create texture: error \(textureCreateResult)")
+      #endif
+      CVMetalTextureCacheFlush(textureCache!, 0)
+      return
+    }
+        
     guard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {
+      #if DEBUG
       print("Failed to create preview texture")
-
+      #endif
       CVMetalTextureCacheFlush(textureCache!, 0)
       return
     }
@@ -329,19 +355,25 @@ class PreviewMetalView: MTKView {
 
     // Set up command buffer and encoder
     guard let commandQueue = commandQueue else {
+      #if DEBUG
       print("Failed to create Metal command queue")
+      #endif
       CVMetalTextureCacheFlush(textureCache!, 0)
       return
     }
 
     guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+      #if DEBUG
       print("Failed to create Metal command buffer")
+      #endif
       CVMetalTextureCacheFlush(textureCache!, 0)
       return
     }
 
     guard let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: currentRenderPassDescriptor) else {
+      #if DEBUG
       print("Failed to create Metal command encoder")
+      #endif
       CVMetalTextureCacheFlush(textureCache!, 0)
       return
     }
@@ -355,6 +387,65 @@ class PreviewMetalView: MTKView {
     commandEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
     commandEncoder.endEncoding()
 
+    // Draw to the screen.
+    commandBuffer.present(drawable)
+    commandBuffer.commit()
+  }
+  
+  /// Draws a Metal texture directly to the view
+  func draw(metalTexture: MTLTexture) {
+    guard let drawable = currentDrawable,
+          let currentRenderPassDescriptor = currentRenderPassDescriptor else {
+      #if DEBUG
+      print("Draw failed: drawable=\(currentDrawable != nil), renderPassDescriptor=\(currentRenderPassDescriptor != nil)")
+      #endif
+      return
+    }
+    
+    let width = metalTexture.width
+    let height = metalTexture.height
+    let mirroring = false
+    let rotation = curentDeviceRotation()
+    
+    if width != textureWidth ||
+        height != textureHeight ||
+        self.bounds != internalBounds ||
+        mirroring != textureMirroring ||
+        rotation != textureRotation {
+      setupTransform(width: width, height: height, mirroring: mirroring, rotation: rotation)
+    }
+    
+    // Set up command buffer and encoder
+    guard let commandQueue = commandQueue else {
+      #if DEBUG
+      print("Failed to create Metal command queue")
+      #endif
+      return
+    }
+    
+    guard let commandBuffer = commandQueue.makeCommandBuffer() else {
+      #if DEBUG
+      print("Failed to create Metal command buffer")
+      #endif
+      return
+    }
+    
+    guard let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: currentRenderPassDescriptor) else {
+      #if DEBUG
+      print("Failed to create Metal command encoder")
+      #endif
+      return
+    }
+    
+    commandEncoder.label = "Metal texture display"
+    commandEncoder.setRenderPipelineState(renderPipelineState!)
+    commandEncoder.setVertexBuffer(vertexCoordBuffer, offset: 0, index: 0)
+    commandEncoder.setVertexBuffer(textCoordBuffer, offset: 0, index: 1)
+    commandEncoder.setFragmentTexture(metalTexture, index: 0)
+    commandEncoder.setFragmentSamplerState(sampler, index: 0)
+    commandEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+    commandEncoder.endEncoding()
+    
     // Draw to the screen.
     commandBuffer.present(drawable)
     commandBuffer.commit()
