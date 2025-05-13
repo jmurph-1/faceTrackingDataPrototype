@@ -10,9 +10,12 @@
 		1FB4DB731718CFD48F6CCA1F /* Pods_ImageSegmenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB81BA1A32936BF6829D8CD6 /* Pods_ImageSegmenter.framework */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
-		52BEF1802DD30C6E00957595 /* knowledge 2.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* knowledge 2.md */; };
+		52BEF1802DD30C6E00957595 /* techKnowledge.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* techKnowledge.md */; };
 		52BEF1812DD2F93800957595 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1822DD2F93800957595 /* Shaders.metal */; };
 		52BEF1832DD2F95C00957595 /* product.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1842DD2F95C00957595 /* product.md */; };
+		52BEF1832DD3114B00957595 /* video_processing_plan.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1822DD3114B00957595 /* video_processing_plan.md */; };
+		52BEF1852DD312E200957595 /* rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1842DD312D900957595 /* rules.md */; };
+		52BEF1872DD313A900957595 /* bugFixes.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1862DD3139800957595 /* bugFixes.md */; };
 		BF2D8E652B830C7B0050C3B6 /* deeplab_v3.tflite in Resources */ = {isa = PBXBuildFile; fileRef = BF2D8E642B830C7A0050C3B6 /* deeplab_v3.tflite */; };
 		BF6EBB4F2B1EB5BE00CD13FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB4E2B1EB5BE00CD13FB /* AppDelegate.swift */; };
 		BF6EBB512B1EB5BE00CD13FB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB502B1EB5BE00CD13FB /* SceneDelegate.swift */; };
@@ -56,10 +59,13 @@
 		1F44B4095124C60C8C521374 /* Pods-ImageSegmenter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageSegmenter.release.xcconfig"; path = "Target Support Files/Pods-ImageSegmenter/Pods-ImageSegmenter.release.xcconfig"; sourceTree = "<group>"; };
 		3DD5C13A41F6755F985364BD /* Pods-ImageSegmenter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageSegmenter.debug.xcconfig"; path = "Target Support Files/Pods-ImageSegmenter/Pods-ImageSegmenter.debug.xcconfig"; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
-		52BEF17F2DD30C6E00957595 /* knowledge 2.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "knowledge 2.md"; sourceTree = "<group>"; };
+		52BEF17F2DD30C6E00957595 /* techKnowledge.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = techKnowledge.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
 		52BEF1822DD2F93800957595 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		52BEF1822DD3114B00957595 /* video_processing_plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = video_processing_plan.md; sourceTree = "<group>"; };
 		52BEF1842DD2F95C00957595 /* product.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = product.md; sourceTree = "<group>"; };
+		52BEF1842DD312D900957595 /* rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = rules.md; sourceTree = "<group>"; };
+		52BEF1862DD3139800957595 /* bugFixes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = bugFixes.md; sourceTree = "<group>"; };
 		BF2D8E642B830C7A0050C3B6 /* deeplab_v3.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = deeplab_v3.tflite; sourceTree = "<group>"; };
 		BF6EBB4B2B1EB5BE00CD13FB /* ImageSegmenter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageSegmenter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF6EBB4E2B1EB5BE00CD13FB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -116,6 +122,18 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		52BEF1812DD310ED00957595 /* Knowledge */ = {
+			isa = PBXGroup;
+			children = (
+				52BEF1862DD3139800957595 /* bugFixes.md */,
+				52BEF1842DD312D900957595 /* rules.md */,
+				52BEF1842DD2F95C00957595 /* product.md */,
+				52BEF17F2DD30C6E00957595 /* techKnowledge.md */,
+				52BEF1822DD3114B00957595 /* video_processing_plan.md */,
+			);
+			path = Knowledge;
+			sourceTree = "<group>";
+		};
 		BF6EBB422B1EB5BE00CD13FB = {
 			isa = PBXGroup;
 			children = (
@@ -154,8 +172,7 @@
 				BF6EBB572B1EB5BF00CD13FB /* Assets.xcassets */,
 				BF6EBB592B1EB5BF00CD13FB /* LaunchScreen.storyboard */,
 				BF6EBB5C2B1EB5BF00CD13FB /* Info.plist */,
-				52BEF1842DD2F95C00957595 /* product.md */,
-				52BEF17F2DD30C6E00957595 /* knowledge 2.md */,
+				52BEF1812DD310ED00957595 /* Knowledge */,
 			);
 			path = ImageSegmenter;
 			sourceTree = "<group>";
@@ -330,11 +347,14 @@
 			files = (
 				BF6EBB5B2B1EB5BF00CD13FB /* LaunchScreen.storyboard in Resources */,
 				BF6EBB582B1EB5BF00CD13FB /* Assets.xcassets in Resources */,
+				52BEF1852DD312E200957595 /* rules.md in Resources */,
 				52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */,
-				52BEF1802DD30C6E00957595 /* knowledge 2.md in Resources */,
+				52BEF1802DD30C6E00957595 /* techKnowledge.md in Resources */,
+				52BEF1832DD3114B00957595 /* video_processing_plan.md in Resources */,
 				BF2D8E652B830C7B0050C3B6 /* deeplab_v3.tflite in Resources */,
 				52BEF1832DD2F95C00957595 /* product.md in Resources */,
 				BF6EBBA82B20712600CD13FB /* selfie_segmenter.tflite in Resources */,
+				52BEF1872DD313A900957595 /* bugFixes.md in Resources */,
 				BF6EBB562B1EB5BE00CD13FB /* Main.storyboard in Resources */,
 			);
 		};
