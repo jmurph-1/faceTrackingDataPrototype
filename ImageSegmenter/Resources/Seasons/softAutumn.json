@@ -1,0 +1,207 @@
+{
+  "Soft Autumn": {
+    "tagline": "Soft and warm, like a hazy autumn afternoon with gentle earthy tones",
+    "introduction": "Soft Autumn is one of the three Autumn seasons and sits between Soft Summer and True Autumn on the seasonal flow chart. Unlike Soft Summer, this season is warm. However, both sister seasons are a blend of Summer and Autumn. And while Soft Summer leans more towards the Summer palette, Soft Autumn leans more towards the Autumn palette.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a Soft Autumn if the primary colour aspect of your overall appearance is muted, and the secondary aspect is warm – meaning warm colours suit you better than cooler ones. When you look in the mirror the first thing you notice about your colouring is that your skin, eyes and hair blend into one another. Instead of bright and vibrant, your features appear somewhat 'greyed out' or toned down. This gives you a soft, muted appearance. The contrast between your skin, eyes and hair is low to medium. But the important thing is that your colouring blends and is not intense. In addition, your colouring has warmer undertones, meaning gold flatters your skin more than silver.",
+      "features": {
+        "eyes": {
+          "description": "Soft Autumn eyes can be green, light hazel or light brown. They tend to have a bit of grey to them, which gives them a muted appearance. You may also notice freckles on the iris and swirling erratic borders that are characteristic of Autumn eyes. Blue eyes in this colour season tend to be warm and with some grey in them. Darker ethnicities may also have a medium brown colour, but it must be soft, not bright.",
+          "eyeColors": [
+            "green",
+            "light hazel",
+            "light brown",
+            "warm blue",
+            "medium brown"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d239b418cee21d17ff31_Soft%20Autumn%20Eyes.webp"
+        },
+        "skin": {
+          "description": "The skin is either neutral or neutral-warm – meaning both gold and silver look good against it, but gold looks better. It can come in a range of tones from fair to tan and often has a hint of sand or yellow. Surrounded by vibrant colours, the skin may appear dull. And against true black, it may appear yellowish.",
+          "skinTones": {
+            "1": [
+              "neutral-warm",
+              "neutral"
+            ],
+            "2": [
+              "neutral-warm",
+              "neutral"
+            ],
+            "3": [
+              "neutral-warm",
+              "neutral"
+            ],
+            "4": [
+              "neutral-warm",
+              "neutral"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d25ff1e39e5f7481c6c8_Soft%20Autumn%20Skin.png"
+        },
+        "hair": {
+          "description": "Soft Autumn hair ranges from strawberry blonde over golden blonde to medium golden brown. The hair may appear slightly ashy because it is muted. But when exposed to the sun, it may develop golden highlights.",
+          "hairColors": {
+            "blonde": [
+              "strawberry",
+              "golden"
+            ],
+            "brown": [
+              "light golden",
+              "medium golden"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d27875af5e3452543933_Soft%20Autumn%20Hair.webp"
+        },
+        "contrast": {
+          "value": "low-medium",
+          "description": "Soft Autumn has a low to medium level of contrast between features. The features blend into one another rather than contrasting, creating a soft and muted appearance. This is reflected in the combination of neutral-warm skin tones with similarly toned hair colors."          
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60ca0a3b97253a0084808dda_Soft%20Autumn%20Colour%20Palette.png",
+      "description": "Soft Autumn is the colour season reminiscent of hazy days. The last summer sun rays touch the earth and create gentle, earthy Autumn landscapes with intricate nuances. These colours are delicate and mysterious. They are the colours of nuts and seeds and the first fields ready to harvest.",
+      "hue": {
+        "value": "neutral-warm",
+        "explanation": "Thanks to this season's secondary aspect, the colours lean towards the warm end of the scale but are not very warm. This means they contain more yellow than blue undertones. Consequently, you will find fewer shades of blue (which is the coolest colour of all) on the palette. And you will only see warmer shades of blue, like turquoise, that have a tint of yellow. Instead, there are more yellows, greens, and warm browns that are naturally yellow-based."
+      },
+      "value": {
+        "value": "medium",
+        "explanation": "The colour palette is medium in value; meaning neither light nor dark colours dominate it. While there are lighter and darker colours, most of the colours cluster around the middle of the value scale."
+      },
+      "chroma": {
+        "value": "low",
+        "explanation": "Due to its primary colour aspect, this Soft Autumn has the least tolerance for brightness. Consequently, its colours are low in chroma and are not saturated at all."
+      },
+      "sisterPalettes": {
+        "description": "Soft Autumn sits between Soft Summer and True Autumn on the seasonal flow chart. It falls at the Summer end of the Autumn palette. Consequently, the colours are softer, slightly lighter, and less warm than those of True Autumn. Compared to Soft Summer, the colours are warmer but otherwise similar – both are medium in value and muted. Summer's effect on Soft Autumn is to cool the colours slightly and make them softer. Compared to the third Autumn season Dark Autumn, the colours share the same neutral-warm hue but are more muted and considerably lighter.",
+        "sisters": [
+          "Soft Summer",
+          "True Autumn"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d8590179dbce2035f3e3_Soft%20Autumn%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "Due to your gentle colouring, dark colours are one of your worst options. Hence, true black (a Winter colour) is not on your colour palette. Black near your face will make you look aged and unhealthy. To replace black, you have dark browns, dark greys and dark greens. The closest to black on the palette is a dusty warm dark grey. Similarly, true white (another Winter colour) is too harsh and too cool for you. Your light neutrals are yellowish to make them warmer and less harsh. They include a yellowish off-white, beiges and sand colours.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60ca0a634f6f994cd61e2444_Soft%20Autumn%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since Soft Autumn's main colour aspects are low chroma and warmth, your worst colours are bright and cool. Vibrant colours, such as intense oranges, will overpower you and may even make you look clownish. Dark colours, such as deep purples and blues, will make you disappear. And very cool colours, like black, white and blueish greys, will clash with your warm appearance.",
+        "colors": [
+          "Bright orange",
+          "Deep purple",
+          "Deep blue",
+          "Black",
+          "White"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d89cc785510d9d543ff1_Soft%20Autumn%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the Soft Autumn palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the level of contrast that is naturally present in your appearance. Soft Autumn's natural appearance blends rather than contrasts. This season does not tolerate a lot of contrast. Therefore, your best colour combinations are those that complement each other. The best way to achieve this is through monochromatic colour combinations. You can pair slightly different shades of the same hue, such as a lighter green with a darker one. While hue contrast is not something Soft Autumn generally wear well, you can combine neighbouring hues as long as they have the same value. For example, you could pair a medium blue with a medium green. Another option is to mix a neutral with an accent of similar value, such as a medium brown with a similarly medium red.",
+        "Combinations": [
+          [
+            "monochromatic hues"
+          ],
+          [
+            "neighbouring hues"
+          ],
+          [
+            "lighter neutral",
+            "darker accent"
+          ]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d8d0f1e39e868681ee8a_Soft%20Autumn%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain Soft Autumn colours.",
+        "color": {
+          "description": "If a pattern contains some but not much colour from a disharmonious palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., Bright Winter green). Since your natural colouring has low contrast, opt for patterns that reflect this natural contrast level rather than ones which are too bold.",
+          "combinations": {
+            "bad": [
+              "Soft Autumn pattern",
+              "Bright Winter background"
+            ],
+            "good": [
+              "Soft Autumn pattern",
+              "Bright Winter accents"
+            ],
+            "great": "Soft Autumn pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d907bd91d56a87a52603_Soft%20Autumn%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring has low contrast, opt for patterns that reflect this natural contrast level rather than ones which are too bold. In the example below, both patterns are in Soft Autumn colours and wearable. However, the second pattern displays a very high contrast between the elements and is thus less flattering.",
+          "combinations": {
+            "bad": "high-contrast pattern",
+            "great": "medium-contrast pattern",
+            "good": "low-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d92c75af5e552f545b3c_Soft%20Autumn%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for Soft Autumn are natural and gentle – such as oval shapes, leaves, and wood structures. Since this sub-season borders on Summer, floral patterns also work, especially small flowers. The elements of the pattern should be small and loosely arranged. Avoid geometric patterns, ordered arrangements, and big elements – like in the first example. These don't go well with your soft, gentle appearance.",
+          "combinations": {
+            "bad": [
+              "big",
+              "ordered",
+              "geometric"
+            ],
+            "good": [
+              "small",
+              "loose",
+              "floral"
+            ],
+            "great": [
+              "small",
+              "loose",
+              "nautual",
+              "wood structures",
+              "oval shapes"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d970079b18ab3b72f25c_Soft%20Autumn%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "The best metals for Soft Autumn are gentle – brushed, matte, satin and hammered metals are ideal. Antiqued metals can work too as long as they are not overly blackened and dark. Avoid bright and shiny metals and bling, as they will overwhelm the natural, subtle gentleness of your colouring and fade it into dullness. Since Soft Autumn is neutral-warm, silver, pewter, bronze, white gold, rose gold and soft yellow gold all work on you, as long as they are muted enough. Most coppers are too orange and therefore too rich for you.",
+        "metals": {
+          "type": {
+            "mixed": "good",
+            "silver": "good",
+            "pewter": "good",
+            "bronze": "good",
+            "white gold": "good",
+            "rose gold": "good",
+            "gold": "good",
+            "copper": "bad"
+          },
+          "finish": {
+            "brushed": "great",
+            "matte": "great",
+            "satin": "great",
+            "hammered": "great",
+            "antiqued": "good",
+            "shiny": "bad"
+          }
+        },
+        "accessories": {
+          "description": "Wood and other natural materials also make great accessories for Autumns.",
+          "type": {
+            "wood": "great"
+          }
+        },
+        "stones": {
+          "description": "The best stones for Soft Autumn are citrine and amber. These stones complement the season's soft and warm characteristics.",
+          "stones": [
+            "citrine",
+            "amber"
+          ]
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d993bef2c602504a8887_Soft%20Autumn%20Metals.png"
+      }
+    }
+  }
+}

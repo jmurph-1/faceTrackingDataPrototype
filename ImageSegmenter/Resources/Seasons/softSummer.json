@@ -1,0 +1,199 @@
+{
+  "Soft Summer": {
+    "tagline": "Soft and cool, like a misty summer day",
+    "introduction": "Soft Summer is one of the three Summer seasons and sits between True Summer and Soft Autumn on the seasonal flow chart. Unlike Soft Autumn, this season is cool. However, both sister seasons are a blend of Autumn and Summer. And while Soft Autumn leans more towards Autumn, Soft Summer leans more towards the Summer.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a Soft Summer if the primary colour aspect of your overall appearance is muted, and the secondary aspect is cool – meaning cool colours suit you better than warmer ones. When you look in the mirror the first thing you notice about your colouring is that your skin, eyes and hair all blend into one another. Instead of bright and vibrant, your features appear somewhat 'greyed out' or toned down. This gives you a soft, muted appearance. The contrast between your skin, eyes and hair is low to medium. But the important thing is that your colouring blends and is not intense. In addition, your colouring has cooler undertones, meaning silver flatters your skin more than gold.",
+      "features": {
+        "eyes": {
+          "description": "Soft Summer eyes can be grey, grey blue, grey green or grey hazel. A muted brown is common for darker ethnicities. Regardless of the colour, Soft Summer eyes are always softly greyed. Although they are clearer and less muddy than Soft Autumn eyes, they are by no means bright. Typical of the Summer eye, you may notice a crackled glass pattern on the iris.",
+          "eyeColors": [
+            "grey",
+            "grey blue",
+            "grey green",
+            "grey hazel",
+            "muted brown"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c45692d47ea748cefea4_Soft%20Summer%20Eyes.webp"
+        },
+        "skin": {
+          "description": "Soft Summer skin is either neutral, olive or neutral-cool with ashy undertones and possibly a pink tinge. This means both silver and gold look good against the skin, but silver looks better. Skin tones range from fair to tan, but they are muted rather than vibrant. Soft Summers may also have freckles.",
+          "skinTones": {
+            "1": [
+              "neutral-cool",
+              "nuetral"
+            ],
+            "2": [
+              "neutral-cool",
+              "nuetral"
+            ],
+            "3": [
+              "neutral-cool",
+              "nuetral"
+            ],
+            "4": [
+              "neutral-cool",
+              "nuetral"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c49e488e4640626d1856_Soft%20Summer%20Skin.png"
+        },
+        "hair": {
+          "description": "Hair in this colour season ranges from medium ash blonde over light to medium ash brown. Because of the high concentration of grey pigments, Soft Summer hair is always muted and ashy, never saturated and bright. When exposed to the sun, it can develop ash blonde highlights.",
+          "hairColors": {
+            "blonde": [
+              "medium ash",
+              "dark ash"
+            ],
+            "brown": [
+              "light ash",
+              "medium ash"
+            ],
+            "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c5dc1595f97f46004808_Soft%20Summer%20Hair.webp"
+          }
+        },
+        "contrast": {
+          "value": "low-medium",
+          "description": "Soft Summer has a low to medium level of contrast between features. The features blend into one another rather than contrasting, creating a soft and muted appearance. This is reflected in the combination of neutral-cool skin tones with similarly toned hair colors."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60d195b912a086265f293a3c_Soft%20Summer%20Colour%20Palette.png",
+      "description": "Soft Summer is the colour season reminiscent of misty days when the heat carries the fog through the air after a cool summer rain. And the arrival of autumn is not far away. These colours are gentle and mysterious. They contain so many cold and warm tones that their collision gives rise to a surprisingly harmonious image. And like a chameleon, this colour season can show one side or another.",
+      "hue": {
+        "value": "nuetral-cool",
+        "explanation": "Thanks to Soft Summer's secondary aspect, the colours lean towards the cool end of the scale but are not extremely cool. That means they contain more blue than yellow undertones. As a result, you will find fewer shades of yellow (which is the warmest colour of all). And you will only see cooler shades of yellow that have a tint of blue. Instead, there are more blues, pinks and greys, which are naturally blue-based and thus cool."
+      },
+      "value": {
+        "value": "medium",
+        "explanation": "The colour palette is medium in value, meaning neither light nor dark colours dominate it. And while there are lighter and darker colours, most of the colours fall somewhere in the middle of the value scale."
+      },
+      "chroma": {
+        "value": "muted",
+        "explanation": "In line with this season's primary colour aspect, Soft Summer has the least tolerance for brightness. Consequently, the colours have low chroma – meaning they are very desaturated, muted or simply greyed-out."
+      },
+      "sisterPalettes": {
+        "description": "Soft Summer sits between True Summer and Soft Autumn on the seasonal flow chart. It falls at the Autumn end of the Summer palette. And the colours are more muted, warmer and ever so slightly darker than those of True Summer. Compared to Soft Autumn, the colours are cooler and more greyish, but otherwise similar – both seasons are medium in value and muted. Compared to the third Summer season Light Summer, the colours share the same neutral cool temperature but are more muted and darker.",
+        "sisters": [
+          "True Summer",
+          "Soft Autumn"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c6e6dd41c2e7325be434_Soft%20Summer%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "True black, which is a Winter colour, is very dark and therefore not flattering on a Soft Summer. Black near your face will make you look aged and unhealthy. The closest you have to black are greyish dark browns, which are gentler and more muted. These are your dark neutrals. True white, another Winter colour, is also too harsh for you since your colouring does not tolerate intensity. In its place, you have light greys, sand tones, and muted browns, which you can use as light neutrals.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c7093465c68133d3fa98_Soft%20Summer%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since Soft Summer's main colour aspects are desaturation and coolness, your worst colours are bright and warm. Apart from white and black, other vibrant colours, such as intense pinks and blues, will clash with your natural softness and swallow you up. Rich, warm colours, like orangey reds and earthy browns, are also not flattering on you since they will clash with your coolness.",
+        "colors": [
+          "Intense pinks",
+          "Intense blues",
+          "Orangey reds",
+          "Earthy browns",
+          "White",
+          "Black"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d016dd41c20dcc5c0b62_Soft%20Summer%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the Soft Summer palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the level of contrast that is naturally present in your appearance. Soft Summer's natural appearance blends rather than contrasts. This season does not tolerate a lot of contrast. Therefore, your best colour combinations are those that complement each other. The best way to achieve this is through monochromatic colour combinations. You can pair slightly different shades of the same hue, such as a lighter green with a darker one. While hue contrast is not something Soft Summers generally wear well, you can combine neighbouring hues as long as they have the same value. For example, you could pair a lavender purple with a lighter blue. Another option is to mix a neutral with an accent colour of similar value, such as a light beige with a similarly light yellow. Generally, pastel and greyed out colours combined in a monochromatic combination will look best on Soft Summers. This might make other seasons look washed out, but on a Soft Summer, it is nothing but flattering. Avoid pairing highly contrasting colours, especially those that sit opposite each other on the colour wheel, such as blue and orange. These combinations will swallow up your delicate appearance and make you disappear behind them.",
+        "Combinations": [
+          [
+            "monochromatic combinations"
+          ],
+          [
+            "neighbouring hues"
+          ],
+          [
+            "light neutral",
+            "darker accent"
+          ]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d0356526afe0dcb17d0c_Soft%20Summer%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain Soft Summer colours – like in the first example below. If a pattern contains some but not much colour from a disharmonious palette – like in the second example, you can also wear it. The last example contains too much of a disharmonious colour (a Bright Spring orange, which is bright and warm). Avoid this pattern.",
+        "color": {
+          "description": "Since your natural colouring has low contrast, opt for patterns that reflect this natural contrast level rather than ones which are too bold. In the example below, both patterns are in Soft Summer colours and wearable. However, the second pattern displays a very high contrast between the elements and is thus less flattering.",
+          "combinations": {
+            "bad": [
+              "Soft Summer pattern",
+              "Bright Spring background"
+            ],
+            "good": [
+              "Soft Summer pattern",
+              "Bright Spring accents"
+            ],
+            "great": "Soft Summer pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d061bef2c69ce84a59cc_Soft%20Summer%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring has low contrast, opt for patterns that reflect this natural contrast level rather than ones which are too bold. In the example below, both patterns are in Soft Summer colours and wearable. However, the second pattern displays a very high contrast between the elements and is thus less flattering.",
+          "combinations": {
+            "bad": "high-contrast pattern",
+            "great": "low-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d0ab281858b57f00c0f0_Soft%20Summer%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for Soft Summer are gentle and delicate – such as watercolour and floral textures, delicate floral drawings, and brush strokes. Natural, delicate elements – such as feathers, birds, and flowers are best. The elements of the pattern should be small and loosely arranged. Avoid ordered arrangements and big elements and stiff geometric patterns. These don't go well with your soft, delicate appearance.",
+          "combinations": {
+            "bad": [
+              "big",
+              "stiff geometric"
+            ],
+            "good": [
+              "medium",
+              "loosely arranged",
+              "gentle"
+            ],
+            "great": [
+              "small",
+              "watercolour",
+              "delicate",
+              "natural",
+              "floral",
+              "brush strokes"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d0e25515cc55ef8688cc_Soft%20Summer%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "Since Soft Summer flows into Autumn, you can wear both warm and cool metals. But silver is more flattering on you, and it is a more foolproof choice. When opting for gold, make sure to choose one that is not too orange, dark and rich. Rose gold works if it is on the pink side. Metals are best gentle and muted – brushed, matte, satin and hammered metals are great options. Antiqued metals work as well as long as they are not too blackened. Avoid bright and shiny metals since they will overwhelm your gentle colouring. Pearls are another great option. But look for ones with complex colouring; those in which different values are combined – from light to medium-dark. Snow-white pearls are more suitable for Winters.",
+        "metals": {
+          "type": {
+            "silver": "great",
+            "rose gold": "good",
+            "gold": "good",
+            "white gold": "good",
+            "dark gold": "bad"
+          },
+          "finish": {
+            "brushed": "great",
+            "matte": "great",
+            "satin": "great",
+            "hammered": "great",
+            "antiqued": "good",
+            "shiny": "bad"
+          }
+        },
+        "stones": {
+          "description": "The best stones for Soft Summer are moonstone and rose quartz. These stones complement the season's soft and cool characteristics.",
+          "stones": [
+            "moonstone",
+            "rose quartz",
+            "medium-dark pearls"
+          ]
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d100f61b0d7e2000ea65_Soft%20Summer%20Metals.png"
+      }
+    }
+  }
+}

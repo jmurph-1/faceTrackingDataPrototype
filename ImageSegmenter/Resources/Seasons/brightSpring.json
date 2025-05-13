@@ -1,0 +1,195 @@
+{
+  "Bright Spring": {
+    "tagline": "Bright and warm, like a vibrant spring day with intense colors",
+    "introduction": "Bright Spring is bright and warm. This season's colour palette is a set of wild, vibrant colours, whose intensity can only be rivalled by the colours on the Bright Winter palette.\n\nBright Spring is one of the three Spring seasons and sits between Bright Winter and True Spring on the seasonal flow chart.\n\nUnlike Bright Winter, this season is warm. However, both are sister seasons, meaning they are both a blend of Winter and Spring, with Bright Winter leaning more towards the Winter palette and Bright Spring leaning more towards the Spring palette.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a Bright Spring if the primary colour aspect of your overall appearance is bright, and the secondary aspect is warm – meaning warm colours suit you more than cooler ones.\n\nWhen you look in the mirror, the first thing you notice about your colouring is that it is highly saturated. There is no greyness in any of your features, and your appearance is vibrant and bright. There is also a very high contrast between your skin, eyes and hair. Your eyes will probably be clear and perhaps sparkling.\n\nIn addition, your colouring has warmer undertones, meaning gold flatters your skin more than silver.",
+      "features": {
+        "eyes": {
+          "description": "Bright Spring eyes are generally clear. Because of the high contrast with the whites of the eye, they typically stand out. They can be blue, green, topaz or even brown as long as they are bright. Bright Spring eyes have warm undertones, and you may notice a sunburst pattern on the iris, which is typical for Spring eyes.",
+          "eyeColors:": [
+            "blue",
+            "green",
+            "brown",
+            "topaz"
+          ]
+        },
+        "skin": {
+          "description": "Bright Spring skin comes in a broad range of shades: from fair to tan. It has either neutral or neutral-warm undertones - meaning both gold and silver look good against it, but gold look somewhat better.",
+          "skinTones:": {
+            "1": [
+              "neutral-warm",
+              "neutral"
+            ],
+            "2": [
+              "neutral-warm",
+              "neutral"
+            ],
+            "3": [
+              "neutral-warm",
+              "neutral"
+            ],
+            "4": [
+              "neutral-warm",
+              "neutral"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b88e98c78551675a529d63_Bright%20Spring%20Skin.png"
+        },
+        "hair": {
+          "description": "Like the skin, the hair is typically warmer and tends to develop highlights when exposed to the sun. Medium golden to dark golden blonde with highlights are very common. But copper, auburn and medium brown with reddish undertones are also possible.",
+          "hairColors:": {
+            "blonde": [
+              "medium golden",
+              "dark golden"
+            ],
+            "red": [
+              "copper",
+              "auburn"
+            ],
+            "brown": [
+              "medium brown"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b3bd41e891223d04781266_Bright%20Spring%20Hair.webp"
+        },
+        "contrast": {
+          "value": "high",
+          "description": "Bright Spring has one of the highest contrast levels between skin, hair and eyes among the twelve colour seasons. There is even a high contrast between the iris and the whites of the eye. This is because brightness creates contrast. In the images below, you can see how the features all contrast rather than blend into each other."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://theconceptwardrobe.com/thumbs/bright-spring-colour-palette.jpg",
+      "description": "The Bright Spring colour palette is reminiscent of exotic summer holidays. From tropical waters to remote islands, these are the most saturated colours out of the twelve seasons.\n\nThese colours are vibrant, wild and vivid – the colours of tropical landscapes, plants and fruit. In the western part of the northern hemisphere, Bright Spring colours are present in the first spring flowers, announcing the end of the dark days of winter.\n\nBright Spring colouring combines brightness with warmth. And while this colour season has the typical freshness that is characteristic of all the Spring seasons, it also has some of the crisp and starker contrast of Winter.The primary aspect of the Bright Spring colour palette is its vibrancy. The colours are bright and highly saturated. These are the most intense of the Spring colours. But they do retain the relative lightness of the Spring family. And so the colours are warm, fresh and full of new life, like the first budding signs of spring.The palette features a broad range of hues with a heavy focus on pinks and jewel-like tones, such as turquoises and lime greens.",
+      "hue": {
+        "value": "Neutral‑warm",
+        "explanation": "Because of Bright Spring's secondary aspect, the colours lean towards the warm end of the scale but are not extremely warm. That means they contain more yellow than blue undertones. So even if you choose blue (the coolest colour), you will find only warmer shades with a tint of yellow. Some of these are the turquoises and pastel colours."
+      },
+      "value": {
+        "value": "Light‑medium",
+        "explanation": "The colour palette ranges from light to dark, but it does not include very light or dark colours. Although you may find darker shades of blue, green and purple, these are only supporting colours. Most colours cluster around the middle of the value scale, leaning slightly towards the lighter end because of the greater concentration of yellow undertones."
+      },
+      "chroma": {
+        "value": "High",
+        "explanation": "In line with this colour season's primary aspect, the colours are very high in chroma; meaning they are intensely bright and vibrant. Only the sister palette Bright Winter can rival this intensity."
+      },
+      "sisterPalettes": {
+        "description": "Bright Spring sits between Bright Winter and True Spring on the seasonal flow chart. The colour season falls at the Winter end of the Spring family. That's why its colours are brighter, slightly darker and less warm than those of True Spring.\n\nCompared to Bright Winter, the colours are similarly bright but warmer and slightly lighter. Winter's effect on Bright Spring is to turn up the saturation of Spring's naturally bright colours to maximum brightness.\n\nWinter also cools the colours somewhat. For example, Bright Winter's fuchsias have been warmed up and introduced to the palette, but True Spring's golden browns have been dropped.\n\nAs sister palettes, Bright Winter and True Spring both share Bright Spring's aspects of bright and warm, respectively. Depending on where you fall on the Bright Spring spectrum, you can borrow some colours from your sister palettes since they are close enough to the Bright Spring colour palette.\n\nIf you lean more towards Bright Winter, opt for the warmer shades on the Bright Winter palette – such as Honeysuckle, Beetroot Purple or Foliage. Whereas if you lean more towards True Spring, choose the brighter colours on the True Spring palette – such as Pansy, Marina or Green Flash.",
+        "sisters": [
+          "Bright Winter",
+          "True Spring"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c8700b62eab474c083a1e1_Bright%20Spring%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "Since Bright Spring flows from Winter, black is included in the palette. But the best versions of black for Bright Spring are a slightly yellowish charcoal and a slightly greenish black. These are warmer and more suitable dark neutrals than the cool blue-black of Winter.\n\nBesides, black on its own is not flattering on a Bright Spring since you need vibrant colours to lift your appearance. It's better to mix it with some of the other warmer, more saturated colours on the palette.\n\nThere are also darker greyish browns and warm blues which you can also use as dark neutrals.\n\nA soft white, a more yellowish off-white, and gentle greens act as light neutrals. These are slightly warmer than the cool, harsh whites of Winter.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b3cd1e92de8d2a77598566_Bright%20Spring%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since the main colour aspects of Bright Spring are brightness and warmth, your worst colours are muted and cool.\n\nDesaturated, toned-down colours, such as dusty blues and muddy browns, will dampen your natural brightness and make you look muddy.\n\nVery cool colours, such as icy blues and greys, will clash with your naturally warmer colouring.",
+        "colors": [
+          "Dusty pastels",
+          "Muddy browns",
+          "Cool greys",
+          "Icy blues"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b3cd3562daab63c423beee_Bright%20Spring%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the Bright Spring palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level that is naturally present in your appearance.\n\nBright Spring's natural appearance is highly contrasting because of its brightness. Therefore, the best colour combinations for your outfits are similarly contrasting.\n\nThe obvious way to create contrast is by pairing a dark colour with a light colour, such as dark blue and light blue. This is called value contrast.\n\nHowever, this may not be enough contrast for a Bright Spring. Instead of value contrast, aim for hue contrast. Don't be afraid to combine unlike colours – particularly those sitting opposite each other on the colour wheel, such as pink and green. The more unusual the combination, the more striking.\n\nThe other way you can create a high contrast is by combining a neutral with a bright accent colour. Either pair a dark neutral with a lighter, brighter accent colour or a light neutral and a different darker accent colour. Make sure to select different hues to create additional hue contrast.\n\nIn general, always aim for at least one bright colour in your outfit. Avoid neutrals-only combinations, monochromatic looks and low contrast combinations. These will diminish your naturally vibrant colouring.",
+        "Combinations": [
+          [
+            "dark neutral",
+            "light accent"
+          ],
+          [
+            "light neutral",
+            "bright accent"
+          ],
+          [
+            "opposite hues"
+          ]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b3cd67388e8bc59bd82190_Bright%20Spring%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain Bright Spring colours",
+        "color": {
+          "description": "If a pattern contains some but not much colour from a Bright Spring palette, you can also wear it.\n• Avoid patterns with disharmonious colours (e.g., muted cool greys).\n\nSince your natural colouring is highly contrasted, opt for patterns with higher contrast between the elements rather than ones which blend too much.\n\nGreat patterns for Bright Spring are dotty, busy, creative, and geometric patterns. Hand-drawn elements are also good.",
+          "combinations": {
+            "bad": [
+              "Bright Spring pattern",
+              "Soft Summer background"
+            ],
+            "good": [
+              "Bright Spring pattern",
+              "Soft Summer accents"
+            ],
+            "great": "Bright Spring pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b89820dfd8366cfd260c1d_Bright%20Spring%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring is highly contrasted, opt for patterns with higher contrast between the elements rather than ones which blend too much.\n\nIn the example below, both patterns contain only Bright Spring colours and are wearable. However, the second pattern displays a higher contrast between the elements and is consequently more flattering.",
+          "combinations": {
+            "good": ["low-contrast", "medium-contrast"],
+            "great": ["high-contrast"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b898410bcd7e4964e0d034_Bright%20Spring%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for Bright Spring are dotty, busy, creative, and geometric patterns. Hand-drawn elements are also good. Since this sub-season borders on Winter, natural floral patterns are best avoided. If you want to wear floral patterns, opt for stylised flowers.\n\nElements should be bigger and not too dense. Avoid small elements, very loose and very dense arrangements - like the first example.",
+          "combinations": {
+            "bad": [
+              "small",
+              "natural florals",
+              "dense",
+              "loose arrangement"
+            ],
+            "good": [
+              "small",
+              "natural florals",
+              "dense",
+              "loose arrangement"
+            ],
+            "great": [
+              "big",
+              "hand-drawn",
+              "stylised elements",
+              "loose arrangement"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8985d488e46af5e6c291f_Bright%20Spring%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "Although Bright Spring is warm, gold is not the only metal that works for this season. Since your skin's undertones are neutral-warm, rose gold, white gold, and even silver and platinum may work for you.\n\nMake sure that metals have a shiny or polished finish. Matte finishes will clash with your naturally bright colouring.",
+        "metals": {
+          "type": {
+            "gold": "great",
+            "rose gold": "good",
+            "white gold": "good",
+            "platinum": "maybe",
+            "silver": "maybe"
+          },
+          "finish": {
+            "polished": "great",
+            "matte": "bad"
+          }
+        },
+        "stones": {
+          "description": "The best stones for Bright Spring are turquoise and fuchsia quartz. These stones complement the season's bright and warm characteristics.",
+          "stones": [
+            "turquoise",
+            "fuchsia quartz"
+          ]
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b3ceaccd5e766c9d37f58a_Bright%20Spring%20Metals.png"
+      }
+    }
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "True Autumn": {
+    "tagline": "Warm and rich, like golden wheat fields under an autumn sunset",
+    "introduction": "True Autumn is the original Autumn season in the four seasons colour analysis and sits between Soft Autumn and Dark Autumn on the seasonal flow chart. Its opposite season is True Spring, and in contrast to the latter, True Autumn's appearance is muted and rich instead of bright and fresh.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a True Autumn if the primary colour aspect of your overall appearance is warm, and the secondary aspect is muted. When you look in the mirror, the first thing you notice about your colouring is the warmth that radiates from every feature. Your skin, hair and eyes all have rich, golden undertones. In addition, your colouring is soft and muted as opposed to bright and clear. This means that instead of contrasting each other, your features blend into one another. Because the saturation is low, your colouring appears gentle and toned down. This results in a medium contrast between the features.",
+      "features": {
+        "eyes": {
+          "description": "True Autumn eyes are rich and warm. Often they are a mix of brown, green and medium gold. The most common colours are warm green, olive green, dark hazel, amber and golden brown. Though rare, deep blue eyes with a teal cast and warm chocolate brown eyes are also possible (the latter is common in darker ethnicities). Typical for Autumn eyes, you may see swirling erratic borders around the pupil and freckles on the iris.",
+          "eyeColors": [
+            "warm green",
+            "olive green",
+            "dark hazel",
+            "amber",
+            "golden brown",
+            "deep blue",
+            "warm chocolate brown"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8daf975af5e3c555466e5_True%20Autumn%20Eyes.webp"
+        },
+        "skin": {
+          "description": "True Autumn skin has obvious warm undertones – meaning gold looks great against it, but silver makes it look off. Skin tones range from fair to dark. Freckles are also possible. What's most distinctive about the skin's colouring is the bronzy or golden glow it emanates when paired with rich, warm colours. Against true black, the skin may appear yellowish.",
+          "skinTones": {
+            "1": [
+              "warm"
+            ],
+            "2": [
+              "warm"
+            ],
+            "3": [
+              "warm"
+            ],
+            "4": [
+              "warm"
+            ],
+            "5": [
+              "warm"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8db1f27476728eadd098d_True%20Autumn%20Skin.png"
+        },
+        "hair": {
+          "description": "Like the other features, the hair radiates a rich warmth. It comes in a variety of shades – from golden blonde to dark golden brown and auburn. When exposed to the sun, True Autumn hair often develops highlights, which can be golden, caramel, bronze or rusty.",
+          "hairColors": {
+            "blonde": [
+              "golden"
+            ],
+            "red": [
+              "golden auburn",
+              "medium auburn"
+            ],
+            "brown": [
+              "light golden",
+              "medium golden",
+              "dark golden"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8db37df1741d699889af4_True%20Autumn%20Hair.webp"
+        },
+        "contrast": {
+          "value": "medium",
+          "description": "True Autumn has a medium level of contrast between features. While the features blend rather than contrast each other, there is still some contrast present. This is reflected in the combination of warm skin tones with varying hair colors, creating a balanced but noticeable contrast."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c8552e19dbd400504347dd_True%20Autumn%20Colour%20Palette.png",
+      "description": "True Autumn is the colour season reminiscent of the heyday of autumn in all its glory. Golden crowns of trees flaunt against a bright blue sky; the fallen leaves show their most beautiful brown, orange and yellow colours. These colours are rich and warm like golden wheat fields, warm sun rays and golden sunsets.",
+      "hue": {
+        "value": "warm",
+        "explanation": "True Autumn's primary aspect is warm. Thus, the colour palette sits at the warmest end of the hue scale. This means the colours contain yellow undertones but no blue undertones at all. Consequently, you will find very few shades of blue (which is the coolest colour of all). And you will only see warmer shades of blue that have a tint of yellow, like turquoise. Instead, there are more yellows, greens and warm browns, which are naturally yellow-based."
+      },
+      "value": {
+        "value": "medium-dark",
+        "explanation": "The colours range from fairly light (beige) to fairly dark (deep brown). And while most colours are in the middle of the value scale, there are more that lean towards the darker end."
+      },
+      "chroma": {
+        "value": "medium-low",
+        "explanation": "In line with this season's secondary aspect, the colours are medium-low in chroma. This means they are not saturated. However, the colours may overall appear more saturated because our eyes are more reactive to warm colours."
+      },
+      "sisterPalettes": {
+        "description": "True Autumn sits between Soft Autumn and Dark Autumn on the seasonal flow chart. It is the heart of the Autumn family. And the colours are rich, medium-dark and very warm. With their opposite season True Spring, the colours share the same warmth but are muted and darker. True Spring colours are vibrant, clear and more contrasting. Compared to Soft Autumn, the colours are warmer, brighter and slightly darker overall. And compared to the third Autumn season Dark Autumn, the colours are warmer, softer and slightly lighter.",
+        "sisters": [
+          "Soft Autumn",
+          "Dark Autumn"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c8580e19dbd44c7e43504e_True%20Autumn%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "Even though the True Autumn palette leans towards the darker end, true black (a Winter colour) is not the best colour for you since it is too dark, cool and harsh. In its place, you have dark browns and very dark, slightly-olive greens. These are the best the dark neutrals for True Autumn. The best versions of white (another Winter colour) for True Autumn are slightly yellowed off-whites that are warmer than pure white. Variations of beige, cream, and ecru are also on the palette. You can use these as light neutrals.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e2667dd319bbb26ce73b_True%20Autumn%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since True Autumn's main colour aspects are warmth and richness, your worst colours are cool and bright. Apart from white and black, other cool and bright, such as pastel pink or ice blue, will clash with your natural warmth and richness and will make you look off. Extremely bright and vibrant colours, such as intense pinks and blues, will also swallow up your naturally muted colouring.",
+        "colors": [
+          "Pastel pink",
+          "Ice blue",
+          "Bright pink",
+          "Bright blue",
+          "Black",
+          "White"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e3b8bc23646ae21710db_True%20Autum%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the True Autumn palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the level of contrast that is naturally present in your appearance. True Autumn's natural appearance blends, but there is some contrast between the features. It is also important to achieve the rich look that True Autumns naturally have. Therefore, the best colour combinations for your outfits are those that have a pop of colour here and there. To achieve a lower level of contrast, pair colours that resemble each other in hue or value. Monochromatic combinations, which combine different shades of one hue, such as light green with a darker green, are flattering. But as a True Autumn, you can even take on more contrast than that. Feel free to pair neighbouring hues with similar values, such as a medium orange with a medium pink. Another option is to pair a darker neutral with a lighter, richer accent colour, such as a medium brown with a mustard yellow. Similarly, you can pair lighter neutrals with rich, darker accent colours. Although these combinations have a degree of contrast, they are not highly contrasting. Avoid extreme contrast, especially combinations of colours that sit opposite each other on the colour wheel, such as blue and orange. These combinations will swallow you up. Neutrals-only combinations may also look rather bland on you.",
+        "Combinations": [
+          [
+            "monochromatic hues"
+          ],
+          [
+            "neighbouring hues"
+          ],
+          [
+            "darker neutral",
+            "lighter accent"
+          ]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e3ddc78551d932549733_True%20Autumn%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain True Autumn colours.",
+        "color": {
+          "description": "If a pattern contains some but not much colour from a disharmonious palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., True Winter pink). Since your natural colouring has low- to medium-contrast, opt for patterns that reflect this natural contrast level rather than ones which are too bold.",
+          "combinations": {
+            "bad": [
+              "True Autumn pattern",
+              "True Winter background"
+            ],
+            "good": [
+              "True Autumn pattern",
+              "True Winter accents"
+            ],
+            "great": "True Autumn pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e4070179db6e6c36396f_True%20Autumn%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring has low- to medium-contrast, opt for patterns that reflect this natural contrast level rather than ones which are too bold. In the example below, both patterns are in True Autumn colours and wearable. However, the second pattern displays a very high contrast between the elements and is therefore less flattering.",
+          "combinations": {
+            "bad": "high-contrast pattern",
+            "good": "medium-contrast pattern",
+            "great": "low-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e423b45bb7216bda85ae_True%20Autumn%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for True Autumn are those that correspond to autumn itself – leaves, wood structures, as well as oval shapes, and unusual and extraordinary effects. Geometric shapes are less common in Autumn patterns – with the exception of retro patterns. Natural floral patterns – like in the first example, are not your best choice. If you want to wear floral patterns, the flowers should be highly stylised – as in paisley and oriental patterns. Avoid very small elements in dense arrangements and stiff, square geometric patterns.",
+          "combinations": {
+            "bad": [
+              "small",
+              "dense",
+              "stiff"
+            ],
+            "good": [
+              "medium",
+              "retro geometric",
+              "paisley",
+              "oriental",
+              "highly stylised floral"
+            ],
+            "great": [
+              "big",
+              "leaves",
+              "wood structures",
+              "oval shapes",
+              "unusual and extraordinary"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e471323738f914d8ae5b_True%20Autumn%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "The best metals complementing the rich colouring of True Autumn are gold, copper, brass and bronze. Metals that are slightly less reflective are ideal, such as hammered, oxidised and antiqued metals. Steer clear of overly shiny metals, which clash with your muted appearance. Also avoid silver, platinum and white gold, which are cool and will clash with your natural warm colouring. A great stone for True Autumns is amber. All shades of it complement the beauty of True Autumn. Greenish, grassy stones also work very well.",
+        "metals": {
+          "type": {
+            "gold": "great",
+            "copper": "great",
+            "brass": "great",
+            "bronze": "great",
+            "silver": "bad",
+            "platinum": "bad",
+            "white gold": "bad"
+          },
+          "finish": {
+            "hammered": "great",
+            "oxidised": "great",
+            "antiqued": "great",
+            "shiny": "bad"
+          }
+        },
+        "stones": {
+          "description": "The best stones for True Autumn are amber and tiger's eye. These stones complement the season's warm and rich characteristics.",
+          "stones": [
+            "amber",
+            "tiger's eye",
+            "greenish, grassy stones"
+          ]
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e48e92d47e13f5cfb8d2_True%20Autumn%20Metals.png"
+      }
+    }
+  }
+}

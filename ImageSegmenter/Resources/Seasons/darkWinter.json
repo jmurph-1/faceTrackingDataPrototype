@@ -1,0 +1,206 @@
+{
+  "Dark Winter": {
+    "tagline": "Dark and cool, with a hint of icy frost, like an evening walk though a misty forest",
+    "introduction": "Dark Winter is one of the three Winter seasons and sits between Dark Autumn and True Winter on the seasonal flow chart. Unlike Dark Autumn, this season is cool. However, both sister seasons are a blend of Autumn and Winter, with Dark Autumn leaning more towards the Autumn palette and Dark Winter leaning more towards the Winter palette.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a Dark Winter if the primary colour aspect of your overall appearance is dark, and the secondary aspect is cool – meaning cool colours suit you better than warmer ones. When you look in the mirror, the first thing you notice about your colouring is that your hair and eyes are dark. Your skin may be dark too, or it may be very light. Regardless of the colouring of your skin, there is always a high contrast between the features. This is because the whites of the eyes and the teeth provide plenty of contrast against the dark eyes and hair (and dark skin). In addition, your colouring has cooler undertones, meaning silver flatters your skin more than gold.",
+      "features": {
+        "eyes": {
+          "description": "Dark Winter eyes are, of course, dark. It's no surprise that the most common eye colours are dark brown and black. Very dark olive, dark hazel and even a very deep, cool blue are also possible. You may notice a border defining the iris and spokes on the iris, which are characteristic of Winter eyes.",
+          "eyeColors": [
+            "dark brown",
+            "black",
+            "very dark olive",
+            "dark hazel",
+            "deep cool blue"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ea44cbd4677758b9cd9e_Dark%20Winter%20Eyes.webp"
+        },
+        "skin": {
+          "description": "The skin is either neutral, or neutral-cool – meaning both gold and silver look good against it, but silver looks better. Dark Winter skin has the biggest range of skin colours, ranging from fair to deep.",
+          "skinTones": {
+            "1": [
+              "neutral-cool",
+              "neutral"
+            ],
+            "2": [
+              "neutral-cool",
+              "neutral"
+            ],
+            "3": [
+              "neutral-cool",
+              "neutral"
+            ],
+            "4": [
+              "neutral-cool",
+              "neutral"
+            ],
+            "5": [
+              "neutral-cool",
+              "neutral"
+            ],
+            "6": [
+              "cool",
+              "neutral-cool",
+              "neutral"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ea5eb0cac946e85c98ce_Dark%20Winter%20Skin.png"
+        },
+        "hair": {
+          "description": "Dark Winter hair is also dark, ranging from medium brown over dark brown to black. The colour tends to be either neutral or slightly ashy. It generally doesn't have any highlights and also doesn't develop any when exposed to sunlight.",
+          "hairColors": {
+            "brown": [
+              "medium",
+              "dark"
+            ],
+            "black": [
+              "neutral",
+              "ashy",
+              "cool black-brown"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ea99df1741592789025e_Dark%20Winter%20Hair.webp"
+        },
+        "contrast": {
+          "value": "high",
+          "description": "A dark value can be achieved in two ways: (1) all dark features or (2) dark hair and eyes paired with light skin. In either case, Dark Autumn is a colour season of high contrast between hair, eyes and skin. There is even a high contrast between the iris and the whites of the eye. This is particularly true for individuals with overall dark features."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8eb5675af5ecdd254ea30_Dark%20Winter%20Colour%20Palette.png",
+      "description": "Dark Winter is the colour season reminiscent of deep winter nights, when the stars contrast with the black-and-blue sky, creating an atmosphere of mystery and magic. These colours are dark and cool, just like when the moon tints the night sky bright and illuminates the dark, misty forests beneath. Dark Winter colours are the colours of the night.",
+      "hue": {
+        "value": "neutral-cool",
+        "explanation": "The colours lean towards the cool end of the scale but are not extremely cool. This means they contain more blue than yellow. So even if you choose yellow (which is the warmest colour of all), you will find only cooler shades that have a tint of blue. You will also not find many shades of yellow-based colours but instead more shades of blue and grey, which are naturally cool."
+      },
+      "value": {
+        "value": "dark",
+        "explanation": "In line with this season's primary colour aspect, the overall palette is dark. And while many of the colours are very light (white and the icy pastels), there are many more dark ones. This mixture in value is required to achieve the high contrast a Dark Winter needs."
+      },
+      "chroma": {
+        "value": "medium-high",
+        "explanation": "Typical for Winter colours, the palette is slightly higher in chroma, meaning the colours are somewhat saturated and bright. However, they are dark rather than very bright."
+      },
+      "sisterPalettes": {
+        "description": "Dark Winter sits between Dark Autumn and True Winter on the seasonal flow chart. It falls at the Autumn end of the Winter palette. Consequently, the colours are softer, darker and warmer than those of True Winter. Compared to Dark Autumn, the colours are similarly dark but cooler and brighter. And the light colours of Dark Winter are lighter than those of Dark Autumn. Autumn's effect on Dark Winter is additional warmth and some softness. Compared to the third Winter season Bright Winter, the colours share the same neutral-cool hue but are darker and softer.",
+        "sisters": [
+          "Dark Autumn",
+          "True Winter"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ebb5079b189b07735ba7_Dark%20Winter%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "Since black is part of the Winter palette, you can use it as a dark neutral. And if you have light skin with high contrast against your hair and eyes, you can even pull off an all-black look. If your skin is darker, you may notice that an all-black outfit seems to diminish you. In that case, use black more sparingly. You can also choose dark blues and dark greens as dark neutrals. True white is also part of the Dark Winter palette. But always pair it with a darker colour to achieve high contrast. You also have light beiges and greys on your palette, which you can use as light neutrals.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ebda079b180b40735fb8_Dark%20Winter%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since Dark Winter's main colour aspects are depth and coolness, your worst colours are light and warm. Very warm, earthy colours, such as golden oranges and browns, will make you look unhealthy. Warmer pastel colours may also make you look off, so stick with the icy light colours on your palette. And desaturated, toned-down colours, such as dusty yellows, will clash with your naturally bright appearance.",
+        "colors": [
+          "Golden orange",
+          "Golden brown",
+          "Warm pastel pink",
+          "Dusty yellow"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ebef5515cc9002873466_Dark%20Winter%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the Dark Winter palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level naturally present in your appearance. Dark Winter's natural appearance is highly contrasting. Therefore, the best colour combinations for your outfits are similarly contrasting. Value contrast combined with hue contrast is especially flattering on you. To achieve this, pair a light neutral in one hue with a different dark accent hue, such as a light grey with a dark purple. This combination has not only value contrast (light and dark) but also hue contrast (grey and purple). You can also combine a darker neutral with a brighter accent colour, such as dark green with bright pink. An all-dark look also works for you. But your best combinations will have high contrast. An all-light look, though, will not be flattering since your natural colouring is dark. Another thing to bear in mind is that even though your natural colour contrast is high, it is not as extreme as that of a Bright Winter. So pairing colours that sit opposite each other on the colour wheel, such as yellow and purple, may look overpowering on you. Instead, always pair a neutral with an accent colour. Monochromatic and neutrals-only combinations will also look dull on you.",
+        "Combinations": [
+          [
+            "light neutral",
+            "dark accent"
+          ],
+          [
+            "dark neutral",
+            "bright accent"
+          ],
+          [
+            "all-dark"
+          ]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ec1192d47e360ccfe057_Dark%20Winter%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain Dark Winter colours.",
+        "color": {
+          "description": "If a pattern contains some but not much colour from a disharmonious palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., Light Spring peach). Since your natural colouring is highly contrasted, opt for patterns that reflect this natural high contrast level rather than ones which blend too much together.",
+          "combinations": {
+            "bad": [
+              "Dark Winter pattern",
+              "Light Spring background"
+            ],
+            "good": [
+              "Dark Winter pattern",
+              "Light Spring accents"
+            ],
+            "great": "Dark Winter pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ec4eb418ce58fa1892c3_Dark%20Winter%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring is highly contrasted, opt for patterns that reflect this natural high contrast level rather than ones which blend too much together. In the example below, both patterns are in Dark Winter colours and wearable. However, the second pattern displays a higher contrast between the elements and is therefore more flattering.",
+          "combinations": {
+            "bad": "low-contrast pattern",
+            "good": "medium-contrast pattern",
+            "great": "high-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ec67b460683ab856d400_Dark%20Winter%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for Dark Winter are bold, highly contrasted, and contain unusual and unexpected elements. Look for patterns with geometric shapes or round and rectangular shapes mixed together. Abstract prints are great too; as are stylised versions of natural elements. Natural floral patterns are best avoided. If you want to wear floral patterns, opt for stylised flowers. Also avoid small elements in dense arrangements and anything faded or blended (such as watercolour prints).",
+          "combinations": {
+            "bad": [
+              "small",
+              "dense",
+              "faded",
+              "floral",
+              "watercolour"
+            ],
+            "good": [
+              "meduim",
+              "bold",
+              "round geometric",
+              "stylised floral"
+            ],
+            "great": [
+              "big",
+              "bold",
+              "stylised",
+              "unusual and unexpected",
+              "contrasted"
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8eca040aec03bcc7caf5b_Dark%20Winter%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "Since Dark Winter colours are neutral-cool, gold may also work for you. However, your best metals are cool, like silver and pewter. If you do want to wear gold, opt for a dark one that is not too yellow. Metals can either be shiny or matte, as the difference is not as apparent on a Dark Winter. Ruby is an ideal stone for Dark Winter. Saturated violet stones are also great, as is emerald. And one of the best choices is sapphire because of its deep, cold and rich colouring.",
+        "metals": {
+          "type": {
+            "silver": "great",
+            "pewter": "great",
+            "dark gold": "good",
+            "gold": "maybe",
+            "yellow gold": "bad"
+          },
+          "finish": {
+            "shiny": "great",
+            "matte": "great"
+          }
+        },
+        "stones": {
+          "description": "The best stones for Dark Winter are ruby and sapphire. These stones complement the season's deep and cool characteristics.",
+          "stones": [
+            "ruby",
+            "sapphire"
+          ]
+        }
+      }
+    }
+  }
+}

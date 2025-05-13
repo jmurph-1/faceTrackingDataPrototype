@@ -1,0 +1,4034 @@
+[
+  {
+    "name": "Almond",
+    "hexValue": "#efdece",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Bone",
+    "hexValue": "#e4d7c6",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Coral Reef",
+    "hexValue": "#cebbaa",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Hampton",
+    "hexValue": "#ebd3af",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Tan",
+    "hexValue": "#d4b48d",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Antique Brass",
+    "hexValue": "#c39a6c",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Sorrell Brown",
+    "hexValue": "#c2b281",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Teak",
+    "hexValue": "#b59562",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Spicy Mix",
+    "hexValue": "#865e44",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Potters Clay",
+    "hexValue": "#84563c",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Shingle Fawn",
+    "hexValue": "#704d37",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Congo Brown",
+    "hexValue": "#5b3e38",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Thunder",
+    "hexValue": "#362f29",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Bulgarian Rose",
+    "hexValue": "#430e0a",
+    "category": "Palette",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Toledo",
+    "hexValue": "#3d1321",
+    "category": "Palette",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Bossanova",
+    "hexValue": "#5a214e",
+    "category": "Palette",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Congress Blue",
+    "hexValue": "#0f4c82",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Deep Sapphire",
+    "hexValue": "#002367",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Deep Koamaru",
+    "hexValue": "#191971",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Prussian Blue",
+    "hexValue": "#003152",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Gothic",
+    "hexValue": "#619ea1",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Teal",
+    "hexValue": "#018381",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Deep Sea Green",
+    "hexValue": "#01585f",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Elephant",
+    "hexValue": "#1a3a47",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Feijoa",
+    "hexValue": "#bacc82",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Chalet Green",
+    "hexValue": "#566e3c",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Barley Corn",
+    "hexValue": "#9b8b50",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Millbrook",
+    "hexValue": "#584d37",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Kelp",
+    "hexValue": "#454c3a",
+    "category": "Neutrals",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Stromboli",
+    "hexValue": "#335749",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Sherwood Green",
+    "hexValue": "#004e38",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Kaitoke Green",
+    "hexValue": "#024321",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Laser",
+    "hexValue": "#d7af67",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Muddy Waters",
+    "hexValue": "#b08e51",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Kumera",
+    "hexValue": "#99652c",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Antique Brass",
+    "hexValue": "#c68f66",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Santa Fe",
+    "hexValue": "#b37256",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Teak",
+    "hexValue": "#be9b65",
+    "category": "Base Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Mule Fawn",
+    "hexValue": "#964436",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Burnt Umber",
+    "hexValue": "#8b3325",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Chestnut Rose",
+    "hexValue": "#ce5c5c",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Chestnut",
+    "hexValue": "#bc494e",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Cosmic",
+    "hexValue": "#7f3941",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Buccaneer",
+    "hexValue": "#6e2832",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Pohutukawa",
+    "hexValue": "#8d021f",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Lonestar",
+    "hexValue": "#690102",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Rosewood",
+    "hexValue": "#66000d",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Rustic Red",
+    "hexValue": "#4a0001",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Cardinal",
+    "hexValue": "#c51e3a",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Tamarillo",
+    "hexValue": "#9b111e",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Red Berry",
+    "hexValue": "#8b0303",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Dark Burgundy",
+    "hexValue": "#7c0902",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Apricot",
+    "hexValue": "#e38876",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Vin Rouge",
+    "hexValue": "#9c3f6c",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Tapestry",
+    "hexValue": "#b35d8e",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "Can Can",
+    "hexValue": "#d391ac",
+    "category": "Accent Colors",
+    "season": "Dark Autumn"
+  },
+  {
+    "name": "White Linen",
+    "hexValue": "#f9f4e8",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Parchment",
+    "hexValue": "#f0ead8",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Janna",
+    "hexValue": "#f0eadc",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Bone",
+    "hexValue": "#e1dbc9",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Moon Mist",
+    "hexValue": "#dfd8ca",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Coral Reef",
+    "hexValue": "#c5bcaa",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Akaroa",
+    "hexValue": "#d6cca8",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Heathered Gray",
+    "hexValue": "#bbb798",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Sorrell Brown",
+    "hexValue": "#c3b181",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Eunry",
+    "hexValue": "#c4af92",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Donkey Brown",
+    "hexValue": "#a79277",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Tan",
+    "hexValue": "#d4b48d",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Eunry",
+    "hexValue": "#cfaf95",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Brandy Rose",
+    "hexValue": "#ae9481",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Pharlap",
+    "hexValue": "#a08072",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Shadow",
+    "hexValue": "#836647",
+    "category": "Neutrals",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Danube",
+    "hexValue": "#78acc8",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Steel Blue",
+    "hexValue": "#4682b4",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Kashmir Blue",
+    "hexValue": "#4f6a93",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Pickled Bluewood",
+    "hexValue": "#35465e",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Chambray",
+    "hexValue": "#3f5e8c",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "San Juan",
+    "hexValue": "#2a4b7b",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Midnight Blue",
+    "hexValue": "#023266",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Cloud Burst",
+    "hexValue": "#233757",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Blue Bell",
+    "hexValue": "#8996c6",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Victoria",
+    "hexValue": "#5b5b9f",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Gigas",
+    "hexValue": "#483d8c",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Shadow Green",
+    "hexValue": "#8fc5b7",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Acapulco",
+    "hexValue": "#7cb5a4",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Smalt Blue",
+    "hexValue": "#578e90",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Bay Leaf",
+    "hexValue": "#77a680",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Faded Jade",
+    "hexValue": "#447d6e",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Norway",
+    "hexValue": "#a9b99f",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Gurkha",
+    "hexValue": "#8e9879",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Glade Green",
+    "hexValue": "#77825c",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Dingley",
+    "hexValue": "#5b7248",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Saratoga",
+    "hexValue": "#4b531e",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Stromboli",
+    "hexValue": "#335748",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Kelp",
+    "hexValue": "#454d3a",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Lunar Green",
+    "hexValue": "#38432a",
+    "category": "Base Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Old Rose",
+    "hexValue": "#c18182",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Coral Tree",
+    "hexValue": "#b5716f",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Spicy Mix",
+    "hexValue": "#915c5e",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "My Pink",
+    "hexValue": "#dc8681",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Chestnut Rose",
+    "hexValue": "#ce5c5b",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Matrix",
+    "hexValue": "#a35952",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Buccaneer",
+    "hexValue": "#7c3538",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Buccaneer",
+    "hexValue": "#782a3b",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Illusion",
+    "hexValue": "#edafc2",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Puce",
+    "hexValue": "#cd889a",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Puce",
+    "hexValue": "#da8597",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Coral Tree",
+    "hexValue": "#b66e79",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Cannon Pink",
+    "hexValue": "#915f6e",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Eggplant",
+    "hexValue": "#604052",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Voodoo",
+    "hexValue": "#5d3955",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Matterhorn",
+    "hexValue": "#402b47",
+    "category": "Accent Colors",
+    "season": "Soft Autumn"
+  },
+  {
+    "name": "Beige",
+    "hexValue": "#f5f4de",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Cape Honey",
+    "hexValue": "#f4e1ae",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Calico",
+    "hexValue": "#e0c993",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Gold Sand",
+    "hexValue": "#e4bb9b",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Tumbleweed",
+    "hexValue": "#d4ac8a",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Laser",
+    "hexValue": "#d5a173",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Antique Brass",
+    "hexValue": "#c29a6a",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Sandrift",
+    "hexValue": "#b39377",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Pine Cone",
+    "hexValue": "#675f4f",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Kelp",
+    "hexValue": "#46473e",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Kelp",
+    "hexValue": "#444139",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Russet",
+    "hexValue": "#8c4411",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Russet",
+    "hexValue": "#81461c",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Pickled Bean",
+    "hexValue": "#664223",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Cowboy",
+    "hexValue": "#4b2f27",
+    "category": "Neutrals",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Bulgarian Rose",
+    "hexValue": "#430e09",
+    "category": "Palette",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Shakespeare",
+    "hexValue": "#5cadc4",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Fountain Blue",
+    "hexValue": "#56afbd",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Blue Lagoon",
+    "hexValue": "#097889",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Teal",
+    "hexValue": "#008080",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Calypso",
+    "hexValue": "#26619d",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "San Juan",
+    "hexValue": "#2a4b7b",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Rhino",
+    "hexValue": "#2d3865",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Gigas",
+    "hexValue": "#483d8c",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Olive Green",
+    "hexValue": "#b5b35d",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Avocado",
+    "hexValue": "#899a5c",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Pesto",
+    "hexValue": "#7b7a3b",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Saratoga",
+    "hexValue": "#4b531e",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Wild Willow",
+    "hexValue": "#94c673",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Dingley",
+    "hexValue": "#507944",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Lunar Green",
+    "hexValue": "#274f36",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Zuccini",
+    "hexValue": "#034322",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Bird Flower",
+    "hexValue": "#dcc01a",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Golden Grass",
+    "hexValue": "#dba621",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Buttered Rum",
+    "hexValue": "#a57c00",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Corn Harvest",
+    "hexValue": "#9b6616",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Copper",
+    "hexValue": "#b97435",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Paarl",
+    "hexValue": "#a0522f",
+    "category": "Base Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Orange Peel",
+    "hexValue": "#ffa301",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Pumpkin",
+    "hexValue": "#ff7519",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Flamingo",
+    "hexValue": "#e35823",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Flamingo",
+    "hexValue": "#e35823",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Hot Cinnamon",
+    "hexValue": "#d3691f",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Rose of Sharon",
+    "hexValue": "#be5504",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Rust",
+    "hexValue": "#b64110",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Vivid Tangerine",
+    "hexValue": "#f79685",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Geraldine",
+    "hexValue": "#fa8183",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Salmon",
+    "hexValue": "#fb8073",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Terracotta",
+    "hexValue": "#e3725d",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Thunderbird",
+    "hexValue": "#d9361e",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Tall Poppy",
+    "hexValue": "#b12222",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Mexican Red",
+    "hexValue": "#a72a2b",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Dark Burgundy",
+    "hexValue": "#7c0903",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Maroon",
+    "hexValue": "#810101",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Pohutukawa",
+    "hexValue": "#8d021e",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Black Rose",
+    "hexValue": "#680c22",
+    "category": "Accent Colors",
+    "season": "True Autumn"
+  },
+  {
+    "name": "Star Dust",
+    "hexValue": "#9c9c9a",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Ivory",
+    "hexValue": "#fefff0",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Parchment",
+    "hexValue": "#f0eada",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Almond",
+    "hexValue": "#e3dac9",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Coral Reef",
+    "hexValue": "#c8bba6",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Timberwolf",
+    "hexValue": "#d8d1cd",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Ash",
+    "hexValue": "#c9c0b3",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Bison Hide",
+    "hexValue": "#c0b4ab",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Dusty Gray",
+    "hexValue": "#a19899",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Spanish Green",
+    "hexValue": "#8f928e",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Congo Brown",
+    "hexValue": "#503835",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Congo Brown",
+    "hexValue": "#5b3e38",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Cape Cod",
+    "hexValue": "#3e4749",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Charade",
+    "hexValue": "#262f30",
+    "category": "Neutrals",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Navy Blue",
+    "hexValue": "#010180",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Deep Koamaru",
+    "hexValue": "#191972",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Dodger Blue",
+    "hexValue": "#3399fd",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Royal Blue",
+    "hexValue": "#4269e2",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Electric Violet",
+    "hexValue": "#8d00fd",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Blue Marguerite",
+    "hexValue": "#786eca",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Indigo",
+    "hexValue": "#5a4fce",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Spray",
+    "hexValue": "#7dfaff",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Cyan / Aqua",
+    "hexValue": "#01f0f1",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Turquoise",
+    "hexValue": "#3fe1d1",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Persian Green",
+    "hexValue": "#00af9f",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Observatory",
+    "hexValue": "#009474",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Gossamer",
+    "hexValue": "#149c87",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Teal",
+    "hexValue": "#018380",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Atlantis",
+    "hexValue": "#9bcd31",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Harlequin",
+    "hexValue": "#32cd32",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Christi",
+    "hexValue": "#4cbb16",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Fun Green",
+    "hexValue": "#0c6623",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Gorse",
+    "hexValue": "#fff34f",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Golden Fizz",
+    "hexValue": "#ffff30",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Goldenrod",
+    "hexValue": "#ffd662",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Goldenrod",
+    "hexValue": "#fec66e",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Saffron",
+    "hexValue": "#f8c225",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "My Sin",
+    "hexValue": "#f5b31e",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Ochre",
+    "hexValue": "#cd7722",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Di Serria",
+    "hexValue": "#d18f55",
+    "category": "Base Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Brink Pink",
+    "hexValue": "#ff6e6f",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Orange",
+    "hexValue": "#f96714",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Vermilion",
+    "hexValue": "#f94d01",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Cinnabar",
+    "hexValue": "#e84a34",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Persimmon",
+    "hexValue": "#ff6449",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Coral Red",
+    "hexValue": "#ff4041",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Red",
+    "hexValue": "#ff0901",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Well Read",
+    "hexValue": "#b93b33",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Cotton Candy",
+    "hexValue": "#f4bbca",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Sea Pink",
+    "hexValue": "#f6909e",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Mandy",
+    "hexValue": "#e35c7c",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Froly",
+    "hexValue": "#ee6e8b",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Orchid",
+    "hexValue": "#ff66cc",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Wild Strawberry",
+    "hexValue": "#e1218b",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Cerise Red",
+    "hexValue": "#e5256b",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Razzmatazz",
+    "hexValue": "#e50a5f",
+    "category": "Accent Colors",
+    "season": "Bright Spring"
+  },
+  {
+    "name": "Ivory",
+    "hexValue": "#fffff0",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Parchment",
+    "hexValue": "#f0ead8",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Almond",
+    "hexValue": "#e3dac9",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Akaroa",
+    "hexValue": "#d0c4ad",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Timberwolf",
+    "hexValue": "#d8d1cd",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Silver Rust",
+    "hexValue": "#cbc4b9",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Almond",
+    "hexValue": "#efdfce",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Champagne",
+    "hexValue": "#f7e7cf",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Sandrift",
+    "hexValue": "#ab917c",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Spicy Mix",
+    "hexValue": "#865f45",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Leather",
+    "hexValue": "#9b7353",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Shadow",
+    "hexValue": "#836647",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Hurricane",
+    "hexValue": "#857a77",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Soya Bean",
+    "hexValue": "#686156",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Dorado",
+    "hexValue": "#685a4f",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Chicago",
+    "hexValue": "#5c5758",
+    "category": "Neutrals",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Morning Glory",
+    "hexValue": "#9ad4e9",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Cornflower Blue",
+    "hexValue": "#7bb7db",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Cornflower Blue",
+    "hexValue": "#7eb6fe",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Cornflower Blue",
+    "hexValue": "#7b98ff",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Periwinkle",
+    "hexValue": "#cbccfe",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "East Side",
+    "hexValue": "#b18bda",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Mauve",
+    "hexValue": "#e2b1ff",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Lavender",
+    "hexValue": "#ab6dc2",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Reef",
+    "hexValue": "#c3faa3",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Tea Green",
+    "hexValue": "#cff0c0",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Chinook",
+    "hexValue": "#ace2b0",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Algae Green",
+    "hexValue": "#94e9be",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Monte Carlo",
+    "hexValue": "#89d8c2",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Aquamarine",
+    "hexValue": "#63ffcb",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Turquoise",
+    "hexValue": "#3fe1d1",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Robin's Egg Blue",
+    "hexValue": "#00ccce",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Marigold Yellow",
+    "hexValue": "#f4e97b",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Golden Sand",
+    "hexValue": "#fed777",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Cape Honey",
+    "hexValue": "#f3e5ad",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Grandis",
+    "hexValue": "#fbd48b",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Pale Canary",
+    "hexValue": "#ffff9b",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Golden Sand",
+    "hexValue": "#f8de7e",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Flax",
+    "hexValue": "#efdc83",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Rob Roy",
+    "hexValue": "#f8c46d",
+    "category": "Base Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Flesh",
+    "hexValue": "#ffcba4",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Apricot Peach",
+    "hexValue": "#fcceb2",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Melon",
+    "hexValue": "#febaad",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Macaroni and Cheese",
+    "hexValue": "#fea079",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Salmon",
+    "hexValue": "#fa827b",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Geraldine",
+    "hexValue": "#ff888e",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Geraldine",
+    "hexValue": "#ed888a",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Brink Pink",
+    "hexValue": "#ea6677",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Your Pink",
+    "hexValue": "#f6c4c5",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Pink",
+    "hexValue": "#ffc2cd",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Carnation Pink",
+    "hexValue": "#fea6cb",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Tickle Me Pink",
+    "hexValue": "#fd8faf",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Froly",
+    "hexValue": "#ff7f9d",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Hot Pink",
+    "hexValue": "#f56fa3",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "French Rose",
+    "hexValue": "#fe5b8e",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Wild Watermelon",
+    "hexValue": "#ec5578",
+    "category": "Accent Colors",
+    "season": "Light Spring"
+  },
+  {
+    "name": "Beige",
+    "hexValue": "#f5f4de",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Coral Reef",
+    "hexValue": "#c8bba6",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Sorrell Brown",
+    "hexValue": "#c3b181",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Teak",
+    "hexValue": "#b59462",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Wheat",
+    "hexValue": "#f5dfb4",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Gold Sand",
+    "hexValue": "#e0b58a",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Porsche",
+    "hexValue": "#e6ab71",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Di Serria",
+    "hexValue": "#d68a58",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Cape Palliser",
+    "hexValue": "#af6e4d",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Cape Palliser",
+    "hexValue": "#aa7243",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Tumbleweed",
+    "hexValue": "#d4ac8a",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Spicy Mix",
+    "hexValue": "#865f45",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Shingle Fawn",
+    "hexValue": "#704d37",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Shingle Fawn",
+    "hexValue": "#714e38",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Birch",
+    "hexValue": "#3f332b",
+    "category": "Neutrals",
+    "season": "True Spring"
+  },
+  {
+    "name": "Navy Blue",
+    "hexValue": "#010180",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Perano",
+    "hexValue": "#a3bae2",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Danube",
+    "hexValue": "#7c9dcb",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Havelock Blue",
+    "hexValue": "#5185c3",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Cerulean",
+    "hexValue": "#01b6eb",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Denim",
+    "hexValue": "#1460bd",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Allports",
+    "hexValue": "#0061a4",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Chathams Blue",
+    "hexValue": "#1f4477",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "International Klein Blue",
+    "hexValue": "#1034a8",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Amethyst",
+    "hexValue": "#9966ce",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Butterfly Bush",
+    "hexValue": "#604b8b",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Pigment Indigo",
+    "hexValue": "#4c0082",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Breaker Bay",
+    "hexValue": "#40b48b",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Niagara",
+    "hexValue": "#00a28b",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Teal",
+    "hexValue": "#008080",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Observatory",
+    "hexValue": "#009e62",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Jewel",
+    "hexValue": "#167245",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Fun Green",
+    "hexValue": "#0c6623",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Celery",
+    "hexValue": "#b5c04f",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Sushi",
+    "hexValue": "#9faa20",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Fern",
+    "hexValue": "#7bb369",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Glade Green",
+    "hexValue": "#6f9b41",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Vida Loca",
+    "hexValue": "#598205",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Christi",
+    "hexValue": "#4cbb16",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Forest Green",
+    "hexValue": "#01a93c",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Buff",
+    "hexValue": "#f9de85",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Ronchi",
+    "hexValue": "#f1c64a",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Amber",
+    "hexValue": "#ffbf01",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Fuel Yellow",
+    "hexValue": "#eaa222",
+    "category": "Base Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Macaroni and Cheese",
+    "hexValue": "#fea177",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Sunglo",
+    "hexValue": "#ff7063",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Sunset Orange",
+    "hexValue": "#ff5a54",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Persimmon",
+    "hexValue": "#ff6449",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Brink Pink",
+    "hexValue": "#fb7273",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Froly",
+    "hexValue": "#ff7f9d",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Wild Watermelon",
+    "hexValue": "#ec5578",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Wild Watermelon",
+    "hexValue": "#ec5578",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Razzmatazz",
+    "hexValue": "#e1105f",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Amaranth",
+    "hexValue": "#eb3d53",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Persian Red",
+    "hexValue": "#de343b",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Crimson",
+    "hexValue": "#da1b35",
+    "category": "Accent Colors",
+    "season": "True Spring"
+  },
+  {
+    "name": "Orange White",
+    "hexValue": "#fbf9ec",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Satin Linen",
+    "hexValue": "#e7e5da",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Almond",
+    "hexValue": "#e3dacb",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Silk",
+    "hexValue": "#bfb5ad",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Bizarre",
+    "hexValue": "#e0dcd9",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Alto",
+    "hexValue": "#dcdcdc",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Geyser",
+    "hexValue": "#d9dde2",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Submarine",
+    "hexValue": "#bfc3cb",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Waterloo ",
+    "hexValue": "#707f91",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Pickled Bluewood",
+    "hexValue": "#35465e",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Pickled Bluewood",
+    "hexValue": "#35465e",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Eggplant",
+    "hexValue": "#604052",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Zambezi",
+    "hexValue": "#6c5759",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Zambezi",
+    "hexValue": "#675758",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Matterhorn",
+    "hexValue": "#5d3c43",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Chicago",
+    "hexValue": "#5c5758",
+    "category": "Neutrals",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Blizzard Blue",
+    "hexValue": "#aeeeed",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Spindle",
+    "hexValue": "#b0dfe6",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Regent St Blue",
+    "hexValue": "#aedae6",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Spindle",
+    "hexValue": "#accdef",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Seagull",
+    "hexValue": "#88ceeb",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Danube",
+    "hexValue": "#659bcd",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Kimberly",
+    "hexValue": "#646f9d",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Astral",
+    "hexValue": "#3062a5",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Scooter",
+    "hexValue": "#35bdcd",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Algae Green",
+    "hexValue": "#93e9be",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Algae Green",
+    "hexValue": "#93e9be",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Monte Carlo",
+    "hexValue": "#89d8c0",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Tradewind",
+    "hexValue": "#4cb7a5",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Persian Green",
+    "hexValue": "#00af9f",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Gossamer",
+    "hexValue": "#149c87",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Surfie Green",
+    "hexValue": "#017970",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Lemon Chiffon",
+    "hexValue": "#fef9cd",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Buttermilk",
+    "hexValue": "#faf0bd",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Buff",
+    "hexValue": "#f9de85",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Dust Storm",
+    "hexValue": "#eec5c7",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Pink",
+    "hexValue": "#f3c3cf",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Shilo",
+    "hexValue": "#ecaebe",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Careys Pink",
+    "hexValue": "#c59cb5",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Thistle",
+    "hexValue": "#d8bfd8",
+    "category": "Base Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Lilac",
+    "hexValue": "#c8a2c8",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Light Wisteria",
+    "hexValue": "#caa0dc",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Amethyst Smoke",
+    "hexValue": "#b284bd",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Deluge",
+    "hexValue": "#7d6fad",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Periwinkle",
+    "hexValue": "#cbccfe",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Lavender Gray",
+    "hexValue": "#bdb8d3",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Manatee",
+    "hexValue": "#9a8aa4",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Old Lavender",
+    "hexValue": "#71617b",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Cotton Candy",
+    "hexValue": "#ffbfce",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Tickle Me Pink",
+    "hexValue": "#fc8eaa",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Froly",
+    "hexValue": "#ff7f9d",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Wild Watermelon",
+    "hexValue": "#ec5578",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "French Rose",
+    "hexValue": "#fd5a8c",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "French Rose",
+    "hexValue": "#f8498b",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "French Rose",
+    "hexValue": "#e15286",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Brick Red",
+    "hexValue": "#dc3856",
+    "category": "Accent Colors",
+    "season": "Bright Summer"
+  },
+  {
+    "name": "Bizarre",
+    "hexValue": "#e4dcd1",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Timberwolf",
+    "hexValue": "#d8d1cd",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Westar",
+    "hexValue": "#dbddd1",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Timberwolf",
+    "hexValue": "#ded5c8",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Swirl",
+    "hexValue": "#d2c9c8",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Dusty Gray",
+    "hexValue": "#ad9b9b",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Silver Chalice",
+    "hexValue": "#aaafad",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Concord",
+    "hexValue": "#7c797c",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Dove Gray",
+    "hexValue": "#696e6e",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Chicago",
+    "hexValue": "#5c565b",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Fuscous Gray",
+    "hexValue": "#5d5246",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Ferra",
+    "hexValue": "#655248",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Gravel",
+    "hexValue": "#43464c",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Limed Spruce",
+    "hexValue": "#374550",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Masala",
+    "hexValue": "#423e3d",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Pickled Bluewood",
+    "hexValue": "#35465e",
+    "category": "Neutrals",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Spindle",
+    "hexValue": "#b5cfe6",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Rock Blue",
+    "hexValue": "#9cb7d4",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Ship Cove",
+    "hexValue": "#739bbb",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Danube",
+    "hexValue": "#78acc8",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Danube",
+    "hexValue": "#679acd",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Steel Blue",
+    "hexValue": "#4682b4",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Cornflower",
+    "hexValue": "#99c4e1",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Kashmir Blue",
+    "hexValue": "#4f6a93",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Heather",
+    "hexValue": "#b8c0d6",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Blue Bell",
+    "hexValue": "#8996c6",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Kimberly",
+    "hexValue": "#716f99",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Norway",
+    "hexValue": "#a9b99f",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Feijoa",
+    "hexValue": "#a8c796",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Bay Leaf",
+    "hexValue": "#77a680",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Nandor",
+    "hexValue": "#435e55",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Kelp",
+    "hexValue": "#4a5335",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Sapling",
+    "hexValue": "#dcd8aa",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Yuma",
+    "hexValue": "#cec486",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Double Colonial White",
+    "hexValue": "#ece0ab",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Calico",
+    "hexValue": "#e0c993",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Cameo",
+    "hexValue": "#dcae97",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Petite Orchid",
+    "hexValue": "#d1959a",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Old Rose",
+    "hexValue": "#c18182",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Coral Tree",
+    "hexValue": "#b66e79",
+    "category": "Base Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Pastel Pink",
+    "hexValue": "#f8d1d3",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Rose Bud",
+    "hexValue": "#eea7aa",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Shilo",
+    "hexValue": "#e6b1b7",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Puce",
+    "hexValue": "#cd889a",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Lilac",
+    "hexValue": "#c8a2c8",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Amethyst Smoke",
+    "hexValue": "#b683a6",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Turkish Rose",
+    "hexValue": "#a2759b",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Bouquet",
+    "hexValue": "#b1879c",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Chestnut",
+    "hexValue": "#bc4a4e",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Cabaret",
+    "hexValue": "#c94f61",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Night Shadz",
+    "hexValue": "#b53759",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Hippie Pink",
+    "hexValue": "#aa4066",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Cannon Pink",
+    "hexValue": "#9e456e",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Copper Rust",
+    "hexValue": "#8a4c5f",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Vin Rouge",
+    "hexValue": "#893262",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Voodoo",
+    "hexValue": "#5d3955",
+    "category": "Accent Colors",
+    "season": "Soft Summer"
+  },
+  {
+    "name": "Bizarre",
+    "hexValue": "#e0dcdb",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Geyser",
+    "hexValue": "#d9dde0",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Pumice",
+    "hexValue": "#c1c2cb",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Silver",
+    "hexValue": "#c0c0c0",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Blue Haze",
+    "hexValue": "#bdbbd9",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Heather",
+    "hexValue": "#b8c0d6",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Manatee",
+    "hexValue": "#8c91ab",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Waterloo ",
+    "hexValue": "#707f91",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Pale Sky",
+    "hexValue": "#697a80",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Nandor",
+    "hexValue": "#4f525d",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Zambezi",
+    "hexValue": "#605852",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Gravel",
+    "hexValue": "#49454b",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Cape Cod",
+    "hexValue": "#3e4749",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Limed Spruce",
+    "hexValue": "#374550",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Gulf Blue",
+    "hexValue": "#000b55",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Eggplant",
+    "hexValue": "#604052",
+    "category": "Neutrals",
+    "season": "True Summer"
+  },
+  {
+    "name": "Cornflower",
+    "hexValue": "#8bcef0",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Deep Cerulean",
+    "hexValue": "#0172bb",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Astral",
+    "hexValue": "#2d62a4",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Horizon",
+    "hexValue": "#5a8bae",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Steel Blue",
+    "hexValue": "#4682b4",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Calypso",
+    "hexValue": "#26619d",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "San Juan",
+    "hexValue": "#2a4b7b",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "San Juan",
+    "hexValue": "#32527b",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Turquoise",
+    "hexValue": "#3dc1cf",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Bondi Blue",
+    "hexValue": "#0f98bc",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Horizon",
+    "hexValue": "#4691a3",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Bondi Blue",
+    "hexValue": "#00a1b1",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Bahama Blue",
+    "hexValue": "#006a94",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Wistful",
+    "hexValue": "#a3aad1",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Wild Blue Yonder",
+    "hexValue": "#7d84bd",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Kimberly",
+    "hexValue": "#646194",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Gulf Stream",
+    "hexValue": "#80bba0",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Sea Green",
+    "hexValue": "#3ba178",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Casal",
+    "hexValue": "#246b63",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Smalt Blue",
+    "hexValue": "#488589",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Bay Leaf",
+    "hexValue": "#77a680",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "De York",
+    "hexValue": "#54c6a9",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Surfie Green",
+    "hexValue": "#017970",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Deep Sea Green",
+    "hexValue": "#01585f",
+    "category": "Base Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Primrose",
+    "hexValue": "#ece89c",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Caper",
+    "hexValue": "#dfe6a0",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Pink Flare",
+    "hexValue": "#e2c6cd",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Thistle",
+    "hexValue": "#daafcb",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Hopbush",
+    "hexValue": "#c67fae",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Illusion",
+    "hexValue": "#e9acd1",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Mauvelous",
+    "hexValue": "#e892b8",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Mulberry",
+    "hexValue": "#c54b8b",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Charm",
+    "hexValue": "#d1748f",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Deep Blush",
+    "hexValue": "#e9738e",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Wild Watermelon",
+    "hexValue": "#ec5578",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Mulberry",
+    "hexValue": "#de5e82",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Mulberry",
+    "hexValue": "#df5286",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Blush",
+    "hexValue": "#be496a",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Night Shadz",
+    "hexValue": "#b53759",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Tawny Port",
+    "hexValue": "#7a2d47",
+    "category": "Accent Colors",
+    "season": "True Summer"
+  },
+  {
+    "name": "Star Dust",
+    "hexValue": "#999999",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Star Dust",
+    "hexValue": "#999999",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Pumice",
+    "hexValue": "#c1c2cb",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Silver",
+    "hexValue": "#c0c0c0",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Gunsmoke",
+    "hexValue": "#848482",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Dove Gray",
+    "hexValue": "#696969",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Dove Gray",
+    "hexValue": "#696969",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Zorba",
+    "hexValue": "#a38b85",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Gravel",
+    "hexValue": "#43464c",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Blackcurrant",
+    "hexValue": "#3b2e39",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Shark",
+    "hexValue": "#2c262d",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Cod Gray",
+    "hexValue": "#0a0a0a",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Toledo",
+    "hexValue": "#3d1221",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Revolver",
+    "hexValue": "#2e183d",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Revolver",
+    "hexValue": "#31172b",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Gulf Blue",
+    "hexValue": "#04085f",
+    "category": "Neutrals",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Danube",
+    "hexValue": "#679acd",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Shakespeare",
+    "hexValue": "#57a1d3",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Pacific Blue",
+    "hexValue": "#0892d1",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Deep Cerulean",
+    "hexValue": "#0172bb",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Astral",
+    "hexValue": "#2d62a4",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Congress Blue",
+    "hexValue": "#0e4e93",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Cobalt",
+    "hexValue": "#0245ab",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Lucky Point",
+    "hexValue": "#111e6c",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Atoll",
+    "hexValue": "#00637f",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Teal",
+    "hexValue": "#018380",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Deep Sea Green",
+    "hexValue": "#01585f",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Elephant",
+    "hexValue": "#1a3a46",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Watercourse",
+    "hexValue": "#01694f",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Dingley",
+    "hexValue": "#507944",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Lunar Green",
+    "hexValue": "#274f36",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Lunar Green",
+    "hexValue": "#38432a",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Golden Glow",
+    "hexValue": "#f0e79f",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Turmeric",
+    "hexValue": "#d4af41",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Corn",
+    "hexValue": "#e1ad01",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Corn Harvest",
+    "hexValue": "#9b6616",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Pink",
+    "hexValue": "#f7cac9",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Mulberry",
+    "hexValue": "#de5e82",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Mulberry",
+    "hexValue": "#df5286",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Maroon Flush",
+    "hexValue": "#c41e58",
+    "category": "Base Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Lavender Gray",
+    "hexValue": "#bbb9d5",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Wisteria",
+    "hexValue": "#966ba2",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Trendy Pink",
+    "hexValue": "#936a98",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Strikemaster",
+    "hexValue": "#8e4484",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Mulberry",
+    "hexValue": "#c54b8b",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Vin Rouge",
+    "hexValue": "#893262",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Bossanova",
+    "hexValue": "#5a2149",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Bossanova",
+    "hexValue": "#512d55",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Shiraz",
+    "hexValue": "#b31a3a",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Cardinal",
+    "hexValue": "#c61d3a",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Merlot",
+    "hexValue": "#9c1c31",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Red Berry",
+    "hexValue": "#8c0304",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Camelot",
+    "hexValue": "#972d4c",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Claret",
+    "hexValue": "#7a1c30",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Buccaneer",
+    "hexValue": "#74262c",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Lonestar",
+    "hexValue": "#6a0102",
+    "category": "Accent Colors",
+    "season": "Dark Winter"
+  },
+  {
+    "name": "Star Dust",
+    "hexValue": "#999999",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Mountain Mist",
+    "hexValue": "#97999d",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Geyser",
+    "hexValue": "#d9dde0",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Alto",
+    "hexValue": "#dcdcdc",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Bizarre",
+    "hexValue": "#e0dcdb",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Pink Swan",
+    "hexValue": "#bebebe",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Stack",
+    "hexValue": "#8c8c8a",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Suva Gray",
+    "hexValue": "#848388",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Gravel",
+    "hexValue": "#49494b",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Tuna",
+    "hexValue": "#2b3143",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Port Gore",
+    "hexValue": "#2a1f43",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Revolver",
+    "hexValue": "#2e183d",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Cloud Burst",
+    "hexValue": "#262a48",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Martinique",
+    "hexValue": "#2c304e",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Bossanova",
+    "hexValue": "#403f6f",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Black",
+    "hexValue": "#000000",
+    "category": "Neutrals",
+    "season": "True Winter"
+  },
+  {
+    "name": "Powder Blue",
+    "hexValue": "#b5e9ec",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Malibu",
+    "hexValue": "#73c2fc",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Picton Blue",
+    "hexValue": "#44a5f1",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Royal Blue",
+    "hexValue": "#4269e2",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Cerulean Blue",
+    "hexValue": "#2953be",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Cobalt",
+    "hexValue": "#0245ab",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Ultramarine",
+    "hexValue": "#011b94",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Lucky Point",
+    "hexValue": "#111e6c",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Blue Chalk",
+    "hexValue": "#e7e6fb",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Lavender Purple",
+    "hexValue": "#977bb7",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Butterfly Bush",
+    "hexValue": "#604b8b",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Royal Purple",
+    "hexValue": "#6a3fa0",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Pigment Indigo",
+    "hexValue": "#4c0082",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Gigas",
+    "hexValue": "#483d8c",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Tapestry",
+    "hexValue": "#ad5d98",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Finn",
+    "hexValue": "#642b61",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Primrose",
+    "hexValue": "#efea97",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Candy Corn",
+    "hexValue": "#fcec5e",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Golden Fizz",
+    "hexValue": "#f1e331",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Golden Fizz",
+    "hexValue": "#ffe236",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Surf",
+    "hexValue": "#bed9cb",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Gossamer",
+    "hexValue": "#009b8d",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Mosque",
+    "hexValue": "#0c6f69",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Spectra",
+    "hexValue": "#27535b",
+    "category": "Base Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Pink Lace",
+    "hexValue": "#ffdef4",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "We Peep",
+    "hexValue": "#f4d5e2",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Cupid",
+    "hexValue": "#edbfdd",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Illusion",
+    "hexValue": "#f1a7cd",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Hopbush",
+    "hexValue": "#dc6da2",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Hibiscus",
+    "hexValue": "#b83274",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Cerise Red",
+    "hexValue": "#cb1f7b",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Vin Rouge",
+    "hexValue": "#93306f",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "French Rose",
+    "hexValue": "#f64a8b",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Razzmatazz",
+    "hexValue": "#e50a5f",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Razzmatazz",
+    "hexValue": "#e1105f",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Crimson",
+    "hexValue": "#dd143f",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Merlot",
+    "hexValue": "#9e1d32",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Paprika",
+    "hexValue": "#9f0f30",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Monarch",
+    "hexValue": "#840d30",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Black Rose",
+    "hexValue": "#650b25",
+    "category": "Accent Colors",
+    "season": "True Winter"
+  },
+  {
+    "name": "Mountain Mist",
+    "hexValue": "#969696",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Star Dust",
+    "hexValue": "#9b9b9b",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Soft Peach",
+    "hexValue": "#f0efeb",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Bizarre",
+    "hexValue": "#e0dcdb",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Geyser",
+    "hexValue": "#d9dde0",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Silver",
+    "hexValue": "#c0c0c0",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Mantle",
+    "hexValue": "#8e9296",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Fedora",
+    "hexValue": "#746f71",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Ghost",
+    "hexValue": "#c1c7d7",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Manatee",
+    "hexValue": "#8c91ab",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Navy Blue",
+    "hexValue": "#010180",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Port Gore",
+    "hexValue": "#2a1f43",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Tuna",
+    "hexValue": "#2b3143",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Tuatara",
+    "hexValue": "#383838",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Shark",
+    "hexValue": "#29282f",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Cod Gray",
+    "hexValue": "#0a0a0a",
+    "category": "Neutrals",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Mabel",
+    "hexValue": "#d5f1fe",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Bright Turquoise",
+    "hexValue": "#02cdff",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Scooter",
+    "hexValue": "#2ea8da",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Dodger Blue",
+    "hexValue": "#0180ff",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Royal Blue",
+    "hexValue": "#4f4dff",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Royal Blue",
+    "hexValue": "#4266f4",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Tory Blue",
+    "hexValue": "#0f53bb",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "International Klein Blue",
+    "hexValue": "#012aa9",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Cruise",
+    "hexValue": "#b8e3db",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Viking",
+    "hexValue": "#5dc8d8",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Eastern Blue",
+    "hexValue": "#0bb9b5",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Chathams Blue",
+    "hexValue": "#005b75",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Emerald",
+    "hexValue": "#51c777",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Jade",
+    "hexValue": "#00a86b",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Observatory",
+    "hexValue": "#009474",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Surfie Green",
+    "hexValue": "#017970",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Banana Mania",
+    "hexValue": "#f3e7b2",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Turbo",
+    "hexValue": "#e1f700",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Gold",
+    "hexValue": "#ffd502",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Pizza",
+    "hexValue": "#c59101",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Pastel Pink",
+    "hexValue": "#f8d1d3",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Geraldine",
+    "hexValue": "#ec8a8d",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Cranberry",
+    "hexValue": "#d95070",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Cerise Red",
+    "hexValue": "#d2386c",
+    "category": "Base Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Cherub",
+    "hexValue": "#f4d6e7",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Cupid",
+    "hexValue": "#ffbdda",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Pink Lace",
+    "hexValue": "#facffb",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Orchid",
+    "hexValue": "#ff66cc",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Persian Rose",
+    "hexValue": "#f81793",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Blush Pink",
+    "hexValue": "#ff77ff",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Orchid",
+    "hexValue": "#da71d7",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Medium Red Violet",
+    "hexValue": "#b71b94",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Violet Eggplant",
+    "hexValue": "#810082",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Pigment Indigo",
+    "hexValue": "#4c0082",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Crimson",
+    "hexValue": "#dd143f",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Scarlet",
+    "hexValue": "#ff2401",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Alizarin Crimson",
+    "hexValue": "#ee2a3a",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Crimson",
+    "hexValue": "#da1b35",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Paprika",
+    "hexValue": "#9f0f30",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  },
+  {
+    "name": "Monarch",
+    "hexValue": "#840d30",
+    "category": "Accent Colors",
+    "season": "Bright Winter"
+  }
+]

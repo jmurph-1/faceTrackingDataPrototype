@@ -1,0 +1,148 @@
+{
+  "Light Spring": {
+    "tagline": "Light and warm, like the first gentle rays of spring sunshine",
+    "introduction": "Light Spring is one of the three Spring seasons and sits between True Spring and Light Summer on the seasonal flow chart. Unlike Light Summer, this season is warm. However, both sister seasons are a blend of Spring and Summer, with Light Summer leaning more towards the Summer palette and Light Spring leaning more towards the Spring palette.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a Light Spring if the primary colour aspect of your overall appearance is light, and the secondary aspect is warm – meaning warm colours suit you better than cooler ones. When you look in the mirror, the first thing you notice about your colouring is that there is very little contrast between your skin, eyes and hair. All of your features are similarly light. This means that if you have dark eyes or dark hair, but you aren't a person of colour, then you are most likely one of the darker seasons. If you are a person of colour, but you have very light colouring for your ethnicity, you may be a Light Spring. In addition, your colouring has warmer undertones, meaning gold flatters your skin more than silver.",
+      "features": {
+        "eyes": {
+          "description": "Light Spring eyes are, of course, light. They come in light blue, green, hazel, and light brown. Like all Spring eyes, they are bright and have warm undertones. You might also notice the typical Spring sunburst pattern on the iris.",
+          "eyeColors": [
+            "light blue",
+            "green",
+            "hazel",
+            "light brown"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b42c92d47e7247ce95bd_Light%20Spring%20Eyes.webp"
+        },
+        "skin": {
+          "description": "Light Spring skin is also light and ranges from fair to medium. Light Spring skin is either neutral or has neutral-warm undertones – which means that both gold and silver look good against it, but gold looks better. The skin may have golden or peach undertones. Light Springs can also have freckles.",
+          "skinTones": {
+            "1": ["neutral-warm"],
+            "2": ["neutral-warm"],
+            "3": ["neutral-warm"],
+            "4": ["neutral-warm"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b44b7e5418fecfe5d716_Light%20Spring%20Skin.png"
+        },
+        "hair": {
+          "description": "The primary colour aspect of Light Springs is lightness. Therefore, the hair of this sub-season is naturally also light. It ranges from light to medium golden blonde, light red (strawberry blond to light copper) and light golden brown. Whatever the shade, the hair has warm, golden undertones or highlights. Most Light Springs were also fair-haired as children. Individuals of darker ethnicities (whose colouring is very light for their ethnicity) may have a lighter shade of brown.",
+          "hairColors": {
+            "blonde": ["light golden", "medium golden"],
+            "red": ["strawberry", "light copper"],
+            "brown": ["light golden"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b46646f35775934de675_Light%20Spring%20Hair.webp"
+        },
+        "contrast": {
+          "value": "low",
+          "description": "Light Spring has a low level of contrast between features. All features are similarly light, with very little contrast between skin, eyes, and hair. This creates a delicate, harmonious appearance that is characteristic of the Light Spring season."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c87774ddc0c82ee48bfb91_Light%20Spring%20Colour%20Palette.png",
+      "description": "Light Spring is the colour season reminiscent of new life. These are the days when the warming sun makes the last of the spring flowers bud and the first hint of Summer lies in the air. These colours are warm and fresh but still light and gentle – like the pastel colours of candy.",
+      "hue": {
+        "value": "warm",
+        "explanation": "As part of the Spring family, the colours lean towards the warm end of the scale but are not extremely warm. That means they contain more yellow than blue undertones. And consequently, you will find fewer tints of blue (which is the coolest colour of all) on the palette. And the blues that you will find all have a tint of yellow to make them warmer and lighter."
+      },
+      "value": {
+        "value": "light",
+        "explanation": "Thanks to this colour season's primary colour aspect, the colours are overall low in value – meaning there are many light colours and very few darker ones. And the few medium colours only act as supporting colours for the light ones."
+      },
+      "chroma": {
+        "value": "medium-high",
+        "explanation": "The colour palette is medium-high in chroma. It is not as bright and vibrant as the other two Spring seasons. The colours are typical pastel colours because brightness combined with lightness is what creates pastel."
+      },
+      "sisterPalettes": {
+        "description": "Light Spring sits between True Spring and Light Summer on the seasonal flow chart. It falls at the Summer end of the Spring palette, meaning the colours are softer, lighter and less warm than those of True Spring. Compared to Light Summer, the colours are warmer, brighter and similarly light. The influence of Summer on the palette is extra softness. Pastel colours would look dull on the other Spring seasons but flatter Light Spring skin. Similarly, the high contrast of the other two Spring seasons does not work here because Light Spring has naturally low contrast. Compared to the third Spring season Bright Spring, the colours are gentler and lighter. They are not as vibrant and not as contrasted.",
+        "sisters": [
+          "True Spring",
+          "Light Summer"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b572bc23646111161af4_Light%20Spring%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "True black (a Winter colour) is not the right neutral for a Light Spring since it is cold and dark in contrast to your warm and light appearance. Black against your skin will make you look aged. In its place, you have lots of other relatively darker neutrals – such as slightly greenish greys and medium-dark browns. The closest colour to black on the palette is a medium-dark, warm grey. And instead of true white, which is also too cool and harsh for your appearance, you have a soft yellowish, pinkish off-white as well as light greenish greys. These colours are warmer and more flattering against Light Spring skin. You can use them as light neutrals.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b59894058a77390684da_Light%20Spring%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since Light Spring's main colour aspects are lightness and warmth, your worst colours are dark and cool. Apart from black, other harsh, dark colours, such as deep purples and blues, will overwhelm your light colouring. White is also too harsh for you. Overly bright and saturated colours, such as burnt orange, will overwhelm your delicate appearance and make you disappear behind them.",
+        "colors": [
+          "Black",
+          "Deep purples",
+          "Deep blues",
+          "Burnt orange"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b5b233499357d610a95b_Light%20Spring%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the Light Spring palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level that is naturally present in your appearance. Out of the three Spring seasons, Light Spring has the lowest contrast and the most delicate appearance. However, this is not a blended, muted colour season. Light Spring needs vibrancy, contrast and playful colour combinations to come alive. To achieve this look, you can combine neighbouring hues, such as yellow and green. You can also pair colours that sit far from each other on the colour wheel, such as orange and blue. The further apart the colours, the higher the contrast between them. The third option is to combine neutrals with brighter accent colours. If you choose a dark neutral, select a lighter accent; whereas a lighter neutral combines better with a slightly darker accent. Make sure to select different hues to create additional hue contrast. In general, always aim for at least one bright colour in your outfit to achieve a colourful look. Avoid neutrals-only combinations and monochromatic looks, as these will look dull on you.",
+        "Combinations": [
+          ["neighbouring hues"],
+          ["opposite hues"],
+          ["light neutral", "bright accent"]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c8aa66ab5db07166806828_Light%20Spring%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain Light Spring colours.",
+        "color": {
+          "description": "If a pattern contains some but not much colour from a Light Spring palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., muted cool greys). Since your natural colouring has little contrast, opt for patterns that reflect this natural low contrast level rather than ones that are too bold. Great patterns for Light Spring are dotty, busy, creative, and rounded shaped geometric patterns. Delicate natural elements – such as flowers, butterflies, and birds are also great.",
+          "combinations": {
+            "bad": ["Light Spring pattern", "Dark Winter background"],
+            "good": ["Light Spring pattern", "Dark Winter accents"],
+            "great": "Light Spring pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b614c697620c328ef477_Light%20Spring%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring has little contrast, opt for patterns that reflect this natural low contrast level rather than ones that are too bold. In the example below, both patterns are in Light Spring colours and wearable. However, the second pattern displays a higher contrast between the elements and is thus less flattering.",
+          "combinations": {
+            "bad": "high-contrast pattern",
+            "good": "medium-contrast pattern",
+            "great": "low-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b63146f35700c44dee60_Light%20Spring%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for Light Spring are dotty, busy, creative, and rounded shaped geometric patterns. Delicate natural elements – such as flowers, butterflies, and birds are also great. Elements should be small and dense. Avoid big elements and stiff, square geometric patterns – like in the first example.",
+          "combinations": {
+            "bad": ["big", "stiff", "square geometric"],
+            "good": ["small", "dense", "rounded geometric"],
+            "great": ["small", "dense", "natural elements"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b67117dcb99c0a3af8d9_Light%20Spring%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "Since Light Spring flows from warm Spring into cool Summer, you may be able to wear both warm and cool metals. But gold is the more foolproof choice. The most important factor is that the metal is light to match your delicate colouring rather than deep and rich. Metals can be shiny, brushed, or matte. But avoid antiqued or oxidised finishes that will darken the metals too much and will clash with your light appearance.",
+        "metals": {
+          "type": {
+            "gold": "great",
+            "silver": "good"
+          },
+          "finish": {
+            "shiny": "great",
+            "brushed": "great",
+            "matte": "great",
+            "antiqued": "bad",
+            "oxidised": "bad"
+          }
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b6953cc352d334deefee_Light%20Spring%20Metals.png"
+      },
+      "stones": {
+        "description": "The best stones for Light Spring are aquamarine and rose quartz. These stones complement the season's light and warm characteristics.",
+        "stones": [
+          "aquamarine",
+          "rose quartz"
+        ]
+      }
+    }
+  }
+}

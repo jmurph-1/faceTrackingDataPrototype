@@ -1,0 +1,151 @@
+{
+  "True Summer": {
+    "tagline": "Cool and gentle, like a misty summer morning by the ocean",
+    "introduction": "True Summer is the original Summer season in the four seasons colour analysis and sits between Light Summer and Soft Summer on the seasonal flow chart. Its opposite season is True Winter. Both are cool, but True Winter is dark and bright; whereas True Summer is light and muted and cannot handle the icy, intense and highly-contrasted colours of Winter.",
+    "characteristics": {
+      "note": "Please note: Do not worry too much if one characteristic of your appearance deviates from the below descriptions. You may still fall into this colour season if your overall appearance matches the profile.",
+      "overview": "You are a True Summer if the primary colour aspect of your overall appearance is cool – meaning cool colours suit you better than warm ones, and the secondary aspect is muted. When you look in the mirror, the first thing you notice about your colouring is its obvious cool quality. Your skin, eyes and hair all have cool undertones, which may be blue or beige. There is no warmth in any of the features. In addition, the colouring of your features is muted – meaning the features blend rather than contrast each other. Compared to the other two Summer seasons, however, True Summer is the most contrasted. Overall, the level of contrast between the features is medium.",
+      "features": {
+        "eyes": {
+          "description": "True Summer eyes are usually blue, grey, green or light grey hazel. Darker ethnicities will have greyish brown eyes. Regardless of the colour, True Summer eyes are always softly greyed, making them muted and less vibrant than sparkling Spring or Winter eyes. Typical of the Summer eye, you may notice a crackled glass pattern on the iris.",
+          "eyeColors": [
+            "blue",
+            "grey",
+            "green",
+            "light grey hazel",
+            "greyish brown"
+          ],
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8beff8d0e9baefb22bafa_True%20Summer%20Eyes.webp"
+        },
+        "skin": {
+          "description": "True Summer skin is always cool, with blue or beige undertones and possibly a pink tinge. It ranges from fair to tan. Since True Summer skin is cool, silver looks good against it, but gold makes it look off.",
+          "skinTones": {
+            "1": ["cool", "blue undertones"],
+            "2": ["cool", "beige undertones"],
+            "3": ["cool", "pink tinge"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bf1c63d76625de832dfd_True%20Summer%20Skin.png"
+        },
+        "hair": {
+          "description": "The hair can be any shade from dark blonde, over light and medium brown to dark brown. But what defines True Summer hair is the absence of brightness. Instead, True Summer hair is ashy and muted. There is no warmth in the hair – which means very little to no red undertones, no golden glow, and usually no natural highlights. Redheads, therefore, aren't usually True Summers.",
+          "hairColors": {
+            "blonde": ["dark"],
+            "brown": ["light", "medium", "dark"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bf33b45bb75378d9c545_True%20Summer%20Hair.webp"
+        },
+        "contrast": {
+          "value": "medium",
+          "description": "True Summer has a medium level of contrast between features. While the features blend rather than contrast each other, there is still some contrast present. This is reflected in the combination of light to medium skin tones with darker hair colors, creating a balanced but not dramatic contrast."
+        }
+      }
+    },
+    "palette": {
+      "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c86659cb18b51a00264add_True%20Summer%20Colour%20Palette.png",
+      "description": "True Summer is the colour season reminiscent of summer days after rain when the last grey clouds disperse, and the haze refracts all the colours of nature into a kaleidoscope of contrasts. These colours are cool, calming and refreshing, like the feeling of cool water on the skin. They are the colours of water – the blues and greens of rivers, lakes and deep oceans.",
+      "hue": {
+        "value": "cool",
+        "explanation": "In line with True Summer's primary colour aspect, the colours sit on the coolest end of the hue scale. That means they contain blue undertones but no yellow ones. There are very few yellow shades on the palette, and even those have a heavy tint of blue to cool them. Instead, you will find lots of blues, turquoises and greys, which are naturally cool."
+      },
+      "value": {
+        "value": "medium",
+        "explanation": "The colour palette ranges from light grey to dark brown and is so quite broad. Overall, though, more colours are medium or lighter rather than truly dark. This is because True Summer cannot handle too much contrast."
+      },
+      "chroma": {
+        "value": "muted",
+        "explanation": "The colours are medium in chroma and overall lean more towards the muted end of the scale. They are dusky and greyish rather than saturated and bright."
+      },
+      "sisterPalettes": {
+        "description": "True Summer sits between Light Summer and Soft Summer on the seasonal flow chart. It is the 'standard' Summer palette. With its opposite season True Winter, the colour palette shares the same cool temperature. But True Summer colours are lighter and gentler. Compared to Light Summer, the colours are cooler, more muted and slightly darker. Compared to Soft Summer, the colours are somewhat brighter, cooler and slightly lighter. True Summer colours are not as desaturated as Soft Summer colours. And while True Summer neutrals are getting greyer, the complementary and accent colours on the palette retain some brightness.",
+        "sisters": [
+          "Light Summer",
+          "Soft Summer"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c0610179db6865358486_True%20Summer%20Sister%20Palettes.png"
+      }
+    },
+    "styling": {
+      "neutrals": {
+        "description": "Due to the softness of your natural colouring, true black (a Winter colour) is too dark and harsh. Black near your face will make you look aged. In its place, you have darker greys, blues and browns on the palette, which you can use as dark neutrals for your outfits. True white also does not go well with your appearance because even though it's light, it's also bright. Instead, you have light sand tones, very light greys and greyish blues. These are more suitable for a True Summer's cool and muted appearance. You can use them as your light neutrals.",
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c0813237389bc7d7fd7d_True%20Summer%20Neutrals.png"
+      },
+      "colorsToAvoid": {
+        "description": "Since True Summer's main colour aspects are coolness and softness, your worst colours are warm and bright. Warm, saturated colours, such as bright yellow, and earthy colours with yellow undertones will clash with your natural coolness. Similarly, dark and harsh colours, such as dark purple, black and white, will overpower your soft appearance.",
+        "colors": [
+          "Bright yellow",
+          "Earthy yellow undertones",
+          "Dark purple",
+          "Black",
+          "White"
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c0a2cb599bdb7c6f9062_True%20Summer%20Colours%20to%20Avoid.png"
+      },
+      "ColourCombinations": {
+        "description": "Technically, you can combine any of the colours on the True Summer palette with each other. But certain combinations will look much better than others. Those are the combinations that reflect the contrast level that is naturally present in your appearance. True Summer's natural appearance blends rather than contrasts. But there is still some contrast between the features. Therefore, the best colour combinations for your outfits are those that complement each other or that have medium contrast. One way to achieve a gentle contrast is through monochromatic colour combinations. Pair a lighter tint with a darker shade of the same hue, such as a light blue and a darker blue. This is called value contrast. You can achieve more contrast through hue contrast. You can combine neighbouring hues, as long as they have the same value, such as a pink with a lavender purple. If you want to incorporate neutrals into your outfits, choose a neutral and accent colour with similar or slightly different values. Due to the natural gentleness of your appearance, neutrals will never make you look washed out or boring. But be sure to combine them with a brighter accent colour. Avoid combining highly contrasting colours, especially colours that sit opposite each other on the colour wheel, such as yellow and purple. These combinations will overwhelm your delicate appearance and swallow you up.",
+        "Combinations": [
+          ["monochromatic combinations"],
+          ["neighbouring hues"],
+          ["lighter neutral with darker accent"]
+        ],
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc2cc7855152b4537a7e_Light%20Summer%20Colour%20Combinations.png"
+      },
+      "PatternsAndPrints": {
+        "description": "The best patterns are those that only contain True Summer colours.",
+        "color": {
+          "description": "If a pattern contains some but not much colour from a True Summer palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., warm yellows). Since your natural colouring has medium contrast, opt for patterns that reflect this contrast level rather than ones which are too bold. Great patterns for True Summer are gentle but not too delicate – such as watercolour and floral textures, floral drawings, and brush strokes.",
+          "combinations": {
+            "bad": ["True Summer pattern", "True Spring background"],
+            "good": ["True Summer pattern", "True Spring accents"],
+            "great": "True Summer pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c1003cc3527963df3c5d_True%20Summer%20Patterns%20%26%20Prints.webp"
+        },
+        "contrast": {
+          "description": "Since your natural colouring has medium contrast, opt for patterns that reflect this contrast level rather than ones which are too bold. In the example below, both patterns are in True Summer colours and wearable. However, the second pattern displays a very high contrast between the elements and is thus less flattering.",
+          "combinations": {
+            "bad": "high-contrast pattern",
+            "good": "medium-contrast pattern",
+            "great": "gentle-contrast pattern"
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c11e17dcb9cc6f3b30d6_True%20Summer%20Patterns%20%26%20Prints%20Contrast.webp"
+        },
+        "elements": {
+          "description": "Great patterns for True Summer are gentle but not too delicate – such as watercolour and floral textures, floral drawings, and brush strokes. The elements of the pattern should not be too small and should be loosely arranged. Avoid ordered arrangements, small and dense elements, and stiff geometric patterns – like in the first example.",
+          "combinations": {
+            "bad": ["small", "dense", "stiff geometric"],
+            "good": ["medium/big" ,"loosely arranged", "gentle"],
+            "great": ["big", "loosely arranged", "brush strokes"]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c15c10f77f3e0905bf2b_True%20Summer%20Patterns%20%26%20Prints%20Elements.webp"
+        }
+      },
+      "metalsAndAccessories": {
+        "description": "The best metals for True Summer are silver, white gold and platinum. Brushed and satin metals are especially flattering. Because your natural colouring is very cool, yellow gold looks very disharmonious against your skin. Also stay away from other metals that contain a lot of yellow or warmth, such as copper. Great precious stones for True Summer are amazonite, amethyst and apatite. Their gentle, cool colouring makes them ideal stones for this season. Pearls are another great option. But look for ones with complex colouring, those in which different values are combined – from light to medium-dark. Avoid snow-white pearls, which are more suitable for Winters.",
+        "metals": {
+          "type": {
+            "silver": "great",
+            "white gold": "great",
+            "platinum": "great",
+            "yellow gold": "bad",
+            "copper": "bad"
+          },
+          "finish": {
+            "brushed": "great",
+            "satin": "great"
+          }
+        },
+        "stones": {
+          "description": "Great precious stones for True Summer are amazonite, amethyst and apatite. Their gentle, cool colouring makes them ideal stones for this season. Pearls are another great option. But look for ones with complex colouring, those in which different values are combined – from light to medium-dark. Avoid snow-white pearls, which are more suitable for Winters.",
+          "stones": [
+            "amethyst",
+            "aquamarine",
+            "amazonite",
+            "apatite",
+            "medium-dark pearls"
+          ]
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c179488e463a966d113e_True%20Summer%20Metals.webp"
+      }
+    }
+  }
+}
