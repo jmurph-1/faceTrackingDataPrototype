@@ -21,5 +21,17 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>NSCameraUsageDescription</key>
+	<string>For image segmentation on device</string>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<true/>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>For image segmentation</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>

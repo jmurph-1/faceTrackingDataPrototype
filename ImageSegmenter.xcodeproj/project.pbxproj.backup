@@ -11,7 +11,6 @@
 		5222FD9B2DD3AF1800EF3C65 /* face_landmarker.task in Resources */ = {isa = PBXBuildFile; fileRef = 5222FD9A2DD3AF1800EF3C65 /* face_landmarker.task */; };
 		5222FD9E2DD3AF6100EF3C65 /* FaceLandmarkerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FD9C2DD3AF6100EF3C65 /* FaceLandmarkerService.swift */; };
 		5222FD9F2DD3AF6100EF3C65 /* FaceLandmarkRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FD9D2DD3AF6100EF3C65 /* FaceLandmarkRenderer.swift */; };
-		5222FDA12DD3B52400EF3C65 /* FaceLandmarkShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDA02DD3B52400EF3C65 /* FaceLandmarkShaders.metal */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* techKnowledge.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* techKnowledge.md */; };
@@ -63,7 +62,6 @@
 		5222FD9A2DD3AF1800EF3C65 /* face_landmarker.task */ = {isa = PBXFileReference; lastKnownFileType = file; path = face_landmarker.task; sourceTree = "<group>"; };
 		5222FD9C2DD3AF6100EF3C65 /* FaceLandmarkerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceLandmarkerService.swift; sourceTree = "<group>"; };
 		5222FD9D2DD3AF6100EF3C65 /* FaceLandmarkRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceLandmarkRenderer.swift; sourceTree = "<group>"; };
-		5222FDA02DD3B52400EF3C65 /* FaceLandmarkShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = FaceLandmarkShaders.metal; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* techKnowledge.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = techKnowledge.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -213,7 +211,6 @@
 		BF6EBB852B1EB75B00CD13FB /* Units */ = {
 			isa = PBXGroup;
 			children = (
-				5222FDA02DD3B52400EF3C65 /* FaceLandmarkShaders.metal */,
 				BF6EBB842B1EB75B00CD13FB /* MergeColorShaders.metal */,
 				BF6EBBA52B2070F000CD13FB /* RenderToMtlViewShaders.metal */,
 			);
@@ -310,6 +307,7 @@
 		BF6EBB432B1EB5BE00CD13FB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1630;
 				TargetAttributes = {
@@ -396,6 +394,10 @@
 				"# This output is used by Xcode 'outputs' to avoid re-running this script phase.",
 				"echo \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"",
 				"",
+				"",
+				"",
+				"",
+				"",
 			);
 			showEnvVarsInLog = 0;
 		};
@@ -405,6 +407,11 @@
 			shellPath = /bin/sh;
 			shellScript = (
 				"\"$SRCROOT/RunScripts/download_models.sh\"",
+				"",
+				"",
+				"",
+				"",
+				"",
 			);
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -430,7 +437,6 @@
 				BF6EBB512B1EB5BE00CD13FB /* SceneDelegate.swift in Sources */,
 				BF6EBB9A2B1EB75B00CD13FB /* CameraViewController.swift in Sources */,
 				BF6EBB932B1EB75B00CD13FB /* MergeColorShaders.metal in Sources */,
-				5222FDA12DD3B52400EF3C65 /* FaceLandmarkShaders.metal in Sources */,
 				BF6EBB992B1EB75B00CD13FB /* BottomSheetViewController.swift in Sources */,
 			);
 		};
