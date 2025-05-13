@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		1FB4DB731718CFD48F6CCA1F /* Pods_ImageSegmenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB81BA1A32936BF6829D8CD6 /* Pods_ImageSegmenter.framework */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
+		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
+		52BEF1812DD2F93800957595 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1822DD2F93800957595 /* Shaders.metal */; };
+		52BEF1832DD2F95C00957595 /* product.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1842DD2F95C00957595 /* product.md */; };
 		BF2D8E652B830C7B0050C3B6 /* deeplab_v3.tflite in Resources */ = {isa = PBXBuildFile; fileRef = BF2D8E642B830C7A0050C3B6 /* deeplab_v3.tflite */; };
 		BF6EBB4F2B1EB5BE00CD13FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB4E2B1EB5BE00CD13FB /* AppDelegate.swift */; };
 		BF6EBB512B1EB5BE00CD13FB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB502B1EB5BE00CD13FB /* SceneDelegate.swift */; };
@@ -52,6 +55,9 @@
 		1F44B4095124C60C8C521374 /* Pods-ImageSegmenter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageSegmenter.release.xcconfig"; path = "Target Support Files/Pods-ImageSegmenter/Pods-ImageSegmenter.release.xcconfig"; sourceTree = "<group>"; };
 		3DD5C13A41F6755F985364BD /* Pods-ImageSegmenter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageSegmenter.debug.xcconfig"; path = "Target Support Files/Pods-ImageSegmenter/Pods-ImageSegmenter.debug.xcconfig"; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
+		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
+		52BEF1822DD2F93800957595 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		52BEF1842DD2F95C00957595 /* product.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = product.md; sourceTree = "<group>"; };
 		BF2D8E642B830C7A0050C3B6 /* deeplab_v3.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = deeplab_v3.tflite; sourceTree = "<group>"; };
 		BF6EBB4B2B1EB5BE00CD13FB /* ImageSegmenter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageSegmenter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF6EBB4E2B1EB5BE00CD13FB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -146,6 +152,7 @@
 				BF6EBB572B1EB5BF00CD13FB /* Assets.xcassets */,
 				BF6EBB592B1EB5BF00CD13FB /* LaunchScreen.storyboard */,
 				BF6EBB5C2B1EB5BF00CD13FB /* Info.plist */,
+				52BEF1842DD2F95C00957595 /* product.md */,
 			);
 			path = ImageSegmenter;
 			sourceTree = "<group>";
@@ -172,6 +179,8 @@
 				BF6EBB822B1EB75B00CD13FB /* ImageSegmenterService.swift */,
 				BF6EBB832B1EB75B00CD13FB /* CameraFeedService.swift */,
 				BF6EBBA12B20531800CD13FB /* SegmentedImageRenderer.swift */,
+				52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */,
+				52BEF1822DD2F93800957595 /* Shaders.metal */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -320,6 +329,7 @@
 				BF6EBB582B1EB5BF00CD13FB /* Assets.xcassets in Resources */,
 				52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */,
 				BF2D8E652B830C7B0050C3B6 /* deeplab_v3.tflite in Resources */,
+				52BEF1832DD2F95C00957595 /* product.md in Resources */,
 				BF6EBBA82B20712600CD13FB /* selfie_segmenter.tflite in Resources */,
 				BF6EBB562B1EB5BE00CD13FB /* Main.storyboard in Resources */,
 			);
@@ -358,6 +368,8 @@
 				"# This output is used by Xcode 'outputs' to avoid re-running this script phase.",
 				"echo \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"",
 				"",
+				"",
+				"",
 			);
 			showEnvVarsInLog = 0;
 		};
@@ -367,6 +379,8 @@
 			shellPath = /bin/sh;
 			shellScript = (
 				"\"$SRCROOT/RunScripts/download_models.sh\"",
+				"",
+				"",
 				"",
 			);
 		};
@@ -379,6 +393,8 @@
 				BF6EBB982B1EB75B00CD13FB /* RootViewController.swift in Sources */,
 				BF6EBBA62B2070F000CD13FB /* RenderToMtlViewShaders.metal in Sources */,
 				BF6EBBA22B20531800CD13FB /* SegmentedImageRenderer.swift in Sources */,
+				52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */,
+				52BEF1812DD2F93800957595 /* Shaders.metal in Sources */,
 				BF6EBB912B1EB75B00CD13FB /* ImageSegmenterService.swift in Sources */,
 				BF6EBB4F2B1EB5BE00CD13FB /* AppDelegate.swift in Sources */,
 				BF6EBB922B1EB75B00CD13FB /* CameraFeedService.swift in Sources */,
