@@ -184,7 +184,7 @@ class SegmentedImageRenderer {
     }
     let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
     textureDescriptor.usage = .unknown
-    let inputScaleTexture = metalDevice.makeTexture(descriptor: textureDescriptor)
+      _ = metalDevice.makeTexture(descriptor: textureDescriptor)
 
     // Set up command queue, buffer, and encoder.
     guard let commandQueue = commandQueue,
