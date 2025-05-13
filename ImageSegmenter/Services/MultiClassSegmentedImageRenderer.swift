@@ -148,29 +148,58 @@ class MultiClassSegmentedImageRenderer {
     textureDescriptor.usage = [.shaderRead, .shaderWrite]
     
     downsampledTexture = metalDevice.makeTexture(descriptor: textureDescriptor)
+    guard let downsampledTexture = downsampledTexture else { return nil }
     
-    // Use a blit command encoder to efficiently downsample the texture
-    if let downsampledTexture = downsampledTexture,
-       let commandBuffer = commandQueue?.makeCommandBuffer(),
-       let blitEncoder = commandBuffer.makeBlitCommandEncoder() {
-      
-      blitEncoder.copy(
-        from: texture,
-        sourceSlice: 0,
-        sourceLevel: 0,
-        sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-        sourceSize: MTLSize(width: texture.width, height: texture.height, depth: 1),
-        to: downsampledTexture,
-        destinationSlice: 0,
-        destinationLevel: 0,
-        destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0)
-      )
-      blitEncoder.endEncoding()
-      commandBuffer.commit()
-      commandBuffer.waitUntilCompleted()
-    }
+    // Use CPU-based downsampling to avoid Metal API issues
+    downsampleTextureCPU(source: texture, destination: downsampledTexture, scale: scale)
     
     return downsampledTexture
+  }
+  
+  // Fallback CPU method to downsample a texture
+  private func downsampleTextureCPU(source: MTLTexture, destination: MTLTexture, scale: Int) {
+    let srcWidth = source.width
+    let srcHeight = source.height
+    let dstWidth = destination.width
+    let dstHeight = destination.height
+    
+    // Create byte arrays for the textures
+    let bytesPerPixel = 4 // BGRA format
+    let srcBytesPerRow = srcWidth * bytesPerPixel
+    let dstBytesPerRow = dstWidth * bytesPerPixel
+    let srcBytes = UnsafeMutablePointer<UInt8>.allocate(capacity: srcWidth * srcHeight * bytesPerPixel)
+    let dstBytes = UnsafeMutablePointer<UInt8>.allocate(capacity: dstWidth * dstHeight * bytesPerPixel)
+    
+    // Create MTLRegions for copying
+    let srcRegion = MTLRegionMake2D(0, 0, srcWidth, srcHeight)
+    let dstRegion = MTLRegionMake2D(0, 0, dstWidth, dstHeight)
+    
+    // Get the source texture data
+    source.getBytes(srcBytes, bytesPerRow: srcBytesPerRow, from: srcRegion, mipmapLevel: 0)
+    
+    // Simple box filter downsampling
+    for y in 0..<dstHeight {
+      for x in 0..<dstWidth {
+        let srcX = x * scale
+        let srcY = y * scale
+        
+        // Just take the center pixel of each block for simplicity
+        let srcIndex = (srcY * srcWidth + srcX) * bytesPerPixel
+        let dstIndex = (y * dstWidth + x) * bytesPerPixel
+        
+        // Copy the pixel data
+        for i in 0..<bytesPerPixel {
+          dstBytes[dstIndex + i] = srcBytes[srcIndex + i]
+        }
+      }
+    }
+    
+    // Copy the downsampled data to the destination texture
+    destination.replace(region: dstRegion, mipmapLevel: 0, withBytes: dstBytes, bytesPerRow: dstBytesPerRow)
+    
+    // Free the memory
+    srcBytes.deallocate()
+    dstBytes.deallocate()
   }
 
   // Function to allocate output buffer pool
@@ -328,7 +357,6 @@ class MultiClassSegmentedImageRenderer {
     let dsHeight = downsampledTexture.height
     
     // Create a temporary buffer to store the downsampled texture data
-    let regionSize = MTLSizeMake(dsWidth, dsHeight, 1)
     let bytesPerRow = dsWidth * 4 // BGRA format = 4 bytes per pixel
     let bufferSize = dsHeight * bytesPerRow
     
@@ -340,11 +368,14 @@ class MultiClassSegmentedImageRenderer {
     let commandBuffer = commandQueue?.makeCommandBuffer()
     let blitEncoder = commandBuffer?.makeBlitCommandEncoder()
     
+    // Use safe parameters for the blit operation that match the actual sizes
+    let sourceSize = MTLSizeMake(dsWidth, dsHeight, 1)
+    
     blitEncoder?.copy(from: downsampledTexture,
                      sourceSlice: 0,
                      sourceLevel: 0,
                      sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-                     sourceSize: regionSize,
+                     sourceSize: sourceSize,
                      to: textureBuffer,
                      destinationOffset: 0,
                      destinationBytesPerRow: bytesPerRow,
