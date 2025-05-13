@@ -33,6 +33,10 @@ class CameraViewController: UIViewController {
   @IBOutlet weak var previewView: PreviewMetalView!
   @IBOutlet weak var cameraUnavailableLabel: UILabel!
   @IBOutlet weak var resumeButton: UIButton!
+  
+  // UI elements for displaying color information
+  private let skinColorLabel = UILabel()
+  private let hairColorLabel = UILabel()
 
   private var videoPixelBuffer: CVImageBuffer!
   private var formatDescription: CMFormatDescription!
@@ -44,6 +48,7 @@ class CameraViewController: UIViewController {
   // Handles all the camera related functionality
   private lazy var cameraFeedService = CameraFeedService()
   private let render = SegmentedImageRenderer()
+  private let multiClassRenderer = MultiClassSegmentedImageRenderer()
 
   private let imageSegmenterServiceQueue = DispatchQueue(
     label: "com.google.mediapipe.cameraController.imageSegmenterServiceQueue",
@@ -92,7 +97,50 @@ class CameraViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     cameraFeedService.delegate = self
-    // Do any additional setup after loading the view.
+    setupColorLabels()
+  }
+  
+  private func setupColorLabels() {
+    // Configure skin color label
+    skinColorLabel.translatesAutoresizingMaskIntoConstraints = false
+    skinColorLabel.textColor = .white
+    skinColorLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+    skinColorLabel.textAlignment = .center
+    skinColorLabel.layer.cornerRadius = 5
+    skinColorLabel.clipsToBounds = true
+    skinColorLabel.font = UIFont.systemFont(ofSize: 12)
+    skinColorLabel.text = "Skin: N/A"
+    
+    // Configure hair color label
+    hairColorLabel.translatesAutoresizingMaskIntoConstraints = false
+    hairColorLabel.textColor = .white
+    hairColorLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+    hairColorLabel.textAlignment = .center
+    hairColorLabel.layer.cornerRadius = 5
+    hairColorLabel.clipsToBounds = true
+    hairColorLabel.font = UIFont.systemFont(ofSize: 12)
+    hairColorLabel.text = "Hair: N/A"
+    
+    // Add labels to view
+    view.addSubview(skinColorLabel)
+    view.addSubview(hairColorLabel)
+    
+    // Set constraints to position labels in top left corner
+    NSLayoutConstraint.activate([
+      skinColorLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+      skinColorLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+      skinColorLabel.widthAnchor.constraint(equalToConstant: 180),
+      skinColorLabel.heightAnchor.constraint(equalToConstant: 30),
+      
+      hairColorLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+      hairColorLabel.topAnchor.constraint(equalTo: skinColorLabel.bottomAnchor, constant: 5),
+      hairColorLabel.widthAnchor.constraint(equalToConstant: 180),
+      hairColorLabel.heightAnchor.constraint(equalToConstant: 30)
+    ])
+    
+    // Initially hide the labels
+    skinColorLabel.isHidden = true
+    hairColorLabel.isHidden = true
   }
 
 #endif
@@ -148,6 +196,17 @@ class CameraViewController: UIViewController {
         modelPath: InferenceConfigurationManager.sharedInstance.model.modelPath,
         liveStreamDelegate: self,
         delegate: InferenceConfigurationManager.sharedInstance.delegate)
+    
+    // Update UI based on selected model
+    DispatchQueue.main.async {
+      self.updateUIForCurrentModel()
+    }
+  }
+  
+  private func updateUIForCurrentModel() {
+    let isMultiClass = InferenceConfigurationManager.sharedInstance.model == .multiClassSegmentation
+    skinColorLabel.isHidden = !isMultiClass
+    hairColorLabel.isHidden = !isMultiClass
   }
 
   private func clearImageSegmenterServiceOnSessionInterruption() {
@@ -172,6 +231,28 @@ class CameraViewController: UIViewController {
                         object: nil)
     }
     isObserving = false
+  }
+  
+  private func updateColorDisplay(_ colorInfo: MultiClassSegmentedImageRenderer.ColorInfo) {
+    // Update skin color label
+    let skinRGB = colorInfo.skinColor.cgColor.components
+    let skinHSV = colorInfo.skinColorHSV
+    
+    if let skinRGB = skinRGB, skinRGB.count >= 3 {
+      let skinRGBString = String(format: "Skin: RGB(%.0f,%.0f,%.0f)", skinRGB[0]*255, skinRGB[1]*255, skinRGB[2]*255)
+      let skinHSVString = String(format: " HSV(%.0f,%.0f,%.0f)", skinHSV.h*360, skinHSV.s*100, skinHSV.v*100)
+      skinColorLabel.text = skinRGBString + skinHSVString
+    }
+    
+    // Update hair color label
+    let hairRGB = colorInfo.hairColor.cgColor.components
+    let hairHSV = colorInfo.hairColorHSV
+    
+    if let hairRGB = hairRGB, hairRGB.count >= 3 {
+      let hairRGBString = String(format: "Hair: RGB(%.0f,%.0f,%.0f)", hairRGB[0]*255, hairRGB[1]*255, hairRGB[2]*255)
+      let hairHSVString = String(format: " HSV(%.0f,%.0f,%.0f)", hairHSV.h*360, hairHSV.s*100, hairHSV.v*100)
+      hairColorLabel.text = hairRGBString + hairHSVString
+    }
   }
 }
 
@@ -229,12 +310,30 @@ extension CameraViewController: ImageSegmenterServiceLiveStreamDelegate {
       let confidenceMasks = imageSegmenterResult.categoryMask else { return }
     let confidenceMask = confidenceMasks.uint8Data
 
-    if !render.isPrepared {
-      render.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+    // Choose renderer based on the selected model
+    if InferenceConfigurationManager.sharedInstance.model == .multiClassSegmentation {
+      if !multiClassRenderer.isPrepared {
+        multiClassRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+      }
+      
+      let outputPixelBuffer = multiClassRenderer.render(pixelBuffer: videoPixelBuffer, segmentDatas: confidenceMask)
+      
+      // Extract and display color information
+      let colorInfo = multiClassRenderer.getCurrentColorInfo()
+      DispatchQueue.main.async { [weak self] in
+        self?.updateColorDisplay(colorInfo)
+      }
+      
+      previewView.pixelBuffer = outputPixelBuffer
+    } else {
+      if !render.isPrepared {
+        render.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+      }
+      
+      let outputPixelBuffer = render.render(pixelBuffer: videoPixelBuffer, segmentDatas: confidenceMask)
+      previewView.pixelBuffer = outputPixelBuffer
     }
-
-    let outputPixelBuffer = render.render(pixelBuffer: videoPixelBuffer, segmentDatas: confidenceMask)
-    previewView.pixelBuffer = outputPixelBuffer
+    
     inferenceResultDeliveryDelegate?.didPerformInference(result: result)
   }
 }
@@ -250,7 +349,7 @@ extension AVLayerVideoGravity {
     case .resize:
       return .scaleToFill
     default:
-      return .scaleAspectFill
+      return .scaleAspectFit
     }
   }
 }

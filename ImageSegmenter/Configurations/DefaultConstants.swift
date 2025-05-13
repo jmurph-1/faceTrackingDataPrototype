@@ -27,7 +27,7 @@ enum Model: Int, CaseIterable {
     
     case selfieSegmenter
     case deeplabV3
-	case multiClassSegmentation
+    case multiClassSegmentation
     
 
   var name: String {
@@ -36,8 +36,8 @@ enum Model: Int, CaseIterable {
       return "Selfie segmenter"
     case .deeplabV3:
       return "Deeplab V3"
-	case .multiClassSegmentation:
-		return "Multi-class segmentation"
+    case .multiClassSegmentation:
+      return "Multi-class segmentation"
     }
   }
 
@@ -49,9 +49,9 @@ enum Model: Int, CaseIterable {
     case .deeplabV3:
       return Bundle.main.path(
         forResource: "deeplab_v3", ofType: "tflite")
-	case .multiClassSegmentation:
-		return Bundle.main.path(
-		forResource: "multi_class_segmentation_256x256", ofType: "tflite")
+    case .multiClassSegmentation:
+      return Bundle.main.path(
+      forResource: "selfie_multiclass_256x256", ofType: "tflite")
     }
   }
 
@@ -61,6 +61,8 @@ enum Model: Int, CaseIterable {
       self.init(rawValue: 0)
     case "Deeplab V3":
       self.init(rawValue: 1)
+    case "Multi-class segmentation":
+      self.init(rawValue: 2)
     default:
       return nil
     }
