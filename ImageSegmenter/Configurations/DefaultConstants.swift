@@ -19,7 +19,7 @@ import MediaPipeTasksVision
 // MARK: Define default constants
 struct DefaultConstants {
   static let model: Model = .multiClassSegmentation
-  static let delegate: Delegate = .CPU
+  static let delegate: Delegate = .GPU
 }
 
 // MARK: Model

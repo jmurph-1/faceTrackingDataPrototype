@@ -165,8 +165,19 @@ class CameraViewController: UIViewController {
       // Reinitialize segmentation
       clearImageSegmenterServiceOnSessionInterruption() 
       initializeImageSegmenterServiceOnSessionResumption()
+      
+      // Reset the renderers to ensure they're properly initialized
+      render.reset()
+      multiClassRenderer.reset()
+      
+      // We need to wait for the next frame to come in before we can reprepare the renderers
+      // as they need the formatDescription which comes from the camera feed
       print("Reinitialized segmentation after returning to foreground")
     }
+    
+    // Make sure the preview view's pixel buffer is cleared to force redraw
+    previewView.pixelBuffer = nil
+    previewView.flushTextureCache()
   }
   
   private func setupColorLabels() {

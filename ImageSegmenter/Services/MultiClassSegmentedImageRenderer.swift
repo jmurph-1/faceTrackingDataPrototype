@@ -314,25 +314,84 @@ class MultiClassSegmentedImageRenderer {
     return (pixelBufferPool, inputColorSpace, outputFormatDescription)
   }
 
+  // Check if GPU processing is available
+  private func isGPUProcessingAvailable() -> Bool {
+    return computePipelineState != nil && commandQueue != nil && metalDevice.supportsFeatureSet(.iOS_GPUFamily2_v1)
+  }
+
+  // CPU fallback for processing when GPU is unavailable
+  private func processFallbackCPU(inputBuffer: CVPixelBuffer, outputBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) {
+    CVPixelBufferLockBaseAddress(inputBuffer, CVPixelBufferLockFlags(rawValue: 0))
+    CVPixelBufferLockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
+    
+    let width = CVPixelBufferGetWidth(inputBuffer)
+    let height = CVPixelBufferGetHeight(inputBuffer)
+    
+    let sourceData = CVPixelBufferGetBaseAddress(inputBuffer)!
+    let destData = CVPixelBufferGetBaseAddress(outputBuffer)!
+    let sourceBytesPerRow = CVPixelBufferGetBytesPerRow(inputBuffer)
+    let destBytesPerRow = CVPixelBufferGetBytesPerRow(outputBuffer)
+    
+    // Simple CPU-based processing
+    for row in 0..<height {
+      let sourceRowPtr = sourceData.advanced(by: row * sourceBytesPerRow)
+      let destRowPtr = destData.advanced(by: row * destBytesPerRow)
+      
+      for col in 0..<width {
+        let pixelOffset = col * 4  // BGRA format (4 bytes per pixel)
+        let segmentClass = segmentDatas[row * width + col]
+        
+        // Get source pixel
+        let srcPixel = sourceRowPtr.advanced(by: pixelOffset)
+        let destPixel = destRowPtr.advanced(by: pixelOffset)
+        
+        // Copy the original pixel
+        memcpy(destPixel, srcPixel, 4)
+        
+        // Apply simple visual effect based on segment class
+        if segmentClass > 0 {  // Not background
+          // Add a visual effect (e.g., tint) based on segment class
+          switch segmentClass {
+          case SegmentationClass.hair.rawValue:
+            // Subtle hair highlight
+            let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
+            destBGRA[2] = min(255, destBGRA[2] + 20)  // Increase red channel
+          case SegmentationClass.skin.rawValue:
+            // Subtle skin smoothing (simplified)
+            let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
+            destBGRA[1] = min(255, destBGRA[1] + 10)  // Increase green channel
+          default:
+            break
+          }
+        }
+      }
+    }
+    
+    CVPixelBufferUnlockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
+    CVPixelBufferUnlockBaseAddress(inputBuffer, CVPixelBufferLockFlags(rawValue: 0))
+  }
+
   // Updated method to handle all the different render signature types
   // This is the version being called from CameraViewController
   func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> CVPixelBuffer? {
     // Create a Result object from the parameters
-    let width = CVPixelBufferGetWidth(pixelBuffer)
-    let height = CVPixelBufferGetHeight(pixelBuffer)
+    let pixelBufferWidth = CVPixelBufferGetWidth(pixelBuffer)
+    let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
     let result = Result(
-      size: CGSize(width: width, height: height),
+      size: CGSize(width: pixelBufferWidth, height: pixelBufferHeight),
       imageSegmenterResult: ImageSegmenterResult(
         categoryMask: segmentDatas,
-        width: width,
-        height: height
+        width: pixelBufferWidth,
+        height: pixelBufferHeight
       )
     )
     
-    // Use our existing implementation but return a pixel buffer
-    let outputTexture = render(result: result)
+    // Only continue if we're properly prepared
+    guard isPrepared else {
+      print("MultiClassSegmentedImageRenderer not prepared")
+      return nil
+    }
     
-    // Convert the output texture to a CVPixelBuffer
     var outputPixelBuffer: CVPixelBuffer?
     let status = CVPixelBufferPoolCreatePixelBuffer(
       kCFAllocatorDefault, outputPixelBufferPool!, &outputPixelBuffer)
@@ -347,35 +406,90 @@ class MultiClassSegmentedImageRenderer {
       return nil
     }
     
-    // Copy the texture data to the pixel buffer
-    // Lock base addresses for direct memory access
-    CVPixelBufferLockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
-    CVPixelBufferLockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
-    
-    // Copy pixel data (simplified - would actually apply segmentation here)
-    let sourceData = CVPixelBufferGetBaseAddress(pixelBuffer)!
-    let destData = CVPixelBufferGetBaseAddress(outputBuffer)!
-    let sourceBytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
-    let destBytesPerRow = CVPixelBufferGetBytesPerRow(outputBuffer)
-    
-    // Simple copy as fallback
-    for rowIndex in 0..<height {
-      let sourcePtr = sourceData.advanced(by: rowIndex * sourceBytesPerRow)
-      let destPtr = destData.advanced(by: rowIndex * destBytesPerRow)
-      memcpy(destPtr, sourcePtr, min(sourceBytesPerRow, destBytesPerRow))
+    // Check if GPU processing is available
+    if isGPUProcessingAvailable() {
+      // Try GPU processing
+      if !processWithGPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas, width: pixelBufferWidth, height: pixelBufferHeight) {
+        // Fall back to CPU if GPU processing fails
+        print("GPU processing failed, falling back to CPU")
+        processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+      }
+    } else {
+      // Use CPU processing directly
+      print("GPU processing not available, using CPU")
+      processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
     }
     
-    // Unlock pixel buffers
-    CVPixelBufferUnlockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
-    CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
-    
-    // Extract and display color information
+    // Extract and display color information (using a less CPU-intensive approach)
     if frameCounter % frameSkip == 0 {
       extractColorInformation(from: result.imageSegmenterResult!)
     }
     frameCounter += 1
     
     return outputBuffer
+  }
+
+  // Process using GPU
+  private func processWithGPU(inputBuffer: CVPixelBuffer, outputBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>, width: Int, height: Int) -> Bool {
+    // Create Metal textures from pixel buffers
+    guard let inputTexture = makeTextureFromCVPixelBuffer(pixelBuffer: inputBuffer, textureFormat: .bgra8Unorm),
+          let outputTexture = makeTextureFromCVPixelBuffer(pixelBuffer: outputBuffer, textureFormat: .bgra8Unorm) else {
+      print("Failed to create Metal textures from pixel buffers")
+      return false
+    }
+    
+    // Set up command queue, buffer, and encoder
+    guard let commandQueue = commandQueue,
+          let commandBuffer = commandQueue.makeCommandBuffer(),
+          let commandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+      print("Failed to create a Metal command queue or encoder")
+      CVMetalTextureCacheFlush(textureCache!, 0)
+      return false
+    }
+    
+    do {
+      // Set up compute pipeline with kernel function
+      commandEncoder.label = "MultiClass Segmentation"
+      commandEncoder.setComputePipelineState(computePipelineState!)
+      commandEncoder.setTexture(inputTexture, index: 0)
+      commandEncoder.setTexture(outputTexture, index: 1)
+      
+      // Create the buffer for segmentation data
+      let buffer = metalDevice.makeBuffer(bytes: segmentDatas, length: width * height * MemoryLayout<UInt8>.size)!
+      commandEncoder.setBuffer(buffer, offset: 0, index: 0)
+      
+      // Pass the width as a parameter to the kernel function
+      var imageWidth: Int = Int(width)
+      commandEncoder.setBytes(&imageWidth, length: MemoryLayout<Int>.size, index: 1)
+      
+      // Set up the thread groups for the compute shader
+      let threadExecutionWidth = computePipelineState!.threadExecutionWidth
+      let threadsPerGroupHeight = computePipelineState!.maxTotalThreadsPerThreadgroup / threadExecutionWidth
+      let threadsPerThreadgroup = MTLSizeMake(threadExecutionWidth, threadsPerGroupHeight, 1)
+      let threadgroupsPerGrid = MTLSize(
+        width: (inputTexture.width + threadExecutionWidth - 1) / threadExecutionWidth,
+        height: (inputTexture.height + threadsPerGroupHeight - 1) / threadsPerGroupHeight,
+        depth: 1
+      )
+      
+      // Dispatch thread groups
+      commandEncoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+      commandEncoder.endEncoding()
+      
+      // Commit the command buffer and wait for it to complete
+      commandBuffer.commit()
+      commandBuffer.waitUntilCompleted()
+      
+      if commandBuffer.status == .completed {
+        return true
+      } else {
+        print("Metal command buffer execution failed with status: \(commandBuffer.status)")
+        return false
+      }
+    } catch {
+      print("Exception during GPU processing: \(error)")
+      return false
+    }
   }
 
   // Metal-based rendering implementation (for future use)
