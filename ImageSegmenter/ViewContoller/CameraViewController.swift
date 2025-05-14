@@ -899,6 +899,13 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
       }
     }
 
+    // Debug print quality score before creating overlay view
+    if let quality = qualityScore {
+      print("Creating DebugOverlayView with quality score - Overall: \(quality.overall), FaceSize: \(quality.faceSize), Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
+    } else {
+      print("Creating DebugOverlayView with nil quality score")
+    }
+    
     // Create updated overlay view
     let updatedOverlayView = DebugOverlayView(
       fps: fps,
