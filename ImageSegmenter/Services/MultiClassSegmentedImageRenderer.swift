@@ -531,7 +531,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     }
 
     if frameCounter % frameSkip == 0 {
-      extractColorInformation(from: result.imageSegmenterResult!)
+      extractColorInformation(from: result.imageSegmenterResult!, pixelBuffer: pixelBuffer)
     }
     frameCounter += 1
 
@@ -893,7 +893,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     return CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
   }
 
-  private func extractColorInformation(from segmenterResult: ImageSegmenterResult) {
+  private func extractColorInformation(from segmenterResult: ImageSegmenterResult, pixelBuffer: CVPixelBuffer) {
     guard let categoryMask = segmenterResult.categoryMask else {
       log("No category mask available for color extraction", level: .warning)
       return
@@ -907,8 +907,8 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       return
     }
     
-    guard let originalTexture = segmenterResult.texture else {
-      log("No original texture available for color extraction", level: .warning)
+    guard let originalTexture = makeTextureFromCVPixelBuffer(pixelBuffer: pixelBuffer, textureFormat: .bgra8Unorm) else {
+      log("Failed to create texture from pixel buffer for color extraction", level: .warning)
       return
     }
     
@@ -918,5 +918,11 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       width: width,
       height: height
     )
+    
+    let cmdBuffer = commandQueue.makeCommandBuffer()
+    cmdBuffer?.addCompletedHandler { (_: MTLCommandBuffer) in
+      TexturePoolManager.shared.recycleTexture(originalTexture)
+    }
+    cmdBuffer?.commit()
   }
 }
