@@ -261,113 +261,101 @@ class FrameQualityService {
         }
     }
 
-    /// Calculate sharpness/blur score using optimized sampling
+    /// Calculate sharpness/blur score using highly optimized method
     /// - Parameters:
     ///   - pixelBuffer: Image pixel buffer
     ///   - faceBoundingBox: Face bounding box
     /// - Returns: Score from 0 to 1 (higher is sharper)
     private static func calculateSharpnessScore(pixelBuffer: CVPixelBuffer, faceBoundingBox: CGRect) -> Float {
-        // Convert CVPixelBuffer to CIImage
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
         
-        // Calculate the face rectangle in pixel coordinates
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+        
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
         
-        let faceRect = CGRect(
-            x: faceBoundingBox.origin.x * CGFloat(width),
-            y: faceBoundingBox.origin.y * CGFloat(height),
-            width: faceBoundingBox.width * CGFloat(width),
-            height: faceBoundingBox.height * CGFloat(height)
-        )
-        
-        // Crop to just the face area and downsample for faster processing
-        let croppedImage = ciImage.cropped(to: faceRect)
-        
-        let scale = min(128.0 / faceRect.width, 128.0 / faceRect.height)
-        let downsampledImage = croppedImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-        
-        // Create a Laplacian filter for edge detection (to detect blur)
-        let filter = CIFilter(name: "CIConvolution3X3")!
-        filter.setValue(downsampledImage, forKey: kCIInputImageKey)
-        
-        // Laplacian kernel
-        let weights = CIVector(values: [
-            -1, -1, -1,
-            -1, 8, -1,
-            -1, -1, -1
-        ], count: 9)
-        filter.setValue(weights, forKey: "inputWeights")
-        
-        // Get the output image
-        guard let outputImage = filter.outputImage else {
+        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
             return 0.5
         }
         
-        // Create a CIContext with options for faster processing
-        let context = CIContext(options: [.workingColorSpace: NSNull()])
+        // Calculate the face rectangle in pixel coordinates
+        let faceRect = CGRect(
+            x: Int(faceBoundingBox.origin.x * CGFloat(width)),
+            y: Int(faceBoundingBox.origin.y * CGFloat(height)),
+            width: Int(faceBoundingBox.width * CGFloat(width)),
+            height: Int(faceBoundingBox.height * CGFloat(height))
+        )
         
-        // Sample 16 regions (4x4 grid) across the image
-        let regionWidth = outputImage.extent.width / 4
-        let regionHeight = outputImage.extent.height / 4
+        let safeRect = CGRect(
+            x: max(0, min(width - 1, Int(faceRect.origin.x))),
+            y: max(0, min(height - 1, Int(faceRect.origin.y))),
+            width: min(width - Int(faceRect.origin.x), Int(faceRect.width)),
+            height: min(height - Int(faceRect.origin.y), Int(faceRect.height))
+        )
         
-        var totalVariance: Float = 0
-        let samplingStep = 4 // Sample every 4th pixel for speed
+        let gridSize = 4
+        let stepX = max(1, Int(safeRect.width) / gridSize)
+        let stepY = max(1, Int(safeRect.height) / gridSize)
         
-        for regionY in 0..<4 {
-            for regionX in 0..<4 {
-                let regionRect = CGRect(
-                    x: regionX * regionWidth,
-                    y: regionY * regionHeight,
-                    width: regionWidth,
-                    height: regionHeight
-                )
+        var gradientSum: Float = 0
+        var sampleCount = 0
+        
+        // Sample in a grid pattern
+        for gridY in 0..<gridSize {
+            for gridX in 0..<gridSize {
+                let x = Int(safeRect.origin.x) + gridX * stepX
+                let y = Int(safeRect.origin.y) + gridY * stepY
                 
-                var bitmap = [UInt8](repeating: 0, count: Int(regionWidth * regionHeight) * 4)
-                context.render(outputImage.cropped(to: regionRect), 
-                               toBitmap: &bitmap, 
-                               rowBytes: Int(regionWidth) * 4, 
-                               bounds: regionRect, 
-                               format: .RGBA8, 
-                               colorSpace: CGColorSpaceCreateDeviceRGB())
-                
-                // Calculate variance for this region using sampled pixels
-                var sum: Float = 0
-                var sumSquared: Float = 0
-                var pixelCount: Int = 0
-                
-                for y in stride(from: 0, to: Int(regionHeight), by: samplingStep) {
-                    for x in stride(from: 0, to: Int(regionWidth), by: samplingStep) {
-                        let offset = (y * Int(regionWidth) + x) * 4
-                        if offset + 2 < bitmap.count {
-                            let r = Float(bitmap[offset])
-                            let g = Float(bitmap[offset + 1])
-                            let b = Float(bitmap[offset + 2])
-                            
-                            // Calculate intensity
-                            let intensity = (r + g + b) / 3.0
-                            
-                            sum += intensity
-                            sumSquared += intensity * intensity
-                            pixelCount += 1
-                        }
-                    }
+                if x <= 0 || y <= 0 || x >= width - 1 || y >= height - 1 {
+                    continue
                 }
                 
-                if pixelCount > 0 {
-                    let mean = sum / Float(pixelCount)
-                    let variance = (sumSquared / Float(pixelCount)) - (mean * mean)
-                    totalVariance += variance
-                }
+                // Calculate gradient at this point using Sobel operator approximation
+                
+                let rowPtr = baseAddress.advanced(by: y * bytesPerRow)
+                let centerPtr = rowPtr.advanced(by: x * 4) // 4 bytes per pixel (BGRA)
+                let leftPtr = rowPtr.advanced(by: (x - 1) * 4)
+                let rightPtr = rowPtr.advanced(by: (x + 1) * 4)
+                let topPtr = baseAddress.advanced(by: (y - 1) * bytesPerRow + x * 4)
+                let bottomPtr = baseAddress.advanced(by: (y + 1) * bytesPerRow + x * 4)
+                
+                let center = getGrayscale(ptr: centerPtr)
+                let left = getGrayscale(ptr: leftPtr)
+                let right = getGrayscale(ptr: rightPtr)
+                let top = getGrayscale(ptr: topPtr)
+                let bottom = getGrayscale(ptr: bottomPtr)
+                
+                // Calculate horizontal and vertical gradients
+                let gradientX = abs(right - left)
+                let gradientY = abs(bottom - top)
+                
+                let gradient = sqrt(gradientX * gradientX + gradientY * gradientY)
+                gradientSum += gradient
+                sampleCount += 1
             }
         }
         
-        let averageVariance = totalVariance / 16.0
+        guard sampleCount > 0 else {
+            return 0.5
+        }
         
-        // Normalize variance to 0-1 range
-        // Higher variance means more edges = sharper image
-        let normalizedVariance = min(1.0, averageVariance / 2000.0)
+        // Calculate average gradient
+        let averageGradient = gradientSum / Float(sampleCount)
         
-        return normalizedVariance
+        // Normalize to 0-1 range
+        // Higher gradient means sharper image
+        let normalizedGradient = min(1.0, averageGradient / 100.0)
+        
+        return normalizedGradient
     }
-}      
+    
+    private static func getGrayscale(ptr: UnsafeRawPointer) -> Float {
+        let b = Float(ptr.load(fromByteOffset: 0, as: UInt8.self))
+        let g = Float(ptr.load(fromByteOffset: 1, as: UInt8.self))
+        let r = Float(ptr.load(fromByteOffset: 2, as: UInt8.self))
+        
+        // Convert to grayscale using standard luminance formula
+        return (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+    }
+}        
