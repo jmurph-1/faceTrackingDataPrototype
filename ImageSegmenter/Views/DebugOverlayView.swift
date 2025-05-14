@@ -24,7 +24,8 @@ struct DebugOverlayView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        print("DebugOverlayView body called with qualityScore: \(String(describing: qualityScore))")
+        return VStack(alignment: .leading, spacing: 8) {
             // Header with toggle
             HStack {
                 Text("DEBUG")
