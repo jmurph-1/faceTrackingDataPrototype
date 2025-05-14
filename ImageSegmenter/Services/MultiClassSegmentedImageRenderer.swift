@@ -605,6 +605,18 @@ class MultiClassSegmentedImageRenderer {
     }
     frameCounter += 1
 
+    // Calculate processing time and adjust frameSkip dynamically
+    let currentProcessingTime = CACurrentMediaTime() - processingStartTime
+    lastProcessingTime = currentProcessingTime
+
+    if currentProcessingTime > 0.1 { // More than 100ms per frame
+      frameSkip = min(frameSkip + 1, 30) // Increase skip rate up to max of 30
+      isProcessingHeavyLoad = true
+    } else if currentProcessingTime < 0.05 && frameSkip > 15 { // Less than 50ms per frame
+      frameSkip = max(frameSkip - 1, 15) // Decrease skip rate down to min of 15
+      isProcessingHeavyLoad = false
+    }
+
     return outputBuffer
   }
 
@@ -990,24 +1002,11 @@ class MultiClassSegmentedImageRenderer {
     return lastColorInfo
   }
 
-  // Get the face bounding box from segmentation data
-  func getFaceBoundingBox() -> CGRect? {
-    // This is a simple implementation that returns a default bounding box
-    // In a real implementation, this would analyze the segmentation mask to find facial features
-
-    // If no skin color has been detected, we probably don't have a valid face
-    if lastColorInfo.skinColor == UIColor.clear {
-      return nil
-    }
-
-    // Return a default bounding box in the center of the frame
-    // This is a placeholder - in a real implementation, this would be calculated from the segmentation mask
-    let defaultWidth = 0.5
-    let defaultHeight = 0.6
-    let x = (1.0 - defaultWidth) / 2.0
-    let y = (1.0 - defaultHeight) / 2.0
-
-    return CGRect(x: x, y: y, width: defaultWidth, height: defaultHeight)
+  // Return a fixed bounding box - face bounding functionality removed as not needed
+  func getFaceBoundingBox() -> CGRect {
+    // Return a fixed default bounding box in the center of the frame
+    // Face bounding box functionality is not needed at this stage of implementation
+    return CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
   }
 
   // Process segmentation results to extract color information

@@ -333,28 +333,42 @@ extension CameraViewModel: SegmentationServiceDelegate {
             // Update delegate with color information
             self.delegate?.viewModel(self, didUpdateColorInfo: result.colorInfo)
 
-            // Evaluate frame quality if we have a face bounding box
-            if let faceBoundingBox = result.faceBoundingBox,
-               let pixelBuffer = self.currentPixelBuffer {
-                let imageSize = CGSize(
-                    width: CVPixelBufferGetWidth(pixelBuffer),
-                    height: CVPixelBufferGetHeight(pixelBuffer)
-                )
-
-                let qualityScore = FrameQualityService.evaluateFrameQuality(
-                    pixelBuffer: pixelBuffer,
-                    faceBoundingBox: faceBoundingBox,
-                    imageSize: imageSize
-                )
-
-                // Update quality score
-                self.currentFrameQualityScore = qualityScore
-
-                // Notify delegate about quality update
-                self.delegate?.viewModel(self, didUpdateFrameQuality: qualityScore)
-
-                // Check for error conditions
-                self.checkForErrorConditions()
+            // Update UI elements that don't require frame quality evaluation
+            
+            if let pixelBuffer = self.currentPixelBuffer {
+                // Create a local copy of the pixel buffer to use in background thread
+                CVPixelBufferRetain(pixelBuffer)
+                
+                self.backgroundQueue.async {
+                    let defaultFaceBoundingBox = CGRect(x: 0.3, y: 0.2, width: 0.4, height: 0.6)
+                    
+                    let imageSize = CGSize(
+                        width: CVPixelBufferGetWidth(pixelBuffer),
+                        height: CVPixelBufferGetHeight(pixelBuffer)
+                    )
+                    
+                    let qualityScore = FrameQualityService.evaluateFrameQuality(
+                        pixelBuffer: pixelBuffer,
+                        faceBoundingBox: defaultFaceBoundingBox,
+                        imageSize: imageSize
+                    )
+                    
+                    CVPixelBufferRelease(pixelBuffer)
+                    
+                    // Update UI on main thread with results
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
+                        
+                        // Update quality score
+                        self.currentFrameQualityScore = qualityScore
+                        
+                        // Notify delegate about quality update
+                        self.delegate?.viewModel(self, didUpdateFrameQuality: qualityScore)
+                        
+                        // Check for error conditions
+                        self.checkForErrorConditions()
+                    }
+                }
             }
         }
     }
@@ -436,4 +450,4 @@ enum CameraError: Error {
 
 enum AnalysisError: Error {
     case insufficientQuality
-}
+}  
