@@ -92,7 +92,7 @@ class MultiClassSegmentedImageRenderer {
     do {
       computePipelineState = try metalDevice.makeComputePipelineState(function: kernelFunction!)
     } catch {
-      log("Could not create pipeline state: \(error)", level: .error)
+      print("Could not create pipeline state: \(error)")
     }
     context = CIContext(mtlDevice: metalDevice)
     textureLoader = MTKTextureLoader(device: metalDevice)
