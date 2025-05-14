@@ -53,7 +53,6 @@
 		5222FE042DD4139A00EF3C65 /* setup_tests.sh in Resources */ = {isa = PBXBuildFile; fileRef = 5222FE002DD4139A00EF3C65 /* setup_tests.sh */; };
 		5222FE072DD4143200EF3C65 /* SeasonAnalysis.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5222FE052DD4143200EF3C65 /* SeasonAnalysis.xcdatamodeld */; };
 		5222FE092DD4184900EF3C65 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5222FE082DD4184900EF3C65 /* XCTest.framework */; platformFilter = ios; };
-		5222FE162DD41C5100EF3C65 /* build.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5222FE102DD41C5100EF3C65 /* build.xcconfig */; };
 		5222FE172DD41C5100EF3C65 /* ColorConvertersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FE112DD41C5100EF3C65 /* ColorConvertersTests.swift */; };
 		5222FE182DD41C5100EF3C65 /* ImageSegmenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FE122DD41C5100EF3C65 /* ImageSegmenterTests.swift */; };
 		5222FE192DD41C5100EF3C65 /* SeasonClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FE132DD41C5100EF3C65 /* SeasonClassifierTests.swift */; };
@@ -517,6 +516,7 @@
 		BF6EBB432B1EB5BE00CD13FB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1630;
 				TargetAttributes = {
@@ -595,7 +595,6 @@
 			isa = PBXResourcesBuildPhase;
 			files = (
 				5222FE022DD4139A00EF3C65 /* download_models.sh in Resources */,
-				5222FE162DD41C5100EF3C65 /* build.xcconfig in Resources */,
 				5222FE032DD4139A00EF3C65 /* pre_test_setup.sh in Resources */,
 				5222FE042DD4139A00EF3C65 /* setup_tests.sh in Resources */,
 			);
@@ -754,6 +753,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3F8784YSMX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -817,6 +817,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3F8784YSMX;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -847,7 +848,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3F8784YSMX;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -883,7 +883,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3F8784YSMX;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -917,7 +916,6 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3F8784YSMX;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
@@ -937,7 +935,6 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3F8784YSMX;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
@@ -955,7 +952,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3F8784YSMX;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "seasons-change-tests-ui";
@@ -972,7 +968,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3F8784YSMX;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "seasons-change-tests-ui";
