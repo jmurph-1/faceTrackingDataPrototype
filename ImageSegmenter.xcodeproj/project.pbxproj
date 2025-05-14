@@ -70,6 +70,7 @@
 		5231129B2DD48A8900FCFC91 /* RendererProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */; };
 		5231129E2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */; };
 		523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */; };
+		523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112A12DD5043900FCFC91 /* LoggingService.swift */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* techKnowledge.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* techKnowledge.md */; };
@@ -178,6 +179,7 @@
 		5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererProtocol.swift; sourceTree = "<group>"; };
 		5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceLandmarkQualityCalculator.swift; sourceTree = "<group>"; };
 		5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
+		523112A12DD5043900FCFC91 /* LoggingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingService.swift; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* techKnowledge.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = techKnowledge.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 		5222FDE92DD40FBE00EF3C65 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				523112A12DD5043900FCFC91 /* LoggingService.swift */,
 				5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */,
 				5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */,
 				5222FE262DD46C3C00EF3C65 /* PixelBufferPoolManager.swift */,
@@ -625,6 +628,7 @@
 				"",
 				"",
 				"",
+				"",
 			);
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -656,6 +660,7 @@
 				5222FDEB2DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift in Sources */,
 				BF6EBB912B1EB75B00CD13FB /* ImageSegmenterService.swift in Sources */,
 				5222FE072DD4143200EF3C65 /* SeasonAnalysis.xcdatamodeld in Sources */,
+				523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */,
 				BF6EBB4F2B1EB5BE00CD13FB /* AppDelegate.swift in Sources */,
 				BF6EBB922B1EB75B00CD13FB /* CameraFeedService.swift in Sources */,
 				BF6EBB952B1EB75B00CD13FB /* InferenceConfigurationManager.swift in Sources */,
