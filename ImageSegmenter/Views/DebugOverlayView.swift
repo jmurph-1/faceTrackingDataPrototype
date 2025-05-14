@@ -182,6 +182,7 @@ struct DebugOverlayView: View {
                 .foregroundColor(.gray)
 
             if let quality = qualityScore {
+                print("Rendering quality scores - Overall: \(quality.overall), FaceSize: \(quality.faceSize), Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
                 HStack {
                     Text("Overall: \(String(format: "%.2f", quality.overall))")
                         .font(.system(size: 10, weight: .medium))
