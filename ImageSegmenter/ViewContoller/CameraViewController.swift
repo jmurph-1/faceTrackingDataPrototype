@@ -71,7 +71,11 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
 
   // Debug overlay
   private var debugOverlayHostingController: UIHostingController<DebugOverlayView>?
-  private var isDebugOverlayVisible = true
+  private var isDebugOverlayVisible = true {
+    didSet {
+      print("isDebugOverlayVisible changed to: \(isDebugOverlayVisible)")
+    }
+  }
 
   // Throttling properties for classification
   private var lastClassificationTime: TimeInterval = 0
@@ -844,6 +848,7 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
 
       // Initially visible if isDebugOverlayVisible is true
       hostingController.view.isHidden = !isDebugOverlayVisible
+      print("Debug overlay initial visibility: \(isDebugOverlayVisible), view.isHidden: \(hostingController.view.isHidden)")
     }
   }
 
@@ -905,6 +910,7 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
 
     // Update the hosting controller's root view
     hostingController.rootView = updatedOverlayView
+    print("Debug overlay rootView updated with qualityScore: \(String(describing: qualityScore))")
   }
 
   private func setupErrorToast() {
