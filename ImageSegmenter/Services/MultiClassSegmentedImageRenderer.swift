@@ -50,6 +50,8 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   }
 
   private var lastColorInfo = ColorInfo()
+  
+  private var lastFaceLandmarks: [NormalizedLandmark]?
 
   private let smoothingFactor: Float = 0.3
   private var frameCounter: Int = 0
@@ -888,8 +890,44 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   func getCurrentColorInfo() -> ColorInfo {
     return lastColorInfo
   }
+  
+  func getFaceLandmarks() -> [NormalizedLandmark]? {
+    return lastFaceLandmarks
+  }
+  
+  func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
+    lastFaceLandmarks = landmarks
+    print("Updated face landmarks in MultiClassSegmentedImageRenderer: \(landmarks?.count ?? 0) points")
+  }
 
   func getFaceBoundingBox() -> CGRect {
+    if let landmarks = lastFaceLandmarks, !landmarks.isEmpty {
+      let faceOvalIndices = MediaPipeFaceMesh.faceOval.flatMap { [$0.0, $0.1] }
+      var minX: CGFloat = 1.0
+      var minY: CGFloat = 1.0
+      var maxX: CGFloat = 0.0
+      var maxY: CGFloat = 0.0
+      
+      for index in faceOvalIndices {
+        guard index < landmarks.count else { continue }
+        let x = CGFloat(landmarks[index].x)
+        let y = CGFloat(landmarks[index].y)
+        
+        minX = min(minX, x)
+        minY = min(minY, y)
+        maxX = max(maxX, x)
+        maxY = max(maxY, y)
+      }
+      
+      let padding: CGFloat = 0.05
+      minX = max(0, minX - padding)
+      minY = max(0, minY - padding)
+      maxX = min(1, maxX + padding)
+      maxY = min(1, maxY + padding)
+      
+      return CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+    }
+    
     return CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
   }
 

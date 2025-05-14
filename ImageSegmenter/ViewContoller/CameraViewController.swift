@@ -554,6 +554,9 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
           #endif
 
           self.lastFaceLandmarks = landmarks
+          
+          self.segmentationService.updateFaceLandmarks(landmarks)
+          print("Updated face landmarks for quality calculation: \(landmarks.count) points")
 
           // Add visual feedback by overlaying a UIView with dots for landmarks
           if self.landmarksOverlayView == nil {
@@ -1093,19 +1096,41 @@ extension CameraViewController: SegmentationServiceDelegate {
       // Update color display
       self.updateColorDisplay(result.colorInfo)
 
-      // Evaluate frame quality if we have a face bounding box
-      if let faceBoundingBox = result.faceBoundingBox,
-         let pixelBuffer = self.videoPixelBuffer {
+      // Evaluate frame quality if we have a face bounding box or landmarks
+      if let pixelBuffer = self.videoPixelBuffer {
         let imageSize = CGSize(
           width: CVPixelBufferGetWidth(pixelBuffer),
           height: CVPixelBufferGetHeight(pixelBuffer)
         )
-
-        let qualityScore = FrameQualityService.evaluateFrameQuality(
-          pixelBuffer: pixelBuffer,
-          faceBoundingBox: faceBoundingBox,
-          imageSize: imageSize
-        )
+        
+        let qualityScore: FrameQualityService.QualityScore
+        
+        // Prefer using landmarks for quality calculation if available
+        if let landmarks = result.faceLandmarks, !landmarks.isEmpty {
+          print("Using landmarks for quality calculation: \(landmarks.count) points")
+          qualityScore = FrameQualityService.evaluateFrameQualityWithLandmarks(
+            pixelBuffer: pixelBuffer,
+            landmarks: landmarks,
+            imageSize: imageSize
+          )
+        } else if let faceBoundingBox = result.faceBoundingBox {
+          // Fall back to bounding box method if landmarks aren't available
+          print("Using bounding box for quality calculation")
+          qualityScore = FrameQualityService.evaluateFrameQuality(
+            pixelBuffer: pixelBuffer,
+            faceBoundingBox: faceBoundingBox,
+            imageSize: imageSize
+          )
+        } else {
+          print("No face detected for quality calculation")
+          qualityScore = FrameQualityService.QualityScore(
+            overall: 0.0,
+            faceSize: 0.0,
+            facePosition: 0.0,
+            brightness: 0.0,
+            sharpness: 0.0
+          )
+        }
         
         print("New quality score calculated: \(qualityScore)")
         print("Quality score details - Overall: \(qualityScore.overall), FaceSize: \(qualityScore.faceSize), Position: \(qualityScore.facePosition), Brightness: \(qualityScore.brightness), Sharpness: \(qualityScore.sharpness)")

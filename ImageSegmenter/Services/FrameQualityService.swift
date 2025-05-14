@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import Vision
+import MediaPipeTasksVision
 
 /// Service for evaluating frame quality for color analysis
 class FrameQualityService {
@@ -358,4 +359,89 @@ class FrameQualityService {
         // Convert to grayscale using standard luminance formula
         return (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
     }
-}        
+    
+    /// Evaluate the quality of a frame using face landmarks instead of bounding box
+    /// - Parameters:
+    ///   - pixelBuffer: The frame pixel buffer
+    ///   - imageSize: The size of the image
+    /// - Returns: Quality score result
+    static func evaluateFrameQualityWithLandmarks(
+        pixelBuffer: CVPixelBuffer,
+        landmarks: [NormalizedLandmark]?,
+        imageSize: CGSize
+    ) -> QualityScore {
+        print("Evaluating quality with landmarks: \(landmarks?.count ?? 0) points")
+        
+        // 1. Calculate face size score
+        let faceSizeScore = FaceLandmarkQualityCalculator.calculateFaceSizeScore(
+            landmarks: landmarks,
+            imageSize: imageSize
+        )
+        
+        // Early termination if face size is too small or too large
+        if faceSizeScore < minimumFaceSizeScoreForAnalysis * 0.7 {
+            return QualityScore(
+                overall: faceSizeScore * 0.25, // Approximate overall score
+                faceSize: faceSizeScore,
+                facePosition: 0,
+                brightness: 0,
+                sharpness: 0
+            )
+        }
+
+        // 2. Calculate face position score
+        let facePositionScore = FaceLandmarkQualityCalculator.calculateFacePositionScore(
+            landmarks: landmarks,
+            imageSize: imageSize
+        )
+        
+        if facePositionScore < minimumFacePositionScoreForAnalysis * 0.7 {
+            // Calculate partial overall score with what we have so far
+            let partialOverall = (faceSizeScore * 0.25) + (facePositionScore * 0.25)
+            
+            return QualityScore(
+                overall: partialOverall,
+                faceSize: faceSizeScore,
+                facePosition: facePositionScore,
+                brightness: 0,
+                sharpness: 0
+            )
+        }
+
+        // 3. Calculate brightness score
+        let brightnessScore = FaceLandmarkQualityCalculator.calculateBrightnessScore(
+            landmarks: landmarks,
+            pixelBuffer: pixelBuffer
+        )
+        
+        if brightnessScore < minimumBrightnessScoreForAnalysis * 0.7 {
+            // Calculate partial overall score with what we have so far
+            let partialOverall = (faceSizeScore * 0.25) + (facePositionScore * 0.25) + (brightnessScore * 0.3)
+            
+            return QualityScore(
+                overall: partialOverall,
+                faceSize: faceSizeScore,
+                facePosition: facePositionScore,
+                brightness: brightnessScore,
+                sharpness: 0
+            )
+        }
+
+        // 4. Calculate sharpness/blur score only if other metrics are acceptable
+        let sharpnessScore = FaceLandmarkQualityCalculator.calculateSharpnessScore(
+            landmarks: landmarks,
+            pixelBuffer: pixelBuffer
+        )
+
+        // 5. Calculate overall score (weighted average)
+        let overall = (faceSizeScore * 0.25) + (facePositionScore * 0.25) + (brightnessScore * 0.3) + (sharpnessScore * 0.2)
+
+        return QualityScore(
+            overall: overall,
+            faceSize: faceSizeScore,
+            facePosition: facePositionScore,
+            brightness: brightnessScore,
+            sharpness: sharpnessScore
+        )
+    }
+}                                        

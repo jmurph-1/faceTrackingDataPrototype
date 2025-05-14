@@ -28,6 +28,7 @@ struct SegmentationResult {
   let segmentationMask: Data?
   let colorInfo: MultiClassSegmentedImageRenderer.ColorInfo
   let faceBoundingBox: CGRect?
+  let faceLandmarks: [NormalizedLandmark]?
   let inferenceTime: TimeInterval?
 }
 
@@ -188,6 +189,7 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
         segmentationMask: nil,
         colorInfo: colorInfo,
         faceBoundingBox: multiClassRenderer.getFaceBoundingBox(),
+        faceLandmarks: multiClassRenderer.getFaceLandmarks(),
         inferenceTime: result?.inferenceTime
       )
 
@@ -212,6 +214,7 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
       segmentationMask: maskData,
       colorInfo: colorInfo,
       faceBoundingBox: faceBoundingBox,
+      faceLandmarks: multiClassRenderer.getFaceLandmarks(),
       inferenceTime: result?.inferenceTime
     )
 
