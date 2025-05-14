@@ -60,8 +60,11 @@ class MultiClassSegmentedImageRenderer {
   // Temporal smoothing parameters
   private let smoothingFactor: Float = 0.3
   private var frameCounter: Int = 0
-  private let frameSkip = 2  // Only analyze colors every 3rd frame
-  private let logFrameInterval = 30  // Only log every 30th frame
+  private var frameSkip = 15  // Start with higher skip rate, will adjust dynamically
+  private let logFrameInterval = 60  // Reduced logging frequency
+  private var lastProcessingTime: CFTimeInterval = 0
+  private var processingStartTime: CFTimeInterval = 0
+  private var isProcessingHeavyLoad: Bool = false
 
   // Downsampling factor for color analysis
   private let downsampleFactor: Int = 4
@@ -515,15 +518,22 @@ class MultiClassSegmentedImageRenderer {
   // Updated method to handle all the different render signature types
   // This is the version being called from CameraViewController
   func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> CVPixelBuffer? {
+    // Start timing the processing
+    processingStartTime = CACurrentMediaTime()
+    
+    // Check if we should skip this frame based on load
+    if isProcessingHeavyLoad && frameCounter % 2 != 0 {
+      frameCounter += 1
+      return nil
+    }
+    
     // Create a Result object from the parameters
     let pixelBufferWidth = CVPixelBufferGetWidth(pixelBuffer)
     let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
     
     if frameCounter % logFrameInterval == 0 {
       log("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .info)
-      log("Render input dimensions: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .debug)
-      log("Output buffer dimensions: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .debug)
-      log("Video buffer dimensions: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .debug)
+      log("Processing time: \(String(format: "%.2f", lastProcessingTime * 1000))ms, frameSkip: \(frameSkip)", level: .debug)
     }
     
     let result = Result(
@@ -583,6 +593,18 @@ class MultiClassSegmentedImageRenderer {
       extractColorInformation(from: result.imageSegmenterResult!)
     }
     frameCounter += 1
+    
+    // Calculate processing time and adjust frameSkip dynamically
+    let currentProcessingTime = CACurrentMediaTime() - processingStartTime
+    lastProcessingTime = currentProcessingTime
+    
+    if currentProcessingTime > 0.1 { // More than 100ms per frame
+      frameSkip = min(frameSkip + 1, 30) // Increase skip rate up to max of 30
+      isProcessingHeavyLoad = true
+    } else if currentProcessingTime < 0.05 && frameSkip > 15 { // Less than 50ms per frame
+      frameSkip = max(frameSkip - 1, 15) // Decrease skip rate down to min of 15
+      isProcessingHeavyLoad = false
+    }
     
     return outputBuffer
   }
@@ -719,8 +741,13 @@ class MultiClassSegmentedImageRenderer {
       frameCounter += 1
     }
     
+    commandBuffer.addCompletedHandler { [weak self] buffer in
+      if buffer.status != .completed {
+        self?.log("Metal command buffer execution failed with status: \(buffer.status)", level: .error)
+      }
+    }
+    
     commandBuffer.commit()
-    commandBuffer.waitUntilCompleted()
     
     return texture
   }
