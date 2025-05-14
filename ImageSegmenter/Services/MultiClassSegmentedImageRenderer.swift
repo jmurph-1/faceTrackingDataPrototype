@@ -100,7 +100,20 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
   private func log(_ message: String, level: LogLevel) {
     if level.rawValue <= logLevel.rawValue {
-      print(message)
+      switch level {
+      case .error:
+        LoggingService.error(message)
+      case .warning:
+        LoggingService.warning(message)
+      case .info:
+        LoggingService.info(message)
+      case .debug:
+        LoggingService.debug(message)
+      case .verbose:
+        LoggingService.verbose(message)
+      case .none:
+        break
+      }
     }
   }
 
@@ -897,7 +910,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   
   func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
     lastFaceLandmarks = landmarks
-    print("Updated face landmarks in MultiClassSegmentedImageRenderer: \(landmarks?.count ?? 0) points")
+    LoggingService.debug("Updated face landmarks in MultiClassSegmentedImageRenderer: \(landmarks?.count ?? 0) points")
   }
 
   func getFaceBoundingBox() -> CGRect {

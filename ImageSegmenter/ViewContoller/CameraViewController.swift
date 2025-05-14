@@ -670,31 +670,29 @@ class CameraViewController: UIViewController {
       return
     }
     
-    let currentView = debugOverlayHostingController.rootView
-    let updatedFps = Float(fps ?? 0.0)
-    let updatedSkinLab = skinColorLab ?? currentView.skinColorLab
-    let updatedHairLab = hairColorLab ?? currentView.hairColorLab
-    let updatedDeltaEs = deltaEs ?? currentView.deltaEToSeasons
-    let updatedQualityScore = qualityScore ?? currentView.qualityScore
-    
-    NSLog("*** DEBUG: Creating updated overlay view - skinLab: %@, hairLab: %@, quality: %@ ***",
-          String(describing: updatedSkinLab),
-          String(describing: updatedHairLab),
-          String(describing: updatedQualityScore))
-    
-    let updatedOverlayView = DebugOverlayView(
-      fps: updatedFps,
-      skinColorLab: updatedSkinLab,
-      hairColorLab: updatedHairLab,
-      deltaEToSeasons: updatedDeltaEs,
-      qualityScore: updatedQualityScore
-    )
-    
-    NSLog("*** DEBUG: Created updated overlay view, updating rootView ***")
-    
-    debugOverlayHostingController.rootView = updatedOverlayView
-    
-    NSLog("*** DEBUG: updateDebugOverlay COMPLETED ***")
+    if let currentView = debugOverlayHostingController.rootView as? DebugOverlayView {
+      let updatedFps = Float(fps ?? 0.0)
+      let updatedSkinLab = skinColorLab ?? currentView.skinColorLab
+      let updatedHairLab = hairColorLab ?? currentView.hairColorLab
+      let updatedDeltaEs = deltaEs ?? currentView.deltaEToSeasons
+      let updatedQualityScore = qualityScore ?? currentView.qualityScore
+      
+      if qualityScore != nil {
+        LoggingService.debug("updateDebugOverlay called with qualityScore: \(String(describing: qualityScore))")
+      }
+      
+      let updatedOverlayView = DebugOverlayView(
+        fps: updatedFps,
+        skinColorLab: updatedSkinLab,
+        hairColorLab: updatedHairLab,
+        deltaEToSeasons: updatedDeltaEs,
+        qualityScore: updatedQualityScore
+      )
+      
+      LoggingService.debug("Debug overlay rootView updated with qualityScore: \(String(describing: updatedQualityScore))")
+      
+      debugOverlayHostingController.rootView = updatedOverlayView
+    }
   }
 
   private func setupErrorToast() {
@@ -820,7 +818,10 @@ extension CameraViewController: SegmentationServiceDelegate {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
       
-      NSLog("*** DEBUG: On main thread, processing segmentation result ***")
+      if let error = error {
+        LoggingService.error("Segmentation error: \(error)")
+        return
+      }
       
       self.previewView.pixelBuffer = result.outputPixelBuffer
       
@@ -854,12 +855,9 @@ extension CameraViewController: SegmentationServiceDelegate {
           landmarks: landmarks,
           imageSize: imageSize
         )
+        LoggingService.debug("New quality score calculated with landmarks: \(qualityScore)")
       } else {
-        // Use bounding box as fallback
-        NSLog("*** DEBUG: Using bounding box for quality calculation ***")
-        // Ensure we have a valid bounding box
-        let faceBoundingBox = result.faceBoundingBox ?? CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
-        
+        LoggingService.debug("Using bounding box for quality calculation")
         qualityScore = FrameQualityService.evaluateFrameQuality(
           pixelBuffer: pixelBuffer,
           faceBoundingBox: faceBoundingBox,
@@ -867,10 +865,8 @@ extension CameraViewController: SegmentationServiceDelegate {
         )
       }
       
-      // Check if brightness and sharpness values are valid
-      NSLog("*** DEBUG: Quality details - Overall: %.2f, FaceSize: %.2f, Position: %.2f, Brightness: %.2f, Sharpness: %.2f ***",
-            qualityScore.overall, qualityScore.faceSize, qualityScore.facePosition,
-            qualityScore.brightness, qualityScore.sharpness)
+      LoggingService.debug("New quality score calculated: \(qualityScore)")
+      LoggingService.debug("Quality score details - Overall: \(qualityScore.overall), FaceSize: \(qualityScore.faceSize), Position: \(qualityScore.facePosition), Brightness: \(qualityScore.brightness), Sharpness: \(qualityScore.sharpness)")
       
       // If brightness or sharpness is zero, calculate them separately
       var updatedQualityScore = qualityScore
@@ -916,53 +912,8 @@ extension CameraViewController: SegmentationServiceDelegate {
     }
   }
   
-  // Fallback method to calculate brightness from the entire frame
-  private func calculateFallbackBrightness(pixelBuffer: CVPixelBuffer) -> Float {
-    let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-    let context = CIContext(options: nil)
-    
-    // Create a smaller version for efficiency
-    let scale = 0.1
-    let scaledImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-    
-    // Use CIAreaAverage for efficient brightness calculation
-    let filter = CIFilter(name: "CIAreaAverage")!
-    filter.setValue(scaledImage, forKey: kCIInputImageKey)
-    filter.setValue(CIVector(cgRect: scaledImage.extent), forKey: "inputExtent")
-    
-    guard let outputImage = filter.outputImage,
-          let outputBuffer = context.createCGImage(outputImage, from: outputImage.extent) else {
-      return 0.7 // Default if calculation fails
-    }
-    
-    // Get color from the average
-    let dataProvider = outputBuffer.dataProvider
-    let data = dataProvider?.data
-    let buffer = CFDataGetBytePtr(data)
-    
-    // Calculate brightness from RGB
-    let r = Float(buffer?[0] ?? 0) / 255.0
-    let g = Float(buffer?[1] ?? 0) / 255.0
-    let b = Float(buffer?[2] ?? 0) / 255.0
-    
-    let brightness = (0.299 * r + 0.587 * g + 0.114 * b)
-    
-    // Map to a 0-1 score where 0.5-0.7 is ideal
-    if brightness < 0.2 {
-      return brightness / 0.2
-    } else if brightness > 0.8 {
-      return Float(1.0 - ((brightness - 0.8) / 0.2))
-    } else if brightness < 0.4 {
-      return Float(0.7 + ((brightness - 0.2) / (0.4 - 0.2)) * 0.3)
-    } else if brightness > 0.7 {
-      return Float(0.7 + ((0.8 - brightness) / (0.8 - 0.7)) * 0.3)
-    } else {
-      return 1.0
-    }
-  }
-
-  func segmentationService(_ segmentationService: SegmentationService, didFailWithError error: Error) {
-    print("Segmentation service error: \(error)")
+  func segmentationService(_ segmentationService: SegmentationService, didEncounterError error: Error) {
+    LoggingService.error("Segmentation service error: \(error)")
   }
 }
 
@@ -1000,7 +951,7 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
       guard let self = self else { return }
 
       if let error = error {
-        print("Face landmark error: \(error)")
+        LoggingService.error("Face landmark error: \(error)")
       }
 
       if let pixelBuffer = self.videoPixelBuffer {
@@ -1029,7 +980,7 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
           self.lastFaceLandmarks = landmarks
           
           self.segmentationService.updateFaceLandmarks(landmarks)
-          print("Updated face landmarks for quality calculation: \(landmarks.count) points")
+          LoggingService.debug("Updated face landmarks for quality calculation: \(landmarks.count) points")
 
           if self.landmarksOverlayView == nil {
             self.setupLandmarksOverlayView()
