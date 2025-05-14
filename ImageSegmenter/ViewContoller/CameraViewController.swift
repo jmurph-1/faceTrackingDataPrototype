@@ -71,7 +71,7 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
 
   // Debug overlay
   private var debugOverlayHostingController: UIHostingController<DebugOverlayView>?
-  private var isDebugOverlayVisible = false
+  private var isDebugOverlayVisible = true
 
   // Throttling properties for classification
   private var lastClassificationTime: TimeInterval = 0
@@ -842,8 +842,8 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
         hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
       ])
 
-      // Initially hidden
-      hostingController.view.isHidden = true
+      // Initially visible if isDebugOverlayVisible is true
+      hostingController.view.isHidden = !isDebugOverlayVisible
     }
   }
 
@@ -863,6 +863,8 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
 
   // Update debug overlay with latest data
   private func updateDebugOverlay(fps: Float, colorInfo: MultiClassSegmentedImageRenderer.ColorInfo?, qualityScore: FrameQualityService.QualityScore?) {
+    print("updateDebugOverlay called with qualityScore: \(String(describing: qualityScore))")
+    
     // Ensure we're on the main thread for UI updates
     if !Thread.isMainThread {
       DispatchQueue.main.async {
@@ -872,6 +874,7 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
     }
 
     guard isDebugOverlayVisible, let hostingController = debugOverlayHostingController else {
+      print("Debug overlay not visible or hostingController is nil")
       return
     }
 
@@ -1090,6 +1093,8 @@ extension CameraViewController: SegmentationServiceDelegate {
           faceBoundingBox: faceBoundingBox,
           imageSize: imageSize
         )
+        
+        print("New quality score calculated: \(qualityScore)")
 
         // Update current score and UI
         self.currentFrameQualityScore = qualityScore

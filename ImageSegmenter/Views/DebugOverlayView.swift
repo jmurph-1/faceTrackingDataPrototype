@@ -172,7 +172,9 @@ struct DebugOverlayView: View {
 
     /// Section for displaying quality scores
     private func qualitySection() -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        print("DebugOverlayView qualitySection called with qualityScore: \(String(describing: qualityScore))")
+        
+        return VStack(alignment: .leading, spacing: 4) {
             Text("QUALITY SCORES")
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.gray)
