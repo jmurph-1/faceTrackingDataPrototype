@@ -661,11 +661,11 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     renderEncoder.endEncoding()
 
     if let segmenterResult = result.imageSegmenterResult,
-      let _ = segmenterResult.categoryMask {
+      let categoryMask = segmenterResult.categoryMask {
 
 
       if frameCounter % frameSkip == 0 {
-        extractColorInformation(from: segmenterResult)
+        extractColorInformation(from: segmenterResult, texture: texture)
       }
       frameCounter += 1
     }
@@ -924,5 +924,22 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       TexturePoolManager.shared.recycleTexture(originalTexture)
     }
     cmdBuffer?.commit()
+  }
+  
+  private func extractColorInformation(from segmenterResult: ImageSegmenterResult, texture: MTLTexture) {
+    guard let categoryMask = segmenterResult.categoryMask else {
+      log("No category mask available for color extraction", level: .warning)
+      return
+    }
+    
+    let width = segmenterResult.width
+    let height = segmenterResult.height
+    
+    extractColorsOptimized(
+      from: texture,
+      with: categoryMask,
+      width: width,
+      height: height
+    )
   }
 }
