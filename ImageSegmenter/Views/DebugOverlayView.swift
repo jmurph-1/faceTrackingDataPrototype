@@ -20,6 +20,20 @@ struct DebugOverlayView: View {
 
     /// Flag to control expanded view
     @State private var isExpanded: Bool = false
+    
+    // Init with logging
+    init(fps: Float, skinColorLab: ColorConverters.LabColor?, hairColorLab: ColorConverters.LabColor?, deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?, qualityScore: FrameQualityService.QualityScore?) {
+        self.fps = fps
+        self.skinColorLab = skinColorLab
+        self.hairColorLab = hairColorLab
+        self.deltaEToSeasons = deltaEToSeasons
+        self.qualityScore = qualityScore
+        
+        print("DebugOverlayView initialized with qualityScore: \(String(describing: qualityScore))")
+        if let quality = qualityScore {
+            print("Quality values - Overall: \(quality.overall), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
+        }
+    }
 
     // MARK: - Body
 

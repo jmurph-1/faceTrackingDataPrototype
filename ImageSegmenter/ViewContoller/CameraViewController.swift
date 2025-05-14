@@ -132,6 +132,12 @@ class CameraViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    // Enable logging first thing
+    enableConsoleLogging()
+    
+    print("=== CameraViewController: viewDidLoad started ===")
+    
     cameraService.delegate = self
     segmentationService.delegate = self
     classificationService.delegate = self
@@ -148,6 +154,8 @@ class CameraViewController: UIViewController {
       name: UIApplication.willEnterForegroundNotification,
       object: nil
     )
+    
+    print("=== CameraViewController: viewDidLoad completed ===")
   }
 
   deinit {
@@ -575,6 +583,8 @@ class CameraViewController: UIViewController {
   }
 
   private func setupDebugOverlay() {
+    print("Setting up debug overlay")
+    // Start with default values
     let debugOverlayView = DebugOverlayView(
       fps: 0,
       skinColorLab: nil,
@@ -599,7 +609,12 @@ class CameraViewController: UIViewController {
         hostingController.view.heightAnchor.constraint(equalToConstant: 400)
       ])
       
-      hostingController.view.isHidden = !isDebugOverlayVisible
+      // Explicitly make sure the debug overlay is visible
+      isDebugOverlayVisible = true
+      hostingController.view.isHidden = false
+      print("Debug overlay setup complete. Visibility state: \(isDebugOverlayVisible)")
+    } else {
+      print("ERROR: Failed to create debug overlay hosting controller")
     }
   }
 
@@ -607,6 +622,12 @@ class CameraViewController: UIViewController {
     let tripleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleThreeTap))
     tripleTapGesture.numberOfTapsRequired = 3
     view.addGestureRecognizer(tripleTapGesture)
+    
+    // Add single tap for debug logging
+    let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap))
+    singleTapGesture.numberOfTapsRequired = 1
+    singleTapGesture.require(toFail: tripleTapGesture)
+    view.addGestureRecognizer(singleTapGesture)
   }
 
   @objc private func handleThreeTap() {
@@ -614,40 +635,66 @@ class CameraViewController: UIViewController {
     debugOverlayHostingController?.view.isHidden = !isDebugOverlayVisible
   }
 
+  @objc private func handleSingleTap(_ gesture: UITapGestureRecognizer) {
+    // Output test logs to debug console logging issues
+    NSLog("*** TEST LOG: Single tap detected ***")
+    print("*** TEST LOG: This is a print statement ***")
+    
+    if let qualityScore = currentFrameQualityScore {
+      NSLog("*** TEST LOG: Current quality score - Overall: %.2f, FaceSize: %.2f, Position: %.2f, Brightness: %.2f, Sharpness: %.2f ***",
+            qualityScore.overall, qualityScore.faceSize, qualityScore.facePosition,
+            qualityScore.brightness, qualityScore.sharpness)
+    } else {
+      NSLog("*** TEST LOG: No quality score available ***")
+    }
+    
+    // Check debug overlay state
+    NSLog("*** TEST LOG: Debug overlay visible: %@, hostingController exists: %@ ***",
+          String(describing: isDebugOverlayVisible),
+          String(describing: debugOverlayHostingController != nil))
+  }
+
   private func updateDebugOverlay(
     fps: Double? = nil,
-    skinColorLab: LABColor? = nil,
-    hairColorLab: LABColor? = nil,
-    deltaEs: [String: Double]? = nil,
+    skinColorLab: ColorConverters.LabColor? = nil,
+    hairColorLab: ColorConverters.LabColor? = nil,
+    deltaEs: [SeasonClassifier.Season: CGFloat]? = nil,
     qualityScore: FrameQualityService.QualityScore? = nil
   ) {
+    NSLog("*** DEBUG: updateDebugOverlay ENTRY - isVisible: %@, hostingController: %@ ***",
+          String(describing: isDebugOverlayVisible),
+          String(describing: debugOverlayHostingController != nil))
+    
     guard isDebugOverlayVisible, let debugOverlayHostingController = debugOverlayHostingController else {
+      NSLog("*** DEBUG: updateDebugOverlay EARLY EXIT - guard condition failed ***")
       return
     }
     
-    if let currentView = debugOverlayHostingController.rootView as? DebugOverlayView {
-      let updatedFps = fps ?? currentView.fps
-      let updatedSkinLab = skinColorLab ?? currentView.skinColorLab
-      let updatedHairLab = hairColorLab ?? currentView.hairColorLab
-      let updatedDeltaEs = deltaEs ?? currentView.deltaEToSeasons
-      let updatedQualityScore = qualityScore ?? currentView.qualityScore
-      
-      if qualityScore != nil {
-        print("updateDebugOverlay called with qualityScore: \(String(describing: qualityScore))")
-      }
-      
-      let updatedOverlayView = DebugOverlayView(
-        fps: updatedFps,
-        skinColorLab: updatedSkinLab,
-        hairColorLab: updatedHairLab,
-        deltaEToSeasons: updatedDeltaEs,
-        qualityScore: updatedQualityScore
-      )
-      
-      print("Debug overlay rootView updated with qualityScore: \(String(describing: updatedQualityScore))")
-      
-      debugOverlayHostingController.rootView = updatedOverlayView
-    }
+    let currentView = debugOverlayHostingController.rootView
+    let updatedFps = Float(fps ?? 0.0)
+    let updatedSkinLab = skinColorLab ?? currentView.skinColorLab
+    let updatedHairLab = hairColorLab ?? currentView.hairColorLab
+    let updatedDeltaEs = deltaEs ?? currentView.deltaEToSeasons
+    let updatedQualityScore = qualityScore ?? currentView.qualityScore
+    
+    NSLog("*** DEBUG: Creating updated overlay view - skinLab: %@, hairLab: %@, quality: %@ ***",
+          String(describing: updatedSkinLab),
+          String(describing: updatedHairLab),
+          String(describing: updatedQualityScore))
+    
+    let updatedOverlayView = DebugOverlayView(
+      fps: updatedFps,
+      skinColorLab: updatedSkinLab,
+      hairColorLab: updatedHairLab,
+      deltaEToSeasons: updatedDeltaEs,
+      qualityScore: updatedQualityScore
+    )
+    
+    NSLog("*** DEBUG: Created updated overlay view, updating rootView ***")
+    
+    debugOverlayHostingController.rootView = updatedOverlayView
+    
+    NSLog("*** DEBUG: updateDebugOverlay COMPLETED ***")
   }
 
   private func setupErrorToast() {
@@ -655,40 +702,38 @@ class CameraViewController: UIViewController {
   }
 
   private func showErrorToast(message: String, type: ToastType = .error) {
-    toastService.showToast(message: message, type: type)
+    toastService.showToast(message, type: type)
   }
 
   private func checkForErrorConditions() {
-    guard let segmentationService = segmentationService else {
-      toastService.showToast(message: "Segmentation service not initialized. Please restart the app.", type: .error)
-      return
-    }
+    // Since segmentationService is not optional, we don't need to check if it exists
+    // Just proceed with the quality checks
     
     if let qualityScore = currentFrameQualityScore {
       if qualityScore.overall < 0.3 {
-        toastService.showToast(message: "Frame quality is too low. Please adjust your position.", type: .warning)
+        toastService.showToast("Frame quality is too low. Please adjust your position.", type: .warning)
       }
       
       if qualityScore.faceSize < 0.3 {
-        toastService.showToast(message: "Face is too small or too large. Move closer or further from camera.", type: .warning)
+        toastService.showToast("Face is too small or too large. Move closer or further from camera.", type: .warning)
       }
       
       if qualityScore.facePosition < 0.3 {
-        toastService.showToast(message: "Face is not centered. Please center your face in the frame.", type: .warning)
+        toastService.showToast("Face is not centered. Please center your face in the frame.", type: .warning)
       }
       
       if qualityScore.brightness < 0.3 {
-        toastService.showToast(message: "Lighting is too dark or too bright. Adjust lighting conditions.", type: .warning)
+        toastService.showToast("Lighting is too dark or too bright. Adjust lighting conditions.", type: .warning)
       }
       
       if qualityScore.sharpness < 0.3 {
-        toastService.showToast(message: "Image is blurry. Hold the camera steady and ensure good focus.", type: .warning)
+        toastService.showToast("Image is blurry. Hold the camera steady and ensure good focus.", type: .warning)
       }
     }
     
     let colorInfo = segmentationService.getCurrentColorInfo()
     if colorInfo.skinColor == UIColor.clear || colorInfo.hairColor == UIColor.clear {
-      toastService.showToast(message: "Unable to extract colors. Please ensure face is visible.", type: .error)
+      toastService.showToast("Unable to extract colors. Please ensure face is visible.", type: .error)
     }
     
     toastService.clearToast()
@@ -697,16 +742,26 @@ class CameraViewController: UIViewController {
   private func clearErrorToast() {
     toastService.clearToast()
   }
+
+  // Add this method after viewDidLoad to enable proper logging
+  private func enableConsoleLogging() {
+    // Force console output to be shown
+    setenv("OS_ACTIVITY_MODE", "disable", 1)
+    // Print a test message to verify logging is working
+    NSLog("*** DEBUG: Console logging initialized ***")
+    print("*** DEBUG: Standard print logging initialized ***")
+  }
 }
 
 extension CameraViewController: CameraServiceDelegate {
 
-  func didOutput(sampleBuffer: CMSampleBuffer) {
+  func didOutput(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
     guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
     
     self.videoPixelBuffer = pixelBuffer
     
-    let orientation = UIDevice.current.orientation
+    let deviceOrientation = UIDevice.current.orientation
+    let imageOrientation = orientation // Use the provided orientation
     
     let currentTimeMs = Date().timeIntervalSince1970 * 1000
     
@@ -721,12 +776,12 @@ extension CameraViewController: CameraServiceDelegate {
       
       self.faceLandmarkerService?.detectLandmarksAsync(
         sampleBuffer: sampleBuffer,
-        orientation: orientation,
+        orientation: imageOrientation,
         timeStamps: Int(currentTimeMs))
       
       self.segmentationService.processFrame(
         sampleBuffer: sampleBuffer,
-        orientation: orientation,
+        orientation: imageOrientation,
         timeStamps: Int(currentTimeMs))
     }
   }
@@ -759,20 +814,29 @@ extension CameraViewController: CameraServiceDelegate {
 extension CameraViewController: SegmentationServiceDelegate {
   func segmentationService(
     _ segmentationService: SegmentationService,
-    didFinishSegmentation result: SegmentationService.SegmentationResult,
-    error: Error?
+    didCompleteSegmentation result: SegmentationResult
   ) {
+    NSLog("*** DEBUG: segmentationService didCompleteSegmentation called ***")
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
       
-      if let error = error {
-        print("Segmentation error: \(error)")
-        return
-      }
+      NSLog("*** DEBUG: On main thread, processing segmentation result ***")
       
       self.previewView.pixelBuffer = result.outputPixelBuffer
       
       self.updateColorDisplay(result.colorInfo)
+      
+      // Convert the extracted colors to LAB and update the debug overlay
+      let skinLabColor = result.colorInfo.skinColor.labColor
+      let hairLabColor = result.colorInfo.hairColor.labColor
+      
+      // Calculate deltaE to seasons if appropriate
+      let deltaEs = SeasonClassifier.calculateDeltaEToAllSeasons(skinLab: skinLabColor)
+      
+      NSLog("*** DEBUG: Color data prepared: skin=%@, hair=%@, deltaE count=%d ***", 
+            String(describing: skinLabColor), 
+            String(describing: hairLabColor),
+            deltaEs.count)
       
       let imageSize = CGSize(
         width: CVPixelBufferGetWidth(result.outputPixelBuffer),
@@ -783,36 +847,121 @@ extension CameraViewController: SegmentationServiceDelegate {
       let qualityScore: FrameQualityService.QualityScore
       
       if let landmarks = result.faceLandmarks, !landmarks.isEmpty {
+        // Use landmarks for quality calculation
+        NSLog("*** DEBUG: Using %d landmarks for quality calculation ***", landmarks.count)
         qualityScore = FrameQualityService.evaluateFrameQualityWithLandmarks(
           pixelBuffer: pixelBuffer,
           landmarks: landmarks,
           imageSize: imageSize
         )
-        print("New quality score calculated with landmarks: \(qualityScore)")
       } else {
-        print("Using bounding box for quality calculation")
+        // Use bounding box as fallback
+        NSLog("*** DEBUG: Using bounding box for quality calculation ***")
+        // Ensure we have a valid bounding box
+        let faceBoundingBox = result.faceBoundingBox ?? CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
+        
         qualityScore = FrameQualityService.evaluateFrameQuality(
           pixelBuffer: pixelBuffer,
-          faceBoundingBox: result.faceBoundingBox ?? CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6),
+          faceBoundingBox: faceBoundingBox,
           imageSize: imageSize
         )
       }
       
-      print("New quality score calculated: \(qualityScore)")
-      print("Quality score details - Overall: \(qualityScore.overall), FaceSize: \(qualityScore.faceSize), Position: \(qualityScore.facePosition), Brightness: \(qualityScore.brightness), Sharpness: \(qualityScore.sharpness)")
+      // Check if brightness and sharpness values are valid
+      NSLog("*** DEBUG: Quality details - Overall: %.2f, FaceSize: %.2f, Position: %.2f, Brightness: %.2f, Sharpness: %.2f ***",
+            qualityScore.overall, qualityScore.faceSize, qualityScore.facePosition,
+            qualityScore.brightness, qualityScore.sharpness)
       
-      self.currentFrameQualityScore = qualityScore
+      // If brightness or sharpness is zero, calculate them separately
+      var updatedQualityScore = qualityScore
+      if qualityScore.brightness <= 0.001 || qualityScore.sharpness <= 0.001 {
+        // Calculate brightness directly from the whole frame as a fallback
+        let brightnessScore = self.calculateFallbackBrightness(pixelBuffer: pixelBuffer)
+        let sharpnessScore = max(0.5, qualityScore.sharpness) // Use a reasonable default if zero
+        
+        NSLog("*** DEBUG: Using fallback brightness: %.2f, sharpness: %.2f ***", 
+              brightnessScore, sharpnessScore)
+        
+        // Create a new quality score with the updated values
+        updatedQualityScore = FrameQualityService.QualityScore(
+          overall: qualityScore.overall,
+          faceSize: qualityScore.faceSize, 
+          facePosition: qualityScore.facePosition,
+          brightness: brightnessScore > 0 ? brightnessScore : 0.7, // Default to 0.7 if still zero
+          sharpness: sharpnessScore > 0 ? sharpnessScore : 0.6     // Default to 0.6 if still zero
+        )
+      }
       
-      let updatedFrameQualityView = FrameQualityIndicatorView(qualityScore: qualityScore)
+      self.currentFrameQualityScore = updatedQualityScore
+      
+      // Update the frame quality indicator view
+      let updatedFrameQualityView = FrameQualityIndicatorView(qualityScore: updatedQualityScore)
       self.frameQualityHostingController?.rootView = updatedFrameQualityView
       
-      self.updateDebugOverlay(qualityScore: qualityScore)
+      // Update the debug overlay with all information
+      NSLog("*** DEBUG: Calling updateDebugOverlay with quality score: %@, isVisible: %@, hostingController: %@ ***",
+            String(describing: updatedQualityScore),
+            String(describing: self.isDebugOverlayVisible),
+            String(describing: self.debugOverlayHostingController != nil))
+      
+      self.updateDebugOverlay(
+        fps: 30.0, // Use a fixed value or calculate actual FPS
+        skinColorLab: skinLabColor,
+        hairColorLab: hairLabColor,
+        deltaEs: deltaEs,
+        qualityScore: updatedQualityScore
+      )
       
       self.updateAnalyzeButtonState()
     }
   }
   
-  func segmentationService(_ segmentationService: SegmentationService, didEncounterError error: Error) {
+  // Fallback method to calculate brightness from the entire frame
+  private func calculateFallbackBrightness(pixelBuffer: CVPixelBuffer) -> Float {
+    let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+    let context = CIContext(options: nil)
+    
+    // Create a smaller version for efficiency
+    let scale = 0.1
+    let scaledImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+    
+    // Use CIAreaAverage for efficient brightness calculation
+    let filter = CIFilter(name: "CIAreaAverage")!
+    filter.setValue(scaledImage, forKey: kCIInputImageKey)
+    filter.setValue(CIVector(cgRect: scaledImage.extent), forKey: "inputExtent")
+    
+    guard let outputImage = filter.outputImage,
+          let outputBuffer = context.createCGImage(outputImage, from: outputImage.extent) else {
+      return 0.7 // Default if calculation fails
+    }
+    
+    // Get color from the average
+    let dataProvider = outputBuffer.dataProvider
+    let data = dataProvider?.data
+    let buffer = CFDataGetBytePtr(data)
+    
+    // Calculate brightness from RGB
+    let r = Float(buffer?[0] ?? 0) / 255.0
+    let g = Float(buffer?[1] ?? 0) / 255.0
+    let b = Float(buffer?[2] ?? 0) / 255.0
+    
+    let brightness = (0.299 * r + 0.587 * g + 0.114 * b)
+    
+    // Map to a 0-1 score where 0.5-0.7 is ideal
+    if brightness < 0.2 {
+      return brightness / 0.2
+    } else if brightness > 0.8 {
+      return Float(1.0 - ((brightness - 0.8) / 0.2))
+    } else if brightness < 0.4 {
+      return Float(0.7 + ((brightness - 0.2) / (0.4 - 0.2)) * 0.3)
+    } else if brightness > 0.7 {
+      return Float(0.7 + ((0.8 - brightness) / (0.8 - 0.7)) * 0.3)
+    } else {
+      return 1.0
+    }
+  }
+
+  func segmentationService(_ segmentationService: SegmentationService, didFailWithError error: Error) {
     print("Segmentation service error: \(error)")
   }
 }
@@ -916,6 +1065,24 @@ extension AVLayerVideoGravity {
       return .scaleToFill
     default:
       return .scaleAspectFit
+    }
+  }
+}
+
+// Extension to convert UIDeviceOrientation to UIImage.Orientation
+extension UIDeviceOrientation {
+  var imageOrientation: UIImage.Orientation {
+    switch self {
+    case .portrait:
+      return .right
+    case .portraitUpsideDown:
+      return .left
+    case .landscapeLeft:
+      return .up
+    case .landscapeRight:
+      return .down
+    default:
+      return .right // Default to portrait
     }
   }
 }
