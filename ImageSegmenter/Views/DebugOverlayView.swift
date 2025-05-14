@@ -72,6 +72,7 @@ struct DebugOverlayView: View {
         }
         .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .id(qualityScore?.overall ?? 0) // Force refresh when quality score changes
     }
 
     // MARK: - Helper views
