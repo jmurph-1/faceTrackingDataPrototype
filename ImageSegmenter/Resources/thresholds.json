@@ -1,0 +1,32 @@
+{
+  "warmCoolThreshold": 12.0,
+  "brightMutedThreshold": 65.0,
+  "clearSoftThreshold": 40.0,
+  
+  "referenceColors": {
+    "spring": {
+      "L": 80.0,
+      "a": 10.0,
+      "b": 25.0,
+      "description": "Warm, bright peach"
+    },
+    "summer": {
+      "L": 70.0,
+      "a": -3.0,
+      "b": 10.0,
+      "description": "Cool, soft pink"
+    },
+    "autumn": {
+      "L": 60.0,
+      "a": 8.0,
+      "b": 22.0,
+      "description": "Warm, muted golden"
+    },
+    "winter": {
+      "L": 65.0,
+      "a": -5.0,
+      "b": 5.0,
+      "description": "Cool, clear olive"
+    }
+  }
+} 

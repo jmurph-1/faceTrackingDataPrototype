@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-run extension command >sweetPad:Build to run the sweetpad extension build command after making large changes

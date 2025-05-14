@@ -1,3 +1,4 @@
+// swiftlint:disable identifier_name type_body_length
 import CoreMedia
 import CoreVideo
 import Metal
@@ -422,7 +423,7 @@ class MultiClassSegmentedImageRenderer {
     
     // Extract and display color information (using a less CPU-intensive approach)
     if frameCounter % frameSkip == 0 {
-      extractColorInformation(from: result.imageSegmenterResult!)
+      extractColorInformation(from: result.imageSegmenterResult!, pixelBuffer: pixelBuffer)
     }
     frameCounter += 1
     
@@ -534,7 +535,7 @@ class MultiClassSegmentedImageRenderer {
       
       // Extract color information for UI display
       if frameCounter % frameSkip == 0 {
-        extractColorInformation(from: segmenterResult)
+        extractColorInformation(from: segmenterResult, pixelBuffer: nil)
       }
       frameCounter += 1
     }
@@ -710,14 +711,14 @@ class MultiClassSegmentedImageRenderer {
   private func blendColors(newColor: UIColor, oldColor: UIColor, factor: Float) -> UIColor {
     let factor = CGFloat(factor)
 
-    var newR: CGFloat = 0
-    var newG: CGFloat = 0
-    var newB: CGFloat = 0
-    var newA: CGFloat = 0
-    var oldR: CGFloat = 0
-    var oldG: CGFloat = 0
-    var oldB: CGFloat = 0
-    var oldA: CGFloat = 0
+    var newR: CGFloat = 0.0
+    var newG: CGFloat = 0.0
+    var newB: CGFloat = 0.0
+    var newA: CGFloat = 0.0
+    var oldR: CGFloat = 0.0
+    var oldG: CGFloat = 0.0
+    var oldB: CGFloat = 0.0
+    var oldA: CGFloat = 0.0
 
     newColor.getRed(&newR, green: &newG, blue: &newB, alpha: &newA)
     oldColor.getRed(&oldR, green: &oldG, blue: &oldB, alpha: &oldA)
@@ -737,11 +738,26 @@ class MultiClassSegmentedImageRenderer {
   }
 
   // Process segmentation results to extract color information
-  private func extractColorInformation(from segmenterResult: ImageSegmenterResult) {
-    // Implementation would analyze the segmentation mask and extract colors
-    // Currently just using placeholders for demonstration purposes
+  private func extractColorInformation(from segmenterResult: ImageSegmenterResult, pixelBuffer: CVPixelBuffer? = nil) {
+    // If we have both a pixel buffer and category mask, use optimized extraction
+    if let pixelBuffer = pixelBuffer, 
+       let categoryMask = segmenterResult.categoryMask {
+      
+      // Create a Metal texture from the pixel buffer
+      if let texture = makeTextureFromCVPixelBuffer(pixelBuffer: pixelBuffer, textureFormat: .bgra8Unorm) {
+        // Use the optimized color extraction method
+        extractColorsOptimized(
+          from: texture, 
+          with: categoryMask, 
+          width: segmenterResult.width, 
+          height: segmenterResult.height
+        )
+        return
+      }
+    }
     
-    // Sample skin color (this would be calculated from the actual segmentation)
+    // Fallback to placeholder colors if we can't do the optimized extraction
+    // Sample skin color
     let sampleSkinColor = UIColor(red: 0.9, green: 0.8, blue: 0.7, alpha: 1.0)
     var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
     sampleSkinColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
