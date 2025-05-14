@@ -256,8 +256,8 @@ class CameraViewModel: NSObject {
 
     /// Check frame for error conditions and provide guidance
     private func checkForErrorConditions() {
-        // Get the current face bounding box
-        guard let faceBoundingBox = currentFaceBoundingBox else {
+        // Check if a face is detected
+        guard currentFaceBoundingBox != nil else {
             delegate?.viewModel(self, didDisplayWarning: "No face detected. Please center your face in the frame.")
             return
         }
@@ -355,9 +355,6 @@ extension CameraViewModel: SegmentationServiceDelegate {
             // Update UI elements that don't require frame quality evaluation
             
             if let pixelBuffer = self.currentPixelBuffer {
-                // Create a local copy of the pixel buffer to use in background thread
-                CVPixelBufferRetain(pixelBuffer)
-                
                 self.backgroundQueue.async {
                     let defaultFaceBoundingBox = CGRect(x: 0.3, y: 0.2, width: 0.4, height: 0.6)
                     
@@ -371,8 +368,6 @@ extension CameraViewModel: SegmentationServiceDelegate {
                         faceBoundingBox: defaultFaceBoundingBox,
                         imageSize: imageSize
                     )
-                    
-                    CVPixelBufferRelease(pixelBuffer)
                     
                     // Update UI on main thread with results
                     DispatchQueue.main.async { [weak self] in
@@ -469,4 +464,4 @@ enum CameraError: Error {
 
 enum AnalysisError: Error {
     case insufficientQuality
-}      
+}        
