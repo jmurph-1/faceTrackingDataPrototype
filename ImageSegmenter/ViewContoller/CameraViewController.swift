@@ -1101,6 +1101,7 @@ extension CameraViewController: SegmentationServiceDelegate {
         )
         
         print("New quality score calculated: \(qualityScore)")
+        print("Quality score details - Overall: \(qualityScore.overall), FaceSize: \(qualityScore.faceSize), Position: \(qualityScore.facePosition), Brightness: \(qualityScore.brightness), Sharpness: \(qualityScore.sharpness)")
 
         // Update current score and UI
         self.currentFrameQualityScore = qualityScore
