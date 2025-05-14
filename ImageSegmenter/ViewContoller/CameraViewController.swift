@@ -633,7 +633,7 @@ class CameraViewController: UIViewController {
       let updatedQualityScore = qualityScore ?? currentView.qualityScore
       
       if qualityScore != nil {
-        print("updateDebugOverlay called with qualityScore: \(String(describing: qualityScore))")
+        LoggingService.debug("updateDebugOverlay called with qualityScore: \(String(describing: qualityScore))")
       }
       
       let updatedOverlayView = DebugOverlayView(
@@ -644,7 +644,7 @@ class CameraViewController: UIViewController {
         qualityScore: updatedQualityScore
       )
       
-      print("Debug overlay rootView updated with qualityScore: \(String(describing: updatedQualityScore))")
+      LoggingService.debug("Debug overlay rootView updated with qualityScore: \(String(describing: updatedQualityScore))")
       
       debugOverlayHostingController.rootView = updatedOverlayView
     }
@@ -766,7 +766,7 @@ extension CameraViewController: SegmentationServiceDelegate {
       guard let self = self else { return }
       
       if let error = error {
-        print("Segmentation error: \(error)")
+        LoggingService.error("Segmentation error: \(error)")
         return
       }
       
@@ -788,9 +788,9 @@ extension CameraViewController: SegmentationServiceDelegate {
           landmarks: landmarks,
           imageSize: imageSize
         )
-        print("New quality score calculated with landmarks: \(qualityScore)")
+        LoggingService.debug("New quality score calculated with landmarks: \(qualityScore)")
       } else {
-        print("Using bounding box for quality calculation")
+        LoggingService.debug("Using bounding box for quality calculation")
         qualityScore = FrameQualityService.evaluateFrameQuality(
           pixelBuffer: pixelBuffer,
           faceBoundingBox: result.faceBoundingBox ?? CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6),
@@ -798,8 +798,8 @@ extension CameraViewController: SegmentationServiceDelegate {
         )
       }
       
-      print("New quality score calculated: \(qualityScore)")
-      print("Quality score details - Overall: \(qualityScore.overall), FaceSize: \(qualityScore.faceSize), Position: \(qualityScore.facePosition), Brightness: \(qualityScore.brightness), Sharpness: \(qualityScore.sharpness)")
+      LoggingService.debug("New quality score calculated: \(qualityScore)")
+      LoggingService.debug("Quality score details - Overall: \(qualityScore.overall), FaceSize: \(qualityScore.faceSize), Position: \(qualityScore.facePosition), Brightness: \(qualityScore.brightness), Sharpness: \(qualityScore.sharpness)")
       
       self.currentFrameQualityScore = qualityScore
       
@@ -813,7 +813,7 @@ extension CameraViewController: SegmentationServiceDelegate {
   }
   
   func segmentationService(_ segmentationService: SegmentationService, didEncounterError error: Error) {
-    print("Segmentation service error: \(error)")
+    LoggingService.error("Segmentation service error: \(error)")
   }
 }
 
@@ -851,7 +851,7 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
       guard let self = self else { return }
 
       if let error = error {
-        print("Face landmark error: \(error)")
+        LoggingService.error("Face landmark error: \(error)")
       }
 
       if let pixelBuffer = self.videoPixelBuffer {
@@ -880,7 +880,7 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
           self.lastFaceLandmarks = landmarks
           
           self.segmentationService.updateFaceLandmarks(landmarks)
-          print("Updated face landmarks for quality calculation: \(landmarks.count) points")
+          LoggingService.debug("Updated face landmarks for quality calculation: \(landmarks.count) points")
 
           if self.landmarksOverlayView == nil {
             self.setupLandmarksOverlayView()

@@ -2,6 +2,15 @@ import SwiftUI
 
 /// Debug overlay view for displaying performance metrics and color data
 struct DebugOverlayView: View {
+    // MARK: - Logging
+    private func logQualityScore() {
+        guard let quality = qualityScore else {
+            LoggingService.debug("No quality score available")
+            return
+        }
+        
+        LoggingService.debug("Quality scores - Overall: \(quality.overall), FaceSize: \(quality.faceSize), Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
+    }
 
     /// FPS measurement
     let fps: Float
@@ -73,6 +82,12 @@ struct DebugOverlayView: View {
         .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .id(qualityScore?.overall ?? 0) // Force refresh when quality score changes
+        .onAppear {
+            logQualityScore()
+        }
+        .onChange(of: qualityScore) { _ in
+            logQualityScore()
+        }
     }
 
     // MARK: - Helper views
@@ -173,7 +188,7 @@ struct DebugOverlayView: View {
 
     /// Section for displaying quality scores
     private func qualitySection() -> some View {
-        print("DebugOverlayView qualitySection called with qualityScore: \(String(describing: qualityScore))")
+        LoggingService.debug("DebugOverlayView qualitySection called with qualityScore: \(String(describing: qualityScore))")
         
         return VStack(alignment: .leading, spacing: 4) {
             Text("QUALITY SCORES")
