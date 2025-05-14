@@ -37,14 +37,16 @@ class SeasonClassifier {
     /// Threshold parameters for classification
     struct Thresholds: Decodable {
         let warmCoolThreshold: Float
-        let brightMutedThreshold: Float
-        let clearSoftThreshold: Float
+        let lightDarkThreshold: Float
+        let brightThreshold: Float
+        let softThreshold: Float
         
         /// Default thresholds based on standard values
         static let `default` = Thresholds(
-            warmCoolThreshold: 0.0,   // a* value in Lab: positive = warm, negative = cool
-            brightMutedThreshold: 65.0, // L* value: higher = brighter, lower = muted
-            clearSoftThreshold: 25.0   // Chroma (a*2 + b*2)^0.5: higher = clear, lower = soft
+            warmCoolThreshold: 12.0,   // b* value: >= 12 = warm, < 12 = cool
+            lightDarkThreshold: 65.0,  // L* value: >= 65 = light, < 65 = dark
+            brightThreshold: 40.0,     // Chroma: >= 40 = bright
+            softThreshold: 35.0        // Chroma: <= 35 = soft, in between = medium
         )
     }
     
@@ -71,18 +73,64 @@ class SeasonClassifier {
         }
     }
     
+    /// Determines the season directly based on the color properties using the rule-based approach
+    private func determineSeasonFromProperties(isWarm: Bool, isLight: Bool) -> Season {
+        if isWarm && isLight {
+            return .spring
+        } else if !isWarm && isLight {
+            return .summer
+        } else if isWarm && !isLight {
+            return .autumn
+        } else {
+            return .winter // !isWarm && !isLight
+        }
+    }
+    
+    /// Calculate season scores based on color properties
+    private func calculateSeasonScores(isWarm: Bool, isLight: Bool) -> [Season: Float] {
+        var seasonScores = [Season: Float]()
+        
+        // Calculate basic scores for each season based on skin properties
+        for season in Season.allCases {
+            var score: Float = 0
+            
+            switch season {
+            case .spring:
+                // Spring: Warm + Light
+                if isWarm { score += 1.5 }
+                if isLight { score += 1.5 }
+                
+            case .summer:
+                // Summer: Cool + Light
+                if !isWarm { score += 1.5 }
+                if isLight { score += 1.5 }
+                
+            case .autumn:
+                // Autumn: Warm + Dark
+                if isWarm { score += 1.5 }
+                if !isLight { score += 1.5 }
+                
+            case .winter:
+                // Winter: Cool + Dark
+                if !isWarm { score += 1.5 }
+                if !isLight { score += 1.5 }
+            }
+            
+            seasonScores[season] = score
+        }
+        
+        return seasonScores
+    }
+    
     /// Classify colors into one of the four seasons
     /// - Parameters:
     ///   - skinColor: The skin color in Lab color space
-    ///   - hairColor: The hair color in Lab color space (optional)
+    ///   - hairColor: The hair color in Lab color space (optional, not currently used)
     /// - Returns: Classification result with season and confidence metrics
     func classify(
         skinColor: ColorConverters.LabColor,
         hairColor: ColorConverters.LabColor? = nil
     ) -> ClassificationResult {
-        
-        // Calculate the scores for each season based on the skin color
-        var seasonScores = [Season: Float]()
         
         // Extract Lab values from skin color
         let skinL = Float(skinColor.L)
@@ -92,111 +140,33 @@ class SeasonClassifier {
         // Calculate chroma (color intensity)
         let skinChroma = sqrt(skinA * skinA + skinB * skinB)
         
-        // Extract Lab values from hair color if available
-        var hairL: Float = 0
-        var hairA: Float = 0
-        var hairB: Float = 0
-        var hairChroma: Float = 0
+        // Feature 1: Undertone - Warm vs Cool (based on b* value)
+        // b* >= 12 = warm, b* < 12 = cool
+        let isWarm = skinB >= thresholds.warmCoolThreshold
         
-        let useHairColor = hairColor != nil
+        // Feature 2: Value - Light vs Dark (based on L* value)
+        // L* >= 65 = light, L* < 65 = dark
+        let isLight = skinL >= thresholds.lightDarkThreshold
         
-        if let hair = hairColor {
-            hairL = Float(hair.L)
-            hairA = Float(hair.a)
-            hairB = Float(hair.b)
-            hairChroma = sqrt(hairA * hairA + hairB * hairB)
-        }
+        // Determine the season based on the rule-based approach (ignoring softness)
+        let season = determineSeasonFromProperties(isWarm: isWarm, isLight: isLight)
         
-        // Feature 1: Warm vs Cool (based on b* value)
-        // Positive b* = blue/yellow, Negative b* = blue/cool
-        let warmCoolValue = skinB
-        let isWarm = warmCoolValue >= thresholds.warmCoolThreshold
+        // Calculate scores for confidence calculation
+        let seasonScores = calculateSeasonScores(isWarm: isWarm, isLight: isLight)
         
-        // Feature 2: Bright vs Muted (based on L* value)
-        // High L* = bright, Low L* = muted
-        let brightMutedValue = skinL
-        let isBright = brightMutedValue > thresholds.brightMutedThreshold
-        
-        // Feature 3: Clear vs Soft (based on chroma)
-        // High chroma = clear, Low chroma = soft
-        let clearSoftValue = skinChroma
-        let isClear = clearSoftValue > thresholds.clearSoftThreshold
-        
-        // Calculate scores for each season based on features
-        for season in Season.allCases {
-            var score: Float = 0
-            
-            switch season {
-            case .spring:
-                // Spring: Warm + Bright
-                if isWarm { score += 1 }
-                if isBright { score += 1 }
-                if isClear { score += 0.5 }
-                
-            case .summer:
-                // Summer: Cool + Bright + Soft
-                if !isWarm { score += 1 }
-                if isBright { score += 0.5 }
-                if !isClear { score += 1 }
-                
-            case .autumn:
-                // Autumn: Warm + Muted
-                if isWarm { score += 1 }
-                if !isBright { score += 1 }
-                if !isClear { score += 0.5 }
-                
-            case .winter:
-                // Winter: Cool + Clear
-                if !isWarm { score += 1 }
-                if isClear { score += 1 }
-                if !isBright { score += 0.5 }
-            }
-            
-            // Add hair color influence if available
-            if useHairColor {
-                let hairInfluenceFactor: Float = 0.3 // 30% influence from hair color
-                
-                // Adjust score based on hair color properties
-                switch season {
-                case .spring:
-                    // Spring hair is typically warm and lighter
-                    if hairA > 0 { score += 0.2 * hairInfluenceFactor }
-                    if hairL > 50 { score += 0.2 * hairInfluenceFactor }
-                    
-                case .summer:
-                    // Summer hair is typically ashy (cool) and medium to light
-                    if hairA < 0 { score += 0.2 * hairInfluenceFactor }
-                    if hairL > 40 && hairL < 70 { score += 0.2 * hairInfluenceFactor }
-                    
-                case .autumn:
-                    // Autumn hair is typically warm and darker
-                    if hairA > 0 { score += 0.2 * hairInfluenceFactor }
-                    if hairL < 50 { score += 0.2 * hairInfluenceFactor }
-                    
-                case .winter:
-                    // Winter hair is typically cool and very dark or very light
-                    if hairA < 0 { score += 0.2 * hairInfluenceFactor }
-                    if hairL < 30 || hairL > 80 { score += 0.2 * hairInfluenceFactor }
-                }
-            }
-            
-            seasonScores[season] = score
-        }
-        
-        // Find the season with the highest score
+        // Sort seasons by score
         let sortedSeasons = seasonScores.sorted { $0.value > $1.value }
-        let bestSeason = sortedSeasons[0].key
         let bestScore = sortedSeasons[0].value
         let secondBestSeason = sortedSeasons[1].key
         let secondBestScore = sortedSeasons[1].value
         
         // Calculate confidence and difference to next closest
-        let maxPossibleScore: Float = useHairColor ? 3.0 : 2.5
+        let maxPossibleScore: Float = 3.0
         let confidence = bestScore / maxPossibleScore
         let deltaE = bestScore - secondBestScore
         
         return ClassificationResult(
-            season: bestSeason,
+            season: season,
             confidence: confidence,
             deltaEToNextClosest: deltaE,
             nextClosestSeason: secondBestSeason
@@ -208,10 +178,10 @@ class SeasonClassifier {
     func calculateDeltaEToSeasonReferences(labColor: ColorConverters.LabColor) -> [Season: CGFloat] {
         // Reference Lab colors for each season (based on typical skin tones)
         let referenceColors: [Season: ColorConverters.LabColor] = [
-            .spring: ColorConverters.LabColor(L: 75.0, a: 10.0, b: 25.0),   // Warm, bright peach
-            .summer: ColorConverters.LabColor(L: 70.0, a: -3.0, b: 10.0),   // Cool, soft pink
-            .autumn: ColorConverters.LabColor(L: 60.0, a: 8.0, b: 22.0),    // Warm, muted golden
-            .winter: ColorConverters.LabColor(L: 65.0, a: -5.0, b: 5.0)     // Cool, clear olive
+            .spring: ColorConverters.LabColor(L: 75.0, a: 10.0, b: 25.0),   // Warm, light, bright
+            .summer: ColorConverters.LabColor(L: 70.0, a: -3.0, b: 10.0),   // Cool, light
+            .autumn: ColorConverters.LabColor(L: 60.0, a: 8.0, b: 22.0),    // Warm, dark
+            .winter: ColorConverters.LabColor(L: 55.0, a: -5.0, b: 5.0)     // Cool, dark
         ]
         
         // Calculate ΔE to each reference color using CIEDE2000 formula for better accuracy
@@ -229,10 +199,10 @@ class SeasonClassifier {
     func compareColorDifferenceMethods(labColor: ColorConverters.LabColor) -> [Season: (cie76: CGFloat, ciede2000: CGFloat)] {
         // Reference Lab colors for each season (based on typical skin tones)
         let referenceColors: [Season: ColorConverters.LabColor] = [
-            .spring: ColorConverters.LabColor(L: 75.0, a: 10.0, b: 25.0),   // Warm, bright peach
-            .summer: ColorConverters.LabColor(L: 70.0, a: -3.0, b: 10.0),   // Cool, soft pink
-            .autumn: ColorConverters.LabColor(L: 60.0, a: 8.0, b: 22.0),    // Warm, muted golden
-            .winter: ColorConverters.LabColor(L: 65.0, a: -5.0, b: 5.0)     // Cool, clear olive
+            .spring: ColorConverters.LabColor(L: 75.0, a: 10.0, b: 25.0),   // Warm, light, bright
+            .summer: ColorConverters.LabColor(L: 70.0, a: -3.0, b: 10.0),   // Cool, light
+            .autumn: ColorConverters.LabColor(L: 60.0, a: 8.0, b: 22.0),    // Warm, dark
+            .winter: ColorConverters.LabColor(L: 55.0, a: -5.0, b: 5.0)     // Cool, dark
         ]
         
         // Calculate using both methods

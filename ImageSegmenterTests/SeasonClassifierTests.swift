@@ -10,66 +10,63 @@ class SeasonClassifierTests: XCTestCase {
         classifier = SeasonClassifier()
     }
     
-    // Test classification of known season colors
+    // Test classification of known season colors based on the new logic
     func testKnownSeasonClassification() {
-        // Spring: Warm (positive a*) + Bright (high L*)
+        // Spring: Warm (b* >= 12) + Light (L >= 65)
         let springColor = ColorConverters.LabColor(L: 75.0, a: 10.0, b: 25.0)
         let springResult = classifier.classify(skinColor: springColor)
         XCTAssertEqual(springResult.season, .spring, "Should classify as Spring")
         
-        // Summer: Cool (negative a*) + Bright (high L*) + Soft (low chroma)
+        // Summer: Cool (b* < 12) + Light (L >= 65)
         let summerColor = ColorConverters.LabColor(L: 70.0, a: -3.0, b: 10.0)
         let summerResult = classifier.classify(skinColor: summerColor)
         XCTAssertEqual(summerResult.season, .summer, "Should classify as Summer")
         
-        // Autumn: Warm (positive a*) + Muted (low L*)
+        // Autumn: Warm (b* >= 12) + Dark (L < 65)
         let autumnColor = ColorConverters.LabColor(L: 60.0, a: 8.0, b: 22.0)
         let autumnResult = classifier.classify(skinColor: autumnColor)
         XCTAssertEqual(autumnResult.season, .autumn, "Should classify as Autumn")
         
-        // Winter: Cool (negative a*) + Clear (high chroma)
-        let winterColor = ColorConverters.LabColor(L: 65.0, a: -5.0, b: 5.0)
+        // Winter: Cool (b* < 12) + Dark (L < 65)
+        let winterColor = ColorConverters.LabColor(L: 55.0, a: -5.0, b: 5.0)
         let winterResult = classifier.classify(skinColor: winterColor)
         XCTAssertEqual(winterResult.season, .winter, "Should classify as Winter")
     }
     
-    // Test the confidence scores
-    func testConfidenceScores() {
-        // Strong spring color should have high confidence
-        let strongSpring = ColorConverters.LabColor(L: 82.0, a: 12.0, b: 30.0)
-        let strongSpringResult = classifier.classify(skinColor: strongSpring)
-        XCTAssertGreaterThan(strongSpringResult.confidence, 0.7, "Strong spring color should have high confidence")
+    // Test borderline cases for the warmCoolThreshold (b* = 12)
+    func testWarmCoolBorderline() {
+        // Just below warm threshold (b* = 11.9) and light - should be Summer
+        let coolLight = ColorConverters.LabColor(L: 70.0, a: 0.0, b: 11.9)
+        let coolLightResult = classifier.classify(skinColor: coolLight)
+        XCTAssertEqual(coolLightResult.season, .summer, "Cool and light should be Summer")
         
-        // Borderline color should have lower confidence
-        let borderlineColor = ColorConverters.LabColor(L: 65.0, a: 0.5, b: 15.0)
-        let borderlineResult = classifier.classify(skinColor: borderlineColor)
-        XCTAssertLessThan(borderlineResult.confidence, 0.7, "Borderline color should have lower confidence")
+        // Just at warm threshold (b* = 12.0) and light - should be Spring
+        let warmLight = ColorConverters.LabColor(L: 70.0, a: 0.0, b: 12.0)
+        let warmLightResult = classifier.classify(skinColor: warmLight)
+        XCTAssertEqual(warmLightResult.season, .spring, "Warm and light should be Spring")
     }
     
-    // Test the effect of hair color on classification
-    func testHairColorInfluence() {
-        // Borderline skin that could be either Spring or Summer
-        let borderlineSkin = ColorConverters.LabColor(L: 72.0, a: 1.0, b: 15.0)
+    // Test borderline cases for the lightDarkThreshold (L = 65)
+    func testLightDarkBorderline() {
+        // Just below light threshold (L = 64.9) and warm - should be Autumn
+        let warmDark = ColorConverters.LabColor(L: 64.9, a: 10.0, b: 20.0)
+        let warmDarkResult = classifier.classify(skinColor: warmDark)
+        XCTAssertEqual(warmDarkResult.season, .autumn, "Warm and dark should be Autumn")
         
-        // Without hair color
-        let resultWithoutHair = classifier.classify(skinColor: borderlineSkin)
+        // Just at light threshold (L = 65.0) and warm - should be Spring
+        let warmLight = ColorConverters.LabColor(L: 65.0, a: 5.0, b: 15.0)
+        let warmLightResult = classifier.classify(skinColor: warmLight)
+        XCTAssertEqual(warmLightResult.season, .spring, "Warm and light should be Spring")
+    }
+    
+    // Test basic classification without hair color influence
+    func testBasicClassification() {
+        // Borderline skin that could be either Spring or Summer (almost warm, light)
+        let borderlineSkin = ColorConverters.LabColor(L: 70.0, a: 0.0, b: 11.5) // Just below warm threshold
         
-        // With warm hair color (should push toward Spring)
-        let warmHair = ColorConverters.LabColor(L: 55.0, a: 10.0, b: 20.0)
-        let resultWithWarmHair = classifier.classify(skinColor: borderlineSkin, hairColor: warmHair)
-        
-        // With cool hair color (should push toward Summer)
-        let coolHair = ColorConverters.LabColor(L: 45.0, a: -5.0, b: 10.0)
-        let resultWithCoolHair = classifier.classify(skinColor: borderlineSkin, hairColor: coolHair)
-        
-        // Hair color should influence the result for borderline cases
-        if resultWithoutHair.season == .spring {
-            XCTAssertEqual(resultWithWarmHair.season, .spring, "Warm hair should maintain or strengthen Spring classification")
-            // Cool hair might push it to Summer if it's very borderline
-        } else if resultWithoutHair.season == .summer {
-            XCTAssertEqual(resultWithCoolHair.season, .summer, "Cool hair should maintain or strengthen Summer classification")
-            // Warm hair might push it to Spring if it's very borderline
-        }
+        // Should be classified as Summer
+        let result = classifier.classify(skinColor: borderlineSkin)
+        XCTAssertEqual(result.season, .summer, "Borderline cool light skin should be Summer")
     }
     
     // Test deltaE calculations to nearest seasons
