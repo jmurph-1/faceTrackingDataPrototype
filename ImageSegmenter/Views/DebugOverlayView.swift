@@ -24,8 +24,7 @@ struct DebugOverlayView: View {
     // MARK: - Body
 
     var body: some View {
-        print("DebugOverlayView body called with qualityScore: \(String(describing: qualityScore))")
-        return VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
             // Header with toggle
             HStack {
                 Text("DEBUG")
@@ -182,7 +181,6 @@ struct DebugOverlayView: View {
                 .foregroundColor(.gray)
 
             if let quality = qualityScore {
-                print("Rendering quality scores - Overall: \(quality.overall), FaceSize: \(quality.faceSize), Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
                 HStack {
                     Text("Overall: \(String(format: "%.2f", quality.overall))")
                         .font(.system(size: 10, weight: .medium))

@@ -147,6 +147,11 @@ class SegmentationService {
   func getCurrentColorInfo() -> MultiClassSegmentedImageRenderer.ColorInfo {
     return multiClassRenderer.getCurrentColorInfo()
   }
+  
+  // Update face landmarks for quality calculation
+  func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
+    multiClassRenderer.updateFaceLandmarks(landmarks)
+  }
 }
 
 // MARK: - ImageSegmenterServiceLiveStreamDelegate
