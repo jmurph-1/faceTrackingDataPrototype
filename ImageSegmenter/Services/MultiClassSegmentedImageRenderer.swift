@@ -462,14 +462,14 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
           switch segmentClass {
           case SegmentationClass.hair.rawValue:
             let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
-            destBGRA[0] = min(255, Int(Float(destBGRA[0]) * 1.1))  // B
-            destBGRA[1] = min(255, Int(Float(destBGRA[1]) * 1.1))  // G
-            destBGRA[2] = min(255, Int(Float(destBGRA[2]) * 1.1))  // R
+            destBGRA[0] = UInt8(min(255, Int(Float(destBGRA[0]) * 1.1)))  // B
+            destBGRA[1] = UInt8(min(255, Int(Float(destBGRA[1]) * 1.1)))  // G
+            destBGRA[2] = UInt8(min(255, Int(Float(destBGRA[2]) * 1.1)))  // R
           case SegmentationClass.skin.rawValue:
             let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
-            destBGRA[0] = min(255, Int(Float(destBGRA[0]) * 1.05))  // B
-            destBGRA[1] = min(255, Int(Float(destBGRA[1]) * 1.05))  // G
-            destBGRA[2] = min(255, Int(Float(destBGRA[2]) * 1.05))  // R
+            destBGRA[0] = UInt8(min(255, Int(Float(destBGRA[0]) * 1.05)))  // B
+            destBGRA[1] = UInt8(min(255, Int(Float(destBGRA[1]) * 1.05)))  // G
+            destBGRA[2] = UInt8(min(255, Int(Float(destBGRA[2]) * 1.05)))  // R
           default:
             break
           }
