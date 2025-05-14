@@ -2,15 +2,15 @@ import SwiftUI
 
 /// View for displaying frame quality indicators and feedback
 struct FrameQualityIndicatorView: View {
-    
+
     /// The quality score to display
     let qualityScore: FrameQualityService.QualityScore
-    
+
     /// Show detailed scores
     var showDetailed: Bool = false
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(spacing: 8) {
             // Overall quality indicator
@@ -21,9 +21,9 @@ struct FrameQualityIndicatorView: View {
                 )
                 .foregroundColor(qualityScore.isAcceptableForAnalysis ? .green : .orange)
                 .font(.headline)
-                
+
                 Spacer()
-                
+
                 // Progress indicator
                 ProgressView(value: Double(qualityScore.overall))
                     .progressViewStyle(LinearProgressViewStyle())
@@ -31,7 +31,7 @@ struct FrameQualityIndicatorView: View {
                     .accentColor(qualityScore.isAcceptableForAnalysis ? .green : .orange)
             }
             .padding(.horizontal)
-            
+
             // Feedback message if quality is not acceptable
             if let feedback = qualityScore.feedbackMessage {
                 Text(feedback)
@@ -42,7 +42,7 @@ struct FrameQualityIndicatorView: View {
                     .background(Color.orange.opacity(0.8))
                     .cornerRadius(8)
             }
-            
+
             // Detailed scores (optional)
             if showDetailed {
                 VStack(spacing: 6) {
@@ -65,9 +65,9 @@ struct FrameQualityIndicatorView: View {
                 .stroke(qualityScore.isAcceptableForAnalysis ? Color.green.opacity(0.6) : Color.orange.opacity(0.6), lineWidth: 1)
         )
     }
-    
+
     // MARK: - Helper views
-    
+
     /// Create a row for displaying a detailed score
     private func detailedScoreRow(label: String, value: Float, threshold: Float) -> some View {
         HStack {
@@ -75,12 +75,12 @@ struct FrameQualityIndicatorView: View {
                 .font(.caption)
                 .foregroundColor(.gray)
                 .frame(width: 70, alignment: .leading)
-            
+
             ProgressView(value: Double(value), total: 1.0)
                 .progressViewStyle(LinearProgressViewStyle())
                 .frame(height: 6)
                 .accentColor(value >= threshold ? .green : .orange)
-            
+
             Text(String(format: "%.0f%%", value * 100))
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -107,7 +107,7 @@ struct FrameQualityIndicatorView_Previews: PreviewProvider {
             .previewLayout(.sizeThatFits)
             .padding()
             .background(Color.black)
-            
+
             // Poor quality
             FrameQualityIndicatorView(
                 qualityScore: FrameQualityService.QualityScore(
@@ -124,4 +124,4 @@ struct FrameQualityIndicatorView_Previews: PreviewProvider {
             .background(Color.black)
         }
     }
-} 
+}

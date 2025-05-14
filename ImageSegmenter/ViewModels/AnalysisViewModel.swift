@@ -30,44 +30,44 @@ class AnalysisViewModel: ObservableObject {
     @Published var hairColorLab: ColorConverters.LabColor?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    
+
     // MARK: - Computed Properties
-    
+
     /// Formatted confidence level string
     var confidenceText: String {
         return String(format: "%.1f%%", confidence * 100)
     }
-    
+
     /// Season display name
     var seasonDisplayName: String {
         guard let season = season else { return "Unknown" }
         return season.displayName
     }
-    
+
     /// Season description
     var seasonDescription: String {
         guard let season = season else { return "" }
         return season.seasonDescription
     }
-    
+
     /// Color palette for the determined season
     var seasonColorPalette: [UIColor] {
         guard let season = season else { return [] }
         return season.colorPalette
     }
-    
+
     /// Determine if the confidence is high enough to be reliable
     var isConfidenceHigh: Bool {
         return confidence >= 0.7
     }
-    
+
     // MARK: - Initialization
     init() {
         // Empty initialization
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Update the view model with analysis result
     /// - Parameter result: The analysis result from classification
     func updateWithResult(_ result: AnalysisResult) {
@@ -78,7 +78,7 @@ class AnalysisViewModel: ObservableObject {
         self.skinColor = result.skinColor
         self.hairColor = result.hairColor
         self.thumbnail = result.thumbnail
-        
+
         // Manually convert Lab tuples to ColorConverters.LabColor structs
         if let skinLabTuple = result.skinColorLab {
             self.skinColorLab = ColorConverters.LabColor(
@@ -89,7 +89,7 @@ class AnalysisViewModel: ObservableObject {
         } else {
             self.skinColorLab = nil
         }
-        
+
         if let hairLabTuple = result.hairColorLab {
             self.hairColorLab = ColorConverters.LabColor(
                 L: hairLabTuple.L,
@@ -99,11 +99,11 @@ class AnalysisViewModel: ObservableObject {
         } else {
             self.hairColorLab = nil
         }
-        
+
         self.errorMessage = nil
         self.isLoading = false
     }
-    
+
     /// Clear any current analysis result
     func clearResult() {
         self.season = nil
@@ -117,32 +117,32 @@ class AnalysisViewModel: ObservableObject {
         self.hairColorLab = nil
         self.errorMessage = nil
     }
-    
+
     /// Set the loading state
     /// - Parameter isLoading: Whether the view model is loading data
     func setLoading(_ isLoading: Bool) {
         self.isLoading = isLoading
     }
-    
+
     /// Set error message
     /// - Parameter message: Error message to display
     func setError(_ message: String) {
         self.errorMessage = message
         self.isLoading = false
     }
-    
+
     /// Get human-readable and localized description for the analysis result
     func getAnalysisDescription() -> String {
         guard let season = season else {
             return "No analysis available."
         }
-        
+
         var description = "You are a \(seasonDisplayName)."
-        
+
         if let nextClosestSeason = nextClosestSeason {
             description += " Your next closest season is \(nextClosestSeason.displayName)."
         }
-        
+
         if confidence > 0.9 {
             description += " This classification has very high confidence."
         } else if confidence > 0.7 {
@@ -152,14 +152,14 @@ class AnalysisViewModel: ObservableObject {
         } else {
             description += " This classification has low confidence. You might want to try again with better lighting."
         }
-        
+
         return description
     }
-    
+
     /// Get color recommendations based on the determined season
     func getColorRecommendations() -> [String] {
         guard let season = season else { return [] }
-        
+
         switch season {
         case .spring:
             return [
@@ -208,7 +208,7 @@ extension SeasonClassifier.Season {
             return "Winter"
         }
     }
-    
+
     /// Description for the season
     var seasonDescription: String {
         switch self {
@@ -222,7 +222,7 @@ extension SeasonClassifier.Season {
             return "Winters have cool, clear coloring with blue undertones. They typically have dark brown, black, or platinum hair, and clear blue, deep brown, or dark green eyes."
         }
     }
-    
+
     /// Color palette for the season
     var colorPalette: [UIColor] {
         switch self {
@@ -260,4 +260,4 @@ extension SeasonClassifier.Season {
             ]
         }
     }
-} 
+}

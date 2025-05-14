@@ -59,10 +59,6 @@ class MediaLibraryViewController: UIViewController {
   @IBOutlet weak var pickFromGalleryButtonBottomSpace: NSLayoutConstraint!
   @IBOutlet weak var previewView: PreviewMetalView!
 
-  override func viewDidLoad() {
-    super.viewDidLoad()
-  }
-
   override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     redrawBoundingBoxesForCurrentDeviceOrientation()
@@ -196,8 +192,7 @@ extension MediaLibraryViewController: UIImagePickerControllerDelegate, UINavigat
 
     if let player = playerViewController?.player {
       player.replaceCurrentItem(with: playerItem)
-    }
-    else {
+    } else {
       playerViewController?.player = AVPlayer(playerItem: playerItem)
     }
 
@@ -238,7 +233,7 @@ extension MediaLibraryViewController: UIImagePickerControllerDelegate, UINavigat
 
   func imagePickerController(
     _ picker: UIImagePickerController,
-    didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
       clearPlayerView()
       pickedImageView.image = nil
 
@@ -318,11 +313,11 @@ extension MediaLibraryViewController: UIImagePickerControllerDelegate, UINavigat
         modelPath: InferenceConfigurationManager.sharedInstance.model.modelPath,
         delegate: InferenceConfigurationManager.sharedInstance.delegate)
     default:
-      break;
+      break
     }
   }
 
-  func getVideoFormatDescription(from asset: AVAsset) -> (description: CMFormatDescription?, needChangeWidthHeight: Bool)  {
+  func getVideoFormatDescription(from asset: AVAsset) -> (description: CMFormatDescription?, needChangeWidthHeight: Bool) {
     // Get the video track from the asset
     guard let videoTrack = asset.tracks(withMediaType: AVMediaType.video).first else {
       print("No video track found in the asset.")

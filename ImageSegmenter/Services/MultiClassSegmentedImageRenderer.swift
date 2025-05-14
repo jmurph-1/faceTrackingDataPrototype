@@ -65,7 +65,7 @@ class MultiClassSegmentedImageRenderer {
     private var lastProcessingTime: CFTimeInterval = 0
     private var processingStartTime: CFTimeInterval = 0
     private var isProcessingHeavyLoad: Bool = false
-    
+
   // Downsampling factor for color analysis
   private let downsampleFactor: Int = 4
 
@@ -128,8 +128,7 @@ class MultiClassSegmentedImageRenderer {
 
     var metalTextureCache: CVMetalTextureCache?
     if CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, metalDevice, nil, &metalTextureCache)
-      != kCVReturnSuccess
-    {
+      != kCVReturnSuccess {
       assertionFailure("Unable to allocate texture cache")
     } else {
       textureCache = metalTextureCache
@@ -248,12 +247,12 @@ class MultiClassSegmentedImageRenderer {
               if (gid.x >= destinationTexture.get_width() || gid.y >= destinationTexture.get_height()) {
                   return;
               }
-              
+
               uint2 sourcePos = gid * scale;
-              
+
               // Read the source pixel
               float4 color = sourceTexture.read(sourcePos);
-              
+
               // Write to the destination texture
               destinationTexture.write(color, gid);
           }
@@ -406,7 +405,7 @@ class MultiClassSegmentedImageRenderer {
       kCVPixelBufferPixelFormatTypeKey as String: UInt(inputMediaSubType),
       kCVPixelBufferWidthKey as String: width,
       kCVPixelBufferHeightKey as String: height,
-      kCVPixelBufferIOSurfacePropertiesKey as String: [:],
+      kCVPixelBufferIOSurfacePropertiesKey as String: [:]
     ]
 
     var pixelBufferPool: CVPixelBufferPool?
@@ -526,7 +525,7 @@ class MultiClassSegmentedImageRenderer {
   func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> CVPixelBuffer? {
       // Start timing the processing
         processingStartTime = CACurrentMediaTime()
-        
+
         // Check if we should skip this frame based on load
         if isProcessingHeavyLoad && frameCounter % 2 != 0 {
           frameCounter += 1
@@ -587,8 +586,7 @@ class MultiClassSegmentedImageRenderer {
       // Try GPU processing
       if !processWithGPU(
         inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas,
-        width: pixelBufferWidth, height: pixelBufferHeight)
-      {
+        width: pixelBufferWidth, height: pixelBufferHeight) {
         // Fall back to CPU if GPU processing fails
         log("GPU processing failed, falling back to CPU", level: .warning)
         processFallbackCPU(
@@ -647,8 +645,7 @@ class MultiClassSegmentedImageRenderer {
       let segBuffer: MTLBuffer
 
       if let pooledBuffer = BufferPoolManager.shared.getBuffer(
-        length: bufferSize, options: .storageModeShared)
-      {
+        length: bufferSize, options: .storageModeShared) {
         // Copy the segmentation data to the pooled buffer
         memcpy(pooledBuffer.contents(), segmentDatas, bufferSize)
         segBuffer = pooledBuffer
@@ -745,8 +742,7 @@ class MultiClassSegmentedImageRenderer {
 
     // Process the segmentation texture if available
     if let segmenterResult = result.imageSegmenterResult,
-      let categoryMask = segmenterResult.categoryMask
-    {
+      let categoryMask = segmenterResult.categoryMask {
 
       // Process the mask data and draw it to the texture
       // This is simplified - would need to be expanded in real implementation

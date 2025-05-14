@@ -2,28 +2,28 @@ import SwiftUI
 
 /// View for displaying season analysis results
 struct AnalysisResultView: View {
-    
+
     /// View model for analysis results
     @ObservedObject var viewModel: AnalysisResultViewModel
-    
+
     /// Dismiss action
     var onDismiss: () -> Void
-    
+
     /// Retry action
     var onRetry: () -> Void
-    
+
     /// See details action (stub for future expansion)
     var onSeeDetails: () -> Void
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(spacing: 20) {
             // Header
             Text("Your Season Analysis")
                 .font(.headline)
                 .padding(.top)
-            
+
             // Result content
             if let result = viewModel.currentResult {
                 resultContent(result)
@@ -33,7 +33,7 @@ struct AnalysisResultView: View {
                     .foregroundColor(.gray)
                     .padding()
             }
-            
+
             // Actions
             actionButtons()
                 .padding(.bottom)
@@ -44,39 +44,39 @@ struct AnalysisResultView: View {
         .shadow(radius: 5)
         .padding()
     }
-    
+
     // MARK: - Helper views
-    
+
     /// Create the result content section
     private func resultContent(_ result: AnalysisResult) -> some View {
         VStack(spacing: 20) {
             // Season badge
             seasonBadge(for: result.season)
                 .padding()
-            
+
             // Color samples
             colorSamples(result)
                 .padding(.horizontal)
-            
+
             // Season description
             Text(result.seasonDescription)
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            
+
             // Confidence information
             HStack {
                 Text("Match confidence: ")
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                
+
                 Text(result.confidencePercentage)
                     .font(.subheadline)
                     .foregroundColor(.primary)
                     .fontWeight(.semibold)
-                
+
                 Spacer()
-                
+
                 if result.deltaEToNextClosest > 0 {
                     Text("ΔE to \(result.nextClosestSeason.rawValue): \(String(format: "%.1f", result.deltaEToNextClosest))")
                         .font(.caption)
@@ -86,7 +86,7 @@ struct AnalysisResultView: View {
             .padding(.horizontal)
         }
     }
-    
+
     /// Create the season badge
     private func seasonBadge(for season: SeasonClassifier.Season) -> some View {
         VStack {
@@ -95,12 +95,12 @@ struct AnalysisResultView: View {
                 Circle()
                     .fill(seasonColor(for: season))
                     .frame(width: 120, height: 120)
-                
+
                 Image(systemName: seasonIcon(for: season))
                     .font(.system(size: 50))
                     .foregroundColor(.white)
             }
-            
+
             // Season name
             Text(season.rawValue)
                 .font(.title)
@@ -108,7 +108,7 @@ struct AnalysisResultView: View {
                 .padding(.top, 8)
         }
     }
-    
+
     /// Create color sample views
     private func colorSamples(_ result: AnalysisResult) -> some View {
         HStack(spacing: 20) {
@@ -119,12 +119,12 @@ struct AnalysisResultView: View {
                     .frame(width: 50, height: 50)
                     .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
                     .shadow(radius: 2)
-                
+
                 Text("Skin")
                     .font(.caption)
                     .foregroundColor(.gray)
             }
-            
+
             // Hair color (if available)
             if let hairColor = result.hairColor {
                 VStack {
@@ -133,7 +133,7 @@ struct AnalysisResultView: View {
                         .frame(width: 50, height: 50)
                         .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
                         .shadow(radius: 2)
-                    
+
                     Text("Hair")
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -141,14 +141,14 @@ struct AnalysisResultView: View {
             }
         }
     }
-    
+
     /// Action buttons
     private func actionButtons() -> some View {
         VStack(spacing: 12) {
             // Save button
             if let result = viewModel.currentResult {
                 Button(action: {
-                    let _ = viewModel.saveCurrentResult()
+                    _ = viewModel.saveCurrentResult()
                 }) {
                     Label(
                         viewModel.isResultSaved(result) ? "Saved" : "Save Result",
@@ -164,7 +164,7 @@ struct AnalysisResultView: View {
                 }
                 .disabled(viewModel.isResultSaved(result))
             }
-            
+
             // Bottom action buttons
             HStack {
                 // Retry button
@@ -178,7 +178,7 @@ struct AnalysisResultView: View {
                         )
                         .foregroundColor(.primary)
                 }
-                
+
                 // See details button (stub for future)
                 Button(action: onSeeDetails) {
                     Label("See Details", systemImage: "list.bullet")
@@ -191,7 +191,7 @@ struct AnalysisResultView: View {
                         .foregroundColor(.primary)
                 }
             }
-            
+
             // Close button
             Button(action: onDismiss) {
                 Text("Close")
@@ -206,9 +206,9 @@ struct AnalysisResultView: View {
         }
         .padding(.horizontal)
     }
-    
+
     // MARK: - Helper methods
-    
+
     /// Get a color for a season
     private func seasonColor(for season: SeasonClassifier.Season) -> Color {
         switch season {
@@ -222,7 +222,7 @@ struct AnalysisResultView: View {
             return Color.purple
         }
     }
-    
+
     /// Get an icon for a season
     private func seasonIcon(for season: SeasonClassifier.Season) -> String {
         switch season {
@@ -255,7 +255,7 @@ struct AnalysisResultView_Previews: PreviewProvider {
             thumbnail: nil
         )
         viewModel.updateWithResult(sampleResult)
-        
+
         return Group {
             // Light mode
             AnalysisResultView(
@@ -266,7 +266,7 @@ struct AnalysisResultView_Previews: PreviewProvider {
             )
             .previewLayout(.sizeThatFits)
             .padding()
-            
+
             // Dark mode
             AnalysisResultView(
                 viewModel: viewModel,
@@ -279,4 +279,4 @@ struct AnalysisResultView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
         }
     }
-} 
+}

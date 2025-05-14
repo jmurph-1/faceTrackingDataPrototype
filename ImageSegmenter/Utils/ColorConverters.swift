@@ -11,13 +11,13 @@ class ColorUtils {
         let labColor = ColorConverters.colorToLab(color)
         return (labColor.L, labColor.a, labColor.b)
     }
-    
+
     /// Calculate the color difference (ΔE) between two Lab colors using CIEDE2000 formula
     /// - Parameters:
     ///   - lab1: First Lab color as (L, a, b) tuple
     ///   - lab2: Second Lab color as (L, a, b) tuple
     /// - Returns: Color difference value
-    static func deltaE2000(lab1: (L: CGFloat, a: CGFloat, b: CGFloat), 
+    static func deltaE2000(lab1: (L: CGFloat, a: CGFloat, b: CGFloat),
                           lab2: (L: CGFloat, a: CGFloat, b: CGFloat)) -> CGFloat {
         let color1 = ColorConverters.LabColor(L: lab1.L, a: lab1.a, b: lab1.b)
         let color2 = ColorConverters.LabColor(L: lab2.L, a: lab2.a, b: lab2.b)
@@ -27,65 +27,65 @@ class ColorUtils {
 
 /// Color conversion utilities for image analysis
 struct ColorConverters {
-    
+
     /// CIELAB color representation
     struct LabColor {
         let L: CGFloat  // Lightness (0-100)
         let a: CGFloat  // Green-Red (-128 to +127)
         let b: CGFloat  // Blue-Yellow (-128 to +127)
-        
+
         /// Calculate the color difference (ΔE) between two Lab colors using CIE76 formula
         func deltaE(to other: LabColor) -> CGFloat {
             let deltaL = L - other.L
             let deltaA = a - other.a
             let deltaB = b - other.b
-            
+
             // CIE76 color difference formula
             return sqrt(deltaL * deltaL + deltaA * deltaA + deltaB * deltaB)
         }
-        
+
         /// Calculate the color difference (ΔE) between two Lab colors using CIEDE2000 formula
         func deltaE2000(to other: LabColor) -> CGFloat {
             // Convert Lab values to the ranges used by the CIEDE2000 formula
             let L1 = Double(L)
             let a1 = Double(a)
             let b1 = Double(b)
-            
+
             let L2 = Double(other.L)
             let a2 = Double(other.a)
             let b2 = Double(other.b)
-            
+
             // Calculate CIEDE2000 (simplified implementation)
             let kL = 1.0  // Lightness parameter
             let kC = 1.0  // Chroma parameter
             let kH = 1.0  // Hue parameter
-            
+
             // Step 1: Calculate C1, C2, C̄, ΔL′, ΔC′, ΔH′
             let C1 = sqrt(a1 * a1 + b1 * b1)
             let C2 = sqrt(a2 * a2 + b2 * b2)
             let Cbar = (C1 + C2) / 2.0
-            
+
             // Compensate a values
             let G = 0.5 * (1.0 - sqrt(pow(Cbar, 7) / (pow(Cbar, 7) + pow(25.0, 7))))
             let a1Prime = a1 * (1.0 + G)
             let a2Prime = a2 * (1.0 + G)
-            
+
             // Recalculate C values
             let C1Prime = sqrt(a1Prime * a1Prime + b1 * b1)
             let C2Prime = sqrt(a2Prime * a2Prime + b2 * b2)
             let CbarPrime = (C1Prime + C2Prime) / 2.0
-            
+
             // Calculate h' values
             var h1Prime = atan2(b1, a1Prime) * 180.0 / Double.pi
             if h1Prime < 0.0 { h1Prime += 360.0 }
-            
+
             var h2Prime = atan2(b2, a2Prime) * 180.0 / Double.pi
             if h2Prime < 0.0 { h2Prime += 360.0 }
-            
+
             // Calculate ΔH'
             var deltaHPrime: Double
             let diffHPrime = h2Prime - h1Prime
-            
+
             if C1Prime * C2Prime == 0.0 {
                 deltaHPrime = 0.0
             } else if abs(diffHPrime) <= 180.0 {
@@ -95,12 +95,12 @@ struct ColorConverters {
             } else {
                 deltaHPrime = diffHPrime + 360.0
             }
-            
+
             // Calculate ΔH'
             let deltaLPrime = L2 - L1
             let deltaCPrime = C2Prime - C1Prime
             deltaHPrime = 2.0 * sqrt(C1Prime * C2Prime) * sin(deltaHPrime * Double.pi / 360.0)
-            
+
             // Calculate CIEDE2000 components
             let Lbar = (L1 + L2) / 2.0
             let SL = 1.0 + (0.015 * pow(Lbar - 50.0, 2)) / sqrt(20.0 + pow(Lbar - 50.0, 2))
@@ -110,12 +110,12 @@ struct ColorConverters {
                    0.32 * cos((3.0 * CbarPrime + 6.0) * Double.pi / 180.0) -
                    0.20 * cos((4.0 * CbarPrime - 63.0) * Double.pi / 180.0)
             let SH = 1.0 + 0.015 * CbarPrime * T
-            
+
             let hbarPrime = (h1Prime + h2Prime) / 2.0
             let deltaTheta = 30.0 * exp(-pow((hbarPrime - 275.0) / 25.0, 2))
             let RC = 2.0 * sqrt(pow(CbarPrime, 7) / (pow(CbarPrime, 7) + pow(25.0, 7)))
             let RT = -RC * sin(2.0 * deltaTheta * Double.pi / 180.0)
-            
+
             // Calculate final CIEDE2000 value
             let deltaE = sqrt(
                 pow(deltaLPrime / (kL * SL), 2) +
@@ -123,10 +123,10 @@ struct ColorConverters {
                 pow(deltaHPrime / (kH * SH), 2) +
                 RT * (deltaCPrime / (kC * SC)) * (deltaHPrime / (kH * SH))
             )
-            
+
             return CGFloat(deltaE)
         }
-        
+
         /// Convert Lab color to UIColor (for use with ColorKit)
         private func labToUIColor(_ lab: LabColor) -> UIColor {
             // Since ColorKit doesn't have a direct constructor for Lab colors,
@@ -134,16 +134,16 @@ struct ColorConverters {
             var red: CGFloat = 0.0
             var green: CGFloat = 0.0
             var blue: CGFloat = 0.0
-            
+
             // Simple Lab to RGB conversion for ColorKit compatibility
             // This is a simplification, but should work for our comparisons
-            return UIColor(red: lab.L/100.0, 
-                          green: (lab.a + 128)/255.0, 
+            return UIColor(red: lab.L/100.0,
+                          green: (lab.a + 128)/255.0,
                           blue: (lab.b + 128)/255.0,
                           alpha: 1.0)
         }
     }
-    
+
     /// Convert RGB to CIELAB color space using GPU-accelerated matrix math
     /// - Parameters:
     ///   - red: Red component (0-1)
@@ -184,20 +184,20 @@ struct ColorConverters {
 
         return LabColor(L: CGFloat(L), a: CGFloat(a), b: CGFloat(b))
     }
-    
+
     /// Convert UIColor to Lab
     static func colorToLab(_ color: UIColor) -> LabColor {
         var red: CGFloat = 0.0
         var green: CGFloat = 0.0
         var blue: CGFloat = 0.0
         var alpha: CGFloat = 0.0
-        
+
         color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         return rgbToLab(red: red, green: green, blue: blue)
     }
-    
+
     // MARK: - Helper functions
-    
+
     /// Convert sRGB component to linear RGB
     private static func rgba_to_linear(_ c: Float) -> Float {
         if c <= 0.04045 {
@@ -206,12 +206,12 @@ struct ColorConverters {
             return pow((c + 0.055) / 1.055, 2.4)
         }
     }
-    
+
     /// XYZ to Lab conversion helper function
     private static func xyz_to_lab(_ c: Float) -> Float {
         let epsilon: Float = 0.008856
         let kappa: Float = 903.3
-        
+
         if c > epsilon {
             return pow(c, 1.0 / 3.0)
         } else {
@@ -227,14 +227,14 @@ extension UIColor {
     var labColor: ColorConverters.LabColor {
         return ColorConverters.colorToLab(self)
     }
-    
+
     /// Calculate the color difference (ΔE) to another color using CIE76
     func deltaE(to otherColor: UIColor) -> CGFloat {
         return self.labColor.deltaE(to: otherColor.labColor)
     }
-    
+
     /// Calculate the color difference (ΔE) to another color using CIEDE2000
     func deltaE2000(to otherColor: UIColor) -> CGFloat {
         return self.labColor.deltaE2000(to: otherColor.labColor)
     }
-} 
+}

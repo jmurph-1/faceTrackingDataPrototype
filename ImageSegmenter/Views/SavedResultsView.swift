@@ -2,21 +2,21 @@ import SwiftUI
 
 /// View for displaying saved season analysis results
 struct SavedResultsView: View {
-    
+
     /// View model for analysis results
     @ObservedObject var viewModel: AnalysisResultViewModel
-    
+
     /// Controls whether the sheet is presented
     @Binding var isPresented: Bool
-    
+
     /// Selected result for details
     @State private var selectedResult: AnalysisResult?
-    
+
     /// Show details sheet
     @State private var showDetails = false
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         NavigationView {
             Group {
@@ -45,20 +45,20 @@ struct SavedResultsView: View {
             viewModel.loadSavedResults()
         }
     }
-    
+
     // MARK: - Helper views
-    
+
     /// Empty state view
     private func emptyStateView() -> some View {
         VStack(spacing: 20) {
             Image(systemName: "rectangle.on.rectangle.slash")
                 .font(.system(size: 60))
                 .foregroundColor(.gray)
-            
+
             Text("No Saved Analyses")
                 .font(.title2)
                 .fontWeight(.bold)
-            
+
             Text("Your saved season analyses will appear here.")
                 .font(.body)
                 .foregroundColor(.gray)
@@ -66,7 +66,7 @@ struct SavedResultsView: View {
                 .padding(.horizontal)
         }
     }
-    
+
     /// Results list
     private func resultsList() -> some View {
         List {
@@ -84,7 +84,7 @@ struct SavedResultsView: View {
         }
         .listStyle(InsetGroupedListStyle())
     }
-    
+
     /// Result row
     private func resultRow(_ result: AnalysisResult) -> some View {
         HStack(spacing: 15) {
@@ -93,21 +93,21 @@ struct SavedResultsView: View {
                 Circle()
                     .fill(seasonColor(for: result.season))
                     .frame(width: 50, height: 50)
-                
+
                 Image(systemName: seasonIcon(for: result.season))
                     .font(.system(size: 20))
                     .foregroundColor(.white)
             }
-            
+
             // Result info
             VStack(alignment: .leading, spacing: 4) {
                 Text(result.season.rawValue)
                     .font(.headline)
-                
+
                 Text(result.formattedDate)
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                
+
                 // Color samples
                 HStack(spacing: 8) {
                     // Skin color
@@ -115,7 +115,7 @@ struct SavedResultsView: View {
                         .fill(Color(result.skinColor))
                         .frame(width: 15, height: 15)
                         .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 0.5))
-                    
+
                     // Hair color (if available)
                     if let hairColor = result.hairColor {
                         Circle()
@@ -123,9 +123,9 @@ struct SavedResultsView: View {
                             .frame(width: 15, height: 15)
                             .overlay(Circle().stroke(Color.gray.opacity(0.3), lineWidth: 0.5))
                     }
-                    
+
                     Spacer()
-                    
+
                     // Confidence
                     Text(result.confidencePercentage)
                         .font(.caption)
@@ -138,9 +138,9 @@ struct SavedResultsView: View {
                         )
                 }
             }
-            
+
             Spacer()
-            
+
             // Chevron indicator
             Image(systemName: "chevron.right")
                 .font(.caption)
@@ -148,7 +148,7 @@ struct SavedResultsView: View {
         }
         .padding(.vertical, 8)
     }
-    
+
     /// Detail view for a result
     private func detailView(for result: AnalysisResult) -> some View {
         AnalysisResultView(
@@ -168,17 +168,17 @@ struct SavedResultsView: View {
             viewModel.updateWithResult(result)
         }
     }
-    
+
     // MARK: - Helper methods
-    
+
     /// Delete results at given indices
     private func deleteResults(at indexSet: IndexSet) {
         for index in indexSet {
             let result = viewModel.savedResults[index]
-            let _ = viewModel.deleteResult(with: result.date)
+            _ = viewModel.deleteResult(with: result.date)
         }
     }
-    
+
     /// Get a color for a season
     private func seasonColor(for season: SeasonClassifier.Season) -> Color {
         switch season {
@@ -192,7 +192,7 @@ struct SavedResultsView: View {
             return Color.purple
         }
     }
-    
+
     /// Get an icon for a season
     private func seasonIcon(for season: SeasonClassifier.Season) -> String {
         switch season {
@@ -213,10 +213,10 @@ struct SavedResultsView_Previews: PreviewProvider {
     static var previews: some View {
         // Setup a sample view model with results
         let viewModel = AnalysisResultViewModel()
-        
+
         // Add sample results
         let seasons: [SeasonClassifier.Season] = [.spring, .summer, .autumn, .winter]
-        
+
         for (index, season) in seasons.enumerated() {
             let result = AnalysisResult(
                 season: season,
@@ -240,17 +240,17 @@ struct SavedResultsView_Previews: PreviewProvider {
                 thumbnail: nil,
                 date: Date().addingTimeInterval(-Double(index) * 86400) // Subtract days
             )
-            
+
             viewModel.savedResults.append(result)
         }
-        
+
         return Group {
             // With results
             SavedResultsView(
                 viewModel: viewModel,
                 isPresented: .constant(true)
             )
-            
+
             // Empty state
             SavedResultsView(
                 viewModel: AnalysisResultViewModel(),
@@ -258,4 +258,4 @@ struct SavedResultsView_Previews: PreviewProvider {
             )
         }
     }
-} 
+}

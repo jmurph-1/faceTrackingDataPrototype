@@ -31,9 +31,9 @@ class InferenceConfigurationManager: NSObject {
   }
 
   static let sharedInstance = InferenceConfigurationManager()
-  
+
   static let notificationName = Notification.Name.init(rawValue: "com.google.mediapipe.inferenceConfigChanged")
-  
+
   private func postConfigChangedNotification() {
     NotificationCenter.default
       .post(name: InferenceConfigurationManager.notificationName, object: nil)

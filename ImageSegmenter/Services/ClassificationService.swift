@@ -26,12 +26,12 @@ protocol ClassificationServiceDelegate: AnyObject {
 class ClassificationService {
     // MARK: - Properties
     weak var delegate: ClassificationServiceDelegate?
-    
+
     // MARK: - Initialization
     init() {}
-    
+
     // MARK: - Public Methods
-    
+
     /// Analyze the current frame with the provided color info
     /// - Parameters:
     ///   - pixelBuffer: The current video pixel buffer for thumbnail creation
@@ -42,24 +42,24 @@ class ClassificationService {
             delegate?.classificationService(self, didFailWithError: ClassificationError.insufficientColorData)
             return
         }
-        
+
         // Get colors for analysis
         let skinColor = colorInfo.skinColor
         let hairColor = colorInfo.hairColor
-        
+
         // Convert colors to Lab space
         let skinLab = ColorUtils.convertRGBToLab(color: skinColor)
         let hairLab = ColorUtils.convertRGBToLab(color: hairColor)
-        
+
         // Perform classification with the season classifier
         let classificationResult = SeasonClassifier.classifySeason(
             skinLab: (skinLab.L, skinLab.a, skinLab.b),
             hairLab: (hairLab.L, hairLab.a, hairLab.b)
         )
-        
+
         // Create thumbnail from current frame
         let thumbnail = createThumbnailFromPixelBuffer(pixelBuffer)
-        
+
         // Create analysis result
         let result = AnalysisResult(
             season: classificationResult.season,
@@ -72,13 +72,13 @@ class ClassificationService {
             hairColorLab: hairLab,
             thumbnail: thumbnail
         )
-        
+
         // Notify delegate
         delegate?.classificationService(self, didCompleteAnalysis: result)
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// Create a thumbnail from a pixel buffer
     /// - Parameter pixelBuffer: CVPixelBuffer to convert
     /// - Returns: UIImage thumbnail
@@ -96,4 +96,4 @@ class ClassificationService {
 enum ClassificationError: Error {
     case insufficientColorData
     case analysisFailure
-} 
+}

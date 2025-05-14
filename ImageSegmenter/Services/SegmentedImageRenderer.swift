@@ -226,29 +226,29 @@ class SegmentedImageRenderer {
   private func processFallbackCPU(inputBuffer: CVPixelBuffer, outputBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) {
     CVPixelBufferLockBaseAddress(inputBuffer, CVPixelBufferLockFlags(rawValue: 0))
     CVPixelBufferLockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
-    
+
     let width = CVPixelBufferGetWidth(inputBuffer)
     let height = CVPixelBufferGetHeight(inputBuffer)
-    
+
     let sourceData = CVPixelBufferGetBaseAddress(inputBuffer)!
     let destData = CVPixelBufferGetBaseAddress(outputBuffer)!
     let sourceBytesPerRow = CVPixelBufferGetBytesPerRow(inputBuffer)
     let destBytesPerRow = CVPixelBufferGetBytesPerRow(outputBuffer)
-    
+
     // Basic CPU-based processing
     for row in 0..<height {
       let sourceRowPtr = sourceData.advanced(by: row * sourceBytesPerRow)
       let destRowPtr = destData.advanced(by: row * destBytesPerRow)
-      
+
       for col in 0..<width {
         let pixelOffset = col * 4  // BGRA format (4 bytes per pixel)
         let segmentIdx = row * width + col
         let isMasked = segmentDatas[segmentIdx] > 0
-        
+
         // Get source pixel
         let srcPixel = sourceRowPtr.advanced(by: pixelOffset)
         let destPixel = destRowPtr.advanced(by: pixelOffset)
-        
+
         if isMasked {
           // Simple masked pixel effect (make it brighter for visualization)
           let pixelValue = srcPixel.bindMemory(to: UInt8.self, capacity: 4)
@@ -262,7 +262,7 @@ class SegmentedImageRenderer {
         }
       }
     }
-    
+
     CVPixelBufferUnlockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
     CVPixelBufferUnlockBaseAddress(inputBuffer, CVPixelBufferLockFlags(rawValue: 0))
   }
@@ -308,7 +308,7 @@ class SegmentedImageRenderer {
     commandEncoder.endEncoding()
     commandBuffer.commit()
     commandBuffer.waitUntilCompleted()
-    
+
     if commandBuffer.status == .completed {
       return true
     } else {
@@ -329,7 +329,7 @@ class SegmentedImageRenderer {
       print("Allocation failure: Could not get pixel buffer from pool. (\(self.description))")
       return nil
     }
-    
+
     // Try to use GPU, with fallback to CPU
     if isGPUProcessingAvailable() {
       // Try GPU processing
@@ -352,31 +352,31 @@ class SegmentedImageRenderer {
     return cgImage
   }
 
-  func resizeTexture(sourceTexture: MTLTexture, desTexture: MTLTexture, targetSize:MTLSize, resizeMode: UIView.ContentMode) {
+  func resizeTexture(sourceTexture: MTLTexture, desTexture: MTLTexture, targetSize: MTLSize, resizeMode: UIView.ContentMode) {
     guard let queue = self.commandQueue,
           let commandBuffer = queue.makeCommandBuffer() else {
       print("FrameMixer resizeTexture command buffer create failed")
       return
     }
 
-    let device = queue.device;
+    let device = queue.device
 
     // Scale texture
     let sourceWidth = sourceTexture.width
     let sourceHeight = sourceTexture.height
     let widthRatio: Double = Double(targetSize.width) / Double(sourceWidth)
     let heightRatio: Double = Double(targetSize.height) / Double(sourceHeight)
-    var scaleX: Double = 0;
-    var scaleY: Double  = 0;
-    var translateX: Double = 0;
-    var translateY: Double = 0;
+    var scaleX: Double = 0
+    var scaleY: Double  = 0
+    var translateX: Double = 0
+    var translateY: Double = 0
     if resizeMode == .scaleToFill {
-      //ScaleFill
+      // ScaleFill
       scaleX = Double(targetSize.width) / Double(sourceWidth)
       scaleY = Double(targetSize.height) / Double(sourceHeight)
 
     } else if resizeMode == .scaleAspectFit {
-      //AspectFit
+      // AspectFit
       if heightRatio > widthRatio {
         scaleX = Double(targetSize.width) / Double(sourceWidth)
         scaleY = scaleX
@@ -389,7 +389,7 @@ class SegmentedImageRenderer {
         translateX = (Double(targetSize.width) - currentWidth) * 0.5
       }
     } else if resizeMode == .scaleAspectFill {
-      //AspectFill
+      // AspectFill
       if heightRatio > widthRatio {
         scaleY = Double(targetSize.height) / Double(sourceHeight)
         scaleX = scaleY
@@ -406,7 +406,7 @@ class SegmentedImageRenderer {
     var transform = MPSScaleTransform(scaleX: scaleX, scaleY: scaleY, translateX: translateX, translateY: translateY)
     if #available(iOS 11.0, *) {
       let scale = MPSImageBilinearScale.init(device: device)
-      withUnsafePointer(to: &transform) { (transformPtr: UnsafePointer<MPSScaleTransform>) -> () in
+      withUnsafePointer(to: &transform) { (transformPtr: UnsafePointer<MPSScaleTransform>) in
         scale.scaleTransform = transformPtr
         scale.encode(commandBuffer: commandBuffer, sourceTexture: sourceTexture, destinationTexture: desTexture)
       }
@@ -434,7 +434,7 @@ class SegmentedImageRenderer {
   }
 }
 
-func allocateOutputBufferPool(with imageSize: CGSize, outputRetainedBufferCountHint: Int) ->(
+func allocateOutputBufferPool(with imageSize: CGSize, outputRetainedBufferCountHint: Int) -> (
   outputBufferPool: CVPixelBufferPool?,
   outputColorSpace: CGColorSpace?,
   outputFormatDescription: CMFormatDescription?) {
@@ -477,7 +477,7 @@ func allocateOutputBufferPool(with imageSize: CGSize, outputRetainedBufferCountH
     return (pixelBufferPool, cgColorSpace, outputFormatDescription)
   }
 
-func allocateOutputBufferPool(with inputFormatDescription: CMFormatDescription, outputRetainedBufferCountHint: Int, needChangeWidthHeight: Bool) ->(
+func allocateOutputBufferPool(with inputFormatDescription: CMFormatDescription, outputRetainedBufferCountHint: Int, needChangeWidthHeight: Bool) -> (
   outputBufferPool: CVPixelBufferPool?,
   outputColorSpace: CGColorSpace?,
   outputFormatDescription: CMFormatDescription?) {
@@ -572,21 +572,20 @@ private func preallocateBuffers(pool: CVPixelBufferPool, allocationThreshold: In
 
 extension UIImage {
 
-
   func fixedOrientation() -> CGImage? {
 
     guard let cgImage = self.cgImage else {
-      //CGImage is not available
+      // CGImage is not available
       return nil
     }
 
     guard imageOrientation != UIImage.Orientation.up else {
-      //This is default orientation, don't need to do anything
+      // This is default orientation, don't need to do anything
       return cgImage.copy()
     }
 
     guard let colorSpace = cgImage.colorSpace, let ctx = CGContext(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: cgImage.bitsPerComponent, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
-      return nil //Not able to create CGContext
+      return nil // Not able to create CGContext
     }
 
     var transform: CGAffineTransform = CGAffineTransform.identity
@@ -595,25 +594,21 @@ extension UIImage {
     case .down, .downMirrored:
       transform = transform.translatedBy(x: size.width, y: size.height)
       transform = transform.rotated(by: CGFloat.pi)
-      break
-    case .left, .leftMirrored:
+      case .left, .leftMirrored:
       transform = transform.translatedBy(x: size.width, y: 0)
       transform = transform.rotated(by: CGFloat.pi / 2.0)
-      break
-    case .right, .rightMirrored:
+      case .right, .rightMirrored:
       transform = transform.translatedBy(x: 0, y: size.height)
       transform = transform.rotated(by: CGFloat.pi / -2.0)
-      break
     default:
       break
     }
 
-    //Flip image one more time if needed to, this is to prevent flipped image
+    // Flip image one more time if needed to, this is to prevent flipped image
     switch imageOrientation {
     case .upMirrored, .downMirrored:
       transform = transform.translatedBy(x: size.width, y: 0)
       transform = transform.scaledBy(x: -1, y: 1)
-      break
     case .leftMirrored, .rightMirrored:
       transform = transform.translatedBy(x: size.height, y: 0)
       transform = transform.scaledBy(x: -1, y: 1)
@@ -626,9 +621,8 @@ extension UIImage {
     switch imageOrientation {
     case .left, .leftMirrored, .right, .rightMirrored:
       ctx.draw(self.cgImage!, in: CGRect(x: 0, y: 0, width: size.height, height: size.width))
-    default:
+      default:
       ctx.draw(self.cgImage!, in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-      break
     }
 
     guard let newCGImage = ctx.makeImage() else { return nil }
