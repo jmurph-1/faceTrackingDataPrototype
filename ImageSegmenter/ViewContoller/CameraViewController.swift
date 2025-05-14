@@ -658,8 +658,9 @@ class CameraViewController: UIViewController {
   }
 
   private func checkForErrorConditions() {
-    guard let segmentationService = segmentationService else {
-      toastService.showToast(message: "Segmentation service not initialized. Please restart the app.", type: .error)
+      // Check if the segmentation service is properly configured
+    if imageSegmenterService == nil {
+        toastService.showToast("Segmentation service not initialized. Please restart the app.", type: .error)
       return
     }
     
@@ -700,12 +701,12 @@ class CameraViewController: UIViewController {
 
 extension CameraViewController: CameraServiceDelegate {
 
-  func didOutput(sampleBuffer: CMSampleBuffer) {
+  func didOutput(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
     guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
     
     self.videoPixelBuffer = pixelBuffer
     
-    let orientation = UIDevice.current.orientation
+    let deviceOrientation = UIDevice.current.orientation
     
     let currentTimeMs = Date().timeIntervalSince1970 * 1000
     
@@ -758,16 +759,10 @@ extension CameraViewController: CameraServiceDelegate {
 extension CameraViewController: SegmentationServiceDelegate {
   func segmentationService(
     _ segmentationService: SegmentationService,
-    didFinishSegmentation result: SegmentationService.SegmentationResult,
-    error: Error?
+    didCompleteSegmentation result: SegmentationResult
   ) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
-      
-      if let error = error {
-        LoggingService.error("Segmentation error: \(error)")
-        return
-      }
       
       self.previewView.pixelBuffer = result.outputPixelBuffer
       
@@ -918,6 +913,24 @@ extension AVLayerVideoGravity {
       return .scaleToFill
     default:
       return .scaleAspectFit
+    }
+  }
+}
+
+// Extension to convert UIDeviceOrientation to UIImage.Orientation
+extension UIDeviceOrientation {
+  var imageOrientation: UIImage.Orientation {
+    switch self {
+    case .portrait:
+      return .right
+    case .portraitUpsideDown:
+      return .left
+    case .landscapeLeft:
+      return .up
+    case .landscapeRight:
+      return .down
+    default:
+      return .right // Default to portrait
     }
   }
 }

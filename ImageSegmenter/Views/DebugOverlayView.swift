@@ -9,7 +9,9 @@ struct DebugOverlayView: View {
             return
         }
         
-        LoggingService.debug("Quality scores - Overall: \(quality.overall), FaceSize: \(quality.faceSize), Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
+        // Split into multiple lines to avoid exceeding character limit
+        LoggingService.debug("Quality scores - Overall: \(quality.overall), FaceSize: \(quality.faceSize)")
+        LoggingService.debug("Quality scores - Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
     }
 
     /// FPS measurement
@@ -31,7 +33,11 @@ struct DebugOverlayView: View {
     @State private var isExpanded: Bool = false
     
     // Init with logging
-    init(fps: Float, skinColorLab: ColorConverters.LabColor?, hairColorLab: ColorConverters.LabColor?, deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?, qualityScore: FrameQualityService.QualityScore?) {
+    init(fps: Float, 
+         skinColorLab: ColorConverters.LabColor?, 
+         hairColorLab: ColorConverters.LabColor?, 
+         deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?, 
+         qualityScore: FrameQualityService.QualityScore?) {
         self.fps = fps
         self.skinColorLab = skinColorLab
         self.hairColorLab = hairColorLab
@@ -97,9 +103,6 @@ struct DebugOverlayView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .id(qualityScore?.overall ?? 0) // Force refresh when quality score changes
         .onAppear {
-            logQualityScore()
-        }
-        .onChange(of: qualityScore) { _ in
             logQualityScore()
         }
     }

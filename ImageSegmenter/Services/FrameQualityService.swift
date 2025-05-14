@@ -21,7 +21,7 @@ class FrameQualityService {
     static let minimumBrightnessScoreForAnalysis: Float = 0.6
 
     /// Quality score result
-    struct QualityScore {
+    struct QualityScore: Equatable {
         /// Overall quality score (0-1)
         let overall: Float
 
