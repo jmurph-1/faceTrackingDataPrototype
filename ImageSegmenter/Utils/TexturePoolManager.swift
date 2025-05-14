@@ -1,78 +1,94 @@
 //
-//  TexturePoolManager.swift
-//  ImageSegmenter
 //
-//  Created by John Murphy on 5/14/25.
 //
 
-import Metal
 import Foundation
+import Metal
 
 class TexturePoolManager {
     static let shared = TexturePoolManager()
     
-    private var device: MTLDevice
-    private var availableTextures: [String: [MTLTexture]] = [:]
-    private let queue = DispatchQueue(label: "com.colorAnalysisApp.texturePool")
+    private var availableTextures: [MTLPixelFormat: [String: [MTLTexture]]] = [:]
     
-    init(device: MTLDevice = MTLCreateSystemDefaultDevice()!) {
-        self.device = device
-    }
+    private let lock = NSLock()
     
-    // Generate a key for the texture cache based on its properties
-    private func keyForTexture(width: Int, height: Int, pixelFormat: MTLPixelFormat) -> String {
-        return "\\(width)x\\(height)_\\(pixelFormat.rawValue)"
-    }
+    private(set) var totalCreated: Int = 0
+    private(set) var totalReused: Int = 0
     
-    // Get a texture from the pool or create a new one
-    func getTexture(width: Int, height: Int, pixelFormat: MTLPixelFormat, usage: MTLTextureUsage = [.shaderRead, .shaderWrite]) -> MTLTexture {
-        let key = keyForTexture(width: width, height: height, pixelFormat: pixelFormat)
+    private init() {}
+    
+    func getTexture(
+        pixelFormat: MTLPixelFormat,
+        width: Int,
+        height: Int,
+        usage: MTLTextureUsage = [.shaderRead, .shaderWrite],
+        device: MTLDevice
+    ) -> MTLTexture? {
+        let key = "\(width)x\(height)x\(usage.rawValue)"
         
-        return queue.sync {
-            if var textures = availableTextures[key], !textures.isEmpty {
-                let texture = textures.removeLast()
-                availableTextures[key] = textures
-                return texture
-            } else {
-                // Create a new texture if none available
-                let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-                    pixelFormat: pixelFormat,
-                    width: width,
-                    height: height,
-                    mipmapped: false)
-                descriptor.usage = usage
-                
-                guard let newTexture = device.makeTexture(descriptor: descriptor) else {
-                    fatalError("Failed to create texture")
-                }
-                
-                return newTexture
-            }
+        lock.lock()
+        defer { lock.unlock() }
+        
+        if var formatTextures = availableTextures[pixelFormat],
+           var sizeTextures = formatTextures[key],
+           !sizeTextures.isEmpty {
+            
+            let texture = sizeTextures.removeLast()
+            formatTextures[key] = sizeTextures
+            availableTextures[pixelFormat] = formatTextures
+            
+            totalReused += 1
+            return texture
         }
+        
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: pixelFormat,
+            width: width,
+            height: height,
+            mipmapped: false
+        )
+        textureDescriptor.usage = usage
+        
+        guard let newTexture = device.makeTexture(descriptor: textureDescriptor) else {
+            print("Failed to create texture in pool")
+            return nil
+        }
+        
+        totalCreated += 1
+        return newTexture
     }
     
-    // Return a texture to the pool for reuse
     func recycleTexture(_ texture: MTLTexture) {
-        let key = keyForTexture(
-            width: texture.width,
-            height: texture.height,
-            pixelFormat: texture.pixelFormat)
+        let key = "\(texture.width)x\(texture.height)x\(texture.usage.rawValue)"
         
-        queue.sync {
-            var textures = availableTextures[key] ?? []
-            // Limit pool size to prevent excessive memory usage
-            if textures.count < 5 {
-                textures.append(texture)
-                availableTextures[key] = textures
-            }
-            // If pool is full, texture will be deallocated naturally
+        lock.lock()
+        defer { lock.unlock() }
+        
+        var formatTextures = availableTextures[texture.pixelFormat] ?? [:]
+        var sizeTextures = formatTextures[key] ?? []
+        
+        let maxPoolSize = 10
+        if sizeTextures.count < maxPoolSize {
+            sizeTextures.append(texture)
+            formatTextures[key] = sizeTextures
+            availableTextures[texture.pixelFormat] = formatTextures
         }
     }
     
-    // Clear all cached textures
-    func clearCache() {
-        queue.sync {
-            availableTextures.removeAll()
-        }
+    func clearPool() {
+        lock.lock()
+        defer { lock.unlock() }
+        
+        availableTextures.removeAll()
+    }
+    
+    func getStatistics() -> (hitRate: Double, created: Int, reused: Int) {
+        lock.lock()
+        defer { lock.unlock() }
+        
+        let total = totalCreated + totalReused
+        let hitRate = total > 0 ? Double(totalReused) / Double(total) : 0.0
+        
+        return (hitRate: hitRate, created: totalCreated, reused: totalReused)
     }
 }

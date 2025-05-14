@@ -75,14 +75,12 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
   private var lastClassificationTime: TimeInterval = 0
   private let classificationThrottleInterval: TimeInterval = 0.1  // 10Hz throttle (10 frames per second)
   
-  // Error state toast
-  private let errorToastLabel = UILabel()
-  private var errorToastTimer: Timer?
-  
   // MARK: Controllers that manage functionality
   // Handles all the camera related functionality
   private lazy var cameraService = CameraService()
   private let segmentationService = SegmentationService()
+  private let classificationService = ClassificationService()
+  private var toastService: ToastService!
   // These will now be handled by SegmentationService
   // private let render = SegmentedImageRenderer()
   // private let multiClassRenderer = MultiClassSegmentedImageRenderer()
@@ -159,12 +157,16 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
   override func viewDidLoad() {
     super.viewDidLoad()
     cameraService.delegate = self
+    segmentationService.delegate = self
+    classificationService.delegate = self
     setupColorLabels()
     setupFrameQualityUI()
     setupFaceTrackingControls()
     setupDebugOverlay()
     setupGestures()
-    setupErrorToast()
+    
+    // Initialize toast service
+    toastService = ToastService(containerView: view)
     
     // Register for app lifecycle notifications
     NotificationCenter.default.addObserver(
@@ -747,85 +749,31 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
       return
     }
     
-    // Perform the color analysis
-    performColorAnalysis()
-  }
-
-  // Perform color analysis and show results
-  private func performColorAnalysis() {
     // Show loading indicator
     let loadingIndicator = UIActivityIndicatorView(style: .large)
     loadingIndicator.center = view.center
     loadingIndicator.startAnimating()
     view.addSubview(loadingIndicator)
     
-    // Process the current frame data
+    // Use classification service to analyze the frame
     if let pixelBuffer = self.videoPixelBuffer {
       let colorInfo = self.segmentationService.getCurrentColorInfo()
-      let skinColor = colorInfo.skinColor
-      let hairColor = colorInfo.hairColor
-      
-      if skinColor != nil && hairColor != nil {
-        // Convert colors to Lab space
-        let skinLab = ColorUtils.convertRGBToLab(color: skinColor)
-        let hairLab = ColorUtils.convertRGBToLab(color: hairColor)
+      classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
+    } else {
+      // Handle error case - no pixel buffer
+      DispatchQueue.main.async {
+        loadingIndicator.removeFromSuperview()
         
-        // Perform classification with the season classifier
-        let classificationResult = SeasonClassifier.classifySeason(
-          skinLab: (skinLab.L, skinLab.a, skinLab.b),
-          hairLab: (hairLab.L, hairLab.a, hairLab.b)
+        // Show error alert
+        let alert = UIAlertController(
+          title: "Analysis Failed",
+          message: "Could not access video frame. Please try again.",
+          preferredStyle: .alert
         )
-        
-        // Create thumbnail from current frame
-        let thumbnail = createThumbnailFromPixelBuffer(pixelBuffer)
-        
-        // Create analysis result
-        let result = AnalysisResult(
-          season: classificationResult.season,
-          confidence: classificationResult.confidence,
-          deltaEToNextClosest: classificationResult.deltaEToNextClosest,
-          nextClosestSeason: classificationResult.nextClosestSeason,
-          skinColor: skinColor,
-          skinColorLab: skinLab,
-          hairColor: hairColor,
-          hairColorLab: hairLab,
-          thumbnail: thumbnail
-        )
-        
-        // Show result view
-        DispatchQueue.main.async {
-          // Remove loading indicator
-          loadingIndicator.removeFromSuperview()
-          
-          // Present result view
-          self.presentAnalysisResultView(result: result)
-        }
-      } else {
-        // Handle error case
-        DispatchQueue.main.async {
-          loadingIndicator.removeFromSuperview()
-          
-          // Show error alert
-          let alert = UIAlertController(
-            title: "Analysis Failed",
-            message: "Could not extract color information. Please try again with better lighting.",
-            preferredStyle: .alert
-          )
-          alert.addAction(UIAlertAction(title: "OK", style: .default))
-          self.present(alert, animated: true)
-        }
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
       }
     }
-  }
-
-  // Create thumbnail from pixel buffer
-  private func createThumbnailFromPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> UIImage? {
-    let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-    let context = CIContext(options: nil)
-    guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
-      return nil
-    }
-    return UIImage(cgImage: cgImage)
   }
 
   // Present analysis result view
@@ -953,56 +901,12 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
   }
 
   private func setupErrorToast() {
-    // Configure error toast label
-    errorToastLabel.translatesAutoresizingMaskIntoConstraints = false
-    errorToastLabel.textColor = .white
-    errorToastLabel.backgroundColor = UIColor.systemRed.withAlphaComponent(0.8)
-    errorToastLabel.textAlignment = .center
-    errorToastLabel.layer.cornerRadius = 10
-    errorToastLabel.clipsToBounds = true
-    errorToastLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-    errorToastLabel.numberOfLines = 0
-    errorToastLabel.alpha = 0 // Initially hidden
-    
-    view.addSubview(errorToastLabel)
-    
-    NSLayoutConstraint.activate([
-      errorToastLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-      errorToastLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -140),
-      errorToastLabel.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, constant: -40)
-    ])
+    // Now handled by ToastService
   }
   
   // Show error toast message
   private func showErrorToast(_ message: String, duration: TimeInterval = 3.0) {
-    // Ensure we're on the main thread for UI updates
-    if !Thread.isMainThread {
-      DispatchQueue.main.async {
-        self.showErrorToast(message, duration: duration)
-      }
-      return
-    }
-    
-    // Cancel existing timer
-    errorToastTimer?.invalidate()
-    
-    // Update message and show
-    errorToastLabel.text = message
-    
-    // Animate in
-    UIView.animate(withDuration: 0.3) {
-      self.errorToastLabel.alpha = 1.0
-    }
-    
-    // Set timer to hide
-    errorToastTimer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { [weak self] _ in
-      // Ensure animation runs on main thread
-      DispatchQueue.main.async {
-        UIView.animate(withDuration: 0.3) {
-          self?.errorToastLabel.alpha = 0.0
-        }
-      }
-    }
+    toastService.showToast(message, duration: duration, type: .error)
   }
   
   // Check for error conditions and provide user guidance
@@ -1013,7 +917,7 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
     
     // Check if any face was detected
     if !hasFace {
-      showErrorToast("No face detected. Please center your face in the frame.")
+      toastService.showToast("No face detected. Please center your face in the frame.", type: .warning)
       return
     }
     
@@ -1022,7 +926,7 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
       // Check overall quality first
       if qualityScore.overall < FrameQualityService.minimumQualityScoreForAnalysis {
         if let feedback = qualityScore.feedbackMessage {
-          showErrorToast(feedback)
+          toastService.showToast(feedback, type: .warning)
           return
         }
       }
@@ -1030,11 +934,11 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
       // Check brightness issues
       if qualityScore.brightness < FrameQualityService.minimumBrightnessScoreForAnalysis {
         if qualityScore.brightness < 0.3 {
-          showErrorToast("Too dark. Please move to a brighter area.")
+          toastService.showToast("Too dark. Please move to a brighter area.", type: .warning)
         } else if qualityScore.brightness > 0.9 {
-          showErrorToast("Too bright. Please reduce direct light on your face.")
+          toastService.showToast("Too bright. Please reduce direct light on your face.", type: .warning)
         } else {
-          showErrorToast("Poor lighting detected. Please find better lighting.")
+          toastService.showToast("Poor lighting detected. Please find better lighting.", type: .warning)
         }
         return
       }
@@ -1042,22 +946,22 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
       // Check face size and position
       if qualityScore.faceSize < FrameQualityService.minimumFaceSizeScoreForAnalysis {
         if qualityScore.faceSize < 0.3 {
-          showErrorToast("Face too small. Please move closer to the camera.")
+          toastService.showToast("Face too small. Please move closer to the camera.", type: .warning)
         } else {
-          showErrorToast("Face position issue. Please center your face.")
+          toastService.showToast("Face position issue. Please center your face.", type: .warning)
         }
         return
       }
       
       // Check position
       if qualityScore.facePosition < FrameQualityService.minimumFacePositionScoreForAnalysis {
-        showErrorToast("Please center your face in the frame.")
+        toastService.showToast("Please center your face in the frame.", type: .warning)
         return
       }
       
       // Check sharpness
       if qualityScore.sharpness < 0.5 {
-        showErrorToast("Image is blurry. Please hold the device steady.")
+        toastService.showToast("Image is blurry. Please hold the device steady.", type: .warning)
         return
       }
     }
@@ -1065,30 +969,17 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
     // Check if color extraction failed
     let colorInfo = segmentationService.getCurrentColorInfo()
     if colorInfo.skinColor == nil {
-      showErrorToast("Unable to extract skin color. Please adjust lighting.")
+      toastService.showToast("Unable to extract skin color. Please adjust lighting.", type: .error)
       return
     }
     
     // If all conditions are good, clear any error toast
-    clearErrorToast()
+    toastService.clearToast()
   }
 
-  // Add the missing function
+  // Replace clearErrorToast method with toastService call
   private func clearErrorToast() {
-    // Ensure we're on the main thread for UI updates
-    if Thread.isMainThread {
-      errorToastTimer?.invalidate()
-      UIView.animate(withDuration: 0.3) {
-        self.errorToastLabel.alpha = 0.0
-      }
-    } else {
-      DispatchQueue.main.async {
-        self.errorToastTimer?.invalidate()
-        UIView.animate(withDuration: 0.3) {
-          self.errorToastLabel.alpha = 0.0
-        }
-      }
-    }
+    toastService.clearToast()
   }
 }
 
@@ -1232,6 +1123,43 @@ extension CameraViewController: SegmentationServiceDelegate {
   
   func segmentationService(_ service: SegmentationService, didFailWithError error: Error) {
     print("Segmentation error: \(error)")
+  }
+}
+
+// MARK: - ClassificationServiceDelegate
+extension CameraViewController: ClassificationServiceDelegate {
+  func classificationService(_ service: ClassificationService, didCompleteAnalysis result: AnalysisResult) {
+    DispatchQueue.main.async {
+      // Remove any loading indicators
+      for subview in self.view.subviews {
+        if let indicator = subview as? UIActivityIndicatorView {
+          indicator.removeFromSuperview()
+        }
+      }
+      
+      // Present analysis result view
+      self.presentAnalysisResultView(result: result)
+    }
+  }
+  
+  func classificationService(_ service: ClassificationService, didFailWithError error: Error) {
+    DispatchQueue.main.async {
+      // Remove any loading indicators
+      for subview in self.view.subviews {
+        if let indicator = subview as? UIActivityIndicatorView {
+          indicator.removeFromSuperview()
+        }
+      }
+      
+      // Show error alert
+      let alert = UIAlertController(
+        title: "Analysis Failed",
+        message: "Could not extract color information. Please try again with better lighting.",
+        preferredStyle: .alert
+      )
+      alert.addAction(UIAlertAction(title: "OK", style: .default))
+      self.present(alert, animated: true)
+    }
   }
 }
 
