@@ -588,18 +588,18 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     if isGPUProcessingAvailable() {
       // Try GPU processing
       if !processWithGPU(
-        inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas,
+        inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas!,
         width: pixelBufferWidth, height: pixelBufferHeight) {
         // Fall back to CPU if GPU processing fails
         log("GPU processing failed, falling back to CPU", level: .warning)
         processFallbackCPU(
-          inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+          inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas!)
       }
     } else {
       // Use CPU processing directly
       log("GPU processing not available, using CPU", level: .warning)
       processFallbackCPU(
-        inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+        inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas!)
     }
 
     // Extract and display color information (using a less CPU-intensive approach)
@@ -714,10 +714,6 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       commandBuffer.commit()
 
       return true
-    } catch {
-      log("Exception during GPU processing: \(error)", level: .error)
-      return false
-    }
   }
 
   // Metal-based rendering implementation (for future use)
@@ -757,7 +753,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
     // Process the segmentation texture if available
     if let segmenterResult = result.imageSegmenterResult,
-      let categoryMask = segmenterResult.categoryMask {
+      let _ = segmenterResult.categoryMask {
 
       // Process the mask data and draw it to the texture
       // This is simplified - would need to be expanded in real implementation
