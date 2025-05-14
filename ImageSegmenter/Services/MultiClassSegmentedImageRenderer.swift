@@ -1014,29 +1014,53 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
   // Process segmentation results to extract color information
   private func extractColorInformation(from segmenterResult: ImageSegmenterResult) {
-    // Implementation would analyze the segmentation mask and extract colors
-    // Currently just using placeholders for demonstration purposes
-
-    // Sample skin color (this would be calculated from the actual segmentation)
-    let sampleSkinColor = UIColor(red: 0.9, green: 0.8, blue: 0.7, alpha: 1.0)
-    var h: CGFloat = 0
-    var s: CGFloat = 0
-    var b: CGFloat = 0
-    var a: CGFloat = 0
-    sampleSkinColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-
-    // Sample hair color
-    let sampleHairColor = UIColor(red: 0.2, green: 0.1, blue: 0.05, alpha: 1.0)
-    var hh: CGFloat = 0
-    var sh: CGFloat = 0
-    var bh: CGFloat = 0
-    var ah: CGFloat = 0
-    sampleHairColor.getHue(&hh, saturation: &sh, brightness: &bh, alpha: &ah)
-
-    // Update the color info
-    lastColorInfo.skinColor = sampleSkinColor
-    lastColorInfo.hairColor = sampleHairColor
-    lastColorInfo.skinColorHSV = (h: h, s: s, v: b)
-    lastColorInfo.hairColorHSV = (h: hh, s: sh, v: bh)
+    guard let categoryMask = segmenterResult.categoryMask else {
+      log("No category mask available for color extraction", level: .warning)
+      return
+    }
+    
+    // Create a Metal texture from the current frame for color extraction
+    let width = segmenterResult.width
+    let height = segmenterResult.height
+    
+    // Get the current frame texture from the texture cache if available
+    guard let commandBuffer = commandQueue?.makeCommandBuffer() else {
+      log("Failed to create command buffer for color extraction", level: .error)
+      return
+    }
+    
+    // Create a texture descriptor for the frame texture
+    let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+      pixelFormat: .bgra8Unorm,
+      width: width,
+      height: height,
+      mipmapped: false
+    )
+    textureDescriptor.usage = [.shaderRead, .shaderWrite]
+    
+    guard let frameTexture = TexturePoolManager.shared.getTexture(
+      pixelFormat: .bgra8Unorm,
+      width: width,
+      height: height,
+      usage: [.shaderRead, .shaderWrite],
+      device: metalDevice
+    ) else {
+      log("Failed to get texture from pool for color extraction", level: .error)
+      return
+    }
+    
+    extractColorsOptimized(
+      from: frameTexture,
+      with: categoryMask,
+      width: width,
+      height: height
+    )
+    
+    // Recycle the frame texture when done
+    commandBuffer.addCompletedHandler { _ in
+      TexturePoolManager.shared.recycleTexture(frameTexture)
+    }
+    
+    commandBuffer.commit()
   }
 }
