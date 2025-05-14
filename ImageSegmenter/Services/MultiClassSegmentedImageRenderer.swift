@@ -907,37 +907,16 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       return
     }
     
-    let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
-      pixelFormat: .bgra8Unorm,
-      width: width,
-      height: height,
-      mipmapped: false
-    )
-    textureDescriptor.usage = [.shaderRead, .shaderWrite]
-    
-    guard let frameTexture = TexturePoolManager.shared.getTexture(
-      pixelFormat: .bgra8Unorm,
-      width: width,
-      height: height,
-      usage: [.shaderRead, .shaderWrite],
-      device: metalDevice
-    ) else {
-      log("Failed to get texture from pool for color extraction", level: .error)
+    guard let originalTexture = segmenterResult.texture else {
+      log("No original texture available for color extraction", level: .warning)
       return
     }
     
     extractColorsOptimized(
-      from: frameTexture,
+      from: originalTexture,
       with: categoryMask,
       width: width,
       height: height
     )
-    
-    let cmdBuffer = commandQueue.makeCommandBuffer()
-    cmdBuffer?.addCompletedHandler { (_: MTLCommandBuffer) in
-      TexturePoolManager.shared.recycleTexture(frameTexture)
-    }
-    
-    cmdBuffer?.commit()
   }
 }

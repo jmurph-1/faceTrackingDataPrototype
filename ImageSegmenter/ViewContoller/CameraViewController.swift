@@ -48,6 +48,8 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
       sharpness: 0.0
   ))
   private var currentFrameQualityScore: FrameQualityService.QualityScore?
+  
+  private var frameQualityHostingController: UIHostingController<FrameQualityIndicatorView>?
   private let analyzeButton = UIButton(type: .system)
 
   // Face landmark detection toggle
@@ -253,20 +255,22 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
 
   private func setupFrameQualityUI() {
     // Configure frame quality view
-    let frameQualityHostingController = UIHostingController(rootView: frameQualityView)
-    frameQualityHostingController.view.translatesAutoresizingMaskIntoConstraints = false
-    frameQualityHostingController.view.backgroundColor = .clear
+    self.frameQualityHostingController = UIHostingController(rootView: frameQualityView)
+    self.frameQualityHostingController?.view.translatesAutoresizingMaskIntoConstraints = false
+    self.frameQualityHostingController?.view.backgroundColor = .clear
 
-    addChild(frameQualityHostingController)
-    view.addSubview(frameQualityHostingController.view)
-    frameQualityHostingController.didMove(toParent: self)
+    if let hostingController = self.frameQualityHostingController {
+      addChild(hostingController)
+      view.addSubview(hostingController.view)
+      hostingController.didMove(toParent: self)
 
-    // Position it at the bottom center above the analyze button
-    NSLayoutConstraint.activate([
-        frameQualityHostingController.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        frameQualityHostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -80),
-        frameQualityHostingController.view.widthAnchor.constraint(equalToConstant: 300)
-    ])
+      // Position it at the bottom center above the analyze button
+      NSLayoutConstraint.activate([
+          hostingController.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+          hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -80),
+          hostingController.view.widthAnchor.constraint(equalToConstant: 300)
+      ])
+    }
 
     // Configure analyze button
     analyzeButton.translatesAutoresizingMaskIntoConstraints = false
@@ -1096,11 +1100,9 @@ extension CameraViewController: SegmentationServiceDelegate {
           showDetailed: false
         )
 
-        // Use the UIHostingController view hierarchy to find and update the view
-        for child in self.children {
-          if let hostingController = child as? UIHostingController<FrameQualityIndicatorView> {
-            hostingController.rootView = updatedFrameQualityView
-          }
+        // Update the frame quality view using the stored reference
+        if let hostingController = self.frameQualityHostingController {
+          hostingController.rootView = updatedFrameQualityView
         }
 
         // Update analyze button state
