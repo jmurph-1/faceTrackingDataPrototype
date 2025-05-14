@@ -541,17 +541,25 @@ class CameraViewController: UIViewController {
     
     let colorInfo = segmentationService.getCurrentColorInfo()
     
-    classificationService.classifyColors(colorInfo: colorInfo)
+    classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
   }
 
-  private func presentAnalysisResultView(with result: ClassificationService.ClassificationResult) {
+  private func presentAnalysisResultView(with result: AnalysisResult) {
+    let viewModel = AnalysisResultViewModel()
+    viewModel.updateWithResult(result)
+    
     let resultView = UIHostingController(
       rootView: AnalysisResultView(
-        result: result,
-        skinColor: result.skinColor,
-        hairColor: result.hairColor,
+        viewModel: viewModel,
         onDismiss: { [weak self] in
           self?.dismiss(animated: true)
+        },
+        onRetry: { [weak self] in
+          self?.dismiss(animated: true)
+          self?.analyzeButtonTapped()
+        },
+        onSeeDetails: { 
+          print("See details tapped")
         }
       )
     )
@@ -810,7 +818,7 @@ extension CameraViewController: SegmentationServiceDelegate {
 }
 
 extension CameraViewController: ClassificationServiceDelegate {
-  func classificationService(_ classificationService: ClassificationService, didClassifyColors result: ClassificationService.ClassificationResult) {
+  func classificationService(_ service: ClassificationService, didCompleteAnalysis result: AnalysisResult) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
       
@@ -818,7 +826,7 @@ extension CameraViewController: ClassificationServiceDelegate {
     }
   }
   
-  func classificationService(_ classificationService: ClassificationService, didEncounterError error: Error) {
+  func classificationService(_ service: ClassificationService, didFailWithError error: Error) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
       
@@ -837,8 +845,8 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
   func faceLandmarkerService(
     _ faceLandmarkerService: FaceLandmarkerService,
     didFinishLandmarkDetection result: FaceLandmarkerResultBundle?,
-    error: Error?) {
-
+    error: Error?
+  ) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
 
@@ -853,13 +861,12 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
 
         self.previewView.pixelBuffer = pixelBuffer
 
-          #if DEBUG
-          print("Preview view updated with pixel buffer")
-          #endif
+        #if DEBUG
+        print("Preview view updated with pixel buffer")
+        #endif
 
-          self.landmarksOverlayView?.isHidden = false
-        }
-
+        self.landmarksOverlayView?.isHidden = false
+        
         if let faceLandmarkerResults = result?.faceLandmarkerResults,
            let firstResult = faceLandmarkerResults.first,
            let faceLandmarkerResult = firstResult,
