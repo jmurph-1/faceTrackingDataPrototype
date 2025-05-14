@@ -29,7 +29,7 @@ protocol FaceLandmarkerServiceLiveStreamDelegate: AnyObject {
 class FaceLandmarkerService: NSObject {
 
   weak var liveStreamDelegate: FaceLandmarkerServiceLiveStreamDelegate?
-  
+
   var faceLandmarker: FaceLandmarker?
   private(set) var runningMode = RunningMode.image
   var modelPath: String
@@ -55,15 +55,14 @@ class FaceLandmarkerService: NSObject {
     faceLandmarkerOptions.baseOptions.delegate = self.delegate
     faceLandmarkerOptions.outputFaceBlendshapes = true
     faceLandmarkerOptions.outputFacialTransformationMatrixes = true
-    
+
     if runningMode == .liveStream {
       faceLandmarkerOptions.faceLandmarkerLiveStreamDelegate = self
     }
-    
+
     do {
       faceLandmarker = try FaceLandmarker(options: faceLandmarkerOptions)
-    }
-    catch {
+    } catch {
       print(error)
     }
   }
@@ -147,4 +146,4 @@ struct FaceLandmarkerResultBundle {
   let inferenceTime: Double
   let faceLandmarkerResults: [FaceLandmarkerResult?]
   var size: CGSize = .zero
-} 
+}

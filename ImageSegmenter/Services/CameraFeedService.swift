@@ -86,7 +86,6 @@ class CameraFeedService: NSObject {
   private var isSessionRunning = false
   private var imageBufferSize: CGSize?
 
-
   // MARK: CameraFeedServiceDelegate
   weak var delegate: CameraFeedServiceDelegate?
 
@@ -139,7 +138,7 @@ class CameraFeedService: NSObject {
   /**
    This method resumes an interrupted AVCaptureSession.
    */
-  func resumeInterruptedSession(withCompletion completion: @escaping (Bool) -> ()) {
+  func resumeInterruptedSession(withCompletion completion: @escaping (Bool) -> Void) {
     sessionQueue.async {
       self.startSession()
 
@@ -167,7 +166,7 @@ class CameraFeedService: NSObject {
       self.cameraConfigurationStatus = .success
     case .notDetermined:
       self.sessionQueue.suspend()
-      self.requestCameraAccess(completion: { (granted) in
+      self.requestCameraAccess(completion: { (_) in
         self.sessionQueue.resume()
       })
     case .denied:
@@ -184,18 +183,16 @@ class CameraFeedService: NSObject {
   /**
    This method requests for camera permissions.
    */
-  private func requestCameraAccess(completion: @escaping (Bool) -> ()) {
+  private func requestCameraAccess(completion: @escaping (Bool) -> Void) {
     AVCaptureDevice.requestAccess(for: .video) { (granted) in
       if !granted {
         self.cameraConfigurationStatus = .permissionDenied
-      }
-      else {
+      } else {
         self.cameraConfigurationStatus = .success
       }
       completion(granted)
     }
   }
-
 
   /**
    This method handles all the steps to configure an AVCaptureSession.
@@ -241,12 +238,10 @@ class CameraFeedService: NSObject {
       if session.canAddInput(videoDeviceInput) {
         session.addInput(videoDeviceInput)
         return true
-      }
-      else {
+      } else {
         return false
       }
-    }
-    catch {
+    } catch {
       fatalError("Cannot create video device input")
     }
   }
@@ -259,7 +254,7 @@ class CameraFeedService: NSObject {
     let sampleBufferQueue = DispatchQueue(label: "sampleBufferQueue")
     videoDataOutput.setSampleBufferDelegate(self, queue: sampleBufferQueue)
     videoDataOutput.alwaysDiscardsLateVideoFrames = true
-    videoDataOutput.videoSettings = [ String(kCVPixelBufferPixelFormatTypeKey) : kCMPixelFormat_32BGRA]
+    videoDataOutput.videoSettings = [ String(kCVPixelBufferPixelFormatTypeKey): kCMPixelFormat_32BGRA]
 
     if session.canAddOutput(videoDataOutput) {
       session.addOutput(videoDataOutput)

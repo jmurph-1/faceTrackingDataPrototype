@@ -40,7 +40,7 @@ class RootViewController: UIViewController {
     static let inferenceVCEmbedSegueName = "EMBED"
     static let tabBarItemsCount = 2
   }
-  
+
   // MARK: Controllers that manage functionality
   private var inferenceViewController: BottomSheetViewController?
   private var cameraViewController: CameraViewController?
@@ -59,7 +59,7 @@ class RootViewController: UIViewController {
   // MARK: View Handling Methods
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     runningModeTabbar.selectedItem = runningModeTabbar.items?.first
     runningModeTabbar.delegate = self
     instantiateCameraViewController()
@@ -100,19 +100,19 @@ class RootViewController: UIViewController {
     guard cameraViewController == nil else {
       return
     }
-    
+
     guard let viewController = UIStoryboard(
       name: Constants.storyBoardName, bundle: .main)
       .instantiateViewController(
         withIdentifier: Constants.cameraViewControllerStoryBoardId) as? CameraViewController else {
       return
     }
-    
+
     viewController.inferenceResultDeliveryDelegate = self
-    
+
     cameraViewController = viewController
   }
-  
+
   private func instantiateMediaLibraryViewController() {
     guard mediaLibraryViewController == nil else {
       return
@@ -123,7 +123,7 @@ class RootViewController: UIViewController {
             as? MediaLibraryViewController else {
       return
     }
-    
+
     viewController.inferenceResultDeliveryDelegate = self
     mediaLibraryViewController = viewController
   }
@@ -146,11 +146,11 @@ extension RootViewController: UITabBarDelegate {
     fromViewController?.willMove(toParent: nil)
     fromViewController?.view.removeFromSuperview()
     fromViewController?.removeFromParent()
-    
+
     guard let childViewController = childViewController else {
       return
     }
-      
+
     addChild(childViewController)
     childViewController.view.translatesAutoresizingMaskIntoConstraints = false
     tabBarContainerView.addSubview(childViewController.view)
@@ -172,7 +172,7 @@ extension RootViewController: UITabBarDelegate {
     )
     childViewController.didMove(toParent: self)
   }
-  
+
   func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
     guard let tabBarItems = tabBar.items, tabBarItems.count == Constants.tabBarItemsCount else {
       return
@@ -180,7 +180,7 @@ extension RootViewController: UITabBarDelegate {
 
     var fromViewController: UIViewController?
     var toViewController: UIViewController?
-    
+
     switch item {
     case tabBarItems[0]:
         fromViewController = mediaLibraryViewController
@@ -192,7 +192,7 @@ extension RootViewController: UITabBarDelegate {
     default:
       break
     }
-    
+
     switchTo(
       childViewController: toViewController,
       fromViewController: fromViewController)
@@ -204,7 +204,7 @@ extension RootViewController: UITabBarDelegate {
 extension RootViewController: InferenceResultDeliveryDelegate {
   func didPerformInference(result: ResultBundle?) {
     var inferenceTimeString = ""
-    
+
     if let inferenceTime = result?.inferenceTime {
       inferenceTimeString = String(format: "%.2fms", inferenceTime)
     }
@@ -221,8 +221,7 @@ extension RootViewController: BottomSheetViewControllerDelegate {
     didSwitchBottomSheetViewState isOpen: Bool) {
       if isOpen == true {
         bottomSheetViewBottomSpace.constant = 0.0
-      }
-      else {
+      } else {
         bottomSheetViewBottomSpace.constant = -Constants.inferenceBottomHeight
         + Constants.expandButtonHeight
         + self.view.safeAreaInsets.bottom

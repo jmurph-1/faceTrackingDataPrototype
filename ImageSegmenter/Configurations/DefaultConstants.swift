@@ -24,7 +24,7 @@ struct DefaultConstants {
 
 // MARK: Model
 enum Model: Int, CaseIterable {
-    
+
     case multiClassSegmentation = 0
     // Face landmark detection is now handled by a separate toggle
     // and has been removed from the model selection dropdown

@@ -302,7 +302,7 @@ class PreviewMetalView: MTKView {
     let width = CVPixelBufferGetWidth(previewPixelBuffer)
     let height = CVPixelBufferGetHeight(previewPixelBuffer)
     let format = CVPixelBufferGetPixelFormatType(previewPixelBuffer)
-    
+
     #if DEBUG
     let formatStr: String
     switch format {
@@ -328,7 +328,7 @@ class PreviewMetalView: MTKView {
         height,
         0,
         &cvTextureOut)
-        
+
     if textureCreateResult != kCVReturnSuccess {
       #if DEBUG
       print("Failed to create texture: error \(textureCreateResult)")
@@ -336,7 +336,7 @@ class PreviewMetalView: MTKView {
       CVMetalTextureCacheFlush(textureCache!, 0)
       return
     }
-        
+
     guard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {
       #if DEBUG
       print("Failed to create preview texture")
@@ -391,7 +391,7 @@ class PreviewMetalView: MTKView {
     commandBuffer.present(drawable)
     commandBuffer.commit()
   }
-  
+
   /// Draws a Metal texture directly to the view
   func draw(metalTexture: MTLTexture) {
     guard let drawable = currentDrawable,
@@ -401,12 +401,12 @@ class PreviewMetalView: MTKView {
       #endif
       return
     }
-    
+
     let width = metalTexture.width
     let height = metalTexture.height
     let mirroring = false
     let rotation = curentDeviceRotation()
-    
+
     if width != textureWidth ||
         height != textureHeight ||
         self.bounds != internalBounds ||
@@ -414,7 +414,7 @@ class PreviewMetalView: MTKView {
         rotation != textureRotation {
       setupTransform(width: width, height: height, mirroring: mirroring, rotation: rotation)
     }
-    
+
     // Set up command buffer and encoder
     guard let commandQueue = commandQueue else {
       #if DEBUG
@@ -422,21 +422,21 @@ class PreviewMetalView: MTKView {
       #endif
       return
     }
-    
+
     guard let commandBuffer = commandQueue.makeCommandBuffer() else {
       #if DEBUG
       print("Failed to create Metal command buffer")
       #endif
       return
     }
-    
+
     guard let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: currentRenderPassDescriptor) else {
       #if DEBUG
       print("Failed to create Metal command encoder")
       #endif
       return
     }
-    
+
     commandEncoder.label = "Metal texture display"
     commandEncoder.setRenderPipelineState(renderPipelineState!)
     commandEncoder.setVertexBuffer(vertexCoordBuffer, offset: 0, index: 0)
@@ -445,7 +445,7 @@ class PreviewMetalView: MTKView {
     commandEncoder.setFragmentSamplerState(sampler, index: 0)
     commandEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
     commandEncoder.endEncoding()
-    
+
     // Draw to the screen.
     commandBuffer.present(drawable)
     commandBuffer.commit()

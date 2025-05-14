@@ -23,7 +23,7 @@ final class ImageSegmenterTests: XCTestCase {
         let testClass = XCTestCase.self
         XCTAssertNotNil(testClass, "XCTest framework should be available")
     }
-    
+
     func testImageSegmenterAvailable() throws {
         // This test verifies that the main app module is available
         let classifier = SeasonClassifier()

@@ -28,13 +28,12 @@ protocol ImageSegmenterServiceLiveStreamDelegate: AnyObject {
 /**
  This protocol must be adopted by any class that wants to take appropriate actions during  different stages of image segmenter on videos.
  */
-//protocol ImageSegmenterServiceVideoDelegate: AnyObject {
+// protocol ImageSegmenterServiceVideoDelegate: AnyObject {
 //  func imageSegmenterService(_ imageSegmenterService: ImageSegmenterService,
 //                             didFinishSegmentionOnVideoFrame index: Int)
 //  func imageSegmenterService(_ imageSegmenterService: ImageSegmenterService,
 //                             willBeginSegmention totalframeCount: Int)
-//}
-
+// }
 
 // Initializes and calls the MediaPipe APIs for segmention.
 class ImageSegmenterService: NSObject {
@@ -49,7 +48,7 @@ class ImageSegmenterService: NSObject {
 
   // MARK: - Custom Initializer
   private init?(modelPath: String?,
-                runningMode:RunningMode,
+                runningMode: RunningMode,
                 delegate: Delegate) {
     guard let modelPath = modelPath else { return nil }
     self.modelPath = modelPath
@@ -71,8 +70,7 @@ class ImageSegmenterService: NSObject {
     }
     do {
       imageSegmenter = try ImageSegmenter(options: imageSegmenterOptions)
-    }
-    catch {
+    } catch {
       print(error)
     }
   }
@@ -151,7 +149,7 @@ class ImageSegmenterService: NSObject {
     videoFrame: CGImage,
     orientation: UIImage.Orientation,
     timeStamps: Int)
-  -> ResultBundle?  {
+  -> ResultBundle? {
     do {
       let mpImage = try MPImage(uiImage: UIImage(cgImage: videoFrame))
       let startDate = Date()

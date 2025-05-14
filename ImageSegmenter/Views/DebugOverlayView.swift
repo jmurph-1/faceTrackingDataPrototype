@@ -2,27 +2,27 @@ import SwiftUI
 
 /// Debug overlay view for displaying performance metrics and color data
 struct DebugOverlayView: View {
-    
+
     /// FPS measurement
     let fps: Float
-    
+
     /// Current skin color in Lab space
     let skinColorLab: ColorConverters.LabColor?
-    
+
     /// Current hair color in Lab space
     let hairColorLab: ColorConverters.LabColor?
-    
+
     /// Delta-E to each season
     let deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?
-    
+
     /// Quality score
     let qualityScore: FrameQualityService.QualityScore?
-    
+
     /// Flag to control expanded view
     @State private var isExpanded: Bool = false
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Header with toggle
@@ -30,13 +30,13 @@ struct DebugOverlayView: View {
                 Text("DEBUG")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(.yellow)
-                
+
                 Spacer()
-                
+
                 Text("FPS: \(String(format: "%.1f", fps))")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(fpsColor())
-                
+
                 Button(action: {
                     isExpanded.toggle()
                 }) {
@@ -52,16 +52,16 @@ struct DebugOverlayView: View {
             .padding(.vertical, 4)
             .background(Color.black.opacity(0.8))
             .cornerRadius(6)
-            
+
             // Expanded content
             if isExpanded {
                 VStack(alignment: .leading, spacing: 8) {
                     // Color values
                     colorSection()
-                    
+
                     // Delta-E values
                     deltaESection()
-                    
+
                     // Quality scores
                     qualitySection()
                 }
@@ -73,16 +73,16 @@ struct DebugOverlayView: View {
         .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
-    
+
     // MARK: - Helper views
-    
+
     /// Section for displaying color values
     private func colorSection() -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("COLOR VALUES")
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.gray)
-            
+
             if let skin = skinColorLab {
                 HStack {
                     colorSample(Color(UIColor(red: CGFloat(skin.L)/100, green: 0.5, blue: 0.5, alpha: 1.0)))
@@ -95,7 +95,7 @@ struct DebugOverlayView: View {
                     .font(.system(size: 10))
                     .foregroundColor(.gray)
             }
-            
+
             if let hair = hairColorLab {
                 HStack {
                     colorSample(Color(UIColor(red: CGFloat(hair.L)/100, green: 0.5, blue: 0.5, alpha: 1.0)))
@@ -110,52 +110,52 @@ struct DebugOverlayView: View {
             }
         }
     }
-    
+
     /// Section for displaying delta-E values
     private func deltaESection() -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("DELTA-E TO SEASONS")
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.gray)
-            
+
             if let deltaEs = deltaEToSeasons {
                 let sortedSeasons = deltaEs.sorted { $0.value < $1.value }
-                
+
                 ForEach(sortedSeasons.prefix(4), id: \.key) { (season, deltaE) in
                     HStack {
                         Text(season.rawValue)
                             .font(.system(size: 10, weight: .medium))
                             .foregroundColor(seasonColor(for: season))
                             .frame(width: 60, alignment: .leading)
-                        
+
                         Text("\(String(format: "%.2f", deltaE))")
                             .font(.system(size: 10, weight: .medium))
                             .foregroundColor(.white)
-                        
+
                         // Simple bar visualization
                         ZStack(alignment: .leading) {
                             Rectangle()
                                 .frame(width: 100, height: 6)
                                 .foregroundColor(.gray.opacity(0.3))
-                            
+
                             Rectangle()
                                 .frame(width: max(2, min(100, 100 - deltaE * 5)), height: 6)
                                 .foregroundColor(seasonColor(for: season))
                         }
                     }
                 }
-                
+
                 // Add margin info to next closest season if we have at least 2 seasons
                 if sortedSeasons.count >= 2 {
                     let closest = sortedSeasons[0]
                     let nextClosest = sortedSeasons[1]
                     let margin = nextClosest.value - closest.value
-                    
+
                     HStack {
                         Text("Margin to \(nextClosest.key.rawValue):")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(.yellow)
-                        
+
                         Text("\(String(format: "%.2f", margin)) ΔE")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundColor(.yellow)
@@ -169,37 +169,37 @@ struct DebugOverlayView: View {
             }
         }
     }
-    
+
     /// Section for displaying quality scores
     private func qualitySection() -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("QUALITY SCORES")
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.gray)
-            
+
             if let quality = qualityScore {
                 HStack {
                     Text("Overall: \(String(format: "%.2f", quality.overall))")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(quality.overall >= FrameQualityService.minimumQualityScoreForAnalysis ? .green : .orange)
                         .frame(width: 80, alignment: .leading)
-                    
+
                     Text("Face Size: \(String(format: "%.2f", quality.faceSize))")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(quality.faceSize >= FrameQualityService.minimumFaceSizeScoreForAnalysis ? .green : .orange)
                 }
-                
+
                 HStack {
                     Text("Position: \(String(format: "%.2f", quality.facePosition))")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(quality.facePosition >= FrameQualityService.minimumFacePositionScoreForAnalysis ? .green : .orange)
                         .frame(width: 80, alignment: .leading)
-                    
+
                     Text("Brightness: \(String(format: "%.2f", quality.brightness))")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(quality.brightness >= FrameQualityService.minimumBrightnessScoreForAnalysis ? .green : .orange)
                 }
-                
+
                 HStack {
                     Text("Sharpness: \(String(format: "%.2f", quality.sharpness))")
                         .font(.system(size: 10, weight: .medium))
@@ -212,7 +212,7 @@ struct DebugOverlayView: View {
             }
         }
     }
-    
+
     /// Helper to create a color sample view
     private func colorSample(_ color: Color) -> some View {
         color
@@ -222,9 +222,9 @@ struct DebugOverlayView: View {
                     .stroke(Color.white.opacity(0.5), lineWidth: 0.5)
             )
     }
-    
+
     // MARK: - Helper methods
-    
+
     /// Determine color for FPS display
     private func fpsColor() -> Color {
         if fps >= 25 {
@@ -235,7 +235,7 @@ struct DebugOverlayView: View {
             return .red
         }
     }
-    
+
     /// Get a color for a season
     private func seasonColor(for season: SeasonClassifier.Season) -> Color {
         switch season {
@@ -257,14 +257,14 @@ struct DebugOverlayView_Previews: PreviewProvider {
         // Sample data
         let skin = ColorConverters.LabColor(L: 65.0, a: 8.0, b: 16.0)
         let hair = ColorConverters.LabColor(L: 35.0, a: 6.0, b: 12.0)
-        
+
         let deltaEs: [SeasonClassifier.Season: CGFloat] = [
             .spring: 5.2,
             .summer: 8.7,
             .autumn: 3.1,
             .winter: 6.4
         ]
-        
+
         let quality = FrameQualityService.QualityScore(
             overall: 0.75,
             faceSize: 0.8,
@@ -272,10 +272,10 @@ struct DebugOverlayView_Previews: PreviewProvider {
             brightness: 0.9,
             sharpness: 0.6
         )
-        
+
         return ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
-            
+
             DebugOverlayView(
                 fps: 24.5,
                 skinColorLab: skin,
@@ -285,4 +285,4 @@ struct DebugOverlayView_Previews: PreviewProvider {
             )
         }
     }
-} 
+}

@@ -42,7 +42,7 @@ class BottomSheetViewController: UIViewController {
   @IBOutlet weak var choseModelButton: UIButton!
   @IBOutlet weak var toggleBottomSheetButton: UIButton!
   @IBOutlet weak var delegateButton: UIButton!
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     setupUI()

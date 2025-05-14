@@ -22,17 +22,17 @@ class ToastService {
     private var toastTimer: Timer?
     private var messageQueue: [ToastMessage] = []
     private var isShowingMessage = false
-    
+
     // Default position from bottom
     private let defaultBottomOffset: CGFloat = 140
-    
+
     // MARK: - Initialization
-    
+
     /// Initialize with the container view where toasts will be displayed
     /// - Parameter containerView: UIView where toast messages will be shown
     init(containerView: UIView) {
         self.containerView = containerView
-        
+
         // Create the toast label
         self.toastLabel = UILabel()
         self.toastLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -44,10 +44,10 @@ class ToastService {
         self.toastLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         self.toastLabel.numberOfLines = 0
         self.toastLabel.alpha = 0 // Initially hidden
-        
+
         // Add to container view
         containerView.addSubview(self.toastLabel)
-        
+
         // Position the toast
         NSLayoutConstraint.activate([
             self.toastLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
@@ -55,9 +55,9 @@ class ToastService {
             self.toastLabel.widthAnchor.constraint(lessThanOrEqualTo: containerView.widthAnchor, constant: -40)
         ])
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Show a toast message
     /// - Parameters:
     ///   - message: Message to display
@@ -66,25 +66,25 @@ class ToastService {
     func showToast(_ message: String, duration: TimeInterval = 3.0, type: ToastType = .error) {
         // Create a toast message object
         let toastMessage = ToastMessage(text: message, duration: duration, type: type)
-        
+
         // Add to queue
         messageQueue.append(toastMessage)
-        
+
         // Display if not already showing a message
         if !isShowingMessage {
             displayNextMessage()
         }
     }
-    
+
     /// Clear any currently displayed toast messages
     func clearToast() {
         // Cancel current timer
         toastTimer?.invalidate()
         toastTimer = nil
-        
+
         // Clear queue
         messageQueue.removeAll()
-        
+
         // Animate out
         UIView.animate(withDuration: 0.3) {
             self.toastLabel.alpha = 0.0
@@ -92,9 +92,9 @@ class ToastService {
             self.isShowingMessage = false
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// Display the next message in queue
     private func displayNextMessage() {
         // Ensure we're on the main thread
@@ -103,11 +103,11 @@ class ToastService {
             guard !self.messageQueue.isEmpty, !self.isShowingMessage else {
                 return
             }
-            
+
             // Get next message
             let message = self.messageQueue.removeFirst()
             self.isShowingMessage = true
-            
+
             // Update toast style based on message type
             switch message.type {
             case .error:
@@ -117,15 +117,15 @@ class ToastService {
             case .info:
                 self.toastLabel.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.8)
             }
-            
+
             // Update message and show
             self.toastLabel.text = message.text
-            
+
             // Animate in
             UIView.animate(withDuration: 0.3) {
                 self.toastLabel.alpha = 1.0
             }
-            
+
             // Set timer to hide
             self.toastTimer = Timer.scheduledTimer(withTimeInterval: message.duration, repeats: false) { [weak self] _ in
                 // Ensure animation runs on main thread
@@ -155,4 +155,4 @@ enum ToastType {
     case error
     case warning
     case info
-} 
+}
