@@ -66,7 +66,8 @@ class CameraViewModel: NSObject {
 
     // Throttling properties
     private var lastProcessingTime: TimeInterval = 0
-    private let processingThrottleInterval: TimeInterval = 0.1  // 10Hz throttle
+    private var processingThrottleInterval: TimeInterval = 0.1  // Start at 10Hz throttle
+    private var lastFrameProcessingDuration: TimeInterval = 0
 
     // MARK: - Initialization
     override init() {
@@ -193,7 +194,7 @@ class CameraViewModel: NSObject {
         clearFaceLandmarkerService()
     }
 
-    /// Process current frame
+    /// Process current frame with adaptive throttling
     private func processFrame(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             return
@@ -210,6 +211,8 @@ class CameraViewModel: NSObject {
         if shouldProcess {
             // Update throttle timestamp
             lastProcessingTime = currentTime
+            
+            let processingStartTime = CACurrentMediaTime()
 
             // Process based on current mode
             if isFaceTrackingEnabled {
@@ -227,6 +230,22 @@ class CameraViewModel: NSObject {
                     timeStamps: Int(currentTime * 1000)
                 )
             }
+            
+            let processingDuration = CACurrentMediaTime() - processingStartTime
+            lastFrameProcessingDuration = processingDuration
+            updateThrottleInterval(processingTime: processingDuration)
+        }
+    }
+    
+    private func updateThrottleInterval(processingTime: TimeInterval) {
+        if processingTime > 0.08 {  // Taking >80ms to process
+            processingThrottleInterval = min(processingThrottleInterval + 0.01, 0.2)
+        } else if processingTime < 0.04 && processingThrottleInterval > 0.05 {  // Fast processing
+            processingThrottleInterval = max(processingThrottleInterval - 0.01, 0.05)
+        }
+        
+        if Int(Date().timeIntervalSince1970 * 10) % 30 == 0 {
+            print("Processing time: \(String(format: "%.1f", processingTime * 1000))ms, Throttle: \(String(format: "%.1f", processingThrottleInterval * 1000))ms")
         }
     }
 
@@ -450,4 +469,4 @@ enum CameraError: Error {
 
 enum AnalysisError: Error {
     case insufficientQuality
-}  
+}      

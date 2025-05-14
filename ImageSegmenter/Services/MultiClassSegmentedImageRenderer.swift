@@ -6,7 +6,7 @@ import MetalKit
 import MetalPerformanceShaders
 import UIKit
 
-class MultiClassSegmentedImageRenderer {
+class MultiClassSegmentedImageRenderer: RendererProtocol {
 
   var description: String = "MultiClass Renderer"
   var isPrepared = false
@@ -520,9 +520,12 @@ class MultiClassSegmentedImageRenderer {
     CVPixelBufferUnlockBaseAddress(inputBuffer, CVPixelBufferLockFlags(rawValue: 0))
   }
 
-  // Updated method to handle all the different render signature types
-  // This is the version being called from CameraViewController
-  func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> CVPixelBuffer? {
+  // Implementation of RendererProtocol render method
+  func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>?) -> CVPixelBuffer? {
+    guard let segmentData = segmentDatas else {
+      log("No segmentation data provided", level: .warning)
+      return nil
+    }
       // Start timing the processing
         processingStartTime = CACurrentMediaTime()
 
@@ -546,7 +549,7 @@ class MultiClassSegmentedImageRenderer {
     let result = Result(
       size: CGSize(width: pixelBufferWidth, height: pixelBufferHeight),
       imageSegmenterResult: ImageSegmenterResult(
-        categoryMask: segmentDatas,
+        categoryMask: segmentData,
         width: pixelBufferWidth,
         height: pixelBufferHeight
       )
