@@ -1,0 +1,33 @@
+{
+  "warmCoolThreshold": 12.0,
+  "lightDarkThreshold": 65.0,
+  "brightThreshold": 40.0,
+  "softThreshold": 35.0,
+  
+  "referenceColors": {
+    "spring": {
+      "L": 75.0,
+      "a": 10.0,
+      "b": 25.0,
+      "description": "Warm, light, bright"
+    },
+    "summer": {
+      "L": 70.0,
+      "a": -3.0,
+      "b": 10.0,
+      "description": "Cool, light"
+    },
+    "autumn": {
+      "L": 60.0,
+      "a": 8.0,
+      "b": 22.0,
+      "description": "Warm, dark"
+    },
+    "winter": {
+      "L": 55.0,
+      "a": -5.0,
+      "b": 5.0,
+      "description": "Cool, dark"
+    }
+  }
+} 

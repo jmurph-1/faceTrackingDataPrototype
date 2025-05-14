@@ -15,9 +15,8 @@
 import UIKit
 import AVFoundation
 
-// MARK: CameraFeedServiceDelegate Declaration
-protocol CameraFeedServiceDelegate: AnyObject {
-
+// MARK: CameraServiceDelegate Declaration
+protocol CameraServiceDelegate: AnyObject {
   /**
    This method delivers the pixel buffer of the current frame seen by the device's camera.
    */
@@ -37,13 +36,12 @@ protocol CameraFeedServiceDelegate: AnyObject {
    This method initimates that the session interruption has ended.
    */
   func sessionInterruptionEnded()
-
 }
 
 /**
  This class manages all camera related functionality
  */
-class CameraFeedService: NSObject {
+class CameraService: NSObject {
   /**
    This enum holds the state of the camera initialization.
    */
@@ -78,7 +76,7 @@ class CameraFeedService: NSObject {
 
   // MARK: Instance Variables
   private let session: AVCaptureSession = AVCaptureSession()
-  private let sessionQueue = DispatchQueue(label: "com.google.mediapipe.CameraFeedService.sessionQueue")
+  private let sessionQueue = DispatchQueue(label: "com.google.mediapipe.CameraService.sessionQueue")
   private let cameraPosition: AVCaptureDevice.Position = .front
 
   private var cameraConfigurationStatus: CameraConfigurationStatus = .failed
@@ -86,9 +84,8 @@ class CameraFeedService: NSObject {
   private var isSessionRunning = false
   private var imageBufferSize: CGSize?
 
-
-  // MARK: CameraFeedServiceDelegate
-  weak var delegate: CameraFeedServiceDelegate?
+  // MARK: CameraServiceDelegate
+  weak var delegate: CameraServiceDelegate?
 
   // MARK: Initializer
   override init() {
@@ -133,7 +130,6 @@ class CameraFeedService: NSObject {
         self.isSessionRunning = self.session.isRunning
       }
     }
-
   }
 
   /**
@@ -196,12 +192,10 @@ class CameraFeedService: NSObject {
     }
   }
 
-
   /**
    This method handles all the steps to configure an AVCaptureSession.
    */
   private func configureSession() {
-
     guard cameraConfigurationStatus == .success else {
       return
     }
@@ -229,7 +223,6 @@ class CameraFeedService: NSObject {
    This method tries to an AVCaptureDeviceInput to the current AVCaptureSession.
    */
   private func addVideoDeviceInput() -> Bool {
-
     /**Tries to get the default back camera.
      */
     guard let camera  = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition) else {
@@ -255,7 +248,6 @@ class CameraFeedService: NSObject {
    This method tries to an AVCaptureVideoDataOutput to the current AVCaptureSession.
    */
   private func addVideoDataOutput() -> Bool {
-
     let sampleBufferQueue = DispatchQueue(label: "sampleBufferQueue")
     videoDataOutput.setSampleBufferDelegate(self, queue: sampleBufferQueue)
     videoDataOutput.alwaysDiscardsLateVideoFrames = true
@@ -275,9 +267,9 @@ class CameraFeedService: NSObject {
 
   // MARK: Notification Observer Handling
   private func addObservers() {
-    NotificationCenter.default.addObserver(self, selector: #selector(CameraFeedService.sessionRuntimeErrorOccured(notification:)), name: NSNotification.Name.AVCaptureSessionRuntimeError, object: session)
-    NotificationCenter.default.addObserver(self, selector: #selector(CameraFeedService.sessionWasInterrupted(notification:)), name: NSNotification.Name.AVCaptureSessionWasInterrupted, object: session)
-    NotificationCenter.default.addObserver(self, selector: #selector(CameraFeedService.sessionInterruptionEnded), name: NSNotification.Name.AVCaptureSessionInterruptionEnded, object: session)
+    NotificationCenter.default.addObserver(self, selector: #selector(CameraService.sessionRuntimeErrorOccured(notification:)), name: NSNotification.Name.AVCaptureSessionRuntimeError, object: session)
+    NotificationCenter.default.addObserver(self, selector: #selector(CameraService.sessionWasInterrupted(notification:)), name: NSNotification.Name.AVCaptureSessionWasInterrupted, object: session)
+    NotificationCenter.default.addObserver(self, selector: #selector(CameraService.sessionInterruptionEnded), name: NSNotification.Name.AVCaptureSessionInterruptionEnded, object: session)
   }
 
   private func removeObservers() {
@@ -288,7 +280,6 @@ class CameraFeedService: NSObject {
 
   // MARK: Notification Observers
   @objc func sessionWasInterrupted(notification: Notification) {
-
     if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?,
        let reasonIntegerValue = userInfoValue.integerValue,
        let reason = AVCaptureSession.InterruptionReason(rawValue: reasonIntegerValue) {
@@ -302,7 +293,6 @@ class CameraFeedService: NSObject {
       }
 
       self.delegate?.sessionWasInterrupted(canResumeManually: canResumeManually)
-
     }
   }
 
@@ -337,8 +327,7 @@ class CameraFeedService: NSObject {
 /**
  AVCaptureVideoDataOutputSampleBufferDelegate
  */
-extension CameraFeedService: AVCaptureVideoDataOutputSampleBufferDelegate {
-
+extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
   /** This method delegates the CVPixelBuffer of the frame seen by the camera currently.
    */
   func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
@@ -346,8 +335,7 @@ extension CameraFeedService: AVCaptureVideoDataOutputSampleBufferDelegate {
   }
 }
 
-// MARK: UIImage.Orientation Extension - Commented out to avoid redeclaration
-/* 
+// MARK: UIImage.Orientation Extension
 extension UIImage.Orientation {
   static func from(deviceOrientation: UIDeviceOrientation) -> UIImage.Orientation {
     switch deviceOrientation {
@@ -361,5 +349,4 @@ extension UIImage.Orientation {
       return .up
     }
   }
-}
-*/
+} 

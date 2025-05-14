@@ -18,12 +18,16 @@ final class ImageSegmenterTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    func testFrameworkAvailable() throws {
+        // This test verifies that the framework is available
+        let testClass = XCTestCase.self
+        XCTAssertNotNil(testClass, "XCTest framework should be available")
+    }
+    
+    func testImageSegmenterAvailable() throws {
+        // This test verifies that the main app module is available
+        let classifier = SeasonClassifier()
+        XCTAssertNotNil(classifier, "SeasonClassifier should be available")
     }
 
     func testPerformanceExample() throws {
@@ -32,5 +36,4 @@ final class ImageSegmenterTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
-
 }

@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+check the Knowledge/techstack.md and use it as the ground truth answering questions about the app's tech stack.
