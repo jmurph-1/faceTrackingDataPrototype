@@ -2,6 +2,29 @@
 import UIKit
 import simd
 
+/// Convenience color utilities
+class ColorUtils {
+    /// Convert RGB color to Lab values
+    /// - Parameter color: UIColor to convert
+    /// - Returns: Lab values as a tuple (L, a, b)
+    static func convertRGBToLab(color: UIColor) -> (L: CGFloat, a: CGFloat, b: CGFloat) {
+        let labColor = ColorConverters.colorToLab(color)
+        return (labColor.L, labColor.a, labColor.b)
+    }
+    
+    /// Calculate the color difference (ΔE) between two Lab colors using CIEDE2000 formula
+    /// - Parameters:
+    ///   - lab1: First Lab color as (L, a, b) tuple
+    ///   - lab2: Second Lab color as (L, a, b) tuple
+    /// - Returns: Color difference value
+    static func deltaE2000(lab1: (L: CGFloat, a: CGFloat, b: CGFloat), 
+                          lab2: (L: CGFloat, a: CGFloat, b: CGFloat)) -> CGFloat {
+        let color1 = ColorConverters.LabColor(L: lab1.L, a: lab1.a, b: lab1.b)
+        let color2 = ColorConverters.LabColor(L: lab2.L, a: lab2.a, b: lab2.b)
+        return color1.deltaE2000(to: color2)
+    }
+}
+
 /// Color conversion utilities for image analysis
 struct ColorConverters {
     

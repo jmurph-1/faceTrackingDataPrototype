@@ -144,6 +144,24 @@ struct DebugOverlayView: View {
                         }
                     }
                 }
+                
+                // Add margin info to next closest season if we have at least 2 seasons
+                if sortedSeasons.count >= 2 {
+                    let closest = sortedSeasons[0]
+                    let nextClosest = sortedSeasons[1]
+                    let margin = nextClosest.value - closest.value
+                    
+                    HStack {
+                        Text("Margin to \(nextClosest.key.rawValue):")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.yellow)
+                        
+                        Text("\(String(format: "%.2f", margin)) ΔE")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.yellow)
+                    }
+                    .padding(.top, 4)
+                }
             } else {
                 Text("No delta-E data available")
                     .font(.system(size: 10))

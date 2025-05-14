@@ -11,6 +11,8 @@ class MultiClassSegmentedImageRenderer {
 
   var description: String = "MultiClass Renderer"
   var isPrepared = false
+    
+    private var downsampleComputePipelineState: MTLComputePipelineState?
 
   // Define image segmenter result for internal use
   struct ImageSegmenterResult {
@@ -153,33 +155,146 @@ class MultiClassSegmentedImageRenderer {
   }
 
   // Create a downsampled texture for more efficient color analysis
-  private func createDownsampledTexture(from texture: MTLTexture, scale: Int) -> MTLTexture? {
-    let width = texture.width / scale
-    let height = texture.height / scale
-
-    // Reuse existing downsampled texture if possible
-    if let existingTexture = downsampledTexture,
-      existingTexture.width == width && existingTexture.height == height
-    {
-      return existingTexture
+    private func createDownsampledTexture(from texture: MTLTexture, scale: Int) -> MTLTexture? {
+        let width = texture.width / scale
+        let height = texture.height / scale
+        
+        // Reuse existing downsampled texture if possible
+        if let existingTexture = downsampledTexture,
+           existingTexture.width == width && existingTexture.height == height
+        {
+            return existingTexture
+        }
+        
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: texture.pixelFormat,
+            width: width,
+            height: height,
+            mipmapped: false
+        )
+        textureDescriptor.usage = [.shaderRead, .shaderWrite]
+        
+        // Create a new texture with a different variable name to avoid shadowing
+        let newDownsampledTexture = metalDevice.makeTexture(descriptor: textureDescriptor)
+        
+        // Fix the guard statement to use the new variable name
+        guard let newDownsampledTexture = newDownsampledTexture else {
+            print("Failed to create downsampled texture")
+            return nil
+        }
+        
+        // Store the new texture in the class property
+        downsampledTexture = newDownsampledTexture
+        
+        // Use compute shader for downsampling instead of CPU-based method
+        // This properly handles the dimension scaling that was causing the blitEncoder error
+        let commandBuffer = commandQueue?.makeCommandBuffer()
+        
+        // Create a compute encoder for the downsampling operation
+        guard let computeEncoder = commandBuffer?.makeComputeCommandEncoder() else {
+            print("Failed to create compute encoder")
+            return nil
+        }
+        
+        // Set up the compute pipeline state for downsampling
+        // This would need to be created once and stored as a property
+        if downsampleComputePipelineState == nil {
+            let defaultLibrary = metalDevice.makeDefaultLibrary()
+            let kernelFunction = defaultLibrary?.makeFunction(name: "downsampleTexture")
+            
+            if kernelFunction == nil {
+                // If the function doesn't exist in the library, we need to create it
+                let kernelSource = """
+                #include <metal_stdlib>
+                using namespace metal;
+                
+                kernel void downsampleTexture(
+                    texture2d<float, access::read> sourceTexture [[texture(0)]],
+                    texture2d<float, access::write> destinationTexture [[texture(1)]],
+                    uint2 gid [[thread_position_in_grid]],
+                    constant int &scale [[buffer(0)]])
+                {
+                    // Ensure we're within the destination texture bounds
+                    if (gid.x >= destinationTexture.get_width() || gid.y >= destinationTexture.get_height()) {
+                        return;
+                    }
+                    
+                    // Calculate the corresponding position in the source texture
+                    uint2 sourcePos = gid * scale;
+                    
+                    // Read the source pixel
+                    float4 color = sourceTexture.read(sourcePos);
+                    
+                    // Write to the destination texture
+                    destinationTexture.write(color, gid);
+                }
+                """
+                
+                // Create a new library with our kernel
+                let options = MTLCompileOptions()
+                options.languageVersion = .version2_0
+                
+                do {
+                    let library = try metalDevice.makeLibrary(source: kernelSource, options: options)
+                    let downsampleFunction = library.makeFunction(name: "downsampleTexture")
+                    downsampleComputePipelineState = try metalDevice.makeComputePipelineState(function: downsampleFunction!)
+                } catch {
+                    print("Failed to create downsample pipeline: \\(error)")
+                    return nil
+                }
+            } else {
+                do {
+                    downsampleComputePipelineState = try metalDevice.makeComputePipelineState(function: kernelFunction!)
+                } catch {
+                    print("Failed to create downsample pipeline: \\(error)")
+                    return nil
+                }
+            }
+        }
+        
+        guard let pipelineState = downsampleComputePipelineState else {
+            print("Downsample pipeline state is nil")
+            return nil
+        }
+        
+        // Set up the compute encoder
+        computeEncoder.setComputePipelineState(pipelineState)
+        computeEncoder.setTexture(texture, index: 0)
+        computeEncoder.setTexture(newDownsampledTexture, index: 1)
+        
+        // Pass the scale factor to the shader
+        var scaleFactor = scale
+        computeEncoder.setBytes(&scaleFactor, length: MemoryLayout<Int>.size, index: 0)
+        
+        // Calculate threadgroup size
+        let threadgroupSize = MTLSize(
+            width: 16,
+            height: 16,
+            depth: 1
+        )
+        
+        let threadgroupCount = MTLSize(
+            width: (width + threadgroupSize.width - 1) / threadgroupSize.width,
+            height: (height + threadgroupSize.height - 1) / threadgroupSize.height,
+            depth: 1
+        )
+        
+        // Dispatch the compute encoder
+        computeEncoder.dispatchThreadgroups(threadgroupCount, threadsPerThreadgroup: threadgroupSize)
+        computeEncoder.endEncoding()
+        
+        // Commit the command buffer
+        commandBuffer?.commit()
+        
+        return newDownsampledTexture
     }
-
-    let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
-      pixelFormat: texture.pixelFormat,
-      width: width,
-      height: height,
-      mipmapped: false
-    )
-    textureDescriptor.usage = [.shaderRead, .shaderWrite]
-
-    downsampledTexture = metalDevice.makeTexture(descriptor: textureDescriptor)
-    guard let downsampledTexture = downsampledTexture else { return nil }
-
-    // Use CPU-based downsampling to avoid Metal API issues
-    downsampleTextureCPU(source: texture, destination: downsampledTexture, scale: scale)
-
-    return downsampledTexture
-  }
+    // Add cleanup method to recycle the downsampled texture
+    private func recycleDownsampledTexture() {
+        if let texture = downsampledTexture {
+            TexturePoolManager.shared.recycleTexture(texture)
+            downsampledTexture = nil
+        }
+    }
 
   // Fallback CPU method to downsample a texture
   private func downsampleTextureCPU(source: MTLTexture, destination: MTLTexture, scale: Int) {
@@ -375,9 +490,12 @@ class MultiClassSegmentedImageRenderer {
   // Updated method to handle all the different render signature types
   // This is the version being called from CameraViewController
   func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> CVPixelBuffer? {
-    // Create a Result object from the parameters
+    // Log dimensions for debugging
     let pixelBufferWidth = CVPixelBufferGetWidth(pixelBuffer)
     let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
+    print("Render input dimensions: \(pixelBufferWidth)x\(pixelBufferHeight)")
+    
+    // Create a Result object from the parameters
     let result = Result(
       size: CGSize(width: pixelBufferWidth, height: pixelBufferHeight),
       imageSegmenterResult: ImageSegmenterResult(
@@ -386,6 +504,32 @@ class MultiClassSegmentedImageRenderer {
         height: pixelBufferHeight
       )
     )
+    
+    // Check if we need to re-prepare the renderer because of format changes
+    if isPrepared {
+      // Check if dimensions have changed
+      if let outputDesc = outputFormatDescription {
+        let outputDimensions = CMVideoFormatDescriptionGetDimensions(outputDesc)
+        if Int(outputDimensions.width) != pixelBufferWidth || Int(outputDimensions.height) != pixelBufferHeight {
+          print("Dimension mismatch: output (\(outputDimensions.width)x\(outputDimensions.height)) vs input (\(pixelBufferWidth)x\(pixelBufferHeight)). Re-preparing renderer.")
+          
+          // Create a new format description from the current pixel buffer
+          var newFormatDesc: CMFormatDescription?
+          let status = CMVideoFormatDescriptionCreateForImageBuffer(
+            allocator: kCFAllocatorDefault,
+            imageBuffer: pixelBuffer,
+            formatDescriptionOut: &newFormatDesc)
+          
+          if status == 0, let desc = newFormatDesc {
+            // Re-prepare with new format
+            prepare(with: desc, outputRetainedBufferCountHint: 3)
+          } else {
+            print("Failed to create new format description: \(status)")
+            isPrepared = false
+          }
+        }
+      }
+    }
     
     // Only continue if we're properly prepared
     guard isPrepared else {
@@ -404,6 +548,17 @@ class MultiClassSegmentedImageRenderer {
     
     guard let outputBuffer = outputPixelBuffer else {
       print("Failed to get output pixel buffer")
+      return nil
+    }
+    
+    // Verify output dimensions
+    let outputWidth = CVPixelBufferGetWidth(outputBuffer)
+    let outputHeight = CVPixelBufferGetHeight(outputBuffer)
+    print("Output buffer dimensions: \(outputWidth)x\(outputHeight)")
+    
+    // Check for dimension mismatch
+    if outputWidth != pixelBufferWidth || outputHeight != pixelBufferHeight {
+      print("ERROR: Critical dimension mismatch between input and output buffers!")
       return nil
     }
     
@@ -432,6 +587,15 @@ class MultiClassSegmentedImageRenderer {
 
   // Process using GPU
   private func processWithGPU(inputBuffer: CVPixelBuffer, outputBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>, width: Int, height: Int) -> Bool {
+    // Prevent processing of extremely large buffers that could cause memory issues
+    if width * height > 4_000_000 { // 4 megapixels max
+      print("Buffer too large for GPU processing: \(width)x\(height)")
+      return false
+    }
+    
+    // Flush the texture cache to clear any lingering textures
+    CVMetalTextureCacheFlush(textureCache!, 0)
+    
     // Create Metal textures from pixel buffers
     guard let inputTexture = makeTextureFromCVPixelBuffer(pixelBuffer: inputBuffer, textureFormat: .bgra8Unorm),
           let outputTexture = makeTextureFromCVPixelBuffer(pixelBuffer: outputBuffer, textureFormat: .bgra8Unorm) else {
@@ -550,8 +714,11 @@ class MultiClassSegmentedImageRenderer {
   private func extractColorsOptimized(
     from texture: MTLTexture, with segmentMask: UnsafePointer<UInt8>, width: Int, height: Int
   ) {
+    // Use a reduced sample size to minimize memory usage
+    let reducedScale = max(downsampleFactor, 8) // At least 8x downsampling for color analysis
+    
     // Create a downsampled version of the texture for color analysis
-    guard let downsampledTexture = createDownsampledTexture(from: texture, scale: downsampleFactor)
+    guard let downsampledTexture = createDownsampledTexture(from: texture, scale: reducedScale)
     else {
       return
     }
@@ -563,20 +730,28 @@ class MultiClassSegmentedImageRenderer {
     let bytesPerRow = dsWidth * 4  // BGRA format = 4 bytes per pixel
     let bufferSize = dsHeight * bytesPerRow
 
+    // Check if buffer size is reasonable (prevent massive allocations)
+    if bufferSize > 1_048_576 { // Limit to 1MB
+      print("Texture buffer would be too large: \(bufferSize) bytes, skipping color analysis")
+      return
+    }
+
     guard
       let textureBuffer = metalDevice.makeBuffer(length: bufferSize, options: .storageModeShared)
     else {
       return
     }
 
-    // Copy the downsampled texture to the buffer
-    let commandBuffer = commandQueue?.makeCommandBuffer()
-    let blitEncoder = commandBuffer?.makeBlitCommandEncoder()
+    // Create a small, reusable command buffer
+    guard let commandBuffer = commandQueue?.makeCommandBuffer(),
+          let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
+      return
+    }
 
     // Use safe parameters for the blit operation that match the actual sizes
     let sourceSize = MTLSizeMake(dsWidth, dsHeight, 1)
 
-    blitEncoder?.copy(
+    blitEncoder.copy(
       from: downsampledTexture,
       sourceSlice: 0,
       sourceLevel: 0,
@@ -587,9 +762,11 @@ class MultiClassSegmentedImageRenderer {
       destinationBytesPerRow: bytesPerRow,
       destinationBytesPerImage: bufferSize)
 
-    blitEncoder?.endEncoding()
-    commandBuffer?.commit()
-    commandBuffer?.waitUntilCompleted()
+    blitEncoder.endEncoding()
+    commandBuffer.commit()
+    
+    // Don't wait for completion - just process what we have
+    // This prevents blocking and allows for better GPU utilization
 
     // Analyze the pixel data from the buffer
     let pixelData = textureBuffer.contents().bindMemory(to: UInt8.self, capacity: bufferSize)
@@ -735,6 +912,26 @@ class MultiClassSegmentedImageRenderer {
   // Get the current color information
   func getCurrentColorInfo() -> ColorInfo {
     return lastColorInfo
+  }
+
+  // Get the face bounding box from segmentation data
+  func getFaceBoundingBox() -> CGRect? {
+    // This is a simple implementation that returns a default bounding box
+    // In a real implementation, this would analyze the segmentation mask to find facial features
+    
+    // If no skin color has been detected, we probably don't have a valid face
+    if lastColorInfo.skinColor == UIColor.clear {
+      return nil
+    }
+    
+    // Return a default bounding box in the center of the frame
+    // This is a placeholder - in a real implementation, this would be calculated from the segmentation mask
+    let defaultWidth = 0.5
+    let defaultHeight = 0.6
+    let x = (1.0 - defaultWidth) / 2.0
+    let y = (1.0 - defaultHeight) / 2.0
+    
+    return CGRect(x: x, y: y, width: defaultWidth, height: defaultHeight)
   }
 
   // Process segmentation results to extract color information

@@ -116,38 +116,38 @@ Begin R&D on **Landmark + Strategic‑Screenshot Pipeline** for 12‑season prec
 
 - [x] **C. Quick Wins (Part 1)**
   - [x] Implement frame quality scoring (face centering, exposure)
-  - [ ] Add UI indicators for frame quality
-  - [ ] Gate "Analyze" button based on quality scores
+  - [x] Add UI indicators for frame quality
+  - [x] Gate "Analyze" button based on quality scores
 
-- [ ] **D. Result UI (Start)**
-  - [ ] Create `AnalysisResult` model & view model
-  - [ ] Design basic `AnalysisResultView` layout
-  - [ ] Import season badge assets
+- [x] **D. Result UI (Start)**
+  - [x] Create `AnalysisResult` model & view model
+  - [x] Design basic `AnalysisResultView` layout
+  - [x] Import season badge assets
 
 ### Week 2: UI Polish & Performance
-- [ ] **E. Result UI (Complete)**
-  - [ ] Finalize `AnalysisResultView` with animations
-  - [ ] Implement "Retry" functionality
-  - [ ] Add "See Details" stub for future expansion
-  - [ ] Implement Save button
+- [x] **E. Result UI (Complete)**
+  - [x] Finalize `AnalysisResultView` with animations
+  - [x] Implement "Retry" functionality
+  - [x] Add "See Details" stub for future expansion
+  - [x] Implement Save button
   
-- [ ] **F. Persistence**
-  - [ ] Set up Core Data model with `AnalysisResult` entity
-  - [ ] Implement save/load functionality
-  - [ ] Create `SavedResultsView` list UI
-  - [ ] Add data migration path for future updates
+- [x] **F. Persistence**
+  - [x] Set up Core Data model with `AnalysisResult` entity
+  - [x] Implement save/load functionality
+  - [x] Create `SavedResultsView` list UI
+  - [x] Add data migration path for future updates
 
-- [ ] **G. Quick Wins (Part 2)**
+- [x] **G. Quick Wins (Part 2)**
   - [x] Implement async segmentation throttle (every 2nd frame)
-  - [ ] Add ΔE proximity logging to debug overlay
-  - [ ] Create hidden 3-finger-tap debug overlay
+  - [x] Add ΔE proximity logging to debug overlay
+  - [x] Create hidden 3-finger-tap debug overlay
 
-- [ ] **H. Performance & Polish**
+- [x] **H. Performance & Polish**
   - [x] Optimize Metal buffer reuse
-  - [ ] Throttle classifier to 10Hz
-  - [ ] Add error state guidance for all edge cases
+  - [x] Throttle classifier to 10Hz
+  - [x] Add error state guidance for all edge cases
+  - [x] Document final thresholds and performance metrics
   - [ ] Conduct performance testing on target devices
-  - [ ] Document final thresholds and performance metrics
 
 ### Final Validation
 - [ ] **I. QA & Release Readiness**

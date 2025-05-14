@@ -215,4 +215,35 @@ class SeasonClassifier {
         
         return results
     }
+    
+    // MARK: - Static helper methods
+    
+    /// Static helper to classify skin and hair colors into a season
+    /// - Parameters:
+    ///   - skinLab: Skin color in Lab space as a tuple
+    ///   - hairLab: Hair color in Lab space as a tuple (optional)
+    /// - Returns: Classification result
+    static func classifySeason(
+        skinLab: (L: CGFloat, a: CGFloat, b: CGFloat),
+        hairLab: (L: CGFloat, a: CGFloat, b: CGFloat)? = nil
+    ) -> ClassificationResult {
+        // Create Lab color objects
+        let skinLabColor = ColorConverters.LabColor(L: skinLab.L, a: skinLab.a, b: skinLab.b)
+        var hairLabColor: ColorConverters.LabColor? = nil
+        if let hair = hairLab {
+            hairLabColor = ColorConverters.LabColor(L: hair.L, a: hair.a, b: hair.b)
+        }
+        
+        // Create classifier and classify
+        let classifier = SeasonClassifier()
+        return classifier.classify(skinColor: skinLabColor, hairColor: hairLabColor)
+    }
+    
+    /// Calculate delta-E to all season reference colors using CIEDE2000
+    /// - Parameter skinLab: Skin color in Lab space
+    /// - Returns: Dictionary mapping seasons to delta-E values
+    static func calculateDeltaEToAllSeasons(skinLab: ColorConverters.LabColor) -> [Season: CGFloat] {
+        let classifier = SeasonClassifier()
+        return classifier.calculateDeltaEToSeasonReferences(labColor: skinLab)
+    }
 } 

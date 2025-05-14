@@ -18,12 +18,13 @@ import UIKit
 import Metal
 import MetalKit
 import MetalPerformanceShaders
+import SwiftUI
 
 /**
  * The view controller is responsible for performing segmention on incoming frames from the live camera and presenting the frames with the
  * new backgrourd to the user.
  */
-class CameraViewController: UIViewController {
+class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDelegate {
   private struct Constants {
     static let edgeOffset: CGFloat = 2.0
   }
@@ -37,6 +38,17 @@ class CameraViewController: UIViewController {
   // UI elements for displaying color information
   private let skinColorLabel = UILabel()
   private let hairColorLabel = UILabel()
+  
+  // Frame quality UI elements
+  private let frameQualityView = FrameQualityIndicatorView(qualityScore: FrameQualityService.QualityScore(
+      overall: 0.0,
+      faceSize: 0.0,
+      facePosition: 0.0,
+      brightness: 0.0,
+      sharpness: 0.0
+  ))
+  private var currentFrameQualityScore: FrameQualityService.QualityScore?
+  private let analyzeButton = UIButton(type: .system)
   
   // Face landmark detection toggle
   private let faceTrackingLabel = UILabel()
@@ -55,11 +67,25 @@ class CameraViewController: UIViewController {
   private var landmarksOverlayView: UIView?
   private var landmarkDots: [UIView] = []
   
+  // Debug overlay
+  private var debugOverlayHostingController: UIHostingController<DebugOverlayView>?
+  private var isDebugOverlayVisible = false
+  
+  // Throttling properties for classification
+  private var lastClassificationTime: TimeInterval = 0
+  private let classificationThrottleInterval: TimeInterval = 0.1  // 10Hz throttle (10 frames per second)
+  
+  // Error state toast
+  private let errorToastLabel = UILabel()
+  private var errorToastTimer: Timer?
+  
   // MARK: Controllers that manage functionality
   // Handles all the camera related functionality
-  private lazy var cameraFeedService = CameraFeedService()
-  private let render = SegmentedImageRenderer()
-  private let multiClassRenderer = MultiClassSegmentedImageRenderer()
+  private lazy var cameraService = CameraService()
+  private let segmentationService = SegmentationService()
+  // These will now be handled by SegmentationService
+  // private let render = SegmentedImageRenderer()
+  // private let multiClassRenderer = MultiClassSegmentedImageRenderer()
   // Non-optional face landmark renderer
   private let faceLandmarkRenderer = FaceLandmarkRenderer()
 
@@ -110,7 +136,7 @@ class CameraViewController: UIViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     initializeImageSegmenterServiceOnSessionResumption()
-    cameraFeedService.startLiveCameraSession {[weak self] cameraConfiguration in
+    cameraService.startLiveCameraSession {[weak self] cameraConfiguration in
       DispatchQueue.main.async {
         switch cameraConfiguration {
         case .failed:
@@ -126,15 +152,19 @@ class CameraViewController: UIViewController {
 
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    cameraFeedService.stopSession()
+    cameraService.stopSession()
     clearImageSegmenterServiceOnSessionInterruption()
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    cameraFeedService.delegate = self
+    cameraService.delegate = self
     setupColorLabels()
+    setupFrameQualityUI()
     setupFaceTrackingControls()
+    setupDebugOverlay()
+    setupGestures()
+    setupErrorToast()
     
     // Register for app lifecycle notifications
     NotificationCenter.default.addObserver(
@@ -167,10 +197,6 @@ class CameraViewController: UIViewController {
       initializeImageSegmenterServiceOnSessionResumption()
       
       // Reset the renderers to ensure they're properly initialized
-      render.reset()
-      multiClassRenderer.reset()
-      
-      // We need to wait for the next frame to come in before we can reprepare the renderers
       // as they need the formatDescription which comes from the camera feed
       print("Reinitialized segmentation after returning to foreground")
     }
@@ -221,6 +247,45 @@ class CameraViewController: UIViewController {
     // Initially hide the labels
     skinColorLabel.isHidden = true
     hairColorLabel.isHidden = true
+  }
+
+  private func setupFrameQualityUI() {
+    // Configure frame quality view
+    let frameQualityHostingController = UIHostingController(rootView: frameQualityView)
+    frameQualityHostingController.view.translatesAutoresizingMaskIntoConstraints = false
+    frameQualityHostingController.view.backgroundColor = .clear
+    
+    addChild(frameQualityHostingController)
+    view.addSubview(frameQualityHostingController.view)
+    frameQualityHostingController.didMove(toParent: self)
+    
+    // Position it at the bottom center above the analyze button
+    NSLayoutConstraint.activate([
+        frameQualityHostingController.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        frameQualityHostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -80),
+        frameQualityHostingController.view.widthAnchor.constraint(equalToConstant: 300)
+    ])
+    
+    // Configure analyze button
+    analyzeButton.translatesAutoresizingMaskIntoConstraints = false
+    analyzeButton.setTitle("Analyze", for: .normal)
+    analyzeButton.backgroundColor = UIColor.systemBlue
+    analyzeButton.setTitleColor(.white, for: .normal)
+    analyzeButton.layer.cornerRadius = 22
+    analyzeButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+    analyzeButton.addTarget(self, action: #selector(analyzeButtonTapped), for: .touchUpInside)
+    
+    // Initially disable the analyze button
+    updateAnalyzeButtonState()
+    
+    view.addSubview(analyzeButton)
+    
+    NSLayoutConstraint.activate([
+        analyzeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        analyzeButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+        analyzeButton.widthAnchor.constraint(equalToConstant: 200),
+        analyzeButton.heightAnchor.constraint(equalToConstant: 44)
+    ])
   }
 
   private func setupFaceTrackingControls() {
@@ -288,7 +353,7 @@ class CameraViewController: UIViewController {
 
   // Resume camera session when click button resume
   @IBAction func onClickResume(_ sender: Any) {
-    cameraFeedService.resumeInterruptedSession {[weak self] isSessionRunning in
+    cameraService.resumeInterruptedSession {[weak self] isSessionRunning in
       if isSessionRunning {
         self?.resumeButton.isHidden = true
         self?.cameraUnavailableLabel.isHidden = true
@@ -326,11 +391,13 @@ class CameraViewController: UIViewController {
   }
 
   private func initializeImageSegmenterServiceOnSessionResumption() {
-    clearAndInitializeImageSegmenterService()
+    // Initialize segmentation service
+      segmentationService.configure(with: InferenceConfigurationManager.sharedInstance.model.modelPath!)
+    segmentationService.delegate = self
     startObserveConfigChanges()
     
     // Only initialize face landmarker if switch is on AND we're not doing segmentation
-    if isFaceTrackingEnabled && imageSegmenterService == nil {
+    if isFaceTrackingEnabled && segmentationService.getCurrentColorInfo().skinColor == nil {
       initializeFaceLandmarkerServiceOnSessionResumption()
     }
   }
@@ -340,12 +407,8 @@ class CameraViewController: UIViewController {
   }
 
   @objc private func clearAndInitializeImageSegmenterService() {
-    imageSegmenterService = nil
-    imageSegmenterService = ImageSegmenterService
-      .liveStreamImageSegmenterService(
-        modelPath: InferenceConfigurationManager.sharedInstance.model.modelPath,
-        liveStreamDelegate: self,
-        delegate: InferenceConfigurationManager.sharedInstance.delegate)
+    segmentationService.clearImageSegmenterService()
+      segmentationService.configure(with: InferenceConfigurationManager.sharedInstance.model.modelPath!)
     
     // Update UI based on selected model
     DispatchQueue.main.async {
@@ -377,7 +440,7 @@ class CameraViewController: UIViewController {
   }
 
   private func clearImageSegmenterServiceOnSessionInterruption() {
-    imageSegmenterService = nil
+    segmentationService.clearImageSegmenterService()
     stopObserveConfigChanges()
     
     // Also clear face landmarker
@@ -409,7 +472,7 @@ class CameraViewController: UIViewController {
   
   private func updateColorDisplay(_ colorInfo: MultiClassSegmentedImageRenderer.ColorInfo) {
     // Update skin color label
-    let skinRGB = colorInfo.skinColor.cgColor.components
+      let skinRGB = colorInfo.skinColor.cgColor.components
     let skinHSV = colorInfo.skinColorHSV
     
     if let skinRGB = skinRGB, skinRGB.count >= 3 {
@@ -419,11 +482,11 @@ class CameraViewController: UIViewController {
     }
     
     // Update hair color label
-    let hairRGB = colorInfo.hairColor.cgColor.components
+      let hairRGB = colorInfo.hairColor.cgColor.components
     let hairHSV = colorInfo.hairColorHSV
     
     if let hairRGB = hairRGB, hairRGB.count >= 3 {
-      let hairRGBString = String(format: "Hair: RGB(%.0f,%.0f,%.0f)", hairRGB[0]*255, hairRGB[1]*255, hairRGB[2]*255)
+      let hairRGBString = String(format: "Hair: RGB(%.0f,%.0f,%.0f)", hairRGB[0]*250, hairRGB[1]*250, hairRGB[2]*250)
       let hairHSVString = String(format: " HSV(%.0f,%.0f,%.0f)", hairHSV.h*360, hairHSV.s*100, hairHSV.v*100)
       hairColorLabel.text = hairRGBString + hairHSVString
     }
@@ -672,10 +735,365 @@ class CameraViewController: UIViewController {
     
     return texture
   }
+
+  // MARK: - Quality-related properties
+  private var isFrameQualitySufficientForAnalysis: Bool {
+    return currentFrameQualityScore?.isAcceptableForAnalysis ?? false
+  }
+
+  // Handle analyze button tap
+  @objc private func analyzeButtonTapped() {
+    guard let qualityScore = currentFrameQualityScore, qualityScore.isAcceptableForAnalysis else {
+      return
+    }
+    
+    // Perform the color analysis
+    performColorAnalysis()
+  }
+
+  // Perform color analysis and show results
+  private func performColorAnalysis() {
+    // Show loading indicator
+    let loadingIndicator = UIActivityIndicatorView(style: .large)
+    loadingIndicator.center = view.center
+    loadingIndicator.startAnimating()
+    view.addSubview(loadingIndicator)
+    
+    // Process the current frame data
+    if let pixelBuffer = self.videoPixelBuffer {
+      let colorInfo = self.segmentationService.getCurrentColorInfo()
+      let skinColor = colorInfo.skinColor
+      let hairColor = colorInfo.hairColor
+      
+      if skinColor != nil && hairColor != nil {
+        // Convert colors to Lab space
+        let skinLab = ColorUtils.convertRGBToLab(color: skinColor)
+        let hairLab = ColorUtils.convertRGBToLab(color: hairColor)
+        
+        // Perform classification with the season classifier
+        let classificationResult = SeasonClassifier.classifySeason(
+          skinLab: (skinLab.L, skinLab.a, skinLab.b),
+          hairLab: (hairLab.L, hairLab.a, hairLab.b)
+        )
+        
+        // Create thumbnail from current frame
+        let thumbnail = createThumbnailFromPixelBuffer(pixelBuffer)
+        
+        // Create analysis result
+        let result = AnalysisResult(
+          season: classificationResult.season,
+          confidence: classificationResult.confidence,
+          deltaEToNextClosest: classificationResult.deltaEToNextClosest,
+          nextClosestSeason: classificationResult.nextClosestSeason,
+          skinColor: skinColor,
+          skinColorLab: skinLab,
+          hairColor: hairColor,
+          hairColorLab: hairLab,
+          thumbnail: thumbnail
+        )
+        
+        // Show result view
+        DispatchQueue.main.async {
+          // Remove loading indicator
+          loadingIndicator.removeFromSuperview()
+          
+          // Present result view
+          self.presentAnalysisResultView(result: result)
+        }
+      } else {
+        // Handle error case
+        DispatchQueue.main.async {
+          loadingIndicator.removeFromSuperview()
+          
+          // Show error alert
+          let alert = UIAlertController(
+            title: "Analysis Failed",
+            message: "Could not extract color information. Please try again with better lighting.",
+            preferredStyle: .alert
+          )
+          alert.addAction(UIAlertAction(title: "OK", style: .default))
+          self.present(alert, animated: true)
+        }
+      }
+    }
+  }
+
+  // Create thumbnail from pixel buffer
+  private func createThumbnailFromPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> UIImage? {
+    let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+    let context = CIContext(options: nil)
+    guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
+      return nil
+    }
+    return UIImage(cgImage: cgImage)
+  }
+
+  // Present analysis result view
+  private func presentAnalysisResultView(result: AnalysisResult) {
+    // Create view model and update with result
+    let viewModel = AnalysisResultViewModel()
+    viewModel.updateWithResult(result)
+    
+    // Create hosting controller for SwiftUI view
+    let resultView = AnalysisResultView(
+      viewModel: viewModel,
+      onDismiss: { [weak self] in
+        self?.dismiss(animated: true)
+      },
+      onRetry: { [weak self] in
+        self?.dismiss(animated: true)
+      },
+      onSeeDetails: { [weak self] in
+        // Stub for future expansion
+        self?.dismiss(animated: true)
+      }
+    )
+    
+    let hostingController = UIHostingController(rootView: resultView)
+    hostingController.modalPresentationStyle = .pageSheet
+    
+    present(hostingController, animated: true)
+  }
+
+  // Update the analyze button state based on frame quality
+  private func updateAnalyzeButtonState() {
+    analyzeButton.isEnabled = isFrameQualitySufficientForAnalysis
+    analyzeButton.alpha = isFrameQualitySufficientForAnalysis ? 1.0 : 0.5
+  }
+
+  private func setupDebugOverlay() {
+    // Create debug overlay view
+    let debugOverlayView = DebugOverlayView(
+      fps: 0,
+      skinColorLab: nil,
+      hairColorLab: nil,
+      deltaEToSeasons: nil,
+      qualityScore: nil
+    )
+    
+    // Create hosting controller
+    debugOverlayHostingController = UIHostingController(rootView: debugOverlayView)
+    if let hostingController = debugOverlayHostingController {
+      hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+      hostingController.view.backgroundColor = .clear
+      
+      // Add to view hierarchy but initially hidden
+      addChild(hostingController)
+      view.addSubview(hostingController.view)
+      hostingController.didMove(toParent: self)
+      
+      // Fill entire view
+      NSLayoutConstraint.activate([
+        hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+        hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+      ])
+      
+      // Initially hidden
+      hostingController.view.isHidden = true
+    }
+  }
+  
+  private func setupGestures() {
+    // Add 3-finger tap gesture for debug overlay
+    let threeTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleThreeTap))
+    threeTapGesture.numberOfTouchesRequired = 3
+    threeTapGesture.numberOfTapsRequired = 1
+    view.addGestureRecognizer(threeTapGesture)
+  }
+  
+  @objc private func handleThreeTap() {
+    // Toggle debug overlay visibility
+    isDebugOverlayVisible.toggle()
+    debugOverlayHostingController?.view.isHidden = !isDebugOverlayVisible
+  }
+  
+  // Update debug overlay with latest data
+  private func updateDebugOverlay(fps: Float, colorInfo: MultiClassSegmentedImageRenderer.ColorInfo?, qualityScore: FrameQualityService.QualityScore?) {
+    // Ensure we're on the main thread for UI updates
+    if !Thread.isMainThread {
+      DispatchQueue.main.async {
+        self.updateDebugOverlay(fps: fps, colorInfo: colorInfo, qualityScore: qualityScore)
+      }
+      return
+    }
+    
+    guard isDebugOverlayVisible, let hostingController = debugOverlayHostingController else {
+      return
+    }
+    
+    // Convert color values to Lab if available
+    var skinLab: ColorConverters.LabColor? = nil
+    var hairLab: ColorConverters.LabColor? = nil
+    var deltaEs: [SeasonClassifier.Season: CGFloat]? = nil
+    
+    if let colorInfo = colorInfo {
+      // Convert to Lab
+      skinLab = ColorConverters.colorToLab(colorInfo.skinColor)
+      hairLab = ColorConverters.colorToLab(colorInfo.hairColor)
+      
+      // Calculate delta-E to each season
+      if let skinColorLab = skinLab {
+        deltaEs = SeasonClassifier.calculateDeltaEToAllSeasons(skinLab: skinColorLab)
+      }
+    }
+    
+    // Create updated overlay view
+    let updatedOverlayView = DebugOverlayView(
+      fps: fps,
+      skinColorLab: skinLab,
+      hairColorLab: hairLab,
+      deltaEToSeasons: deltaEs,
+      qualityScore: qualityScore
+    )
+    
+    // Update the hosting controller's root view
+    hostingController.rootView = updatedOverlayView
+  }
+
+  private func setupErrorToast() {
+    // Configure error toast label
+    errorToastLabel.translatesAutoresizingMaskIntoConstraints = false
+    errorToastLabel.textColor = .white
+    errorToastLabel.backgroundColor = UIColor.systemRed.withAlphaComponent(0.8)
+    errorToastLabel.textAlignment = .center
+    errorToastLabel.layer.cornerRadius = 10
+    errorToastLabel.clipsToBounds = true
+    errorToastLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+    errorToastLabel.numberOfLines = 0
+    errorToastLabel.alpha = 0 // Initially hidden
+    
+    view.addSubview(errorToastLabel)
+    
+    NSLayoutConstraint.activate([
+      errorToastLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+      errorToastLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -140),
+      errorToastLabel.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, constant: -40)
+    ])
+  }
+  
+  // Show error toast message
+  private func showErrorToast(_ message: String, duration: TimeInterval = 3.0) {
+    // Ensure we're on the main thread for UI updates
+    if !Thread.isMainThread {
+      DispatchQueue.main.async {
+        self.showErrorToast(message, duration: duration)
+      }
+      return
+    }
+    
+    // Cancel existing timer
+    errorToastTimer?.invalidate()
+    
+    // Update message and show
+    errorToastLabel.text = message
+    
+    // Animate in
+    UIView.animate(withDuration: 0.3) {
+      self.errorToastLabel.alpha = 1.0
+    }
+    
+    // Set timer to hide
+    errorToastTimer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { [weak self] _ in
+      // Ensure animation runs on main thread
+      DispatchQueue.main.async {
+        UIView.animate(withDuration: 0.3) {
+          self?.errorToastLabel.alpha = 0.0
+        }
+      }
+    }
+  }
+  
+  // Check for error conditions and provide user guidance
+  private func checkForErrorConditions() {
+    // Get the current face bounding box and other data
+    let faceBoundingBox = segmentationService.getCurrentFaceBoundingBox()
+    let hasFace = faceBoundingBox != nil && !faceBoundingBox!.isEmpty
+    
+    // Check if any face was detected
+    if !hasFace {
+      showErrorToast("No face detected. Please center your face in the frame.")
+      return
+    }
+    
+    // Check for quality issues
+    if let qualityScore = currentFrameQualityScore {
+      // Check overall quality first
+      if qualityScore.overall < FrameQualityService.minimumQualityScoreForAnalysis {
+        if let feedback = qualityScore.feedbackMessage {
+          showErrorToast(feedback)
+          return
+        }
+      }
+      
+      // Check brightness issues
+      if qualityScore.brightness < FrameQualityService.minimumBrightnessScoreForAnalysis {
+        if qualityScore.brightness < 0.3 {
+          showErrorToast("Too dark. Please move to a brighter area.")
+        } else if qualityScore.brightness > 0.9 {
+          showErrorToast("Too bright. Please reduce direct light on your face.")
+        } else {
+          showErrorToast("Poor lighting detected. Please find better lighting.")
+        }
+        return
+      }
+      
+      // Check face size and position
+      if qualityScore.faceSize < FrameQualityService.minimumFaceSizeScoreForAnalysis {
+        if qualityScore.faceSize < 0.3 {
+          showErrorToast("Face too small. Please move closer to the camera.")
+        } else {
+          showErrorToast("Face position issue. Please center your face.")
+        }
+        return
+      }
+      
+      // Check position
+      if qualityScore.facePosition < FrameQualityService.minimumFacePositionScoreForAnalysis {
+        showErrorToast("Please center your face in the frame.")
+        return
+      }
+      
+      // Check sharpness
+      if qualityScore.sharpness < 0.5 {
+        showErrorToast("Image is blurry. Please hold the device steady.")
+        return
+      }
+    }
+    
+    // Check if color extraction failed
+    let colorInfo = segmentationService.getCurrentColorInfo()
+    if colorInfo.skinColor == nil {
+      showErrorToast("Unable to extract skin color. Please adjust lighting.")
+      return
+    }
+    
+    // If all conditions are good, clear any error toast
+    clearErrorToast()
+  }
+
+  // Add the missing function
+  private func clearErrorToast() {
+    // Ensure we're on the main thread for UI updates
+    if Thread.isMainThread {
+      errorToastTimer?.invalidate()
+      UIView.animate(withDuration: 0.3) {
+        self.errorToastLabel.alpha = 0.0
+      }
+    } else {
+      DispatchQueue.main.async {
+        self.errorToastTimer?.invalidate()
+        UIView.animate(withDuration: 0.3) {
+          self.errorToastLabel.alpha = 0.0
+        }
+      }
+    }
+  }
 }
 
-// MARK: - CameraFeedServiceDelegate
-extension CameraViewController: CameraFeedServiceDelegate {
+// MARK: - CameraServiceDelegate
+extension CameraViewController: CameraServiceDelegate {
 
   func didOutput(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
     let currentTimeMs = Date().timeIntervalSince1970 * 1000
@@ -685,25 +1103,42 @@ extension CameraViewController: CameraFeedServiceDelegate {
       return
     }
 
+    // Always update the current video pixel buffer for use in analysis
     self.videoPixelBuffer = videoPixelBuffer
     self.formatDescription = formatDescription
 
+    // Get current time for throttling
+    let currentTime = Date().timeIntervalSince1970
+    let timeElapsedSinceLastClassification = currentTime - lastClassificationTime
+    let shouldProcess = timeElapsedSinceLastClassification >= classificationThrottleInterval
+    
+    // Always process video frames, but throttle intensive operations
     backgroundQueue.async { [weak self] in
       guard let self = self else { return }
       
-      // Use the property instead of accessing the switch directly
+      // Face tracking has priority but should also be throttled
       if self.isFaceTrackingEnabled {
-        // Only do face landmark detection
-        self.faceLandmarkerService?.detectLandmarksAsync(
-          sampleBuffer: sampleBuffer,
-          orientation: orientation,
-          timeStamps: Int(currentTimeMs))
+        if shouldProcess {
+          // Update throttle timestamp
+          self.lastClassificationTime = currentTime
+          
+          // Perform face landmark detection
+          self.faceLandmarkerService?.detectLandmarksAsync(
+            sampleBuffer: sampleBuffer,
+            orientation: orientation,
+            timeStamps: Int(currentTimeMs))
+        }
       } else {
-        // Only do image segmentation
-        self.imageSegmenterService?.segmentAsync(
+        // For regular segmentation, use the segmentation service
+        self.segmentationService.processFrame(
           sampleBuffer: sampleBuffer,
           orientation: orientation,
           timeStamps: Int(currentTimeMs))
+          
+        // If it's time to update classification results, update the timestamp
+        if shouldProcess {
+          self.lastClassificationTime = currentTime
+        }
       }
     }
   }
@@ -734,47 +1169,70 @@ extension CameraViewController: CameraFeedServiceDelegate {
   }
 }
 
-// MARK: - ImageSegmenterServiceLiveStreamDelegate
-extension CameraViewController: ImageSegmenterServiceLiveStreamDelegate {
-
-  func imageSegmenterService(_ imageSegmenterService: ImageSegmenterService, didFinishSegmention result: ResultBundle?, error: Error?) {
-    guard let imageSegmenterResult = result?.imageSegmenterResults.first as? ImageSegmenterResult,
-      let confidenceMasks = imageSegmenterResult.categoryMask else { return }
-    let confidenceMask = confidenceMasks.uint8Data
-
-    // Choose renderer based on the selected model
-    if InferenceConfigurationManager.sharedInstance.model == .multiClassSegmentation {
-      if !multiClassRenderer.isPrepared {
-        multiClassRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+// MARK: - SegmentationServiceDelegate
+extension CameraViewController: SegmentationServiceDelegate {
+  func segmentationService(_ service: SegmentationService, didCompleteSegmentation result: SegmentationResult) {
+    // Check for error conditions and provide guidance
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self else { return }
+      
+      // Update UI with segmentation results
+      self.previewView.pixelBuffer = result.outputPixelBuffer
+      
+      // Update color display
+      self.updateColorDisplay(result.colorInfo)
+      
+      // Evaluate frame quality if we have a face bounding box
+      if let faceBoundingBox = result.faceBoundingBox,
+         let pixelBuffer = self.videoPixelBuffer {
+        let imageSize = CGSize(
+          width: CVPixelBufferGetWidth(pixelBuffer),
+          height: CVPixelBufferGetHeight(pixelBuffer)
+        )
+        
+        let qualityScore = FrameQualityService.evaluateFrameQuality(
+          pixelBuffer: pixelBuffer,
+          faceBoundingBox: faceBoundingBox,
+          imageSize: imageSize
+        )
+        
+        // Update current score and UI
+        self.currentFrameQualityScore = qualityScore
+        
+        // Update frame quality view
+        let updatedFrameQualityView = FrameQualityIndicatorView(
+          qualityScore: qualityScore,
+          showDetailed: false
+        )
+        
+        // Use the UIHostingController view hierarchy to find and update the view
+        for child in self.children {
+          if let hostingController = child as? UIHostingController<FrameQualityIndicatorView> {
+            hostingController.rootView = updatedFrameQualityView
+          }
+        }
+        
+        // Update analyze button state
+        self.updateAnalyzeButtonState()
+        
+        // Check if we need to show error conditions
+        self.checkForErrorConditions()
+        
+        // Update debug overlay
+        self.updateDebugOverlay(
+          fps: result.inferenceTime != nil ? 1000.0 / Float(result.inferenceTime!) : 0.0,
+          colorInfo: result.colorInfo,
+          qualityScore: qualityScore
+        )
       }
-      
-      // Call the render method with the pixel buffer and segmentation data
-      let outputPixelBuffer = multiClassRenderer.render(pixelBuffer: videoPixelBuffer, segmentDatas: confidenceMask)
-      
-      // Display the segmentation result
-      previewView.pixelBuffer = outputPixelBuffer
-      
-      // Extract and display color information
-      let colorInfo = multiClassRenderer.getCurrentColorInfo()
-      DispatchQueue.main.async { [weak self] in
-        self?.updateColorDisplay(colorInfo)
-      }
-    } else {
-      if !render.isPrepared {
-        render.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
-      }
-      
-      let outputPixelBuffer = render.render(pixelBuffer: videoPixelBuffer, segmentDatas: confidenceMask)
-      previewView.pixelBuffer = outputPixelBuffer
     }
     
-    inferenceResultDeliveryDelegate?.didPerformInference(result: result)
+    inferenceResultDeliveryDelegate?.didPerformInference(result: nil)
   }
-}
-
-// MARK: - FaceLandmarkerServiceLiveStreamDelegate
-extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
-  // The implementation is moved to the main class above
+  
+  func segmentationService(_ service: SegmentationService, didFailWithError error: Error) {
+    print("Segmentation error: \(error)")
+  }
 }
 
 // MARK: - AVLayerVideoGravity Extension
