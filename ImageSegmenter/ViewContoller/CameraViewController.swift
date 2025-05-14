@@ -52,12 +52,8 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
   private var frameQualityHostingController: UIHostingController<FrameQualityIndicatorView>?
   private let analyzeButton = UIButton(type: .system)
 
-  // Face landmark detection toggle
-  private let faceTrackingLabel = UILabel()
-  private let faceTrackingSwitch = UISwitch()
-
-  // Track the face tracking state to avoid accessing UI from background threads
-  private var isFaceTrackingEnabled = false
+  // Always run face landmark detection alongside segmentation
+  private var shouldShowLandmarks = false
 
   private var videoPixelBuffer: CVImageBuffer!
   private var formatDescription: CMFormatDescription!
@@ -167,7 +163,6 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
     classificationService.delegate = self
     setupColorLabels()
     setupFrameQualityUI()
-    setupFaceTrackingControls()
     setupDebugOverlay()
     setupGestures()
 
@@ -193,21 +188,17 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
   }
 
   @objc private func handleAppWillEnterForeground() {
-    // Reinitialize services based on current state when app returns to foreground
-    if isFaceTrackingEnabled {
-      // Reinitialize face tracking
-      clearFaceLandmarkerServiceOnSessionInterruption()
-      initializeFaceLandmarkerServiceOnSessionResumption()
-      print("Reinitialized face tracking after returning to foreground")
-    } else {
-      // Reinitialize segmentation
-      clearImageSegmenterServiceOnSessionInterruption()
-      initializeImageSegmenterServiceOnSessionResumption()
-
-      // Reset the renderers to ensure they're properly initialized
-      // as they need the formatDescription which comes from the camera feed
-      print("Reinitialized segmentation after returning to foreground")
-    }
+    // Always reinitialize both services when app returns to foreground
+    clearImageSegmenterServiceOnSessionInterruption()
+    clearFaceLandmarkerServiceOnSessionInterruption()
+    
+    // Initialize segmentation service
+    initializeImageSegmenterServiceOnSessionResumption()
+    
+    // Initialize face landmark service
+    initializeFaceLandmarkerServiceOnSessionResumption()
+    
+    print("Reinitialized both segmentation and face landmark detection after returning to foreground")
 
     // Make sure the preview view's pixel buffer is cleared to force redraw
     previewView.pixelBuffer = nil
@@ -298,66 +289,7 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
     ])
   }
 
-  private func setupFaceTrackingControls() {
-    // Configure face tracking label
-    faceTrackingLabel.translatesAutoresizingMaskIntoConstraints = false
-    faceTrackingLabel.textColor = .white
-    faceTrackingLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-    faceTrackingLabel.textAlignment = .center
-    faceTrackingLabel.layer.cornerRadius = 5
-    faceTrackingLabel.clipsToBounds = true
-    faceTrackingLabel.font = UIFont.systemFont(ofSize: 12)
-    faceTrackingLabel.text = "Face Tracking:"
-
-    // Configure face tracking switch
-    faceTrackingSwitch.translatesAutoresizingMaskIntoConstraints = false
-    faceTrackingSwitch.isOn = false // Default to segmentation mode
-    isFaceTrackingEnabled = faceTrackingSwitch.isOn // Initialize the tracking property
-    faceTrackingSwitch.addTarget(self, action: #selector(faceTrackingSwitchChanged(_:)), for: .valueChanged)
-
-    // Add to view
-    view.addSubview(faceTrackingLabel)
-    view.addSubview(faceTrackingSwitch)
-
-    // Position controls in top right corner
-    NSLayoutConstraint.activate([
-      faceTrackingLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -60),
-      faceTrackingLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-      faceTrackingLabel.widthAnchor.constraint(equalToConstant: 100),
-      faceTrackingLabel.heightAnchor.constraint(equalToConstant: 30),
-
-      faceTrackingSwitch.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
-      faceTrackingSwitch.centerYAnchor.constraint(equalTo: faceTrackingLabel.centerYAnchor)
-    ])
-  }
-
-  @objc private func faceTrackingSwitchChanged(_ sender: UISwitch) {
-    // Update our tracking property when the switch changes
-    isFaceTrackingEnabled = sender.isOn
-
-    if isFaceTrackingEnabled {
-      // Enable face tracking, disable segmentation
-      clearImageSegmenterServiceOnSessionInterruption()
-      initializeFaceLandmarkerServiceOnSessionResumption()
-      // Hide color information labels
-      skinColorLabel.isHidden = true
-      hairColorLabel.isHidden = true
-      print("Face tracking enabled")
-    } else {
-      // Enable segmentation, disable face tracking
-      clearFaceLandmarkerServiceOnSessionInterruption()
-      initializeImageSegmenterServiceOnSessionResumption()
-      // Show or hide color labels based on the selected model
-      updateUIForCurrentModel()
-
-      // Ensure all landmarks are cleared when toggling off
-      clearLandmarksOverlay()
-      // Hide the landmarks overlay view
-      landmarksOverlayView?.isHidden = true
-
-      print("Face tracking disabled")
-    }
-  }
+  // Face tracking toggle has been removed - both segmentation and face landmark detection now run concurrently
 
 #endif
 
@@ -402,14 +334,9 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
 
   private func initializeImageSegmenterServiceOnSessionResumption() {
     // Initialize segmentation service
-      segmentationService.configure(with: InferenceConfigurationManager.sharedInstance.model.modelPath!)
+    segmentationService.configure(with: InferenceConfigurationManager.sharedInstance.model.modelPath!)
     segmentationService.delegate = self
     startObserveConfigChanges()
-
-    // Only initialize face landmarker if switch is on AND we're not doing segmentation
-    if isFaceTrackingEnabled && segmentationService.getCurrentColorInfo().skinColor == nil {
-      initializeFaceLandmarkerServiceOnSessionResumption()
-    }
   }
 
   private func initializeFaceLandmarkerServiceOnSessionResumption() {
@@ -436,17 +363,10 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
   }
 
   private func updateUIForCurrentModel() {
-    // Since we only have one model now (multiClassSegmentation), 
-    // we just need to check if it's enabled or if face tracking is enabled
-    if isFaceTrackingEnabled {
-      // Face tracking mode - hide segmentation UI
-      skinColorLabel.isHidden = true
-      hairColorLabel.isHidden = true
-    } else {
-      // Segmentation mode - always show color labels since there's only one model type now
-      skinColorLabel.isHidden = false
-      hairColorLabel.isHidden = false
-    }
+    // Always show color labels since we're always in segmentation mode now
+    // Face tracking toggle has been removed
+    skinColorLabel.isHidden = false
+    hairColorLabel.isHidden = false
   }
 
   private func clearImageSegmenterServiceOnSessionInterruption() {
@@ -508,13 +428,6 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
     didFinishLandmarkDetection result: FaceLandmarkerResultBundle?,
     error: Error?) {
 
-    // Only process landmarks if face tracking is still enabled
-    // This prevents processing after toggling face tracking off
-    if !isFaceTrackingEnabled {
-      return
-    }
-
-    // Simply use the original video frame for now
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
 
@@ -529,17 +442,18 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
         self.debugPixelBuffer(pixelBuffer, label: "Video pixel buffer for preview")
         #endif
 
+        // Always update preview view with pixel buffer for face landmarks
         // First approach - direct display of camera frame
-        // This approach should be reliable but doesn't show landmarks
         self.previewView.pixelBuffer = pixelBuffer
 
-        // Only print logs in debug builds
-        #if DEBUG
-        print("Preview view updated with pixel buffer")
-        #endif
+          // Only print logs in debug builds
+          #if DEBUG
+          print("Preview view updated with pixel buffer")
+          #endif
 
-        // Make sure landmark overlay view is visible when face tracking is on
-        self.landmarksOverlayView?.isHidden = false
+          // Make sure landmark overlay view is visible when face tracking is on
+          self.landmarksOverlayView?.isHidden = false
+        }
 
         // Detect landmarks
         if let faceLandmarkerResults = result?.faceLandmarkerResults,
@@ -555,9 +469,11 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
 
           self.lastFaceLandmarks = landmarks
           
+          // Always update landmarks for quality calculation regardless of face tracking toggle
           self.segmentationService.updateFaceLandmarks(landmarks)
           print("Updated face landmarks for quality calculation: \(landmarks.count) points")
 
+          // Always show landmarks overlay
           // Add visual feedback by overlaying a UIView with dots for landmarks
           if self.landmarksOverlayView == nil {
             self.setupLandmarksOverlayView()
@@ -573,7 +489,7 @@ class CameraViewController: UIViewController, FaceLandmarkerServiceLiveStreamDel
           print("No face landmarks detected")
           #endif
 
-          // Clear landmarks display if needed
+          // Always clear landmarks display when no face is detected
           self.clearLandmarksOverlay()
         }
       } else {
@@ -1030,30 +946,28 @@ extension CameraViewController: CameraServiceDelegate {
     backgroundQueue.async { [weak self] in
       guard let self = self else { return }
 
-      // Face tracking has priority but should also be throttled
-      if self.isFaceTrackingEnabled {
-        if shouldProcess {
-          // Update throttle timestamp
-          self.lastClassificationTime = currentTime
+      // Initialize face landmarker service if it's nil
+      if self.faceLandmarkerService == nil {
+        self.initializeFaceLandmarkerServiceOnSessionResumption()
+      }
+      
+      // Always perform face landmark detection for quality calculation
+      if shouldProcess {
+        // Update throttle timestamp
+        self.lastClassificationTime = currentTime
 
-          // Perform face landmark detection
-          self.faceLandmarkerService?.detectLandmarksAsync(
-            sampleBuffer: sampleBuffer,
-            orientation: orientation,
-            timeStamps: Int(currentTimeMs))
-        }
-      } else {
-        // For regular segmentation, use the segmentation service
-        self.segmentationService.processFrame(
+        // Perform face landmark detection
+        self.faceLandmarkerService?.detectLandmarksAsync(
           sampleBuffer: sampleBuffer,
           orientation: orientation,
           timeStamps: Int(currentTimeMs))
-
-        // If it's time to update classification results, update the timestamp
-        if shouldProcess {
-          self.lastClassificationTime = currentTime
-        }
       }
+      
+      // Always run segmentation alongside face landmark detection
+      self.segmentationService.processFrame(
+        sampleBuffer: sampleBuffer,
+        orientation: orientation,
+        timeStamps: Int(currentTimeMs))
     }
   }
 
