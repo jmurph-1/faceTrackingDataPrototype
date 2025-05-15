@@ -36,20 +36,10 @@ class RootViewController: UIViewController {
   private var cameraViewController: CameraViewController?
   private var landingPageViewController: UIHostingController<LandingPageView>?
   private var isShowingLandingPage = true
-  private var headerView: UIView?
-  private var footerView: UIView?
 
   // MARK: View Handling Methods
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    for subview in view.subviews where subview != tabBarContainerView {
-      if subview.frame.minY < tabBarContainerView.frame.minY {
-        headerView = subview
-      } else if subview.frame.minY > tabBarContainerView.frame.maxY {
-        footerView = subview
-      }
-    }
     
     // Setup camera view controller but don't show it yet
     setupCameraViewController()
@@ -116,9 +106,6 @@ class RootViewController: UIViewController {
     hostingController.didMove(toParent: self)
     
     cameraViewController?.view.isHidden = true
-    
-    headerView?.isHidden = true
-    footerView?.isHidden = true
   }
   
   private func showCameraView() {
@@ -127,8 +114,6 @@ class RootViewController: UIViewController {
     UIView.transition(with: tabBarContainerView, duration: 0.3, options: .transitionCrossDissolve) { [weak self] in
       self?.landingPageViewController?.view.isHidden = true
       self?.cameraViewController?.view.isHidden = false
-      self?.headerView?.isHidden = false
-      self?.footerView?.isHidden = false
       self?.isShowingLandingPage = false
     }
     
@@ -139,8 +124,6 @@ class RootViewController: UIViewController {
     UIView.transition(with: tabBarContainerView, duration: 0.3, options: .transitionCrossDissolve) { [weak self] in
       self?.landingPageViewController?.view.isHidden = false
       self?.cameraViewController?.view.isHidden = true
-      self?.headerView?.isHidden = true
-      self?.footerView?.isHidden = true
       self?.isShowingLandingPage = true
     }
   }
