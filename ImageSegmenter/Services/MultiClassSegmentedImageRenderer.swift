@@ -507,7 +507,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
 
     if frameCounter % logFrameInterval == 0 {
-      log("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .info)
+      //log("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .info)
     }
 
     var outputBuffer: CVPixelBuffer?
@@ -910,7 +910,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   
   func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
     lastFaceLandmarks = landmarks
-    LoggingService.debug("Updated face landmarks in MultiClassSegmentedImageRenderer: \(landmarks?.count ?? 0) points")
+    //LoggingService.debug("Updated face landmarks in MultiClassSegmentedImageRenderer: \(landmarks?.count ?? 0) points")
   }
 
   func getFaceBoundingBox() -> CGRect {

@@ -246,9 +246,9 @@ class RefactoredCameraViewController: UIViewController {
             view.addSubview(hostingController.view)
             hostingController.didMove(toParent: self)
 
-            // Fill entire view
+            // Position debug overlay with top padding
             NSLayoutConstraint.activate([
-                hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+                hostingController.view.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
                 hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)

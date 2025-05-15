@@ -432,6 +432,8 @@ class FrameQualityService {
             landmarks: landmarks,
             pixelBuffer: pixelBuffer
         )
+        
+        print("Sharpless from Landmarks: ", sharpnessScore)
 
         // 5. Calculate overall score (weighted average)
         let overall = (faceSizeScore * 0.25) + (facePositionScore * 0.25) + (brightnessScore * 0.3) + (sharpnessScore * 0.2)

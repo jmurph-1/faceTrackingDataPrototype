@@ -1,4 +1,3 @@
-```markdown
 # colorAnalysisApp Requirements Document
 
 ## Document Header

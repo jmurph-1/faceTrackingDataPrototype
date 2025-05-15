@@ -260,15 +260,15 @@ extension AnalysisResult {
         var skinLab: (L: CGFloat, a: CGFloat, b: CGFloat)?
         var hairLab: (L: CGFloat, a: CGFloat, b: CGFloat)?
 
-        if let skinL = managedObject.value(forKey: "skinLabL") as? Double {
-            let skinA = managedObject.value(forKey: "skinLabA") as? Double ?? 0
-            let skinB = managedObject.value(forKey: "skinLabB") as? Double ?? 0
+        if let skinL = managedObject.value(forKey: "skinColorLabL") as? Double {
+            let skinA = managedObject.value(forKey: "skinColorLabA") as? Double ?? 0
+            let skinB = managedObject.value(forKey: "skinColorLabB") as? Double ?? 0
             skinLab = (CGFloat(skinL), CGFloat(skinA), CGFloat(skinB))
         }
 
-        if let hairL = managedObject.value(forKey: "hairLabL") as? Double {
-            let hairA = managedObject.value(forKey: "hairLabA") as? Double ?? 0
-            let hairB = managedObject.value(forKey: "hairLabB") as? Double ?? 0
+        if let hairL = managedObject.value(forKey: "hairColorLabL") as? Double {
+            let hairA = managedObject.value(forKey: "hairColorLabA") as? Double ?? 0
+            let hairB = managedObject.value(forKey: "hairColorLabB") as? Double ?? 0
             hairLab = (CGFloat(hairL), CGFloat(hairA), CGFloat(hairB))
         }
 
@@ -318,15 +318,15 @@ extension AnalysisResult {
 
         // Save Lab values
         if let lab = skinColorLab {
-            managedObject.setValue(Double(lab.L), forKey: "skinLabL")
-            managedObject.setValue(Double(lab.a), forKey: "skinLabA")
-            managedObject.setValue(Double(lab.b), forKey: "skinLabB")
+            managedObject.setValue(Double(lab.L), forKey: "skinColorLabL")
+            managedObject.setValue(Double(lab.a), forKey: "skinColorLabA")
+            managedObject.setValue(Double(lab.b), forKey: "skinColorLabB")
         }
 
         if let lab = hairColorLab {
-            managedObject.setValue(Double(lab.L), forKey: "hairLabL")
-            managedObject.setValue(Double(lab.a), forKey: "hairLabA")
-            managedObject.setValue(Double(lab.b), forKey: "hairLabB")
+            managedObject.setValue(Double(lab.L), forKey: "hairColorLabL")
+            managedObject.setValue(Double(lab.a), forKey: "hairColorLabA")
+            managedObject.setValue(Double(lab.b), forKey: "hairColorLabB")
         }
 
         // Save thumbnail

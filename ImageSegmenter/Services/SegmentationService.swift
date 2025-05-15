@@ -134,7 +134,6 @@ class SegmentationService {
     if let pixelBuffer = videoPixelBuffer {
       let width = CVPixelBufferGetWidth(pixelBuffer)
       let height = CVPixelBufferGetHeight(pixelBuffer)
-      print("Video buffer dimensions: \(width)x\(height)")
     }
   }
 
@@ -181,7 +180,7 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
     let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
 
     // Debug log
-    print("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)")
+    //print("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)")
 
     // Render the segmentation
     guard let outputPixelBuffer = multiClassRenderer.render(pixelBuffer: pixelBuffer, segmentDatas: confidenceMask) else {

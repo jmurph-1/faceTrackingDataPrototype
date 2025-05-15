@@ -68,53 +68,74 @@ class FaceLandmarkQualityCalculator {
     
     static func calculateBrightnessScore(landmarks: [NormalizedLandmark]?, pixelBuffer: CVPixelBuffer) -> Float {
         guard let landmarks = landmarks, !landmarks.isEmpty else {
+            print("No landmarks available for brightness calculation")
             return 0.0
         }
         
-        let keyPointIndices = [10, 152, 234, 454, 152]
+        // Key facial points to sample brightness (forehead, cheeks, nose, chin)
+        // Use safer indices well within the landmark count
+        let keyPointIndices = [10, 50, 152, 234, 300]
+        print("Calculating brightness using landmarks: \(keyPointIndices)")
         
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+        
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
+        print("Pixel buffer dimensions: \(width)x\(height)")
         
+        // Direct pixel buffer sampling instead of CIFilter
+        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer),
+              CVPixelBufferGetPixelFormatType(pixelBuffer) == kCVPixelFormatType_32BGRA else {
+            print("Invalid pixel buffer format for brightness calculation")
+            return 0.5 // Default medium score
+        }
+        
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
         var totalBrightness: Float = 0
         var sampleCount = 0
         
+        // Sample brightness at each key point
         for index in keyPointIndices {
-            guard index < landmarks.count else { continue }
+            guard index < landmarks.count else {
+                print("Landmark index \(index) out of bounds")
+                continue
+            }
             
-            let x = Int(CGFloat(landmarks[index].x) * CGFloat(width))
-            let y = Int(CGFloat(landmarks[index].y) * CGFloat(height))
+            let pointX = Int(CGFloat(landmarks[index].x) * CGFloat(width))
+            let pointY = Int(CGFloat(landmarks[index].y) * CGFloat(height))
             
-            let sampleRect = CGRect(x: max(0, x - 5), y: max(0, y - 5), width: 10, height: 10)
+            // Skip if point is outside valid image bounds
+            guard pointX >= 0, pointY >= 0, pointX < width, pointY < height else {
+                print("Sample point (\(pointX),\(pointY)) outside image bounds")
+                continue 
+            }
             
-            let croppedImage = ciImage.cropped(to: sampleRect)
+            // Sample a single pixel instead of an area
+            let rowPtr = baseAddress.advanced(by: pointY * bytesPerRow)
+            let pixelPtr = rowPtr.advanced(by: pointX * 4) // 4 bytes per pixel (BGRA)
             
-            let filter = CIFilter(name: "CIAreaAverage")!
-            filter.setValue(croppedImage, forKey: kCIInputImageKey)
-            filter.setValue(CIVector(cgRect: CGRect(x: 0, y: 0, width: 1, height: 1)), forKey: "inputExtent")
+            let blueValue = Float(pixelPtr.load(fromByteOffset: 0, as: UInt8.self))
+            let greenValue = Float(pixelPtr.load(fromByteOffset: 1, as: UInt8.self))
+            let redValue = Float(pixelPtr.load(fromByteOffset: 2, as: UInt8.self))
             
-            guard let outputImage = filter.outputImage else { continue }
-            
-            let context = CIContext(options: [.workingColorSpace: NSNull()])
-            var bitmap = [UInt8](repeating: 0, count: 4)
-            context.render(outputImage, toBitmap: &bitmap, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())
-            
-            let r = Float(bitmap[0]) / 255.0
-            let g = Float(bitmap[1]) / 255.0
-            let b = Float(bitmap[2]) / 255.0
-            let pointBrightness = (0.299 * r + 0.587 * g + 0.114 * b)
-            
+            // Calculate luminance
+            let pointBrightness = (0.299 * redValue + 0.587 * greenValue + 0.114 * blueValue) / 255.0
             totalBrightness += pointBrightness
             sampleCount += 1
+            
+            print("Sample at point \(index) (\(pointX),\(pointY)): \(pointBrightness)")
         }
         
         guard sampleCount > 0 else {
-            return 0.5 // Default medium score if we can't calculate
+            print("No valid samples for brightness calculation")
+            return 0.5 // Default medium score
         }
         
         let averageBrightness = totalBrightness / Float(sampleCount)
+        print("Average brightness: \(averageBrightness)")
         
+        // Map to quality score using same thresholds
         if averageBrightness < 0.2 {
             return averageBrightness / 0.2
         } else if averageBrightness > 0.8 {
@@ -131,10 +152,15 @@ class FaceLandmarkQualityCalculator {
     
     static func calculateSharpnessScore(landmarks: [NormalizedLandmark]?, pixelBuffer: CVPixelBuffer) -> Float {
         guard let landmarks = landmarks, !landmarks.isEmpty else {
+            print("No landmarks available for sharpness calculation")
             return 0.0
         }
         
-        let featureConnections = MediaPipeFaceMesh.leftEye + MediaPipeFaceMesh.rightEye + MediaPipeFaceMesh.lips
+        print("Calculating sharpness with \(landmarks.count) landmarks")
+        
+        // Sample points across the face for sharpness calculation
+        // Use a simpler approach with key facial points rather than connections
+        let keyPointIndices = [10, 50, 152, 234, 300]
         
         CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
         defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
@@ -144,64 +170,69 @@ class FaceLandmarkQualityCalculator {
         let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
         
         guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+            print("Invalid pixel buffer base address")
             return 0.5
         }
         
         var gradientSum: Float = 0
         var sampleCount = 0
         
-        for connection in featureConnections {
-            let startIndex = connection.0
-            let endIndex = connection.1
-            
-            guard startIndex < landmarks.count && endIndex < landmarks.count else {
+        // Sample around each key point
+        for index in keyPointIndices {
+            guard index < landmarks.count else {
+                print("Landmark index \(index) out of bounds")
                 continue
             }
             
-            let startX = Int(CGFloat(landmarks[startIndex].x) * CGFloat(width))
-            let startY = Int(CGFloat(landmarks[startIndex].y) * CGFloat(height))
-            let endX = Int(CGFloat(landmarks[endIndex].x) * CGFloat(width))
-            let endY = Int(CGFloat(landmarks[endIndex].y) * CGFloat(height))
+            let pointX = Int(CGFloat(landmarks[index].x) * CGFloat(width))
+            let pointY = Int(CGFloat(landmarks[index].y) * CGFloat(height))
             
-            let samplePoints = 3
-            for i in 0...samplePoints {
-                let t = Float(i) / Float(samplePoints)
-                let x = Int(Float(startX) * (1-t) + Float(endX) * t)
-                let y = Int(Float(startY) * (1-t) + Float(endY) * t)
-                
-                if x <= 0 || y <= 0 || x >= width - 1 || y >= height - 1 {
-                    continue
+            // Skip if point is outside valid image bounds or too close to edge
+            guard pointX > 1, pointY > 1, pointX < width - 2, pointY < height - 2 else {
+                print("Sample point (\(pointX),\(pointY)) too close to image edge")
+                continue
+            }
+            
+            // Sample a 3x3 grid around the point
+            for offsetY in -1...1 {
+                for offsetX in -1...1 {
+                    let sampleX = pointX + offsetX
+                    let sampleY = pointY + offsetY
+                    
+                    let rowPtr = baseAddress.advanced(by: sampleY * bytesPerRow)
+                    let centerPtr = rowPtr.advanced(by: sampleX * 4) // 4 bytes per pixel (BGRA)
+                    let leftPtr = rowPtr.advanced(by: (sampleX - 1) * 4)
+                    let rightPtr = rowPtr.advanced(by: (sampleX + 1) * 4)
+                    let topPtr = baseAddress.advanced(by: (sampleY - 1) * bytesPerRow + sampleX * 4)
+                    let bottomPtr = baseAddress.advanced(by: (sampleY + 1) * bytesPerRow + sampleX * 4)
+                    
+                    let center = getGrayscale(ptr: centerPtr)
+                    let left = getGrayscale(ptr: leftPtr)
+                    let right = getGrayscale(ptr: rightPtr)
+                    let top = getGrayscale(ptr: topPtr)
+                    let bottom = getGrayscale(ptr: bottomPtr)
+                    
+                    let gradientX = abs(right - left)
+                    let gradientY = abs(bottom - top)
+                    
+                    let gradient = sqrt(gradientX * gradientX + gradientY * gradientY)
+                    gradientSum += gradient
+                    sampleCount += 1
                 }
-                
-                let rowPtr = baseAddress.advanced(by: y * bytesPerRow)
-                let centerPtr = rowPtr.advanced(by: x * 4) // 4 bytes per pixel (BGRA)
-                let leftPtr = rowPtr.advanced(by: (x - 1) * 4)
-                let rightPtr = rowPtr.advanced(by: (x + 1) * 4)
-                let topPtr = baseAddress.advanced(by: (y - 1) * bytesPerRow + x * 4)
-                let bottomPtr = baseAddress.advanced(by: (y + 1) * bytesPerRow + x * 4)
-                
-                let center = getGrayscale(ptr: centerPtr)
-                let left = getGrayscale(ptr: leftPtr)
-                let right = getGrayscale(ptr: rightPtr)
-                let top = getGrayscale(ptr: topPtr)
-                let bottom = getGrayscale(ptr: bottomPtr)
-                
-                let gradientX = abs(right - left)
-                let gradientY = abs(bottom - top)
-                
-                let gradient = sqrt(gradientX * gradientX + gradientY * gradientY)
-                gradientSum += gradient
-                sampleCount += 1
             }
         }
         
         guard sampleCount > 0 else {
+            print("No valid samples for sharpness calculation")
             return 0.5
         }
         
         let averageGradient = gradientSum / Float(sampleCount)
+        print("Average gradient (sharpness): \(averageGradient)")
         
-        let normalizedGradient = min(1.0, averageGradient / 100.0)
+        // Normalize to 0-1 range
+        let normalizedGradient = min(1.0, averageGradient / 1.4)
+        print("Normalized sharpness score: \(normalizedGradient)")
         
         return normalizedGradient
     }
@@ -212,10 +243,10 @@ class FaceLandmarkQualityCalculator {
         
         var area: CGFloat = 0
         
-        for i in 0..<points.count {
-            let j = (i + 1) % points.count
-            area += points[i].x * points[j].y
-            area -= points[j].x * points[i].y
+        for idx in 0..<points.count {
+            let nextIdx = (idx + 1) % points.count
+            area += points[idx].x * points[nextIdx].y
+            area -= points[nextIdx].x * points[idx].y
         }
         
         area = abs(area) / 2.0
@@ -223,10 +254,10 @@ class FaceLandmarkQualityCalculator {
     }
     
     private static func getGrayscale(ptr: UnsafeRawPointer) -> Float {
-        let b = Float(ptr.load(fromByteOffset: 0, as: UInt8.self))
-        let g = Float(ptr.load(fromByteOffset: 1, as: UInt8.self))
-        let r = Float(ptr.load(fromByteOffset: 2, as: UInt8.self))
+        let blueValue = Float(ptr.load(fromByteOffset: 0, as: UInt8.self))
+        let greenValue = Float(ptr.load(fromByteOffset: 1, as: UInt8.self))
+        let redValue = Float(ptr.load(fromByteOffset: 2, as: UInt8.self))
         
-        return (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+        return (0.299 * redValue + 0.587 * greenValue + 0.114 * blueValue) / 255.0
     }
 }

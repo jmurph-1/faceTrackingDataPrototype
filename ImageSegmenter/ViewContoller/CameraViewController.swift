@@ -106,6 +106,11 @@ class CameraViewController: UIViewController {
   private var lastFaceLandmarkerResult: FaceLandmarkerResult?
   private var lastFaceLandmarks: [NormalizedLandmark]?
 
+  private var isAnalyzeButtonPressed = false
+
+  // Add a flag to control logging
+  private var shouldLogFrameQuality = false
+
 #if !targetEnvironment(simulator)
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -135,10 +140,7 @@ class CameraViewController: UIViewController {
     cameraService.delegate = self
     segmentationService.delegate = self
     classificationService.delegate = self
-    setupColorLabels()
-    setupFrameQualityUI()
-    setupDebugOverlay()
-    setupGestures()
+    setupUIComponents()
 
     toastService = ToastService(containerView: view)
 
@@ -170,6 +172,13 @@ class CameraViewController: UIViewController {
 
     previewView.pixelBuffer = nil
     previewView.flushTextureCache()
+  }
+
+  private func setupUIComponents() {
+    setupColorLabels()
+    setupFrameQualityUI()
+    setupDebugOverlay()
+    setupGestures()
   }
 
   private func setupColorLabels() {
@@ -247,6 +256,16 @@ class CameraViewController: UIViewController {
     ])
   }
 
+  private func setupGestures() {
+    let tripleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleThreeTap))
+    tripleTapGesture.numberOfTapsRequired = 3
+    view.addGestureRecognizer(tripleTapGesture)
+  }
+
+  @objc private func handleThreeTap() {
+    isDebugOverlayVisible.toggle()
+    debugOverlayHostingController?.view.isHidden = !isDebugOverlayVisible
+  }
 
 #endif
 
@@ -525,26 +544,10 @@ class CameraViewController: UIViewController {
     return currentFrameQualityScore?.overall ?? 0 >= 0.7
   }
 
-  @objc private func analyzeButtonTapped() {
-    if !isFrameQualitySufficientForAnalysis {
-      let alert = UIAlertController(
-        title: "Insufficient Frame Quality",
-        message: "Please adjust your position to improve frame quality before analyzing.",
-        preferredStyle: .alert
-      )
-      alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-      present(alert, animated: true)
-      return
-    }
-
-    guard let pixelBuffer = videoPixelBuffer else { return }
-    
-    let colorInfo = segmentationService.getCurrentColorInfo()
-    
-    classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
-  }
-
   private func presentAnalysisResultView(with result: AnalysisResult) {
+    shouldLogFrameQuality = false
+    pauseAllProcessing()
+    
     let viewModel = AnalysisResultViewModel()
     viewModel.updateWithResult(result)
     
@@ -553,10 +556,27 @@ class CameraViewController: UIViewController {
         viewModel: viewModel,
         onDismiss: { [weak self] in
           self?.dismiss(animated: true)
+          self?.resumeAllProcessing()
+          // Reinitialize pixel buffer and services
+          self?.previewView.pixelBuffer = nil
+          self?.initializeImageSegmenterServiceOnSessionResumption()
+          self?.initializeFaceLandmarkerServiceOnSessionResumption()
+          self?.updateAnalyzeButtonState()
+          print("Dismissed results view, services reinitialized.")
         },
         onRetry: { [weak self] in
           self?.dismiss(animated: true)
-          self?.analyzeButtonTapped()
+          self?.resumeAllProcessing()
+          // Reinitialize pixel buffer and services
+          self?.previewView.pixelBuffer = nil
+          self?.initializeImageSegmenterServiceOnSessionResumption()
+          self?.initializeFaceLandmarkerServiceOnSessionResumption()
+          self?.updateAnalyzeButtonState()
+          print("Retrying analysis, services reinitialized.")
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self?.analyzeButtonTapped()
+            print("Analyze button tapped.")
+          }
         },
         onSeeDetails: { 
           print("See details tapped")
@@ -593,7 +613,7 @@ class CameraViewController: UIViewController {
       
       hostingController.view.translatesAutoresizingMaskIntoConstraints = false
       NSLayoutConstraint.activate([
-        hostingController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+        hostingController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
         hostingController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         hostingController.view.widthAnchor.constraint(equalToConstant: 300),
         hostingController.view.heightAnchor.constraint(equalToConstant: 400)
@@ -601,52 +621,6 @@ class CameraViewController: UIViewController {
       
       hostingController.view.isHidden = !isDebugOverlayVisible
     }
-  }
-
-  private func setupGestures() {
-    let tripleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleThreeTap))
-    tripleTapGesture.numberOfTapsRequired = 3
-    view.addGestureRecognizer(tripleTapGesture)
-  }
-
-  @objc private func handleThreeTap() {
-    isDebugOverlayVisible.toggle()
-    debugOverlayHostingController?.view.isHidden = !isDebugOverlayVisible
-  }
-
-  private func updateDebugOverlay(
-    fps: Double? = nil,
-    skinColorLab: ColorConverters.LabColor? = nil,
-    hairColorLab: ColorConverters.LabColor? = nil,
-    deltaEs: [SeasonClassifier.Season: CGFloat]? = nil,
-    qualityScore: FrameQualityService.QualityScore? = nil
-  ) {
-    guard isDebugOverlayVisible, let debugOverlayHostingController = debugOverlayHostingController else {
-      return
-    }
-    
-    let currentView = debugOverlayHostingController.rootView
-      let updatedFps = Float(fps ?? 0.0)
-    let updatedSkinLab = skinColorLab ?? currentView.skinColorLab
-    let updatedHairLab = hairColorLab ?? currentView.hairColorLab
-    let updatedDeltaEs = deltaEs ?? currentView.deltaEToSeasons
-    let updatedQualityScore = qualityScore ?? currentView.qualityScore
-    
-    if qualityScore != nil {
-      LoggingService.debug("updateDebugOverlay called with qualityScore: \(String(describing: qualityScore))")
-    }
-    
-    let updatedOverlayView = DebugOverlayView(
-      fps: updatedFps,
-      skinColorLab: updatedSkinLab,
-      hairColorLab: updatedHairLab,
-      deltaEToSeasons: updatedDeltaEs,
-      qualityScore: updatedQualityScore
-    )
-    
-    LoggingService.debug("Debug overlay rootView updated with qualityScore: \(String(describing: updatedQualityScore))")
-    
-    debugOverlayHostingController.rootView = updatedOverlayView
   }
 
   private func setupErrorToast() {
@@ -696,6 +670,24 @@ class CameraViewController: UIViewController {
 
   private func clearErrorToast() {
     toastService.clearToast()
+  }
+
+  private func updateDebugOverlay(fps: Float, skinColorLab: ColorConverters.LabColor?, hairColorLab: ColorConverters.LabColor?, deltaEs: [SeasonClassifier.Season: CGFloat]?, qualityScore: FrameQualityService.QualityScore?) {
+    guard isDebugOverlayVisible, let hostingController = debugOverlayHostingController else {
+        return
+    }
+
+    // Create updated overlay view
+    let updatedOverlayView = DebugOverlayView(
+        fps: fps,
+        skinColorLab: skinColorLab,
+        hairColorLab: hairColorLab,
+        deltaEToSeasons: deltaEs,
+        qualityScore: qualityScore
+    )
+
+    // Update the hosting controller's root view
+    hostingController.rootView = updatedOverlayView
   }
 }
 
@@ -782,9 +774,7 @@ extension CameraViewController: SegmentationServiceDelegate {
           landmarks: landmarks,
           imageSize: imageSize
         )
-        LoggingService.debug("New quality score calculated with landmarks: \(qualityScore)")
       } else {
-        LoggingService.debug("Using bounding box for quality calculation")
         let faceBoundingBox = result.faceBoundingBox ?? CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
         
         qualityScore = FrameQualityService.evaluateFrameQuality(
@@ -794,16 +784,29 @@ extension CameraViewController: SegmentationServiceDelegate {
         )
       }
       
-      LoggingService.debug("New quality score calculated: \(qualityScore)")
-      LoggingService.debug("Quality details - Overall: \(qualityScore.overall), FaceSize: \(qualityScore.faceSize)")
-      LoggingService.debug("Quality details - Position: \(qualityScore.facePosition), Brightness: \(qualityScore.brightness), Sharpness: \(qualityScore.sharpness)")
-      
       self.currentFrameQualityScore = qualityScore
       
       let updatedFrameQualityView = FrameQualityIndicatorView(qualityScore: qualityScore)
       self.frameQualityHostingController?.rootView = updatedFrameQualityView
       
-      self.updateDebugOverlay(qualityScore: qualityScore)
+      // Convert skin and hair colors to Lab
+      let skinLab = ColorConverters.colorToLab(result.colorInfo.skinColor)
+      let hairLab = ColorConverters.colorToLab(result.colorInfo.hairColor)
+      
+      // Calculate delta-E to seasons if skin color is available
+      var deltaEs: [SeasonClassifier.Season: CGFloat]?
+      if result.colorInfo.skinColor != UIColor.clear {
+          deltaEs = SeasonClassifier.calculateDeltaEToAllSeasons(skinLab: skinLab)
+      }
+      
+      // Update debug overlay with all information
+      self.updateDebugOverlay(
+          fps: 30.0, // Using a default FPS value
+          skinColorLab: skinLab,
+          hairColorLab: hairLab,
+          deltaEs: deltaEs,
+          qualityScore: qualityScore
+      )
       
       self.updateAnalyzeButtonState()
     }
@@ -853,13 +856,17 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
 
       if let pixelBuffer = self.videoPixelBuffer {
         #if DEBUG
-        self.debugPixelBuffer(pixelBuffer, label: "Video pixel buffer for preview")
+        if shouldLogFrameQuality {
+            //self.debugPixelBuffer(pixelBuffer, label: "Video pixel buffer for preview")
+        }
         #endif
 
         self.previewView.pixelBuffer = pixelBuffer
 
         #if DEBUG
-        LoggingService.debug("Preview view updated with pixel buffer")
+        if shouldLogFrameQuality {
+            //LoggingService.debug("Preview view updated with pixel buffer")
+        }
         #endif
 
         self.landmarksOverlayView?.isHidden = false
@@ -871,13 +878,19 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
            let landmarks = faceLandmarkerResult.faceLandmarks.first {
 
           #if DEBUG
-          LoggingService.debug("Received \(landmarks.count) landmarks")
+          if shouldLogFrameQuality {
+              LoggingService.debug("Received \(landmarks.count) landmarks")
+          }
           #endif
 
           self.lastFaceLandmarks = landmarks
           
           self.segmentationService.updateFaceLandmarks(landmarks)
-          LoggingService.debug("Updated face landmarks for quality calculation: \(landmarks.count) points")
+          #if DEBUG
+          if shouldLogFrameQuality {
+              LoggingService.debug("Updated face landmarks for quality calculation: \(landmarks.count) points")
+          }
+          #endif
 
           if self.landmarksOverlayView == nil {
             self.setupLandmarksOverlayView()
@@ -888,14 +901,18 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
           self.lastFaceLandmarks = nil
 
           #if DEBUG
-          LoggingService.debug("No face landmarks detected")
+          if shouldLogFrameQuality {
+              LoggingService.debug("No face landmarks detected")
+          }
           #endif
 
           self.clearLandmarksOverlay()
         }
       } else {
         #if DEBUG
-        LoggingService.error("No video pixel buffer available for preview")
+        if shouldLogFrameQuality {
+            LoggingService.error("No video pixel buffer available for preview")
+        }
         #endif
       }
     }
@@ -933,4 +950,94 @@ extension UIDeviceOrientation {
       return .right // Default to portrait
     }
   }
+}
+
+// MARK: - Camera Processing Control
+
+extension CameraViewController {
+    private func pauseAllProcessing() {
+        cameraService.stopSession()
+        clearImageSegmenterServiceOnSessionInterruption()
+        clearFaceLandmarkerServiceOnSessionInterruption()
+        previewView.pixelBuffer = nil
+        previewView.flushTextureCache()
+        segmentationService.delegate = nil
+        classificationService.delegate = nil
+        faceLandmarkerService = nil
+        
+        // Hide or update UI components that rely on the pixel buffer
+        previewView.isHidden = true
+    }
+
+    private func resumeAllProcessing() {
+        cameraService.startLiveCameraSession { _ in }
+        initializeImageSegmenterServiceOnSessionResumption()
+        initializeFaceLandmarkerServiceOnSessionResumption()
+        
+        // Ensure UI components are visible when processing resumes
+        previewView.isHidden = false
+    }
+}
+
+// MARK: - Analyze Button Handling
+
+extension CameraViewController {
+    @objc private func analyzeButtonTapped() {
+        isAnalyzeButtonPressed = true
+        defer { isAnalyzeButtonPressed = false }
+        
+        if !isFrameQualitySufficientForAnalysis {
+            let alert = UIAlertController(
+                title: "Insufficient Frame Quality",
+                message: "Please adjust your position to improve frame quality before analyzing.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true)
+            return
+        }
+
+        guard let pixelBuffer = videoPixelBuffer else { return }
+        
+        let colorInfo = segmentationService.getCurrentColorInfo()
+        
+        classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
+    }
+}
+
+// MARK: - Camera Session Management
+
+extension CameraViewController {
+    private func startCameraSession() {
+        cameraService.startLiveCameraSession { [weak self] cameraConfiguration in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                switch cameraConfiguration {
+                case .success:
+                    self.initializeImageSegmenterServiceOnSessionResumption()
+                    self.initializeFaceLandmarkerServiceOnSessionResumption()
+                case .failed:
+                    self.showCameraErrorAlert()
+                case .permissionDenied:
+                    self.presentCameraPermissionsDeniedAlert()
+                }
+            }
+        }
+    }
+
+    private func stopCameraSession() {
+        cameraService.stopSession()
+        clearImageSegmenterServiceOnSessionInterruption()
+        clearFaceLandmarkerServiceOnSessionInterruption()
+    }
+
+    private func showCameraErrorAlert() {
+        let alert = UIAlertController(
+            title: "Camera Error",
+            message: "Unable to start camera session.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true)
+    }
 }

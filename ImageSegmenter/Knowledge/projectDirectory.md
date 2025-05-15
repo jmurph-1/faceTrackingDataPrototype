@@ -38,8 +38,6 @@ The colorAnalysisApp is an iOS mobile application built with Swift that provides
 - **ImageSegmenter/ViewContoller/RootViewController.swift** - Main container controller for the application
 - **ImageSegmenter/ViewContoller/CameraViewController.swift** - Handles camera capture and processing 
 - **ImageSegmenter/ViewContoller/RefactoredCameraViewController.swift** - Updated version of the camera controller with improved architecture
-- **ImageSegmenter/ViewContoller/MediaLibraryViewController.swift** - Manages photo library access and image selection
-- **ImageSegmenter/ViewContoller/BottomSheetViewController.swift** - Displays information in a bottom sheet UI
 - **ImageSegmenter/ViewContoller/AnalysisResultViewModel.swift** - View model for displaying analysis results
 
 ### Views
@@ -114,7 +112,7 @@ The colorAnalysisApp is an iOS mobile application built with Swift that provides
 
 ### UI Flow
 
-1. **RootViewController** initializes and coordinates between different views
+1. **RootViewController** initializes the camera view
 2. **CameraViewController** handles camera preview and analysis triggering
 3. **Metal rendering** pipeline (**PreviewMetalView**, **Shaders**, **Renderers**) displays real-time feedback
 4. **AnalysisResultViewModel** processes results for display
@@ -133,7 +131,7 @@ Per the **techstack.md** document, the application uses:
 
 ## Build and Run
 
-The application is built using Xcode and CocoaPods for dependency management. The minimum iOS version supported is iOS 13.0.
+The application is built using Xcode 16.3 and CocoaPods for dependency management. The minimum iOS version supported is iOS 13.0.
 
 ## Future Considerations
 
