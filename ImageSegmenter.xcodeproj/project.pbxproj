@@ -71,6 +71,7 @@
 		523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */; };
 		523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112A12DD5043900FCFC91 /* LoggingService.swift */; };
 		523112A42DD524D500FCFC91 /* projectDirectory.md in Resources */ = {isa = PBXBuildFile; fileRef = 523112A32DD524D500FCFC91 /* projectDirectory.md */; };
+		523112A82DD5CAA400FCFC91 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112A72DD5CAA400FCFC91 /* LandingPageView.swift */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
@@ -178,6 +179,7 @@
 		5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		523112A12DD5043900FCFC91 /* LoggingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingService.swift; sourceTree = "<group>"; };
 		523112A32DD524D500FCFC91 /* projectDirectory.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = projectDirectory.md; sourceTree = "<group>"; };
+		523112A72DD5CAA400FCFC91 /* LandingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageView.swift; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 		BF6EBB7E2B1EB75B00CD13FB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				523112A72DD5CAA400FCFC91 /* LandingPageView.swift */,
 				5222FDEE2DD40FEF00EF3C65 /* AnalysisResultView.swift */,
 				5222FDEF2DD40FEF00EF3C65 /* DebugOverlayView.swift */,
 				5222FDF02DD40FEF00EF3C65 /* FrameQualityIndicatorView.swift */,
@@ -624,6 +627,7 @@
 				"",
 				"",
 				"",
+				"",
 			);
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -649,6 +653,7 @@
 				5222FE232DD46BED00EF3C65 /* TexturePoolManager.swift in Sources */,
 				BF6EBBA22B20531800CD13FB /* SegmentedImageRenderer.swift in Sources */,
 				5222FE252DD46C1E00EF3C65 /* BufferPoolManager.swift in Sources */,
+				523112A82DD5CAA400FCFC91 /* LandingPageView.swift in Sources */,
 				52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */,
 				52BEF1812DD2F93800957595 /* Shaders.metal in Sources */,
 				5222FDEA2DD40FBE00EF3C65 /* ColorConverters.swift in Sources */,
