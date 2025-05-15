@@ -10,6 +10,9 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
   var description: String = "MultiClass Renderer"
   var isPrepared = false
+  
+  // Current log level - set to info by default
+  private var logLevel: LogLevel = .info
 
   enum LogLevel: Int {
     case none = 0
@@ -20,7 +23,6 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     case verbose = 5
   }
 
-  private var logLevel: LogLevel = .info
 
   struct ImageSegmenterResult {
     let categoryMask: UnsafePointer<UInt8>?
@@ -93,7 +95,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     context = CIContext(mtlDevice: metalDevice)
     textureLoader = MTKTextureLoader(device: metalDevice)
   }
-
+  
   func setLogLevel(_ level: LogLevel) {
     logLevel = level
   }
@@ -147,12 +149,10 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     outputPixelBufferPool = nil
     outputFormatDescription = nil
     textureCache = nil
-
     if let texture = downsampledTexture {
       TexturePoolManager.shared.recycleTexture(texture)
     }
     downsampledTexture = nil
-
     if let buffer = segmentationBuffer {
       BufferPoolManager.shared.recycleBuffer(buffer)
     }
@@ -166,24 +166,25 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
     isPrepared = false
   }
-
+  
   func handleMemoryWarning() {
     log("Handling memory warning in MultiClassSegmentedImageRenderer", level: .warning)
-
+    
+    // Recycle the downsampled texture
     if let texture = downsampledTexture {
       TexturePoolManager.shared.recycleTexture(texture)
       downsampledTexture = nil
     }
-
+    
     if let buffer = segmentationBuffer {
       BufferPoolManager.shared.recycleBuffer(buffer)
       segmentationBuffer = nil
     }
-
+    
     TexturePoolManager.shared.clearPool()
     BufferPoolManager.shared.clearPool()
     PixelBufferPoolManager.shared.clearPools()
-
+    
     if textureCache != nil {
       CVMetalTextureCacheFlush(textureCache, 0)
     }
@@ -279,7 +280,6 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
         }
       }
     }
-
     guard let pipelineState = downsampleComputePipelineState else {
       log("Downsample pipeline state is nil", level: .error)
       return nil
@@ -304,7 +304,6 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       height: 16,
       depth: 1
     )
-
     let threadgroupCount = MTLSize(
       width: (width + threadgroupSize.width - 1) / threadgroupSize.width,
       height: (height + threadgroupSize.height - 1) / threadgroupSize.height,
@@ -530,19 +529,48 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
         height: pixelBufferHeight
       )
     )
-
+    
+    // Only continue if we're properly prepared
+    guard isPrepared else {
+      log("MultiClassSegmentedImageRenderer not prepared", level: .error)
+      return nil
+    }
+    
+    var outputPixelBuffer: CVPixelBuffer?
+    
+    outputPixelBuffer = PixelBufferPoolManager.shared.getPixelBuffer(
+      width: pixelBufferWidth,
+      height: pixelBufferHeight
+    )
+    
+    // Fall back to the standard pool if needed
+    if outputPixelBuffer == nil {
+      let status = CVPixelBufferPoolCreatePixelBuffer(
+        kCFAllocatorDefault, outputPixelBufferPool!, &outputPixelBuffer)
+      
+      if status != kCVReturnSuccess {
+        log("Cannot get pixel buffer from the pool. Status: \(status)", level: .error)
+        return nil
+      }
+    }
+    
+    guard let outputBuffer = outputPixelBuffer else {
+      log("Failed to get output pixel buffer", level: .error)
+      return nil
+    }
+    
+    // Check if GPU processing is available
     if isGPUProcessingAvailable() {
-      if !processWithGPU(
-        inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas,
-        width: pixelBufferWidth, height: pixelBufferHeight) {
+      // Try GPU processing
+      if !processWithGPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas, width: pixelBufferWidth, height: pixelBufferHeight) {
+        // Fall back to CPU if GPU processing fails
         log("GPU processing failed, falling back to CPU", level: .warning)
-        processFallbackCPU(
-          inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+        processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
       }
     } else {
+      // Use CPU processing directly
       log("GPU processing not available, using CPU", level: .warning)
-      processFallbackCPU(
-        inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+      processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
     }
 
     if frameCounter % frameSkip == 0 {
@@ -703,7 +731,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     else {
       return
     }
-
+    
     let dsWidth = downsampledTexture.width
     let dsHeight = downsampledTexture.height
 
@@ -731,7 +759,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     let blitEncoder = cmdBuffer?.makeBlitCommandEncoder()
 
     let sourceSize = MTLSizeMake(dsWidth, dsHeight, 1)
-
+    
     blitEncoder?.copy(
       from: downsampledTexture,
       sourceSlice: 0,
@@ -742,7 +770,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       destinationOffset: 0,
       destinationBytesPerRow: bytesPerRow,
       destinationBytesPerImage: bufferSize)
-
+    
     blitEncoder?.endEncoding()
 
     cmdBuffer?.addCompletedHandler { [weak self] (_: MTLCommandBuffer) in
