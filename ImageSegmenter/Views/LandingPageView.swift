@@ -9,49 +9,76 @@ struct LandingPageView: View {
         ZStack {
             Color.white.edgesIgnoringSafeArea(.all)
             
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.85, green: 0.75, blue: 0.92), // Lavender
-                    Color(red: 0.70, green: 0.85, blue: 0.95)  // Light Blue
-                ]),
-                startPoint: animate ? .topLeading : .top,
-                endPoint: animate ? .center : .topTrailing
-            )
-            .opacity(0.7)
-            .ignoresSafeArea(edges: .top)
+            // Top edge gradient: Lavender to Light Blue
+            VStack {
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.85, green: 0.75, blue: 0.92), // Lavender
+                        Color(red: 0.70, green: 0.85, blue: 0.95), // Light Blue
+                        Color.white.opacity(0)
+                    ]),
+                    startPoint: animate ? .topLeading : .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 100)
+                .opacity(0.7)
+                
+                Spacer()
+            }
+            .edgesIgnoringSafeArea(.top)
             
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.98, green: 0.80, blue: 0.70), // Peach
-                    Color(red: 0.98, green: 0.80, blue: 0.90)  // Soft Pink
-                ]),
-                startPoint: animate ? .bottomTrailing : .bottom,
-                endPoint: animate ? .center : .bottomLeading
-            )
-            .opacity(0.7)
-            .ignoresSafeArea(edges: .bottom)
+            // Bottom edge gradient: Peach to Soft Pink
+            VStack {
+                Spacer()
+                
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.white.opacity(0),
+                        Color(red: 0.98, green: 0.80, blue: 0.90), // Soft Pink
+                        Color(red: 0.98, green: 0.80, blue: 0.70)  // Peach
+                    ]),
+                    startPoint: .top,
+                    endPoint: animate ? .bottomTrailing : .bottom
+                )
+                .frame(height: 100)
+                .opacity(0.7)
+            }
+            .edgesIgnoringSafeArea(.bottom)
             
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.75, green: 0.95, blue: 0.80), // Mint Green
-                    Color(red: 0.95, green: 0.95, blue: 0.75)  // Pale Yellow
-                ]),
-                startPoint: animate ? .bottomLeading : .leading,
-                endPoint: animate ? .center : .topLeading
-            )
-            .opacity(0.7)
-            .ignoresSafeArea(edges: .leading)
+            // Left edge gradient: Mint Green to Pale Yellow
+            HStack {
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(red: 0.75, green: 0.95, blue: 0.80), // Mint Green
+                        Color(red: 0.95, green: 0.95, blue: 0.75), // Pale Yellow
+                        Color.white.opacity(0)
+                    ]),
+                    startPoint: animate ? .bottomLeading : .leading,
+                    endPoint: .trailing
+                )
+                .frame(width: 100)
+                .opacity(0.7)
+                
+                Spacer()
+            }
+            .edgesIgnoringSafeArea(.leading)
             
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.95, green: 0.60, blue: 0.50), // Coral
-                    Color(red: 0.60, green: 0.80, blue: 0.95)  // Sky Blue
-                ]),
-                startPoint: animate ? .topTrailing : .trailing,
-                endPoint: animate ? .center : .bottomTrailing
-            )
-            .opacity(0.7)
-            .ignoresSafeArea(edges: .trailing)
+            HStack {
+                Spacer()
+                
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.white.opacity(0),
+                        Color(red: 0.60, green: 0.80, blue: 0.95), // Sky Blue
+                        Color(red: 0.95, green: 0.60, blue: 0.50)  // Coral
+                    ]),
+                    startPoint: .leading,
+                    endPoint: animate ? .topTrailing : .trailing
+                )
+                .frame(width: 100)
+                .opacity(0.7)
+            }
+            .edgesIgnoringSafeArea(.trailing)
             
             VStack {
                 Spacer()
