@@ -36,11 +36,13 @@ class CameraViewController: UIViewController {
       sharpness: 0.0
   ))
   private var currentFrameQualityScore: FrameQualityService.QualityScore?
-  
+
   private var frameQualityHostingController: UIHostingController<FrameQualityIndicatorView>?
   private let analyzeButton = UIButton(type: .system)
 
   private var shouldShowLandmarks = false
+
+C-3  private var shouldAutoStartAnalysis = false
 
   private var videoPixelBuffer: CVImageBuffer!
   private var formatDescription: CMFormatDescription!
@@ -114,16 +116,19 @@ class CameraViewController: UIViewController {
 #if !targetEnvironment(simulator)
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    initializeImageSegmenterServiceOnSessionResumption()
-    cameraService.startLiveCameraSession {[weak self] cameraConfiguration in
-      DispatchQueue.main.async {
-        switch cameraConfiguration {
-        case .failed:
-          self?.presentVideoConfigurationErrorAlert()
-        case .permissionDenied:
-          self?.presentCameraPermissionsDeniedAlert()
-        default:
-          break
+
+    if shouldAutoStartAnalysis {
+      initializeImageSegmenterServiceOnSessionResumption()
+      cameraService.startLiveCameraSession {[weak self] cameraConfiguration in
+        DispatchQueue.main.async {
+          switch cameraConfiguration {
+          case .failed:
+            self?.presentVideoConfigurationErrorAlert()
+          case .permissionDenied:
+            self?.presentCameraPermissionsDeniedAlert()
+          default:
+            break
+          }
         }
       }
     }
@@ -162,11 +167,11 @@ class CameraViewController: UIViewController {
   @objc private func handleAppWillEnterForeground() {
     clearImageSegmenterServiceOnSessionInterruption()
     clearFaceLandmarkerServiceOnSessionInterruption()
-    
+
     initializeImageSegmenterServiceOnSessionResumption()
-    
+
     initializeFaceLandmarkerServiceOnSessionResumption()
-    
+
     print("Reinitialized both segmentation and face landmark detection after returning to foreground")
 
     previewView.pixelBuffer = nil
@@ -546,10 +551,10 @@ class CameraViewController: UIViewController {
   private func presentAnalysisResultView(with result: AnalysisResult) {
     shouldLogFrameQuality = false
     pauseAllProcessing()
-    
+
     let viewModel = AnalysisResultViewModel()
     viewModel.updateWithResult(result)
-    
+
     let resultView = UIHostingController(
       rootView: AnalysisResultView(
         viewModel: viewModel,
@@ -572,18 +577,18 @@ class CameraViewController: UIViewController {
           self?.initializeFaceLandmarkerServiceOnSessionResumption()
           self?.updateAnalyzeButtonState()
           print("Retrying analysis, services reinitialized.")
-          
+
           self?.isAnalyzeButtonPressed = false
           print("ANALYZE_FLOW: Retry completed, waiting for user to tap analyze button")
         },
-        onSeeDetails: { 
+        onSeeDetails: {
           print("See details tapped")
         }
       )
     )
-    
+
     resultView.modalPresentationStyle = .pageSheet
-    
+
     present(resultView, animated: true)
   }
 
@@ -600,15 +605,15 @@ class CameraViewController: UIViewController {
       deltaEToSeasons: nil,
       qualityScore: nil
     )
-    
+
     debugOverlayHostingController = UIHostingController(rootView: debugOverlayView)
     debugOverlayHostingController?.view.backgroundColor = .clear
-    
+
     if let hostingController = debugOverlayHostingController {
       addChild(hostingController)
       view.addSubview(hostingController.view)
       hostingController.didMove(toParent: self)
-      
+
       hostingController.view.translatesAutoresizingMaskIntoConstraints = false
       NSLayoutConstraint.activate([
         hostingController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
@@ -616,7 +621,7 @@ class CameraViewController: UIViewController {
         hostingController.view.widthAnchor.constraint(equalToConstant: 300),
         hostingController.view.heightAnchor.constraint(equalToConstant: 400)
       ])
-      
+
       hostingController.view.isHidden = !isDebugOverlayVisible
     }
   }
@@ -635,34 +640,34 @@ class CameraViewController: UIViewController {
         toastService.showToast("Segmentation service not initialized. Please restart the app.", type: .error)
       return
     }
-    
+
     if let qualityScore = currentFrameQualityScore {
       if qualityScore.overall < 0.3 {
           toastService.showToast("Frame quality is too low. Please adjust your position.", type: .warning)
       }
-      
+
       if qualityScore.faceSize < 0.3 {
           toastService.showToast("Face is too small or too large. Move closer or further from camera.", type: .warning)
       }
-      
+
       if qualityScore.facePosition < 0.3 {
           toastService.showToast("Face is not centered. Please center your face in the frame.", type: .warning)
       }
-      
+
       if qualityScore.brightness < 0.3 {
           toastService.showToast("Lighting is too dark or too bright. Adjust lighting conditions.", type: .warning)
       }
-      
+
       if qualityScore.sharpness < 0.3 {
           toastService.showToast("Image is blurry. Hold the camera steady and ensure good focus.", type: .warning)
       }
     }
-    
+
     let colorInfo = segmentationService.getCurrentColorInfo()
     if colorInfo.skinColor == UIColor.clear || colorInfo.hairColor == UIColor.clear {
         toastService.showToast("Unable to extract colors. Please ensure face is visible.", type: .error)
     }
-    
+
     toastService.clearToast()
   }
 
@@ -693,27 +698,27 @@ extension CameraViewController: CameraServiceDelegate {
 
   func didOutput(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
     guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-    
+
     self.videoPixelBuffer = pixelBuffer
-    
+
     let deviceOrientation = UIDevice.current.orientation
-    
+
     let currentTimeMs = Date().timeIntervalSince1970 * 1000
-    
+
     let shouldProcess = currentTimeMs - lastClassificationTime > classificationThrottleInterval * 1000
-    
+
     if shouldProcess {
       lastClassificationTime = currentTimeMs
-      
+
       if self.faceLandmarkerService == nil {
         self.clearAndInitializeFaceLandmarkerService()
       }
-      
+
       self.faceLandmarkerService?.detectLandmarksAsync(
         sampleBuffer: sampleBuffer,
         orientation: orientation,
         timeStamps: Int(currentTimeMs))
-      
+
       self.segmentationService.processFrame(
         sampleBuffer: sampleBuffer,
         orientation: orientation,
@@ -733,7 +738,7 @@ extension CameraViewController: CameraServiceDelegate {
     if !self.cameraUnavailableLabel.isHidden {
       self.cameraUnavailableLabel.isHidden = true
     }
-    
+
     if !self.resumeButton.isHidden {
       self.resumeButton.isHidden = true
     }
@@ -753,19 +758,19 @@ extension CameraViewController: SegmentationServiceDelegate {
   ) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
-      
+
       self.previewView.pixelBuffer = result.outputPixelBuffer
-      
+
       self.updateColorDisplay(result.colorInfo)
-      
+
       let imageSize = CGSize(
         width: CVPixelBufferGetWidth(result.outputPixelBuffer),
         height: CVPixelBufferGetHeight(result.outputPixelBuffer)
       )
-      
+
       let pixelBuffer = result.outputPixelBuffer
       let qualityScore: FrameQualityService.QualityScore
-      
+
       if let landmarks = result.faceLandmarks, !landmarks.isEmpty {
         qualityScore = FrameQualityService.evaluateFrameQualityWithLandmarks(
           pixelBuffer: pixelBuffer,
@@ -774,29 +779,29 @@ extension CameraViewController: SegmentationServiceDelegate {
         )
       } else {
         let faceBoundingBox = result.faceBoundingBox ?? CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
-        
+
         qualityScore = FrameQualityService.evaluateFrameQuality(
           pixelBuffer: pixelBuffer,
           faceBoundingBox: faceBoundingBox,
           imageSize: imageSize
         )
       }
-      
+
       self.currentFrameQualityScore = qualityScore
-      
+
       let updatedFrameQualityView = FrameQualityIndicatorView(qualityScore: qualityScore)
       self.frameQualityHostingController?.rootView = updatedFrameQualityView
-      
+
       // Convert skin and hair colors to Lab
       let skinLab = ColorConverters.colorToLab(result.colorInfo.skinColor)
       let hairLab = ColorConverters.colorToLab(result.colorInfo.hairColor)
-      
+
       // Calculate delta-E to seasons if skin color is available
       var deltaEs: [SeasonClassifier.Season: CGFloat]?
       if result.colorInfo.skinColor != UIColor.clear {
           deltaEs = SeasonClassifier.calculateDeltaEToAllSeasons(skinLab: skinLab)
       }
-      
+
       // Update debug overlay with all information
       self.updateDebugOverlay(
           fps: 30.0, // Using a default FPS value
@@ -805,11 +810,11 @@ extension CameraViewController: SegmentationServiceDelegate {
           deltaEs: deltaEs,
           qualityScore: qualityScore
       )
-      
+
       self.updateAnalyzeButtonState()
     }
   }
-  
+
   func segmentationService(_ segmentationService: SegmentationService, didFailWithError error: Error) {
     LoggingService.error("Segmentation service error: \(error)")
   }
@@ -819,15 +824,15 @@ extension CameraViewController: ClassificationServiceDelegate {
   func classificationService(_ service: ClassificationService, didCompleteAnalysis result: AnalysisResult) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
-      
+
       self.presentAnalysisResultView(with: result)
     }
   }
-  
+
   func classificationService(_ service: ClassificationService, didFailWithError error: Error) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
-      
+
       let alert = UIAlertController(
         title: "Classification Error",
         message: "An error occurred during color classification: \(error.localizedDescription)",
@@ -868,7 +873,7 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
         #endif
 
         self.landmarksOverlayView?.isHidden = false
-        
+
         if let faceLandmarkerResults = result?.faceLandmarkerResults,
            let firstResult = faceLandmarkerResults.first,
            let faceLandmarkerResult = firstResult,
@@ -882,7 +887,7 @@ extension CameraViewController: FaceLandmarkerServiceLiveStreamDelegate {
           #endif
 
           self.lastFaceLandmarks = landmarks
-          
+
           self.segmentationService.updateFaceLandmarks(landmarks)
           #if DEBUG
           if shouldLogFrameQuality {
@@ -962,7 +967,7 @@ extension CameraViewController {
         segmentationService.delegate = nil
         classificationService.delegate = nil
         faceLandmarkerService = nil
-        
+
         // Hide or update UI components that rely on the pixel buffer
         previewView.isHidden = true
     }
@@ -972,11 +977,11 @@ extension CameraViewController {
         cameraService.startLiveCameraSession { _ in }
         initializeImageSegmenterServiceOnSessionResumption()
         initializeFaceLandmarkerServiceOnSessionResumption()
-        
+
         print("ANALYZE_FLOW: Resetting delegates")
         segmentationService.delegate = self
         classificationService.delegate = self
-        
+
         // Ensure UI components are visible when processing resumes
         previewView.isHidden = false
         print("ANALYZE_FLOW: All processing resumed")
@@ -988,15 +993,15 @@ extension CameraViewController {
 extension CameraViewController {
     @objc private func analyzeButtonTapped() {
         print("ANALYZE_FLOW: analyzeButtonTapped called, isAnalyzeButtonPressed=\(isAnalyzeButtonPressed)")
-        
+
         if isAnalyzeButtonPressed {
             print("ANALYZE_FLOW: Button already pressed, ignoring tap")
             return
         }
-        
+
         print("ANALYZE_FLOW: Setting isAnalyzeButtonPressed=true")
         isAnalyzeButtonPressed = true
-        
+
         // Ensure button state is reset even if we return early
         let resetButtonState = {
             DispatchQueue.main.async {
@@ -1004,7 +1009,7 @@ extension CameraViewController {
                 self.isAnalyzeButtonPressed = false
             }
         }
-        
+
         if !isFrameQualitySufficientForAnalysis {
             print("ANALYZE_FLOW: Frame quality insufficient, showing alert")
             let alert = UIAlertController(
@@ -1023,13 +1028,13 @@ extension CameraViewController {
             resetButtonState()
             return
         }
-        
+
         print("ANALYZE_FLOW: Getting color info from segmentation service")
         let colorInfo = segmentationService.getCurrentColorInfo()
-        
+
         print("ANALYZE_FLOW: Calling analyzeFrame on classification service")
         classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
-        
+
         print("ANALYZE_FLOW: Analysis initiated, resetting button state")
         resetButtonState()
     }
@@ -1069,5 +1074,21 @@ extension CameraViewController {
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true)
+    }
+
+    func startCameraAndAnalysis() {
+        initializeImageSegmenterServiceOnSessionResumption()
+        cameraService.startLiveCameraSession { [weak self] cameraConfiguration in
+            DispatchQueue.main.async {
+                switch cameraConfiguration {
+                case .failed:
+                    self?.presentVideoConfigurationErrorAlert()
+                case .permissionDenied:
+                    self?.presentCameraPermissionsDeniedAlert()
+                default:
+                    break
+                }
+            }
+        }
     }
 }
