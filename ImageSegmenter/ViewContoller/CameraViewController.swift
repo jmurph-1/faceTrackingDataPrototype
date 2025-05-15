@@ -42,7 +42,7 @@ class CameraViewController: UIViewController {
 
   private var shouldShowLandmarks = false
 
-C-3  private var shouldAutoStartAnalysis = false
+var shouldAutoStartAnalysis = false
 
   private var videoPixelBuffer: CVImageBuffer!
   private var formatDescription: CMFormatDescription!
