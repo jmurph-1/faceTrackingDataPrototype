@@ -131,8 +131,7 @@ class CameraViewController: UIViewController {
 
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    cameraService.stopSession()
-    clearImageSegmenterServiceOnSessionInterruption()
+    pauseAllProcessing()
   }
 
   override func viewDidLoad() {
