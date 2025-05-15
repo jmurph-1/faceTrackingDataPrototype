@@ -365,51 +365,7 @@ class FrameQualityService {
     ///   - pixelBuffer: The frame pixel buffer
     ///   - imageSize: The size of the image
     /// - Returns: Quality score result
-    static var enableFrameValidation = true
-    
-    static let sharpnessValidationThreshold: Float = 0.07
-    
-    static let validationFramesInfo = "Validation frames are saved to the app's Documents directory and can be accessed via the 'Export Validation Frames' button in the debug overlay."
-    
-    static var savedValidationFrames: [UIImage] = []
-    
-    private static func saveFrameForValidation(pixelBuffer: CVPixelBuffer, sharpnessScore: Float) {
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        let context = CIContext()
-        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
-        
-        let uiImage = UIImage(cgImage: cgImage)
-        
-        savedValidationFrames.append(uiImage)
-        
-        // Create a unique filename with timestamp and sharpness score
-        let timestamp = Int(Date().timeIntervalSince1970)
-        let filename = "frame_validation_\(timestamp)_sharpness_\(String(format: "%.3f", sharpnessScore)).jpg"
-        
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
-        let fileURL = documentsDirectory.appendingPathComponent(filename)
-        
-        // Save the image
-        if let data = uiImage.jpegData(compressionQuality: 0.8) {
-            do {
-                try data.write(to: fileURL)
-                print("Frame saved for validation: \(filename)")
-                
-                UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
-                print("Frame also saved to Photos album")
-            } catch {
-                print("Error saving frame for validation: \(error)")
-            }
-        }
-    }
-    
-    static func exportAllValidationFrames() {
-        print("Exporting \(savedValidationFrames.count) validation frames to Photos album")
-        for (index, image) in savedValidationFrames.enumerated() {
-            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-            print("Exported validation frame \(index+1)/\(savedValidationFrames.count)")
-        }
-    }
+    private static let sharpnessValidationThreshold: Float = 0.07
     
     static func evaluateFrameQualityWithLandmarks(
         pixelBuffer: CVPixelBuffer,
@@ -481,12 +437,6 @@ class FrameQualityService {
         
         print("Sharpness from Landmarks: \(sharpnessScore)")
         
-        if enableFrameValidation && sharpnessScore > sharpnessValidationThreshold {
-            print("Frame qualifies for validation with sharpness: \(sharpnessScore)")
-            DispatchQueue.global(qos: .background).async {
-                saveFrameForValidation(pixelBuffer: pixelBuffer, sharpnessScore: sharpnessScore)
-            }
-        }
 
         // 5. Calculate overall score (weighted average)
         let overall = (faceSizeScore * 0.25) + (facePositionScore * 0.25) + (brightnessScore * 0.3) + (sharpnessScore * 0.2)
