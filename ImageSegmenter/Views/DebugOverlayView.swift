@@ -2,6 +2,17 @@ import SwiftUI
 
 /// Debug overlay view for displaying performance metrics and color data
 struct DebugOverlayView: View {
+    // MARK: - Logging
+    private func logQualityScore() {
+        guard let quality = qualityScore else {
+            LoggingService.debug("No quality score available")
+            return
+        }
+        
+        // Split into multiple lines to avoid exceeding character limit
+        //LoggingService.debug("Quality scores - Overall: \(quality.overall), FaceSize: \(quality.faceSize)")
+        //LoggingService.debug("Quality scores - Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
+    }
 
     /// FPS measurement
     let fps: Float
@@ -20,6 +31,24 @@ struct DebugOverlayView: View {
 
     /// Flag to control expanded view
     @State private var isExpanded: Bool = false
+    
+    // Init with logging
+    init(fps: Float, 
+         skinColorLab: ColorConverters.LabColor?, 
+         hairColorLab: ColorConverters.LabColor?, 
+         deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?, 
+         qualityScore: FrameQualityService.QualityScore?) {
+        self.fps = fps
+        self.skinColorLab = skinColorLab
+        self.hairColorLab = hairColorLab
+        self.deltaEToSeasons = deltaEToSeasons
+        self.qualityScore = qualityScore
+        
+        //print("DebugOverlayView initialized with qualityScore: \(String(describing: qualityScore))")
+        if let quality = qualityScore {
+            print("Quality values - Overall: \(quality.overall), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
+        }
+    }
 
     // MARK: - Body
 
@@ -72,6 +101,10 @@ struct DebugOverlayView: View {
         }
         .padding(10)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .id(qualityScore?.overall ?? 0) // Force refresh when quality score changes
+        .onAppear {
+            logQualityScore()
+        }
     }
 
     // MARK: - Helper views
@@ -172,7 +205,9 @@ struct DebugOverlayView: View {
 
     /// Section for displaying quality scores
     private func qualitySection() -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        //LoggingService.debug("DebugOverlayView qualitySection called with qualityScore: \(String(describing: qualityScore))")
+        
+        return VStack(alignment: .leading, spacing: 4) {
             Text("QUALITY SCORES")
                 .font(.system(size: 10, weight: .bold))
                 .foregroundColor(.gray)

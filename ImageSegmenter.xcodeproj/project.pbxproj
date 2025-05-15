@@ -67,9 +67,14 @@
 		523112952DD4790300FCFC91 /* AnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112922DD4790300FCFC91 /* AnalysisViewModel.swift */; };
 		523112962DD4790300FCFC91 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112932DD4790300FCFC91 /* CameraViewModel.swift */; };
 		523112982DD4799F00FCFC91 /* RefactoredCameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112972DD4799F00FCFC91 /* RefactoredCameraViewController.swift */; };
+		5231129B2DD48A8900FCFC91 /* RendererProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */; };
+		5231129E2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */; };
+		523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */; };
+		523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112A12DD5043900FCFC91 /* LoggingService.swift */; };
+		523112A42DD524D500FCFC91 /* projectDirectory.md in Resources */ = {isa = PBXBuildFile; fileRef = 523112A32DD524D500FCFC91 /* projectDirectory.md */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
-		52BEF1802DD30C6E00957595 /* techKnowledge.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* techKnowledge.md */; };
+		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
 		52BEF1812DD2F93800957595 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1822DD2F93800957595 /* Shaders.metal */; };
 		52BEF1832DD3114B00957595 /* video_processing_plan.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1822DD3114B00957595 /* video_processing_plan.md */; };
 		52BEF1852DD312E200957595 /* rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1842DD312D900957595 /* rules.md */; };
@@ -83,9 +88,7 @@
 		BF6EBB932B1EB75B00CD13FB /* MergeColorShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB842B1EB75B00CD13FB /* MergeColorShaders.metal */; };
 		BF6EBB952B1EB75B00CD13FB /* InferenceConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB882B1EB75B00CD13FB /* InferenceConfigurationManager.swift */; };
 		BF6EBB962B1EB75B00CD13FB /* DefaultConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB892B1EB75B00CD13FB /* DefaultConstants.swift */; };
-		BF6EBB972B1EB75B00CD13FB /* MediaLibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB8B2B1EB75B00CD13FB /* MediaLibraryViewController.swift */; };
 		BF6EBB982B1EB75B00CD13FB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB8C2B1EB75B00CD13FB /* RootViewController.swift */; };
-		BF6EBB992B1EB75B00CD13FB /* BottomSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB8D2B1EB75B00CD13FB /* BottomSheetViewController.swift */; };
 		BF6EBB9A2B1EB75B00CD13FB /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB8E2B1EB75B00CD13FB /* CameraViewController.swift */; };
 		BF6EBB9C2B200D9400CD13FB /* PreviewMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB9B2B200D9400CD13FB /* PreviewMetalView.swift */; };
 		BF6EBBA22B20531800CD13FB /* SegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBBA12B20531800CD13FB /* SegmentedImageRenderer.swift */; };
@@ -172,8 +175,13 @@
 		523112922DD4790300FCFC91 /* AnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisViewModel.swift; sourceTree = "<group>"; };
 		523112932DD4790300FCFC91 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		523112972DD4799F00FCFC91 /* RefactoredCameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefactoredCameraViewController.swift; sourceTree = "<group>"; };
+		5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererProtocol.swift; sourceTree = "<group>"; };
+		5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceLandmarkQualityCalculator.swift; sourceTree = "<group>"; };
+		5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
+		523112A12DD5043900FCFC91 /* LoggingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingService.swift; sourceTree = "<group>"; };
+		523112A32DD524D500FCFC91 /* projectDirectory.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = projectDirectory.md; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
-		52BEF17F2DD30C6E00957595 /* techKnowledge.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = techKnowledge.md; sourceTree = "<group>"; };
+		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
 		52BEF1822DD2F93800957595 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		52BEF1822DD3114B00957595 /* video_processing_plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = video_processing_plan.md; sourceTree = "<group>"; };
@@ -192,9 +200,7 @@
 		BF6EBB842B1EB75B00CD13FB /* MergeColorShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = MergeColorShaders.metal; sourceTree = "<group>"; };
 		BF6EBB882B1EB75B00CD13FB /* InferenceConfigurationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InferenceConfigurationManager.swift; sourceTree = "<group>"; };
 		BF6EBB892B1EB75B00CD13FB /* DefaultConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultConstants.swift; sourceTree = "<group>"; usesTabs = 0; };
-		BF6EBB8B2B1EB75B00CD13FB /* MediaLibraryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaLibraryViewController.swift; sourceTree = "<group>"; };
 		BF6EBB8C2B1EB75B00CD13FB /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		BF6EBB8D2B1EB75B00CD13FB /* BottomSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomSheetViewController.swift; sourceTree = "<group>"; };
 		BF6EBB8E2B1EB75B00CD13FB /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		BF6EBB9B2B200D9400CD13FB /* PreviewMetalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewMetalView.swift; sourceTree = "<group>"; };
 		BF6EBBA12B20531800CD13FB /* SegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -274,6 +280,9 @@
 		5222FDE92DD40FBE00EF3C65 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				523112A12DD5043900FCFC91 /* LoggingService.swift */,
+				5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */,
+				5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */,
 				5222FE262DD46C3C00EF3C65 /* PixelBufferPoolManager.swift */,
 				5222FE242DD46C1200EF3C65 /* BufferPoolManager.swift */,
 				5222FE222DD46BE000EF3C65 /* TexturePoolManager.swift */,
@@ -317,6 +326,7 @@
 		52BEF1812DD310ED00957595 /* Knowledge */ = {
 			isa = PBXGroup;
 			children = (
+				523112A32DD524D500FCFC91 /* projectDirectory.md */,
 				5222FDCE2DD408FC00EF3C65 /* Phase0.3_Color_Extraction_Baseline_With_QuickWins.md */,
 				5222FDC02DD3F8AD00EF3C65 /* backend.md */,
 				5222FDC12DD3F8AD00EF3C65 /* flow.md */,
@@ -326,7 +336,7 @@
 				5222FDC52DD3F8AD00EF3C65 /* status.md */,
 				5222FDC62DD3F8AD00EF3C65 /* techstack.md */,
 				52BEF1842DD312D900957595 /* rules.md */,
-				52BEF17F2DD30C6E00957595 /* techKnowledge.md */,
+				52BEF17F2DD30C6E00957595 /* debuggingTips.md */,
 				52BEF1822DD3114B00957595 /* video_processing_plan.md */,
 			);
 			path = Knowledge;
@@ -394,6 +404,7 @@
 		BF6EBB812B1EB75B00CD13FB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */,
 				5222FE282DD4729F00EF3C65 /* ClassificationService.swift */,
 				5222FE292DD4729F00EF3C65 /* ToastService.swift */,
 				5222FE202DD46A7900EF3C65 /* SegmentationService.swift */,
@@ -438,9 +449,7 @@
 			children = (
 				523112972DD4799F00FCFC91 /* RefactoredCameraViewController.swift */,
 				5222FDEC2DD40FDA00EF3C65 /* AnalysisResultViewModel.swift */,
-				BF6EBB8B2B1EB75B00CD13FB /* MediaLibraryViewController.swift */,
 				BF6EBB8C2B1EB75B00CD13FB /* RootViewController.swift */,
-				BF6EBB8D2B1EB75B00CD13FB /* BottomSheetViewController.swift */,
 				BF6EBB8E2B1EB75B00CD13FB /* CameraViewController.swift */,
 			);
 			path = ViewContoller;
@@ -564,7 +573,7 @@
 				52BEF1852DD312E200957595 /* rules.md in Resources */,
 				52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */,
 				5222FD9B2DD3AF1800EF3C65 /* face_landmarker.task in Resources */,
-				52BEF1802DD30C6E00957595 /* techKnowledge.md in Resources */,
+				52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */,
 				52BEF1832DD3114B00957595 /* video_processing_plan.md in Resources */,
 				5222FDB32DD3D67500EF3C65 /* softAutumn.json in Resources */,
 				5222FDB42DD3D67500EF3C65 /* trueWinter.json in Resources */,
@@ -578,6 +587,7 @@
 				5222FDBB2DD3D67500EF3C65 /* trueSpring.json in Resources */,
 				5222FDBC2DD3D67500EF3C65 /* lightSpring.json in Resources */,
 				5222FDC72DD3F8AD00EF3C65 /* frontend.md in Resources */,
+				523112A42DD524D500FCFC91 /* projectDirectory.md in Resources */,
 				5222FDC82DD3F8AD00EF3C65 /* status.md in Resources */,
 				5222FDC92DD3F8AD00EF3C65 /* techstack.md in Resources */,
 				5222FDCA2DD3F8AD00EF3C65 /* prd.md in Resources */,
@@ -615,6 +625,8 @@
 				"\"$SRCROOT/RunScripts/download_models.sh\"",
 				"",
 				"",
+				"",
+				"",
 			);
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -632,9 +644,11 @@
 				523112982DD4799F00FCFC91 /* RefactoredCameraViewController.swift in Sources */,
 				5222FDE02DD40F8400EF3C65 /* ColorConversionShader.metal in Sources */,
 				5222FDE12DD40F8400EF3C65 /* CoreDataManager.swift in Sources */,
+				523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */,
 				BF6EBBA62B2070F000CD13FB /* RenderToMtlViewShaders.metal in Sources */,
 				523112952DD4790300FCFC91 /* AnalysisViewModel.swift in Sources */,
 				523112962DD4790300FCFC91 /* CameraViewModel.swift in Sources */,
+				5231129B2DD48A8900FCFC91 /* RendererProtocol.swift in Sources */,
 				5222FE232DD46BED00EF3C65 /* TexturePoolManager.swift in Sources */,
 				BF6EBBA22B20531800CD13FB /* SegmentedImageRenderer.swift in Sources */,
 				5222FE252DD46C1E00EF3C65 /* BufferPoolManager.swift in Sources */,
@@ -644,10 +658,10 @@
 				5222FDEB2DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift in Sources */,
 				BF6EBB912B1EB75B00CD13FB /* ImageSegmenterService.swift in Sources */,
 				5222FE072DD4143200EF3C65 /* SeasonAnalysis.xcdatamodeld in Sources */,
+				523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */,
 				BF6EBB4F2B1EB5BE00CD13FB /* AppDelegate.swift in Sources */,
 				BF6EBB922B1EB75B00CD13FB /* CameraFeedService.swift in Sources */,
 				BF6EBB952B1EB75B00CD13FB /* InferenceConfigurationManager.swift in Sources */,
-				BF6EBB972B1EB75B00CD13FB /* MediaLibraryViewController.swift in Sources */,
 				BF6EBB962B1EB75B00CD13FB /* DefaultConstants.swift in Sources */,
 				5222FE1F2DD4690200EF3C65 /* CameraService.swift in Sources */,
 				BF6EBB9C2B200D9400CD13FB /* PreviewMetalView.swift in Sources */,
@@ -660,13 +674,13 @@
 				BF6EBB512B1EB5BE00CD13FB /* SceneDelegate.swift in Sources */,
 				BF6EBB9A2B1EB75B00CD13FB /* CameraViewController.swift in Sources */,
 				BF6EBB932B1EB75B00CD13FB /* MergeColorShaders.metal in Sources */,
+				5231129E2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift in Sources */,
 				5222FDF22DD40FEF00EF3C65 /* FrameQualityIndicatorView.swift in Sources */,
 				5222FDF32DD40FEF00EF3C65 /* DebugOverlayView.swift in Sources */,
 				5222FE272DD46C4C00EF3C65 /* PixelBufferPoolManager.swift in Sources */,
 				5222FDF42DD40FEF00EF3C65 /* AnalysisResultView.swift in Sources */,
 				5222FDF52DD40FEF00EF3C65 /* SavedResultsView.swift in Sources */,
 				5222FDA12DD3B52400EF3C65 /* FaceLandmarkShaders.metal in Sources */,
-				BF6EBB992B1EB75B00CD13FB /* BottomSheetViewController.swift in Sources */,
 			);
 		};
 		BF6EBB5D2B1EB5BF00CD13FB /* Sources */ = {

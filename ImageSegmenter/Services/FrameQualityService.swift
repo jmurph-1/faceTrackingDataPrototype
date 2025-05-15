@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import Vision
+import MediaPipeTasksVision
 
 /// Service for evaluating frame quality for color analysis
 class FrameQualityService {
@@ -20,7 +21,7 @@ class FrameQualityService {
     static let minimumBrightnessScoreForAnalysis: Float = 0.6
 
     /// Quality score result
-    struct QualityScore {
+    struct QualityScore: Equatable {
         /// Overall quality score (0-1)
         let overall: Float
 
@@ -70,7 +71,7 @@ class FrameQualityService {
         }
     }
 
-    /// Evaluate the quality of a frame for color analysis
+    /// Evaluate the quality of a frame for color analysis with early termination for poor quality frames
     /// - Parameters:
     ///   - pixelBuffer: The frame pixel buffer
     ///   - faceBoundingBox: The bounding box of the detected face
@@ -83,14 +84,51 @@ class FrameQualityService {
     ) -> QualityScore {
         // 1. Calculate face size score (how much of the frame is occupied by the face)
         let faceSizeScore = calculateFaceSizeScore(faceBoundingBox: faceBoundingBox, imageSize: imageSize)
+        
+        // Early termination if face size is too small or too large
+        if faceSizeScore < minimumFaceSizeScoreForAnalysis * 0.7 {
+            return QualityScore(
+                overall: faceSizeScore * 0.25, // Approximate overall score
+                faceSize: faceSizeScore,
+                facePosition: 0,
+                brightness: 0,
+                sharpness: 0
+            )
+        }
 
         // 2. Calculate face position score (how centered the face is)
         let facePositionScore = calculateFacePositionScore(faceBoundingBox: faceBoundingBox, imageSize: imageSize)
+        
+        if facePositionScore < minimumFacePositionScoreForAnalysis * 0.7 {
+            // Calculate partial overall score with what we have so far
+            let partialOverall = (faceSizeScore * 0.25) + (facePositionScore * 0.25)
+            
+            return QualityScore(
+                overall: partialOverall,
+                faceSize: faceSizeScore,
+                facePosition: facePositionScore,
+                brightness: 0,
+                sharpness: 0
+            )
+        }
 
         // 3. Calculate brightness score
         let brightnessScore = calculateBrightnessScore(pixelBuffer: pixelBuffer, faceBoundingBox: faceBoundingBox)
+        
+        if brightnessScore < minimumBrightnessScoreForAnalysis * 0.7 {
+            // Calculate partial overall score with what we have so far
+            let partialOverall = (faceSizeScore * 0.25) + (facePositionScore * 0.25) + (brightnessScore * 0.3)
+            
+            return QualityScore(
+                overall: partialOverall,
+                faceSize: faceSizeScore,
+                facePosition: facePositionScore,
+                brightness: brightnessScore,
+                sharpness: 0
+            )
+        }
 
-        // 4. Calculate sharpness/blur score
+        // 4. Calculate sharpness/blur score only if other metrics are acceptable
         let sharpnessScore = calculateSharpnessScore(pixelBuffer: pixelBuffer, faceBoundingBox: faceBoundingBox)
 
         // 5. Calculate overall score (weighted average)
@@ -163,85 +201,48 @@ class FrameQualityService {
         return (xScore * 0.6) + (yScore * 0.4)
     }
 
-    /// Calculate brightness score
+    /// Calculate brightness score using CIAreaAverage for efficiency
     /// - Parameters:
     ///   - pixelBuffer: Image pixel buffer
     ///   - faceBoundingBox: Face bounding box
     /// - Returns: Score from 0 to 1
     private static func calculateBrightnessScore(pixelBuffer: CVPixelBuffer, faceBoundingBox: CGRect) -> Float {
-        // Lock the buffer
-        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
-
-        // Get the pixel data
-        let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer)
-        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+        // Create a CIImage from the pixel buffer
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        
+        // Calculate the face rectangle in pixel coordinates
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
-
-        // Create a bitmap context
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
-        guard let context = CGContext(
-            data: baseAddress,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: bytesPerRow,
-            space: colorSpace,
-            bitmapInfo: bitmapInfo.rawValue
-        ) else {
-            CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-            return 0.5 // Default medium score if we can't calculate
-        }
-
-        // Create a CGImage from the context
-        guard let cgImage = context.makeImage() else {
-            CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-            return 0.5
-        }
-
-        // Crop to just the face area
+        
         let faceRect = CGRect(
             x: faceBoundingBox.origin.x * CGFloat(width),
             y: faceBoundingBox.origin.y * CGFloat(height),
             width: faceBoundingBox.width * CGFloat(width),
             height: faceBoundingBox.height * CGFloat(height)
         )
-
-        guard let croppedImage = cgImage.cropping(to: faceRect) else {
-            CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-            return 0.5
+        
+        // Crop to just the face area
+        let croppedImage = ciImage.cropped(to: faceRect)
+        
+        let filter = CIFilter(name: "CIAreaAverage")!
+        filter.setValue(croppedImage, forKey: kCIInputImageKey)
+        filter.setValue(CIVector(cgRect: CGRect(x: 0, y: 0, width: 1, height: 1)), forKey: "inputExtent")
+        
+        guard let outputImage = filter.outputImage else {
+            return 0.5 // Default medium score if we can't calculate
         }
-
-        // Calculate average brightness
-        var sum = 0.0
-        var count = 0
-
-        let buffer = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: 4)
-        defer { buffer.deallocate() }
-
-        for y in 0..<croppedImage.height {
-            for x in 0..<croppedImage.width {
-                if let colorBuffer = context.data?.assumingMemoryBound(to: UInt8.self) {
-                    let offset = (Int(faceRect.origin.y) + y) * bytesPerRow + (Int(faceRect.origin.x) + x) * 4
-                    let r = Float(colorBuffer[offset])
-                    let g = Float(colorBuffer[offset + 1])
-                    let b = Float(colorBuffer[offset + 2])
-
-                    // Calculate luminance
-                    let luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
-                    sum += Double(luminance)
-                    count += 1
-                }
-            }
-        }
-
-        // Unlock the buffer
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-
-        // Calculate average brightness
-        let averageBrightness = Float(sum / Double(count))
-
+        
+        // Create a bitmap to get the average color
+        let context = CIContext(options: [.workingColorSpace: NSNull()])
+        var bitmap = [UInt8](repeating: 0, count: 4)
+        context.render(outputImage, toBitmap: &bitmap, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())
+        
+        // Calculate luminance from the average color
+        let r = Float(bitmap[0]) / 255.0
+        let g = Float(bitmap[1]) / 255.0
+        let b = Float(bitmap[2]) / 255.0
+        let averageBrightness = (0.299 * r + 0.587 * g + 0.114 * b)
+        
         // Ideal brightness is between 0.4 and 0.7
         if averageBrightness < 0.2 {
             // Too dark
@@ -261,76 +262,191 @@ class FrameQualityService {
         }
     }
 
-    /// Calculate sharpness/blur score
+    /// Calculate sharpness/blur score using highly optimized method
     /// - Parameters:
     ///   - pixelBuffer: Image pixel buffer
     ///   - faceBoundingBox: Face bounding box
     /// - Returns: Score from 0 to 1 (higher is sharper)
     private static func calculateSharpnessScore(pixelBuffer: CVPixelBuffer, faceBoundingBox: CGRect) -> Float {
-        // Convert CVPixelBuffer to CIImage
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-
-        // Create a Laplacian filter for edge detection (to detect blur)
-        let filter = CIFilter(name: "CIConvolution3X3")!
-        filter.setValue(ciImage, forKey: kCIInputImageKey)
-
-        // Laplacian kernel
-        let weights = CIVector(values: [
-            -1, -1, -1,
-            -1, 8, -1,
-            -1, -1, -1
-        ], count: 9)
-        filter.setValue(weights, forKey: "inputWeights")
-
-        // Get the output image
-        guard let outputImage = filter.outputImage else {
+        
+        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
+        
+        let width = CVPixelBufferGetWidth(pixelBuffer)
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+        
+        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
             return 0.5
         }
-
-        // Create a CIContext
-        let context = CIContext()
-
-        // Convert to CGImage
-        guard let cgImage = context.createCGImage(outputImage, from: outputImage.extent) else {
-            return 0.5
-        }
-
-        // Convert to UIImage
-        let uiImage = UIImage(cgImage: cgImage)
-
-        // Calculate variance as a measure of sharpness
-        var sum: Float = 0
-        var sumSquared: Float = 0
-        var pixelCount: Int = 0
-
-        // Get pixel data
-        if let cfData = uiImage.cgImage?.dataProvider?.data,
-           let data = CFDataGetBytePtr(cfData) {
-            let length = CFDataGetLength(cfData)
-            let bytesPerPixel = length / (uiImage.cgImage?.width ?? 1) / (uiImage.cgImage?.height ?? 1)
-
-            for i in stride(from: 0, to: length, by: bytesPerPixel) {
-                let r = Float(data[i])
-                let g = Float(data[i + 1])
-                let b = Float(data[i + 2])
-
-                // Calculate intensity
-                let intensity = (r + g + b) / 3.0
-
-                sum += intensity
-                sumSquared += intensity * intensity
-                pixelCount += 1
+        
+        // Calculate the face rectangle in pixel coordinates
+        let faceRect = CGRect(
+            x: Int(faceBoundingBox.origin.x * CGFloat(width)),
+            y: Int(faceBoundingBox.origin.y * CGFloat(height)),
+            width: Int(faceBoundingBox.width * CGFloat(width)),
+            height: Int(faceBoundingBox.height * CGFloat(height))
+        )
+        
+        let safeRect = CGRect(
+            x: max(0, min(width - 1, Int(faceRect.origin.x))),
+            y: max(0, min(height - 1, Int(faceRect.origin.y))),
+            width: min(width - Int(faceRect.origin.x), Int(faceRect.width)),
+            height: min(height - Int(faceRect.origin.y), Int(faceRect.height))
+        )
+        
+        let gridSize = 4
+        let stepX = max(1, Int(safeRect.width) / gridSize)
+        let stepY = max(1, Int(safeRect.height) / gridSize)
+        
+        var gradientSum: Float = 0
+        var sampleCount = 0
+        
+        // Sample in a grid pattern
+        for gridY in 0..<gridSize {
+            for gridX in 0..<gridSize {
+                let x = Int(safeRect.origin.x) + gridX * stepX
+                let y = Int(safeRect.origin.y) + gridY * stepY
+                
+                if x <= 0 || y <= 0 || x >= width - 1 || y >= height - 1 {
+                    continue
+                }
+                
+                // Calculate gradient at this point using Sobel operator approximation
+                
+                let rowPtr = baseAddress.advanced(by: y * bytesPerRow)
+                let centerPtr = rowPtr.advanced(by: x * 4) // 4 bytes per pixel (BGRA)
+                let leftPtr = rowPtr.advanced(by: (x - 1) * 4)
+                let rightPtr = rowPtr.advanced(by: (x + 1) * 4)
+                let topPtr = baseAddress.advanced(by: (y - 1) * bytesPerRow + x * 4)
+                let bottomPtr = baseAddress.advanced(by: (y + 1) * bytesPerRow + x * 4)
+                
+                let center = getGrayscale(ptr: centerPtr)
+                let left = getGrayscale(ptr: leftPtr)
+                let right = getGrayscale(ptr: rightPtr)
+                let top = getGrayscale(ptr: topPtr)
+                let bottom = getGrayscale(ptr: bottomPtr)
+                
+                // Calculate horizontal and vertical gradients
+                let gradientX = abs(right - left)
+                let gradientY = abs(bottom - top)
+                
+                let gradient = sqrt(gradientX * gradientX + gradientY * gradientY)
+                gradientSum += gradient
+                sampleCount += 1
             }
         }
-
-        // Calculate variance
-        let mean = sum / Float(pixelCount)
-        let variance = (sumSquared / Float(pixelCount)) - (mean * mean)
-
-        // Normalize variance to 0-1 range
-        // Higher variance means more edges = sharper image
-        let normalizedVariance = min(1.0, variance / 5000.0)
-
-        return normalizedVariance
+        
+        guard sampleCount > 0 else {
+            return 0.5
+        }
+        
+        // Calculate average gradient
+        let averageGradient = gradientSum / Float(sampleCount)
+        
+        // Normalize to 0-1 range
+        // Higher gradient means sharper image
+        let normalizedGradient = min(1.0, averageGradient / 100.0)
+        
+        return normalizedGradient
     }
-}
+    
+    private static func getGrayscale(ptr: UnsafeRawPointer) -> Float {
+        let b = Float(ptr.load(fromByteOffset: 0, as: UInt8.self))
+        let g = Float(ptr.load(fromByteOffset: 1, as: UInt8.self))
+        let r = Float(ptr.load(fromByteOffset: 2, as: UInt8.self))
+        
+        // Convert to grayscale using standard luminance formula
+        return (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+    }
+    
+    /// Evaluate the quality of a frame using face landmarks instead of bounding box
+    /// - Parameters:
+    ///   - pixelBuffer: The frame pixel buffer
+    ///   - imageSize: The size of the image
+    /// - Returns: Quality score result
+    private static let sharpnessValidationThreshold: Float = 0.07
+    
+    static func evaluateFrameQualityWithLandmarks(
+        pixelBuffer: CVPixelBuffer,
+        landmarks: [NormalizedLandmark]?,
+        imageSize: CGSize
+    ) -> QualityScore {
+        print("Evaluating quality with landmarks: \(landmarks?.count ?? 0) points")
+        
+        // 1. Calculate face size score
+        let faceSizeScore = FaceLandmarkQualityCalculator.calculateFaceSizeScore(
+            landmarks: landmarks,
+            imageSize: imageSize
+        )
+        
+        // Early termination if face size is too small or too large
+        if faceSizeScore < minimumFaceSizeScoreForAnalysis * 0.7 {
+            return QualityScore(
+                overall: faceSizeScore * 0.25, // Approximate overall score
+                faceSize: faceSizeScore,
+                facePosition: 0,
+                brightness: 0,
+                sharpness: 0
+            )
+        }
+
+        // 2. Calculate face position score
+        let facePositionScore = FaceLandmarkQualityCalculator.calculateFacePositionScore(
+            landmarks: landmarks,
+            imageSize: imageSize
+        )
+        
+        if facePositionScore < minimumFacePositionScoreForAnalysis * 0.7 {
+            // Calculate partial overall score with what we have so far
+            let partialOverall = (faceSizeScore * 0.25) + (facePositionScore * 0.25)
+            
+            return QualityScore(
+                overall: partialOverall,
+                faceSize: faceSizeScore,
+                facePosition: facePositionScore,
+                brightness: 0,
+                sharpness: 0
+            )
+        }
+
+        // 3. Calculate brightness score
+        let brightnessScore = FaceLandmarkQualityCalculator.calculateBrightnessScore(
+            landmarks: landmarks,
+            pixelBuffer: pixelBuffer
+        )
+        
+        if brightnessScore < minimumBrightnessScoreForAnalysis * 0.7 {
+            // Calculate partial overall score with what we have so far
+            let partialOverall = (faceSizeScore * 0.25) + (facePositionScore * 0.25) + (brightnessScore * 0.3)
+            
+            return QualityScore(
+                overall: partialOverall,
+                faceSize: faceSizeScore,
+                facePosition: facePositionScore,
+                brightness: brightnessScore,
+                sharpness: 0
+            )
+        }
+
+        // 4. Calculate sharpness/blur score only if other metrics are acceptable
+        let sharpnessScore = FaceLandmarkQualityCalculator.calculateSharpnessScore(
+            landmarks: landmarks,
+            pixelBuffer: pixelBuffer
+        )
+        
+        print("Sharpness from Landmarks: \(sharpnessScore)")
+        
+
+        // 5. Calculate overall score (weighted average)
+        let overall = (faceSizeScore * 0.25) + (facePositionScore * 0.25) + (brightnessScore * 0.3) + (sharpnessScore * 0.2)
+
+        return QualityScore(
+            overall: overall,
+            faceSize: faceSizeScore,
+            facePosition: facePositionScore,
+            brightness: brightnessScore,
+            sharpness: sharpnessScore
+        )
+    }
+}                                        

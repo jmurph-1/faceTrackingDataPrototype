@@ -19,12 +19,16 @@ import AVFoundation
 import Metal
 import MetalKit
 
-class FaceLandmarkRenderer {
-
+class FaceLandmarkRenderer: RendererProtocol {
+    
+    var description: String = "Face Landmark Renderer"
+    var isPrepared = false
+    
     private let device: MTLDevice?
     private let commandQueue: MTLCommandQueue?
     private var renderPipelineState: MTLRenderPipelineState?
     private var useMetalRendering = false
+    private var outputFormatDescription: CMFormatDescription?
 
     // Default colors for different landmark types
     private let landmarkColor = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0)
@@ -208,6 +212,26 @@ class FaceLandmarkRenderer {
         // Implementation for Metal-based rendering
         // This would use the Metal pipeline set up earlier
         return texture
+    }
+    
+    
+    func prepare(with formatDescription: CMFormatDescription, outputRetainedBufferCountHint: Int, needChangeWidthHeight: Bool) {
+        isPrepared = true
+        outputFormatDescription = formatDescription
+        setupPipeline()
+    }
+    
+    func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>?) -> CVPixelBuffer? {
+        // This renderer doesn't use segmentation data, but instead would use landmarks
+        return pixelBuffer
+    }
+    
+    func reset() {
+        isPrepared = false
+        outputFormatDescription = nil
+    }
+    
+    func handleMemoryWarning() {
     }
 }
 

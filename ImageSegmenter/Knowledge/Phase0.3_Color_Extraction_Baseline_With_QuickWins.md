@@ -159,4 +159,6 @@ Begin R&D on **Landmark + Strategic‑Screenshot Pipeline** for 12‑season prec
 
 ---
 
-*Prepared for: **John Murphy (Product Manager)** – *May 13 2025*
+
+### QA findings
+

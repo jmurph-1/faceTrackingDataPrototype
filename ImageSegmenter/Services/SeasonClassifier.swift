@@ -160,10 +160,25 @@ class SeasonClassifier {
         let secondBestSeason = sortedSeasons[1].key
         let secondBestScore = sortedSeasons[1].value
 
-        // Calculate confidence and difference to next closest
+        // Calculate confidence based on the difference between best and second best
+        let scoreDifference = bestScore - secondBestScore
         let maxPossibleScore: Float = 3.0
-        let confidence = bestScore / maxPossibleScore
-        let deltaE = bestScore - secondBestScore
+        
+        // Calculate confidence as a ratio of the difference to the maximum possible difference
+        let confidence = min(0.95, (scoreDifference / 1.5) + 0.5)
+        
+        // Calculate actual deltaE using color difference to reference colors
+        let skinLabColor = ColorConverters.LabColor(L: CGFloat(skinL), a: CGFloat(skinA), b: CGFloat(skinB))
+        let deltaEs = calculateDeltaEToSeasonReferences(labColor: skinLabColor)
+        
+        // Sort seasons by deltaE (lower is better)
+        let sortedDeltaEs = deltaEs.sorted { $0.value < $1.value }
+        
+        let bestSeasonDeltaE = sortedDeltaEs[0].value
+        let secondBestSeasonDeltaE = sortedDeltaEs[1].value
+        
+        // Calculate the difference between the deltaE values
+        let deltaE = Float(secondBestSeasonDeltaE - bestSeasonDeltaE)
 
         return ClassificationResult(
             season: season,

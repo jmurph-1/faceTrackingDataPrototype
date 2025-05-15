@@ -28,6 +28,7 @@ struct SegmentationResult {
   let segmentationMask: Data?
   let colorInfo: MultiClassSegmentedImageRenderer.ColorInfo
   let faceBoundingBox: CGRect?
+  let faceLandmarks: [NormalizedLandmark]?
   let inferenceTime: TimeInterval?
 }
 
@@ -133,7 +134,6 @@ class SegmentationService {
     if let pixelBuffer = videoPixelBuffer {
       let width = CVPixelBufferGetWidth(pixelBuffer)
       let height = CVPixelBufferGetHeight(pixelBuffer)
-      print("Video buffer dimensions: \(width)x\(height)")
     }
   }
 
@@ -145,6 +145,11 @@ class SegmentationService {
   // Get current color information for analysis
   func getCurrentColorInfo() -> MultiClassSegmentedImageRenderer.ColorInfo {
     return multiClassRenderer.getCurrentColorInfo()
+  }
+  
+  // Update face landmarks for quality calculation
+  func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
+    multiClassRenderer.updateFaceLandmarks(landmarks)
   }
 }
 
@@ -175,7 +180,7 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
     let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
 
     // Debug log
-    print("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)")
+    //print("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)")
 
     // Render the segmentation
     guard let outputPixelBuffer = multiClassRenderer.render(pixelBuffer: pixelBuffer, segmentDatas: confidenceMask) else {
@@ -188,6 +193,7 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
         segmentationMask: nil,
         colorInfo: colorInfo,
         faceBoundingBox: multiClassRenderer.getFaceBoundingBox(),
+        faceLandmarks: multiClassRenderer.getFaceLandmarks(),
         inferenceTime: result?.inferenceTime
       )
 
@@ -212,6 +218,7 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
       segmentationMask: maskData,
       colorInfo: colorInfo,
       faceBoundingBox: faceBoundingBox,
+      faceLandmarks: multiClassRenderer.getFaceLandmarks(),
       inferenceTime: result?.inferenceTime
     )
 

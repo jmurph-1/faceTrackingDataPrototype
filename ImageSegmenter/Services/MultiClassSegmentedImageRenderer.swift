@@ -6,10 +6,13 @@ import MetalKit
 import MetalPerformanceShaders
 import UIKit
 
-class MultiClassSegmentedImageRenderer {
+class MultiClassSegmentedImageRenderer: RendererProtocol {
 
   var description: String = "MultiClass Renderer"
   var isPrepared = false
+  
+  // Current log level - set to info by default
+  private var logLevel: LogLevel = .info
 
   enum LogLevel: Int {
     case none = 0
@@ -20,23 +23,18 @@ class MultiClassSegmentedImageRenderer {
     case verbose = 5
   }
 
-  // Current log level - set to info by default
-  private var logLevel: LogLevel = .info
 
-  // Define image segmenter result for internal use
   struct ImageSegmenterResult {
     let categoryMask: UnsafePointer<UInt8>?
     let width: Int
     let height: Int
   }
 
-  // Result structure for rendering with Metal texture-based drawing
   struct Result {
     let size: CGSize
     let imageSegmenterResult: ImageSegmenterResult?
   }
 
-  // Class IDs from the model (based on MediaPipe documentation)
   enum SegmentationClass: UInt8 {
     case background = 0
     case hair = 1
@@ -44,10 +42,8 @@ class MultiClassSegmentedImageRenderer {
     case lips = 3
     case eyes = 4
     case eyebrows = 5
-    // Other possible classes in the model
   }
 
-  // Color extraction results
   struct ColorInfo {
     var skinColor: UIColor = .clear
     var hairColor: UIColor = .clear
@@ -56,8 +52,9 @@ class MultiClassSegmentedImageRenderer {
   }
 
   private var lastColorInfo = ColorInfo()
+  
+  private var lastFaceLandmarks: [NormalizedLandmark]?
 
-  // Temporal smoothing parameters
   private let smoothingFactor: Float = 0.3
   private var frameCounter: Int = 0
     private var frameSkip = 15  // Start with higher skip rate, will adjust dynamically
@@ -66,7 +63,6 @@ class MultiClassSegmentedImageRenderer {
     private var processingStartTime: CFTimeInterval = 0
     private var isProcessingHeavyLoad: Bool = false
 
-  // Downsampling factor for color analysis
   private let downsampleFactor: Int = 4
 
   private(set) var outputFormatDescription: CMFormatDescription?
@@ -75,7 +71,6 @@ class MultiClassSegmentedImageRenderer {
   private var computePipelineState: MTLComputePipelineState?
   private var downsampleComputePipelineState: MTLComputePipelineState?
 
-  // Memory pools for reuse
   private var textureCache: CVMetalTextureCache!
   private var downsampledTexture: MTLTexture?
   private var segmentationBuffer: MTLBuffer?
@@ -100,14 +95,27 @@ class MultiClassSegmentedImageRenderer {
     context = CIContext(mtlDevice: metalDevice)
     textureLoader = MTKTextureLoader(device: metalDevice)
   }
-
+  
   func setLogLevel(_ level: LogLevel) {
     logLevel = level
   }
 
   private func log(_ message: String, level: LogLevel) {
     if level.rawValue <= logLevel.rawValue {
-      print(message)
+      switch level {
+      case .error:
+        LoggingService.error(message)
+      case .warning:
+        LoggingService.warning(message)
+      case .info:
+        LoggingService.info(message)
+      case .debug:
+        LoggingService.debug(message)
+      case .verbose:
+        LoggingService.verbose(message)
+      case .none:
+        break
+      }
     }
   }
 
@@ -141,18 +149,15 @@ class MultiClassSegmentedImageRenderer {
     outputPixelBufferPool = nil
     outputFormatDescription = nil
     textureCache = nil
-
     if let texture = downsampledTexture {
       TexturePoolManager.shared.recycleTexture(texture)
     }
     downsampledTexture = nil
-
     if let buffer = segmentationBuffer {
       BufferPoolManager.shared.recycleBuffer(buffer)
     }
     segmentationBuffer = nil
 
-    // Free memory for previous segmentation data
     if let prevData = prevSegmentDatas {
       prevData.deallocate()
       prevSegmentDatas = nil
@@ -161,31 +166,30 @@ class MultiClassSegmentedImageRenderer {
 
     isPrepared = false
   }
-
+  
   func handleMemoryWarning() {
     log("Handling memory warning in MultiClassSegmentedImageRenderer", level: .warning)
-
+    
     // Recycle the downsampled texture
     if let texture = downsampledTexture {
       TexturePoolManager.shared.recycleTexture(texture)
       downsampledTexture = nil
     }
-
+    
     if let buffer = segmentationBuffer {
       BufferPoolManager.shared.recycleBuffer(buffer)
       segmentationBuffer = nil
     }
-
+    
     TexturePoolManager.shared.clearPool()
     BufferPoolManager.shared.clearPool()
     PixelBufferPoolManager.shared.clearPools()
-
+    
     if textureCache != nil {
       CVMetalTextureCacheFlush(textureCache, 0)
     }
   }
 
-  // Helper function to create a Metal texture from a CVPixelBuffer
   private func makeTextureFromCVPixelBuffer(
     pixelBuffer: CVPixelBuffer, textureFormat: MTLPixelFormat
   ) -> MTLTexture? {
@@ -208,7 +212,6 @@ class MultiClassSegmentedImageRenderer {
     return texture
   }
 
-  // Create a downsampled texture for more efficient color analysis
   private func createDownsampledTexture(from texture: MTLTexture, scale: Int) -> MTLTexture? {
     let width = texture.width / scale
     let height = texture.height / scale
@@ -228,7 +231,6 @@ class MultiClassSegmentedImageRenderer {
       return nil
     }
 
-    // Set up the compute shader for downsampling
     if downsampleComputePipelineState == nil {
       let defaultLibrary = metalDevice.makeDefaultLibrary()
       let kernelFunction = defaultLibrary?.makeFunction(name: "downsampleTexture")
@@ -250,15 +252,12 @@ class MultiClassSegmentedImageRenderer {
 
               uint2 sourcePos = gid * scale;
 
-              // Read the source pixel
               float4 color = sourceTexture.read(sourcePos);
 
-              // Write to the destination texture
               destinationTexture.write(color, gid);
           }
           """
 
-        // Create a new library with our kernel
         let options = MTLCompileOptions()
         options.languageVersion = .version2_0
 
@@ -281,13 +280,11 @@ class MultiClassSegmentedImageRenderer {
         }
       }
     }
-
     guard let pipelineState = downsampleComputePipelineState else {
       log("Downsample pipeline state is nil", level: .error)
       return nil
     }
 
-    // Create a command buffer for the downsampling operation
     guard let commandBuffer = commandQueue?.makeCommandBuffer(),
       let computeEncoder = commandBuffer.makeComputeCommandEncoder()
     else {
@@ -295,12 +292,10 @@ class MultiClassSegmentedImageRenderer {
       return nil
     }
 
-    // Set up the compute encoder
     computeEncoder.setComputePipelineState(pipelineState)
     computeEncoder.setTexture(texture, index: 0)
     computeEncoder.setTexture(newDownsampledTexture, index: 1)
 
-    // Pass the scale factor to the shader
     var scaleFactor = scale
     computeEncoder.setBytes(&scaleFactor, length: MemoryLayout<Int>.size, index: 0)
 
@@ -309,31 +304,26 @@ class MultiClassSegmentedImageRenderer {
       height: 16,
       depth: 1
     )
-
     let threadgroupCount = MTLSize(
       width: (width + threadgroupSize.width - 1) / threadgroupSize.width,
       height: (height + threadgroupSize.height - 1) / threadgroupSize.height,
       depth: 1
     )
 
-    // Dispatch the compute encoder
     computeEncoder.dispatchThreadgroups(threadgroupCount, threadsPerThreadgroup: threadgroupSize)
     computeEncoder.endEncoding()
 
-    // Commit the command buffer
     commandBuffer.commit()
 
     return newDownsampledTexture
   }
 
-  // Fallback CPU method to downsample a texture
   private func downsampleTextureCPU(source: MTLTexture, destination: MTLTexture, scale: Int) {
     let srcWidth = source.width
     let srcHeight = source.height
     let dstWidth = destination.width
     let dstHeight = destination.height
 
-    // Create byte arrays for the textures
     let bytesPerPixel = 4  // BGRA format
     let srcBytesPerRow = srcWidth * bytesPerPixel
     let dstBytesPerRow = dstWidth * bytesPerPixel
@@ -342,40 +332,32 @@ class MultiClassSegmentedImageRenderer {
     let dstBytes = UnsafeMutablePointer<UInt8>.allocate(
       capacity: dstWidth * dstHeight * bytesPerPixel)
 
-    // Create MTLRegions for copying
     let srcRegion = MTLRegionMake2D(0, 0, srcWidth, srcHeight)
     let dstRegion = MTLRegionMake2D(0, 0, dstWidth, dstHeight)
 
-    // Get the source texture data
     source.getBytes(srcBytes, bytesPerRow: srcBytesPerRow, from: srcRegion, mipmapLevel: 0)
 
-    // Simple box filter downsampling
     for y in 0..<dstHeight {
       for x in 0..<dstWidth {
         let srcX = x * scale
         let srcY = y * scale
 
-        // Just take the center pixel of each block for simplicity
         let srcIndex = (srcY * srcWidth + srcX) * bytesPerPixel
         let dstIndex = (y * dstWidth + x) * bytesPerPixel
 
-        // Copy the pixel data
         for i in 0..<bytesPerPixel {
           dstBytes[dstIndex + i] = srcBytes[srcIndex + i]
         }
       }
     }
 
-    // Copy the downsampled data to the destination texture
     destination.replace(
       region: dstRegion, mipmapLevel: 0, withBytes: dstBytes, bytesPerRow: dstBytesPerRow)
 
-    // Free the memory
     srcBytes.deallocate()
     dstBytes.deallocate()
   }
 
-  // Function to allocate output buffer pool
   private func allocateOutputBufferPool(
     with formatDescription: CMFormatDescription,
     outputRetainedBufferCountHint: Int,
@@ -409,7 +391,6 @@ class MultiClassSegmentedImageRenderer {
     ]
 
     var pixelBufferPool: CVPixelBufferPool?
-    // Create a pixel buffer pool with the same pixel attributes as the input format description.
     let poolCreateStatus = CVPixelBufferPoolCreate(
       kCFAllocatorDefault,
       nil,
@@ -424,7 +405,6 @@ class MultiClassSegmentedImageRenderer {
     var pixelBuffer: CVPixelBuffer?
     var outputFormatDescription: CMFormatDescription?
 
-    // Get the format description for the output pixel buffer.
     let pixelBufferCreateStatus = CVPixelBufferPoolCreatePixelBuffer(
       kCFAllocatorDefault, pixelBufferPool!, &pixelBuffer)
     if pixelBufferCreateStatus == kCVReturnSuccess, let createdPixelBuffer = pixelBuffer {
@@ -460,13 +440,11 @@ class MultiClassSegmentedImageRenderer {
     return (pixelBufferPool, inputColorSpace, outputFormatDescription)
   }
 
-  // Check if GPU processing is available
   private func isGPUProcessingAvailable() -> Bool {
     return computePipelineState != nil && commandQueue != nil
       && metalDevice.supportsFeatureSet(.iOS_GPUFamily2_v1)
   }
 
-  // CPU fallback for processing when GPU is unavailable
   private func processFallbackCPU(
     inputBuffer: CVPixelBuffer, outputBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>
   ) {
@@ -481,7 +459,6 @@ class MultiClassSegmentedImageRenderer {
     let sourceBytesPerRow = CVPixelBufferGetBytesPerRow(inputBuffer)
     let destBytesPerRow = CVPixelBufferGetBytesPerRow(outputBuffer)
 
-    // Simple CPU-based processing
     for row in 0..<height {
       let sourceRowPtr = sourceData.advanced(by: row * sourceBytesPerRow)
       let destRowPtr = destData.advanced(by: row * destBytesPerRow)
@@ -490,25 +467,23 @@ class MultiClassSegmentedImageRenderer {
         let pixelOffset = col * 4  // BGRA format (4 bytes per pixel)
         let segmentClass = segmentDatas[row * width + col]
 
-        // Get source pixel
         let srcPixel = sourceRowPtr.advanced(by: pixelOffset)
         let destPixel = destRowPtr.advanced(by: pixelOffset)
 
-        // Copy the original pixel
         memcpy(destPixel, srcPixel, 4)
 
-        // Apply simple visual effect based on segment class
         if segmentClass > 0 {  // Not background
-          // Add a visual effect (e.g., tint) based on segment class
           switch segmentClass {
           case SegmentationClass.hair.rawValue:
-            // Subtle hair highlight
             let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
-            destBGRA[2] = min(255, destBGRA[2] + 20)  // Increase red channel
+            destBGRA[0] = UInt8(min(255, Int(Float(destBGRA[0]) * 1.1)))  // B
+            destBGRA[1] = UInt8(min(255, Int(Float(destBGRA[1]) * 1.1)))  // G
+            destBGRA[2] = UInt8(min(255, Int(Float(destBGRA[2]) * 1.1)))  // R
           case SegmentationClass.skin.rawValue:
-            // Subtle skin smoothing (simplified)
             let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
-            destBGRA[1] = min(255, destBGRA[1] + 10)  // Increase green channel
+            destBGRA[0] = UInt8(min(255, Int(Float(destBGRA[0]) * 1.05)))  // B
+            destBGRA[1] = UInt8(min(255, Int(Float(destBGRA[1]) * 1.05)))  // G
+            destBGRA[2] = UInt8(min(255, Int(Float(destBGRA[2]) * 1.05)))  // R
           default:
             break
           }
@@ -516,31 +491,34 @@ class MultiClassSegmentedImageRenderer {
       }
     }
 
-    CVPixelBufferUnlockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
     CVPixelBufferUnlockBaseAddress(inputBuffer, CVPixelBufferLockFlags(rawValue: 0))
+    CVPixelBufferUnlockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
   }
 
-  // Updated method to handle all the different render signature types
-  // This is the version being called from CameraViewController
-  func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> CVPixelBuffer? {
-      // Start timing the processing
-        processingStartTime = CACurrentMediaTime()
+  func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>?) -> CVPixelBuffer? {
+    guard isPrepared, let segmentDatas = segmentDatas else {
+      return nil
+    }
 
-        // Check if we should skip this frame based on load
-        if isProcessingHeavyLoad && frameCounter % 2 != 0 {
-          frameCounter += 1
-          return nil
-        }
-    // Create a Result object from the parameters
+    processingStartTime = CACurrentMediaTime()
+
     let pixelBufferWidth = CVPixelBufferGetWidth(pixelBuffer)
     let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
 
     if frameCounter % logFrameInterval == 0 {
-      log(
-        "Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .info)
-      log("Render input dimensions: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .debug)
-      log("Output buffer dimensions: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .debug)
-      log("Video buffer dimensions: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .debug)
+      //log("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .info)
+    }
+
+    var outputBuffer: CVPixelBuffer?
+    let status = CVPixelBufferPoolCreatePixelBuffer(
+      kCFAllocatorDefault, outputPixelBufferPool!, &outputBuffer)
+    if status != kCVReturnSuccess {
+      log("Failed to create output pixel buffer: \(status)", level: .error)
+      return nil
+    }
+
+    guard let outputBuffer = outputBuffer else {
+      return nil
     }
 
     let result = Result(
@@ -551,69 +529,73 @@ class MultiClassSegmentedImageRenderer {
         height: pixelBufferHeight
       )
     )
-
+    
     // Only continue if we're properly prepared
     guard isPrepared else {
       log("MultiClassSegmentedImageRenderer not prepared", level: .error)
       return nil
     }
-
+    
     var outputPixelBuffer: CVPixelBuffer?
-
+    
     outputPixelBuffer = PixelBufferPoolManager.shared.getPixelBuffer(
       width: pixelBufferWidth,
       height: pixelBufferHeight
     )
-
+    
     // Fall back to the standard pool if needed
     if outputPixelBuffer == nil {
       let status = CVPixelBufferPoolCreatePixelBuffer(
         kCFAllocatorDefault, outputPixelBufferPool!, &outputPixelBuffer)
-
+      
       if status != kCVReturnSuccess {
         log("Cannot get pixel buffer from the pool. Status: \(status)", level: .error)
         return nil
       }
     }
-
+    
     guard let outputBuffer = outputPixelBuffer else {
       log("Failed to get output pixel buffer", level: .error)
       return nil
     }
-
+    
     // Check if GPU processing is available
     if isGPUProcessingAvailable() {
       // Try GPU processing
-      if !processWithGPU(
-        inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas,
-        width: pixelBufferWidth, height: pixelBufferHeight) {
+      if !processWithGPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas, width: pixelBufferWidth, height: pixelBufferHeight) {
         // Fall back to CPU if GPU processing fails
         log("GPU processing failed, falling back to CPU", level: .warning)
-        processFallbackCPU(
-          inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+        processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
       }
     } else {
       // Use CPU processing directly
       log("GPU processing not available, using CPU", level: .warning)
-      processFallbackCPU(
-        inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+      processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
     }
 
-    // Extract and display color information (using a less CPU-intensive approach)
     if frameCounter % frameSkip == 0 {
-      extractColorInformation(from: result.imageSegmenterResult!)
+      extractColorInformation(from: result.imageSegmenterResult!, pixelBuffer: pixelBuffer)
     }
     frameCounter += 1
+
+    let currentProcessingTime = CACurrentMediaTime() - processingStartTime
+    lastProcessingTime = currentProcessingTime
+
+    if currentProcessingTime > 0.1 { // More than 100ms per frame
+      frameSkip = min(frameSkip + 1, 30) // Increase skip rate up to max of 30
+      isProcessingHeavyLoad = true
+    } else if currentProcessingTime < 0.05 && frameSkip > 15 { // Less than 50ms per frame
+      frameSkip = max(frameSkip - 1, 15) // Decrease skip rate down to min of 15
+      isProcessingHeavyLoad = false
+    }
 
     return outputBuffer
   }
 
-  // Process using GPU
   private func processWithGPU(
     inputBuffer: CVPixelBuffer, outputBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>,
     width: Int, height: Int
   ) -> Bool {
-    // Create Metal textures from pixel buffers
     guard
       let inputTexture = makeTextureFromCVPixelBuffer(
         pixelBuffer: inputBuffer, textureFormat: .bgra8Unorm),
@@ -624,7 +606,6 @@ class MultiClassSegmentedImageRenderer {
       return false
     }
 
-    // Set up command queue, buffer, and encoder
     guard let commandQueue = commandQueue,
       let commandBuffer = commandQueue.makeCommandBuffer(),
       let commandEncoder = commandBuffer.makeComputeCommandEncoder()
@@ -634,83 +615,68 @@ class MultiClassSegmentedImageRenderer {
       return false
     }
 
-    do {
-      // Set up compute pipeline with kernel function
-      commandEncoder.label = "MultiClass Segmentation"
-      commandEncoder.setComputePipelineState(computePipelineState!)
-      commandEncoder.setTexture(inputTexture, index: 0)
-      commandEncoder.setTexture(outputTexture, index: 1)
+    commandEncoder.label = "MultiClass Segmentation"
+    commandEncoder.setComputePipelineState(computePipelineState!)
+    commandEncoder.setTexture(inputTexture, index: 0)
+    commandEncoder.setTexture(outputTexture, index: 1)
 
-      let bufferSize = width * height * MemoryLayout<UInt8>.size
-      let segBuffer: MTLBuffer
+    let bufferSize = width * height * MemoryLayout<UInt8>.size
+    let segBuffer: MTLBuffer
 
-      if let pooledBuffer = BufferPoolManager.shared.getBuffer(
-        length: bufferSize, options: .storageModeShared) {
-        // Copy the segmentation data to the pooled buffer
-        memcpy(pooledBuffer.contents(), segmentDatas, bufferSize)
-        segBuffer = pooledBuffer
-      } else {
-        // Fall back to creating a new buffer if the pool is empty
-        guard let newBuffer = metalDevice.makeBuffer(bytes: segmentDatas, length: bufferSize) else {
-          log("Failed to create segmentation buffer", level: .error)
-          return false
-        }
-        segBuffer = newBuffer
+    if let pooledBuffer = BufferPoolManager.shared.getBuffer(
+      length: bufferSize, options: .storageModeShared) {
+      memcpy(pooledBuffer.contents(), segmentDatas, bufferSize)
+      segBuffer = pooledBuffer
+    } else {
+      guard let newBuffer = metalDevice.makeBuffer(bytes: segmentDatas, length: bufferSize) else {
+        log("Failed to create segmentation buffer", level: .error)
+        return false
       }
-
-      segmentationBuffer = segBuffer
-
-      commandEncoder.setBuffer(segBuffer, offset: 0, index: 0)
-
-      // Pass the width as a parameter to the kernel function
-      var imageWidth: Int = Int(width)
-      commandEncoder.setBytes(&imageWidth, length: MemoryLayout<Int>.size, index: 1)
-
-      // Set up the thread groups for the compute shader
-      let threadExecutionWidth = computePipelineState!.threadExecutionWidth
-      let threadsPerGroupHeight =
-        computePipelineState!.maxTotalThreadsPerThreadgroup / threadExecutionWidth
-      let threadsPerThreadgroup = MTLSizeMake(threadExecutionWidth, threadsPerGroupHeight, 1)
-      let threadgroupsPerGrid = MTLSize(
-        width: (inputTexture.width + threadExecutionWidth - 1) / threadExecutionWidth,
-        height: (inputTexture.height + threadsPerGroupHeight - 1) / threadsPerGroupHeight,
-        depth: 1
-      )
-
-      // Dispatch thread groups
-      commandEncoder.dispatchThreadgroups(
-        threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
-      commandEncoder.endEncoding()
-
-      commandBuffer.addCompletedHandler { [weak self] buffer in
-        // Recycle the segmentation buffer when done
-        if let segBuffer = self?.segmentationBuffer {
-          BufferPoolManager.shared.recycleBuffer(segBuffer)
-          self?.segmentationBuffer = nil
-        }
-
-        if buffer.status != .completed {
-          self?.log(
-            "Metal command buffer execution failed with status: \(buffer.status)", level: .error)
-        }
-      }
-
-      // Commit the command buffer
-      commandBuffer.commit()
-
-      return true
-    } catch {
-      log("Exception during GPU processing: \(error)", level: .error)
-      return false
+      segBuffer = newBuffer
     }
+
+    segmentationBuffer = segBuffer
+
+    commandEncoder.setBuffer(segBuffer, offset: 0, index: 0)
+
+    var imageWidth: Int = Int(width)
+    commandEncoder.setBytes(&imageWidth, length: MemoryLayout<Int>.size, index: 1)
+
+    let threadExecutionWidth = computePipelineState!.threadExecutionWidth
+    let threadsPerGroupHeight =
+      computePipelineState!.maxTotalThreadsPerThreadgroup / threadExecutionWidth
+    let threadsPerThreadgroup = MTLSizeMake(threadExecutionWidth, threadsPerGroupHeight, 1)
+    let threadgroupsPerGrid = MTLSize(
+      width: (inputTexture.width + threadExecutionWidth - 1) / threadExecutionWidth,
+      height: (inputTexture.height + threadsPerGroupHeight - 1) / threadsPerGroupHeight,
+      depth: 1
+    )
+
+    commandEncoder.dispatchThreadgroups(
+      threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+    commandEncoder.endEncoding()
+
+    commandBuffer.addCompletedHandler { [weak self] (buffer: MTLCommandBuffer) in
+      if let segBuffer = self?.segmentationBuffer {
+        BufferPoolManager.shared.recycleBuffer(segBuffer)
+        self?.segmentationBuffer = nil
+      }
+
+      if buffer.status != .completed {
+        self?.log(
+          "Metal command buffer execution failed with status: \(buffer.status)", level: .error)
+      }
+    }
+
+    commandBuffer.commit()
+
+    return true
   }
 
-  // Metal-based rendering implementation (for future use)
   func render(result: Result) -> MTLTexture {
     let width = Int(result.size.width)
     let height = Int(result.size.height)
 
-    // Create a texture descriptor
     let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
       pixelFormat: .bgra8Unorm,
       width: width,
@@ -722,7 +688,6 @@ class MultiClassSegmentedImageRenderer {
       fatalError("Failed to create texture")
     }
 
-    // Create a render pass descriptor
     let renderPassDescriptor = MTLRenderPassDescriptor()
     renderPassDescriptor.colorAttachments[0].texture = texture
     renderPassDescriptor.colorAttachments[0].loadAction = .clear
@@ -730,53 +695,46 @@ class MultiClassSegmentedImageRenderer {
     renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColor(
       red: 0, green: 0, blue: 0, alpha: 1)
 
-    // Create command buffer and encoder
-    guard let commandBuffer = commandQueue?.makeCommandBuffer(),
-      let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
+    guard let commandBuffer = commandQueue,
+      let renderEncoder = commandBuffer.makeCommandBuffer()?.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
     else {
       return texture
     }
 
-    // Set up rendering
     renderEncoder.endEncoding()
 
-    // Process the segmentation texture if available
     if let segmenterResult = result.imageSegmenterResult,
       let categoryMask = segmenterResult.categoryMask {
 
-      // Process the mask data and draw it to the texture
-      // This is simplified - would need to be expanded in real implementation
 
-      // Extract color information for UI display
       if frameCounter % frameSkip == 0 {
-        extractColorInformation(from: segmenterResult)
+        extractColorInformation(from: segmenterResult, texture: texture)
       }
       frameCounter += 1
     }
-      commandBuffer.addCompletedHandler { [weak self] buffer in
-            if buffer.status != .completed {
-              self?.log("Metal command buffer execution failed with status: \(buffer.status)", level: .error)
-            }
-          }
-    commandBuffer.commit()
+    
+    commandBuffer.makeCommandBuffer()?.addCompletedHandler { [weak self] (buffer: MTLCommandBuffer) in
+      if buffer.status != .completed {
+        self?.log("Metal command buffer execution failed with status: \(buffer.status)", level: .error)
+      }
+    }
+    
+    commandBuffer.makeCommandBuffer()?.commit()
 
     return texture
   }
 
-  // Optimized color extraction using downsampling and shared memory
   private func extractColorsOptimized(
     from texture: MTLTexture, with segmentMask: UnsafePointer<UInt8>, width: Int, height: Int
   ) {
-    // Create a downsampled version of the texture for color analysis
     guard let downsampledTexture = createDownsampledTexture(from: texture, scale: downsampleFactor)
     else {
       return
     }
-
+    
     let dsWidth = downsampledTexture.width
     let dsHeight = downsampledTexture.height
 
-    // Create a temporary buffer to store the downsampled texture data
     let bytesPerRow = dsWidth * 4  // BGRA format = 4 bytes per pixel
     let bufferSize = dsHeight * bytesPerRow
 
@@ -786,19 +744,22 @@ class MultiClassSegmentedImageRenderer {
         options: .storageModeShared
       )
     else {
-      // Recycle the downsampled texture before returning
       TexturePoolManager.shared.recycleTexture(downsampledTexture)
       log("Failed to get buffer from pool", level: .error)
       return
     }
 
-    // Copy the downsampled texture to the buffer
-    let commandBuffer = commandQueue?.makeCommandBuffer()
-    let blitEncoder = commandBuffer?.makeBlitCommandEncoder()
+    guard let commandBuffer = commandQueue else {
+      TexturePoolManager.shared.recycleTexture(downsampledTexture)
+      BufferPoolManager.shared.recycleBuffer(textureBuffer)
+      return
+    }
+    
+    let cmdBuffer = commandBuffer.makeCommandBuffer()
+    let blitEncoder = cmdBuffer?.makeBlitCommandEncoder()
 
-    // Use safe parameters for the blit operation that match the actual sizes
     let sourceSize = MTLSizeMake(dsWidth, dsHeight, 1)
-
+    
     blitEncoder?.copy(
       from: downsampledTexture,
       sourceSlice: 0,
@@ -809,17 +770,16 @@ class MultiClassSegmentedImageRenderer {
       destinationOffset: 0,
       destinationBytesPerRow: bytesPerRow,
       destinationBytesPerImage: bufferSize)
-
+    
     blitEncoder?.endEncoding()
 
-    commandBuffer?.addCompletedHandler { [weak self] _ in
+    cmdBuffer?.addCompletedHandler { [weak self] (_: MTLCommandBuffer) in
       guard let self = self else {
         BufferPoolManager.shared.recycleBuffer(textureBuffer)
         TexturePoolManager.shared.recycleTexture(downsampledTexture)
         return
       }
 
-      // Analyze the pixel data from the buffer
       let pixelData = textureBuffer.contents().bindMemory(to: UInt8.self, capacity: bufferSize)
 
       var skinPixels = [(r: Float, g: Float, b: Float)]()
@@ -828,13 +788,37 @@ class MultiClassSegmentedImageRenderer {
       var hairPixels = [(r: Float, g: Float, b: Float)]()
       hairPixels.reserveCapacity(dsWidth * dsHeight / 4)  // Estimate capacity
 
-      // Stride for sampling segmentation mask (scaling from downsampled to original)
       let strideX = width / dsWidth
       let strideY = height / dsHeight
 
-      // Process the downsampled image - optimize by processing in chunks
       let chunkSize = 16  // Process 16 pixels at a time
-
+      
+      var cheekPoints: [CGPoint] = []
+      var foreheadPoints: [CGPoint] = []
+      
+      if let landmarks = self.lastFaceLandmarks, !landmarks.isEmpty {
+        let leftCheekIndices = [117, 118, 119, 120, 121, 122, 123, 147, 187, 207, 206, 203, 204]
+        let rightCheekIndices = [348, 349, 350, 351, 352, 353, 354, 376, 411, 427, 426, 423, 424]
+        
+        let foreheadIndices = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 71, 63, 105, 66, 107, 55, 65, 52, 53]
+        
+        for index in leftCheekIndices + rightCheekIndices {
+          if index < landmarks.count {
+            let x = CGFloat(landmarks[index].x)
+            let y = CGFloat(landmarks[index].y)
+            cheekPoints.append(CGPoint(x: x, y: y))
+          }
+        }
+        
+        for index in foreheadIndices {
+          if index < landmarks.count {
+            let x = CGFloat(landmarks[index].x)
+            let y = CGFloat(landmarks[index].y)
+            foreheadPoints.append(CGPoint(x: x, y: y))
+          }
+        }
+      }
+      
       for y in 0..<dsHeight {
         var x = 0
         while x < dsWidth {
@@ -842,35 +826,58 @@ class MultiClassSegmentedImageRenderer {
           let pixelsToProcess = min(chunkSize, remainingPixels)
 
           for i in 0..<pixelsToProcess {
-            // Get corresponding index in full segmentation mask
             let segY = min(y * strideY, height - 1)
             let segX = min((x + i) * strideX, width - 1)
             let segIndex = segY * width + segX
             let segmentClass = segmentMask[segIndex]
 
-            // Get pixel from downsampled texture
             let pixelOffset = (y * dsWidth + (x + i)) * 4
 
-            // BGRA format
             let b = Float(pixelData[pixelOffset])
             let g = Float(pixelData[pixelOffset + 1])
             let r = Float(pixelData[pixelOffset + 2])
-
-            // Store pixel values based on segment class
-            if segmentClass == SegmentationClass.skin.rawValue {
-              skinPixels.append((r: r, g: g, b: b))
-            } else if segmentClass == SegmentationClass.hair.rawValue {
+            
+            if segmentClass == SegmentationClass.hair.rawValue {
               hairPixels.append((r: r, g: g, b: b))
+            } 
+            else if segmentClass == SegmentationClass.skin.rawValue && (cheekPoints.isEmpty && foreheadPoints.isEmpty) {
+              skinPixels.append((r: r, g: g, b: b))
             }
           }
 
           x += pixelsToProcess
         }
       }
+      
+      if !cheekPoints.isEmpty || !foreheadPoints.isEmpty {
+        let allSamplingPoints = cheekPoints + foreheadPoints
+        
+        for point in allSamplingPoints {
+          let dsX = Int(point.x * CGFloat(dsWidth))
+          let dsY = Int(point.y * CGFloat(dsHeight))
+          
+          if dsX >= 0 && dsX < dsWidth && dsY >= 0 && dsY < dsHeight {
+            let pixelOffset = (dsY * dsWidth + dsX) * 4
+            
+            if pixelOffset + 2 < bufferSize {
+              let b = Float(pixelData[pixelOffset])
+              let g = Float(pixelData[pixelOffset + 1])
+              let r = Float(pixelData[pixelOffset + 2])
+              
+              let brightnessAdjustment: Float = 1.15
+              let adjustedR = min(255, r * brightnessAdjustment)
+              let adjustedG = min(255, g * brightnessAdjustment)
+              let adjustedB = min(255, b * brightnessAdjustment)
+              
+              skinPixels.append((r: adjustedR, g: adjustedG, b: adjustedB))
+              skinPixels.append((r: adjustedR, g: adjustedG, b: adjustedB))  // Add twice for higher weight
+            }
+          }
+        }
+      }
 
       var colorInfo = ColorInfo()
 
-      // Process skin pixels
       if !skinPixels.isEmpty {
         let skinPixelCount = skinPixels.count
 
@@ -886,7 +893,6 @@ class MultiClassSegmentedImageRenderer {
           red: CGFloat(avgR / 255.0), green: CGFloat(avgG / 255.0), blue: CGFloat(avgB / 255.0),
           alpha: 1.0)
 
-        // Temporal smoothing for stable color values
         if self.lastColorInfo.skinColor != .clear {
           colorInfo.skinColor = self.blendColors(
             newColor: newSkinColor, oldColor: self.lastColorInfo.skinColor,
@@ -895,7 +901,6 @@ class MultiClassSegmentedImageRenderer {
           colorInfo.skinColor = newSkinColor
         }
 
-        // Convert to HSV
         var hue: CGFloat = 0
         var saturation: CGFloat = 0
         var brightness: CGFloat = 0
@@ -908,7 +913,6 @@ class MultiClassSegmentedImageRenderer {
         colorInfo.skinColorHSV = self.lastColorInfo.skinColorHSV
       }
 
-      // Process hair pixels
       if !hairPixels.isEmpty {
         let hairPixelCount = hairPixels.count
 
@@ -924,7 +928,6 @@ class MultiClassSegmentedImageRenderer {
           red: CGFloat(avgR / 255.0), green: CGFloat(avgG / 255.0), blue: CGFloat(avgB / 255.0),
           alpha: 1.0)
 
-        // Temporal smoothing for stable color values
         if self.lastColorInfo.hairColor != .clear {
           colorInfo.hairColor = self.blendColors(
             newColor: newHairColor, oldColor: self.lastColorInfo.hairColor,
@@ -933,7 +936,6 @@ class MultiClassSegmentedImageRenderer {
           colorInfo.hairColor = newHairColor
         }
 
-        // Convert to HSV
         var hue: CGFloat = 0
         var saturation: CGFloat = 0
         var brightness: CGFloat = 0
@@ -946,23 +948,19 @@ class MultiClassSegmentedImageRenderer {
         colorInfo.hairColorHSV = self.lastColorInfo.hairColorHSV
       }
 
-      // If we have valid data, update the lastColorInfo
       if !skinPixels.isEmpty || !hairPixels.isEmpty {
         self.lastColorInfo = colorInfo
       }
 
-      // Recycle resources when done
       BufferPoolManager.shared.recycleBuffer(textureBuffer)
       TexturePoolManager.shared.recycleTexture(downsampledTexture)
     }
 
-    // Commit the command buffer
-    commandBuffer?.commit()
+    cmdBuffer?.commit()
   }
 
-  // Helper method to blend colors for temporal smoothing
   private func blendColors(newColor: UIColor, oldColor: UIColor, factor: Float) -> UIColor {
-    let factor = CGFloat(factor)
+    let factorCG = CGFloat(factor)
 
     var newR: CGFloat = 0
     var newG: CGFloat = 0
@@ -976,65 +974,105 @@ class MultiClassSegmentedImageRenderer {
     newColor.getRed(&newR, green: &newG, blue: &newB, alpha: &newA)
     oldColor.getRed(&oldR, green: &oldG, blue: &oldB, alpha: &oldA)
 
-    // Blend using exponential moving average
-    let r = oldR * (1 - factor) + newR * factor
-    let g = oldG * (1 - factor) + newG * factor
-    let b = oldB * (1 - factor) + newB * factor
-    let a = oldA * (1 - factor) + newA * factor
+    let r = oldR * (1 - factorCG) + newR * factorCG
+    let g = oldG * (1 - factorCG) + newG * factorCG
+    let b = oldB * (1 - factorCG) + newB * factorCG
+    let a = oldA * (1 - factorCG) + newA * factorCG
 
     return UIColor(red: r, green: g, blue: b, alpha: a)
   }
 
-  // Get the current color information
   func getCurrentColorInfo() -> ColorInfo {
     return lastColorInfo
   }
-
-  // Get the face bounding box from segmentation data
-  func getFaceBoundingBox() -> CGRect? {
-    // This is a simple implementation that returns a default bounding box
-    // In a real implementation, this would analyze the segmentation mask to find facial features
-
-    // If no skin color has been detected, we probably don't have a valid face
-    if lastColorInfo.skinColor == UIColor.clear {
-      return nil
-    }
-
-    // Return a default bounding box in the center of the frame
-    // This is a placeholder - in a real implementation, this would be calculated from the segmentation mask
-    let defaultWidth = 0.5
-    let defaultHeight = 0.6
-    let x = (1.0 - defaultWidth) / 2.0
-    let y = (1.0 - defaultHeight) / 2.0
-
-    return CGRect(x: x, y: y, width: defaultWidth, height: defaultHeight)
+  
+  func getFaceLandmarks() -> [NormalizedLandmark]? {
+    return lastFaceLandmarks
+  }
+  
+  func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
+    lastFaceLandmarks = landmarks
+    //LoggingService.debug("Updated face landmarks in MultiClassSegmentedImageRenderer: \(landmarks?.count ?? 0) points")
   }
 
-  // Process segmentation results to extract color information
-  private func extractColorInformation(from segmenterResult: ImageSegmenterResult) {
-    // Implementation would analyze the segmentation mask and extract colors
-    // Currently just using placeholders for demonstration purposes
+  func getFaceBoundingBox() -> CGRect {
+    if let landmarks = lastFaceLandmarks, !landmarks.isEmpty {
+      let faceOvalIndices = MediaPipeFaceMesh.faceOval.flatMap { [$0.0, $0.1] }
+      var minX: CGFloat = 1.0
+      var minY: CGFloat = 1.0
+      var maxX: CGFloat = 0.0
+      var maxY: CGFloat = 0.0
+      
+      for index in faceOvalIndices {
+        guard index < landmarks.count else { continue }
+        let x = CGFloat(landmarks[index].x)
+        let y = CGFloat(landmarks[index].y)
+        
+        minX = min(minX, x)
+        minY = min(minY, y)
+        maxX = max(maxX, x)
+        maxY = max(maxY, y)
+      }
+      
+      let padding: CGFloat = 0.05
+      minX = max(0, minX - padding)
+      minY = max(0, minY - padding)
+      maxX = min(1, maxX + padding)
+      maxY = min(1, maxY + padding)
+      
+      return CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+    }
+    
+    return CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
+  }
 
-    // Sample skin color (this would be calculated from the actual segmentation)
-    let sampleSkinColor = UIColor(red: 0.9, green: 0.8, blue: 0.7, alpha: 1.0)
-    var h: CGFloat = 0
-    var s: CGFloat = 0
-    var b: CGFloat = 0
-    var a: CGFloat = 0
-    sampleSkinColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-
-    // Sample hair color
-    let sampleHairColor = UIColor(red: 0.2, green: 0.1, blue: 0.05, alpha: 1.0)
-    var hh: CGFloat = 0
-    var sh: CGFloat = 0
-    var bh: CGFloat = 0
-    var ah: CGFloat = 0
-    sampleHairColor.getHue(&hh, saturation: &sh, brightness: &bh, alpha: &ah)
-
-    // Update the color info
-    lastColorInfo.skinColor = sampleSkinColor
-    lastColorInfo.hairColor = sampleHairColor
-    lastColorInfo.skinColorHSV = (h: h, s: s, v: b)
-    lastColorInfo.hairColorHSV = (h: hh, s: sh, v: bh)
+  private func extractColorInformation(from segmenterResult: ImageSegmenterResult, pixelBuffer: CVPixelBuffer) {
+    guard let categoryMask = segmenterResult.categoryMask else {
+      log("No category mask available for color extraction", level: .warning)
+      return
+    }
+    
+    let width = segmenterResult.width
+    let height = segmenterResult.height
+    
+    guard let commandQueue = commandQueue else {
+      log("Failed to create command buffer for color extraction", level: .error)
+      return
+    }
+    
+    guard let originalTexture = makeTextureFromCVPixelBuffer(pixelBuffer: pixelBuffer, textureFormat: .bgra8Unorm) else {
+      log("Failed to create texture from pixel buffer for color extraction", level: .warning)
+      return
+    }
+    
+    extractColorsOptimized(
+      from: originalTexture,
+      with: categoryMask,
+      width: width,
+      height: height
+    )
+    
+    let cmdBuffer = commandQueue.makeCommandBuffer()
+    cmdBuffer?.addCompletedHandler { (_: MTLCommandBuffer) in
+      TexturePoolManager.shared.recycleTexture(originalTexture)
+    }
+    cmdBuffer?.commit()
+  }
+  
+  private func extractColorInformation(from segmenterResult: ImageSegmenterResult, texture: MTLTexture) {
+    guard let categoryMask = segmenterResult.categoryMask else {
+      log("No category mask available for color extraction", level: .warning)
+      return
+    }
+    
+    let width = segmenterResult.width
+    let height = segmenterResult.height
+    
+    extractColorsOptimized(
+      from: texture,
+      with: categoryMask,
+      width: width,
+      height: height
+    )
   }
 }

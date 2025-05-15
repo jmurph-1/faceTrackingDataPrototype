@@ -1,4 +1,3 @@
-```markdown
 # colorAnalysisApp Technical Documentation PRD
 
 ## 1. Document Header

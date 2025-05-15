@@ -5,7 +5,7 @@ import UIKit
 import MetalPerformanceShaders
 import MetalKit
 
-class SegmentedImageRenderer {
+class SegmentedImageRenderer: RendererProtocol {
 
   var description: String = "Metal"
 
@@ -86,6 +86,16 @@ class SegmentedImageRenderer {
     outputFormatDescription = nil
     textureCache = nil
     isPrepared = false
+  }
+  
+  func handleMemoryWarning() {
+    CVMetalTextureCacheFlush(textureCache!, 0)
+    
+    outputPixelBufferPool = nil
+    
+    if isPrepared, let formatDescription = outputFormatDescription {
+      prepare(with: formatDescription, outputRetainedBufferCountHint: 1, needChangeWidthHeight: false)
+    }
   }
 
   func render(image: UIImage, categoryMasks: UnsafePointer<UInt8>?) -> UIImage? {
@@ -267,16 +277,13 @@ class SegmentedImageRenderer {
     CVPixelBufferUnlockBaseAddress(inputBuffer, CVPixelBufferLockFlags(rawValue: 0))
   }
 
-  // Process using GPU with Metal
+  // Process using GPU with Metal - Optimized with asynchronous operations and resource pooling
   private func processWithGPU(inputBuffer: CVPixelBuffer, outputBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> Bool {
     guard let inputTexture = makeTextureFromCVPixelBuffer(pixelBuffer: inputBuffer, textureFormat: .bgra8Unorm),
           let outputTexture = makeTextureFromCVPixelBuffer(pixelBuffer: outputBuffer, textureFormat: .bgra8Unorm) else {
       print("Failed to create Metal textures from pixel buffers")
       return false
     }
-
-    let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
-    textureDescriptor.usage = .unknown
 
     // Set up command queue, buffer, and encoder
     guard let commandQueue = commandQueue,
@@ -287,12 +294,20 @@ class SegmentedImageRenderer {
       return false
     }
 
-    commandEncoder.label = "Demo Metal"
+    commandEncoder.label = "Segmentation Processing"
     commandEncoder.setComputePipelineState(computePipelineState!)
     commandEncoder.setTexture(inputTexture, index: 0)
     commandEncoder.setTexture(outputTexture, index: 1)
-    let buffer = metalDevice.makeBuffer(bytes: segmentDatas, length: inputTexture.width * inputTexture.height * MemoryLayout<UInt8>.size)!
-    commandEncoder.setBuffer(buffer, offset: 0, index: 0)
+    
+    let bufferLength = inputTexture.width * inputTexture.height * MemoryLayout<UInt8>.size
+    guard let segmentationBuffer = BufferPoolManager.shared.getBuffer(length: bufferLength) else {
+      print("Failed to get buffer from pool")
+      return false
+    }
+    
+    memcpy(segmentationBuffer.contents(), segmentDatas, bufferLength)
+    
+    commandEncoder.setBuffer(segmentationBuffer, offset: 0, index: 0)
     var imageWidth: Int = Int(inputTexture.width)
     commandEncoder.setBytes(&imageWidth, length: MemoryLayout<Int>.size, index: 1)
 
@@ -306,44 +321,57 @@ class SegmentedImageRenderer {
     commandEncoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
 
     commandEncoder.endEncoding()
-    commandBuffer.commit()
-    commandBuffer.waitUntilCompleted()
-
-    if commandBuffer.status == .completed {
-      return true
-    } else {
-      print("Metal command buffer execution failed with status: \(commandBuffer.status)")
-      return false
+    
+    commandBuffer.addCompletedHandler { [weak self] buffer in
+      BufferPoolManager.shared.recycleBuffer(segmentationBuffer)
+      
+      if buffer.status != .completed {
+        print("Metal command buffer execution failed with status: \(buffer.status)")
+      }
     }
+    
+    commandBuffer.commit()
+    
+    return true
   }
 
-  func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> CVPixelBuffer? {
+  func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>?) -> CVPixelBuffer? {
     guard isPrepared else {
       print("SegmentedImageRenderer not prepared")
       return nil
     }
-
-    var newPixelBuffer: CVPixelBuffer?
-    CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, outputPixelBufferPool!, &newPixelBuffer)
-    guard let outputPixelBuffer = newPixelBuffer else {
+    
+    guard let segmentData = segmentDatas else {
+      print("No segmentation data provided")
+      return nil
+    }
+    
+    let pixelBufferWidth = CVPixelBufferGetWidth(pixelBuffer)
+    let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
+    
+    guard let outputPixelBuffer = PixelBufferPoolManager.shared.getPixelBuffer(
+      width: pixelBufferWidth,
+      height: pixelBufferHeight,
+      pixelFormat: kCVPixelFormatType_32BGRA
+    ) else {
       print("Allocation failure: Could not get pixel buffer from pool. (\(self.description))")
       return nil
     }
-
+    
     // Try to use GPU, with fallback to CPU
     if isGPUProcessingAvailable() {
       // Try GPU processing
-      if !processWithGPU(inputBuffer: pixelBuffer, outputBuffer: outputPixelBuffer, segmentDatas: segmentDatas) {
+      if !processWithGPU(inputBuffer: pixelBuffer, outputBuffer: outputPixelBuffer, segmentDatas: segmentData) {
         // Fall back to CPU if GPU processing fails
         print("GPU processing failed, falling back to CPU")
-        processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputPixelBuffer, segmentDatas: segmentDatas)
+        processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputPixelBuffer, segmentDatas: segmentData)
       }
     } else {
       // Use CPU processing directly
       print("GPU processing not available, using CPU")
-      processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputPixelBuffer, segmentDatas: segmentDatas)
+      processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputPixelBuffer, segmentDatas: segmentData)
     }
-
+    
     return outputPixelBuffer
   }
 

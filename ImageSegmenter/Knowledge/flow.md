@@ -16,7 +16,7 @@ Key components and their interactions include:
 *   **Camera/Video Input Module:** Provides the real-time video stream from the device camera.
 *   **MediaPipe Processing Module:** Integrates the MediaPipe framework (Face Landmarker, Image Segmenter). Processes incoming video frames to detect facial landmarks and perform multi-class segmentation of facial features (skin, hair, eyes, lips, eyebrows).
 *   **Metal Renderer:** Utilizes the GPU for efficient, real-time rendering of the camera feed, segmentation masks, facial landmarks, and other visual overlays onto the UI.
-*   **Data Extraction Logic:** Processes the output from the MediaPipe Segmentation to identify specific regions (e.g., skin area within face bounds, hair area) and calculates representative color values (RGB, HSV) from these regions.
+*   **Data Extraction Logic:** Processes the output from the MediaPipe Segmentation to identify specific regions (e.g., skin area within face bounds, hair area) and calculates representative color values (RGB, HSV) from these regions and converts it to LAB colors for advanced analysis.
 *   **Analysis Logic Module:** Takes the extracted color data (skin tone/undertone, hair color/depth) and potentially landmark data (for face shape context) as input to determine the user's optimal seasonal color category based on predefined criteria and algorithms.
 *   **Data Management Module:** Handles the local storage and retrieval of user-specific data, including saved analysis results (assigned season, personalized details) and access to static content for the 12 default season pages.
 *   **Content Module:** Stores and provides access to the static data defining the 12 default seasonal color palettes, characteristics, and styling recommendations.

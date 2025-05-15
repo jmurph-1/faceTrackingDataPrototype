@@ -66,7 +66,8 @@ class CameraViewModel: NSObject {
 
     // Throttling properties
     private var lastProcessingTime: TimeInterval = 0
-    private let processingThrottleInterval: TimeInterval = 0.1  // 10Hz throttle
+    private var processingThrottleInterval: TimeInterval = 0.1  // Start at 10Hz throttle
+    private var lastFrameProcessingDuration: TimeInterval = 0
 
     // MARK: - Initialization
     override init() {
@@ -193,7 +194,7 @@ class CameraViewModel: NSObject {
         clearFaceLandmarkerService()
     }
 
-    /// Process current frame
+    /// Process current frame with adaptive throttling
     private func processFrame(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             return
@@ -210,6 +211,8 @@ class CameraViewModel: NSObject {
         if shouldProcess {
             // Update throttle timestamp
             lastProcessingTime = currentTime
+            
+            let processingStartTime = CACurrentMediaTime()
 
             // Process based on current mode
             if isFaceTrackingEnabled {
@@ -227,6 +230,22 @@ class CameraViewModel: NSObject {
                     timeStamps: Int(currentTime * 1000)
                 )
             }
+            
+            let processingDuration = CACurrentMediaTime() - processingStartTime
+            lastFrameProcessingDuration = processingDuration
+            updateThrottleInterval(processingTime: processingDuration)
+        }
+    }
+    
+    private func updateThrottleInterval(processingTime: TimeInterval) {
+        if processingTime > 0.08 {  // Taking >80ms to process
+            processingThrottleInterval = min(processingThrottleInterval + 0.01, 0.2)
+        } else if processingTime < 0.04 && processingThrottleInterval > 0.05 {  // Fast processing
+            processingThrottleInterval = max(processingThrottleInterval - 0.01, 0.05)
+        }
+        
+        if Int(Date().timeIntervalSince1970 * 10) % 30 == 0 {
+            print("Processing time: \(String(format: "%.1f", processingTime * 1000))ms, Throttle: \(String(format: "%.1f", processingThrottleInterval * 1000))ms")
         }
     }
 
@@ -237,8 +256,8 @@ class CameraViewModel: NSObject {
 
     /// Check frame for error conditions and provide guidance
     private func checkForErrorConditions() {
-        // Get the current face bounding box
-        guard let faceBoundingBox = currentFaceBoundingBox else {
+        // Check if a face is detected
+        guard currentFaceBoundingBox != nil else {
             delegate?.viewModel(self, didDisplayWarning: "No face detected. Please center your face in the frame.")
             return
         }
@@ -333,28 +352,37 @@ extension CameraViewModel: SegmentationServiceDelegate {
             // Update delegate with color information
             self.delegate?.viewModel(self, didUpdateColorInfo: result.colorInfo)
 
-            // Evaluate frame quality if we have a face bounding box
-            if let faceBoundingBox = result.faceBoundingBox,
-               let pixelBuffer = self.currentPixelBuffer {
-                let imageSize = CGSize(
-                    width: CVPixelBufferGetWidth(pixelBuffer),
-                    height: CVPixelBufferGetHeight(pixelBuffer)
-                )
-
-                let qualityScore = FrameQualityService.evaluateFrameQuality(
-                    pixelBuffer: pixelBuffer,
-                    faceBoundingBox: faceBoundingBox,
-                    imageSize: imageSize
-                )
-
-                // Update quality score
-                self.currentFrameQualityScore = qualityScore
-
-                // Notify delegate about quality update
-                self.delegate?.viewModel(self, didUpdateFrameQuality: qualityScore)
-
-                // Check for error conditions
-                self.checkForErrorConditions()
+            // Update UI elements that don't require frame quality evaluation
+            
+            if let pixelBuffer = self.currentPixelBuffer {
+                self.backgroundQueue.async {
+                    let defaultFaceBoundingBox = CGRect(x: 0.3, y: 0.2, width: 0.4, height: 0.6)
+                    
+                    let imageSize = CGSize(
+                        width: CVPixelBufferGetWidth(pixelBuffer),
+                        height: CVPixelBufferGetHeight(pixelBuffer)
+                    )
+                    
+                    let qualityScore = FrameQualityService.evaluateFrameQuality(
+                        pixelBuffer: pixelBuffer,
+                        faceBoundingBox: defaultFaceBoundingBox,
+                        imageSize: imageSize
+                    )
+                    
+                    // Update UI on main thread with results
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
+                        
+                        // Update quality score
+                        self.currentFrameQualityScore = qualityScore
+                        
+                        // Notify delegate about quality update
+                        self.delegate?.viewModel(self, didUpdateFrameQuality: qualityScore)
+                        
+                        // Check for error conditions
+                        self.checkForErrorConditions()
+                    }
+                }
             }
         }
     }
@@ -436,4 +464,4 @@ enum CameraError: Error {
 
 enum AnalysisError: Error {
     case insufficientQuality
-}
+}        
