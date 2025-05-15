@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import UIKit
+import SwiftUI
 
 protocol InferenceResultDeliveryDelegate: AnyObject {
   func didPerformInference(result: ResultBundle?)
@@ -32,12 +33,17 @@ class RootViewController: UIViewController {
 
   // MARK: Controllers that manage functionality
   private var cameraViewController: CameraViewController?
+  private var landingPageViewController: UIHostingController<LandingPageView>?
+  private var isShowingLandingPage = true
 
   // MARK: View Handling Methods
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // Setup camera view controller but don't show it yet
     setupCameraViewController()
+    
+    setupLandingPageViewController()
     
     // Configure default settings
     // InferenceConfigurationManager.sharedInstance is already initialized with defaults
@@ -73,6 +79,48 @@ class RootViewController: UIViewController {
     ])
     
     viewController.didMove(toParent: self)
+  }
+  
+  private func setupLandingPageViewController() {
+    let landingPageView = LandingPageView(onAnalyzeButtonTapped: { [weak self] in
+      self?.showCameraView()
+    })
+    
+    let hostingController = UIHostingController(rootView: landingPageView)
+    landingPageViewController = hostingController
+    
+    // Add landing page view controller to container view
+    addChild(hostingController)
+    hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+    tabBarContainerView.addSubview(hostingController.view)
+    
+    // Setup constraints
+    NSLayoutConstraint.activate([
+      hostingController.view.leadingAnchor.constraint(equalTo: tabBarContainerView.leadingAnchor),
+      hostingController.view.trailingAnchor.constraint(equalTo: tabBarContainerView.trailingAnchor),
+      hostingController.view.topAnchor.constraint(equalTo: tabBarContainerView.topAnchor),
+      hostingController.view.bottomAnchor.constraint(equalTo: tabBarContainerView.bottomAnchor)
+    ])
+    
+    hostingController.didMove(toParent: self)
+    
+    cameraViewController?.view.isHidden = true
+  }
+  
+  private func showCameraView() {
+    UIView.transition(with: tabBarContainerView, duration: 0.3, options: .transitionCrossDissolve) { [weak self] in
+      self?.landingPageViewController?.view.isHidden = true
+      self?.cameraViewController?.view.isHidden = false
+      self?.isShowingLandingPage = false
+    }
+  }
+  
+  private func showLandingPage() {
+    UIView.transition(with: tabBarContainerView, duration: 0.3, options: .transitionCrossDissolve) { [weak self] in
+      self?.landingPageViewController?.view.isHidden = false
+      self?.cameraViewController?.view.isHidden = true
+      self?.isShowingLandingPage = true
+    }
   }
 }
 
