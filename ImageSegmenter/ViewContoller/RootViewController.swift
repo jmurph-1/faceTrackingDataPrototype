@@ -14,6 +14,7 @@
 
 import UIKit
 import SwiftUI
+import ImageSegmenter.Views
 
 protocol InferenceResultDeliveryDelegate: AnyObject {
   func didPerformInference(result: ResultBundle?)
