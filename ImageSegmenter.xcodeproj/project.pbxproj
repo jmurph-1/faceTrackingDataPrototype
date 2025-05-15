@@ -32,7 +32,6 @@
 		5222FDCB2DD3F8AD00EF3C65 /* requirements.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC42DD3F8AD00EF3C65 /* requirements.md */; };
 		5222FDCC2DD3F8AD00EF3C65 /* backend.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC02DD3F8AD00EF3C65 /* backend.md */; };
 		5222FDCD2DD3F8AD00EF3C65 /* flow.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC12DD3F8AD00EF3C65 /* flow.md */; };
-		5222FDCF2DD408FC00EF3C65 /* Phase0.3_Color_Extraction_Baseline_With_QuickWins.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDCE2DD408FC00EF3C65 /* Phase0.3_Color_Extraction_Baseline_With_QuickWins.md */; };
 		5222FDD42DD40F4200EF3C65 /* SeasonAnalysis.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDD12DD40F4200EF3C65 /* SeasonAnalysis.xcdatamodeld */; };
 		5222FDD52DD40F4200EF3C65 /* AnalysisResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDD02DD40F4200EF3C65 /* AnalysisResult.swift */; };
 		5222FDD72DD40F5D00EF3C65 /* thresholds.json in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDD62DD40F5D00EF3C65 /* thresholds.json */; };
@@ -139,7 +138,6 @@
 		5222FDC42DD3F8AD00EF3C65 /* requirements.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = requirements.md; sourceTree = "<group>"; };
 		5222FDC52DD3F8AD00EF3C65 /* status.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = status.md; sourceTree = "<group>"; };
 		5222FDC62DD3F8AD00EF3C65 /* techstack.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = techstack.md; sourceTree = "<group>"; };
-		5222FDCE2DD408FC00EF3C65 /* Phase0.3_Color_Extraction_Baseline_With_QuickWins.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Phase0.3_Color_Extraction_Baseline_With_QuickWins.md; sourceTree = "<group>"; };
 		5222FDD02DD40F4200EF3C65 /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResult.swift; sourceTree = "<group>"; };
 		5222FDD32DD40F4200EF3C65 /* SeasonAnalysis.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SeasonAnalysis.xcdatamodel; sourceTree = "<group>"; };
 		5222FDD62DD40F5D00EF3C65 /* thresholds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = thresholds.json; sourceTree = "<group>"; };
@@ -327,7 +325,6 @@
 			isa = PBXGroup;
 			children = (
 				523112A32DD524D500FCFC91 /* projectDirectory.md */,
-				5222FDCE2DD408FC00EF3C65 /* Phase0.3_Color_Extraction_Baseline_With_QuickWins.md */,
 				5222FDC02DD3F8AD00EF3C65 /* backend.md */,
 				5222FDC12DD3F8AD00EF3C65 /* flow.md */,
 				5222FDC22DD3F8AD00EF3C65 /* frontend.md */,
@@ -583,7 +580,6 @@
 				5222FDB82DD3D67500EF3C65 /* trueSummer.json in Resources */,
 				5222FDB92DD3D67500EF3C65 /* trueAutumn.json in Resources */,
 				5222FDBA2DD3D67500EF3C65 /* softSummer.json in Resources */,
-				5222FDCF2DD408FC00EF3C65 /* Phase0.3_Color_Extraction_Baseline_With_QuickWins.md in Resources */,
 				5222FDBB2DD3D67500EF3C65 /* trueSpring.json in Resources */,
 				5222FDBC2DD3D67500EF3C65 /* lightSpring.json in Resources */,
 				5222FDC72DD3F8AD00EF3C65 /* frontend.md in Resources */,
@@ -623,6 +619,7 @@
 			shellPath = /bin/sh;
 			shellScript = (
 				"\"$SRCROOT/RunScripts/download_models.sh\"",
+				"",
 				"",
 				"",
 				"",
