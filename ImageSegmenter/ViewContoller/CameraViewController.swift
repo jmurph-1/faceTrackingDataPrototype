@@ -983,8 +983,18 @@ extension CameraViewController {
 
 extension CameraViewController {
     @objc private func analyzeButtonTapped() {
+        if isAnalyzeButtonPressed {
+            return
+        }
+        
         isAnalyzeButtonPressed = true
-        defer { isAnalyzeButtonPressed = false }
+        
+        // Ensure button state is reset even if we return early
+        let resetButtonState = {
+            DispatchQueue.main.async {
+                self.isAnalyzeButtonPressed = false
+            }
+        }
         
         if !isFrameQualitySufficientForAnalysis {
             let alert = UIAlertController(
@@ -994,14 +1004,20 @@ extension CameraViewController {
             )
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true)
+            resetButtonState()
             return
         }
 
-        guard let pixelBuffer = videoPixelBuffer else { return }
+        guard let pixelBuffer = videoPixelBuffer else {
+            resetButtonState()
+            return
+        }
         
         let colorInfo = segmentationService.getCurrentColorInfo()
         
         classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
+        
+        resetButtonState()
     }
 }
 

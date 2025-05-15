@@ -764,7 +764,33 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       let strideY = height / dsHeight
 
       let chunkSize = 16  // Process 16 pixels at a time
-
+      
+      var cheekPoints: [CGPoint] = []
+      var foreheadPoints: [CGPoint] = []
+      
+      if let landmarks = self.lastFaceLandmarks, !landmarks.isEmpty {
+        let leftCheekIndices = [117, 118, 119, 120, 121, 122, 123, 147, 187, 207, 206, 203, 204]
+        let rightCheekIndices = [348, 349, 350, 351, 352, 353, 354, 376, 411, 427, 426, 423, 424]
+        
+        let foreheadIndices = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 71, 63, 105, 66, 107, 55, 65, 52, 53]
+        
+        for index in leftCheekIndices + rightCheekIndices {
+          if index < landmarks.count {
+            let x = CGFloat(landmarks[index].x)
+            let y = CGFloat(landmarks[index].y)
+            cheekPoints.append(CGPoint(x: x, y: y))
+          }
+        }
+        
+        for index in foreheadIndices {
+          if index < landmarks.count {
+            let x = CGFloat(landmarks[index].x)
+            let y = CGFloat(landmarks[index].y)
+            foreheadPoints.append(CGPoint(x: x, y: y))
+          }
+        }
+      }
+      
       for y in 0..<dsHeight {
         var x = 0
         while x < dsWidth {
@@ -782,15 +808,38 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
             let b = Float(pixelData[pixelOffset])
             let g = Float(pixelData[pixelOffset + 1])
             let r = Float(pixelData[pixelOffset + 2])
-
-            if segmentClass == SegmentationClass.skin.rawValue {
-              skinPixels.append((r: r, g: g, b: b))
-            } else if segmentClass == SegmentationClass.hair.rawValue {
+            
+            if segmentClass == SegmentationClass.hair.rawValue {
               hairPixels.append((r: r, g: g, b: b))
+            } 
+            else if segmentClass == SegmentationClass.skin.rawValue && (cheekPoints.isEmpty && foreheadPoints.isEmpty) {
+              skinPixels.append((r: r, g: g, b: b))
             }
           }
 
           x += pixelsToProcess
+        }
+      }
+      
+      if !cheekPoints.isEmpty || !foreheadPoints.isEmpty {
+        let allSamplingPoints = cheekPoints + foreheadPoints
+        
+        for point in allSamplingPoints {
+          let dsX = Int(point.x * CGFloat(dsWidth))
+          let dsY = Int(point.y * CGFloat(dsHeight))
+          
+          if dsX >= 0 && dsX < dsWidth && dsY >= 0 && dsY < dsHeight {
+            let pixelOffset = (dsY * dsWidth + dsX) * 4
+            
+            if pixelOffset + 2 < bufferSize {
+              let b = Float(pixelData[pixelOffset])
+              let g = Float(pixelData[pixelOffset + 1])
+              let r = Float(pixelData[pixelOffset + 2])
+              
+              skinPixels.append((r: r, g: g, b: b))
+              skinPixels.append((r: r, g: g, b: b))  // Add twice for higher weight
+            }
+          }
         }
       }
 

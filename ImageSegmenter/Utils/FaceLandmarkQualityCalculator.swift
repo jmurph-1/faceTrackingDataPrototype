@@ -231,7 +231,7 @@ class FaceLandmarkQualityCalculator {
         print("Average gradient (sharpness): \(averageGradient)")
         
         // Normalize to 0-1 range
-        let normalizedGradient = min(1.0, averageGradient / 1.4)
+        let normalizedGradient = min(1.0, averageGradient / 0.7)
         print("Normalized sharpness score: \(normalizedGradient)")
         
         return normalizedGradient
