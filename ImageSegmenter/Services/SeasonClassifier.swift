@@ -171,7 +171,14 @@ class SeasonClassifier {
         let skinLabColor = ColorConverters.LabColor(L: CGFloat(skinL), a: CGFloat(skinA), b: CGFloat(skinB))
         let deltaEs = calculateDeltaEToSeasonReferences(labColor: skinLabColor)
         
-        let deltaE = Float(deltaEs[secondBestSeason] ?? 1.5)
+        // Sort seasons by deltaE (lower is better)
+        let sortedDeltaEs = deltaEs.sorted { $0.value < $1.value }
+        
+        let bestSeasonDeltaE = sortedDeltaEs[0].value
+        let secondBestSeasonDeltaE = sortedDeltaEs[1].value
+        
+        // Calculate the difference between the deltaE values
+        let deltaE = Float(secondBestSeasonDeltaE - bestSeasonDeltaE)
 
         return ClassificationResult(
             season: season,

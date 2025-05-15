@@ -989,20 +989,26 @@ extension CameraViewController {
 
 extension CameraViewController {
     @objc private func analyzeButtonTapped() {
+        print("ANALYZE_FLOW: analyzeButtonTapped called, isAnalyzeButtonPressed=\(isAnalyzeButtonPressed)")
+        
         if isAnalyzeButtonPressed {
+            print("ANALYZE_FLOW: Button already pressed, ignoring tap")
             return
         }
         
+        print("ANALYZE_FLOW: Setting isAnalyzeButtonPressed=true")
         isAnalyzeButtonPressed = true
         
         // Ensure button state is reset even if we return early
         let resetButtonState = {
             DispatchQueue.main.async {
+                print("ANALYZE_FLOW: Resetting isAnalyzeButtonPressed=false")
                 self.isAnalyzeButtonPressed = false
             }
         }
         
         if !isFrameQualitySufficientForAnalysis {
+            print("ANALYZE_FLOW: Frame quality insufficient, showing alert")
             let alert = UIAlertController(
                 title: "Insufficient Frame Quality",
                 message: "Please adjust your position to improve frame quality before analyzing.",
@@ -1015,14 +1021,18 @@ extension CameraViewController {
         }
 
         guard let pixelBuffer = videoPixelBuffer else {
+            print("ANALYZE_FLOW: No video pixel buffer available")
             resetButtonState()
             return
         }
         
+        print("ANALYZE_FLOW: Getting color info from segmentation service")
         let colorInfo = segmentationService.getCurrentColorInfo()
         
+        print("ANALYZE_FLOW: Calling analyzeFrame on classification service")
         classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
         
+        print("ANALYZE_FLOW: Analysis initiated, resetting button state")
         resetButtonState()
     }
 }
