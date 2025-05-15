@@ -836,8 +836,13 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
               let g = Float(pixelData[pixelOffset + 1])
               let r = Float(pixelData[pixelOffset + 2])
               
-              skinPixels.append((r: r, g: g, b: b))
-              skinPixels.append((r: r, g: g, b: b))  // Add twice for higher weight
+              let brightnessAdjustment: Float = 1.15
+              let adjustedR = min(255, r * brightnessAdjustment)
+              let adjustedG = min(255, g * brightnessAdjustment)
+              let adjustedB = min(255, b * brightnessAdjustment)
+              
+              skinPixels.append((r: adjustedR, g: adjustedG, b: adjustedB))
+              skinPixels.append((r: adjustedR, g: adjustedG, b: adjustedB))  // Add twice for higher weight
             }
           }
         }

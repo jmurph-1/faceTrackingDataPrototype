@@ -573,9 +573,15 @@ class CameraViewController: UIViewController {
           self?.initializeFaceLandmarkerServiceOnSessionResumption()
           self?.updateAnalyzeButtonState()
           print("Retrying analysis, services reinitialized.")
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self?.analyzeButtonTapped()
-            print("Analyze button tapped.")
+          
+          self?.isAnalyzeButtonPressed = false
+          
+          DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            guard let self = self else { return }
+            if !self.isAnalyzeButtonPressed {
+              self.analyzeButtonTapped()
+              print("Analyze button tapped after retry.")
+            }
           }
         },
         onSeeDetails: { 
