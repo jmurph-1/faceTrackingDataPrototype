@@ -2,134 +2,130 @@ import SwiftUI
 
 struct LandingPageView: View {
     @State private var animate = false
-    
     var onAnalyzeButtonTapped: () -> Void
-    
+
+    // how thick your edge gradients and border should be
+    private let edgeSize: CGFloat = 50
+    private let borderWidth: CGFloat = 5
+
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color.white.edgesIgnoringSafeArea(.all)
-                
-                // Top edge gradient: Lavender to Light Blue
+                // 1) White background
+                Color.white
+                    .edgesIgnoringSafeArea(.all)
+
+                // 2) Top edge gradient
                 VStack(spacing: 0) {
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            Color(red: 0.85, green: 0.75, blue: 0.92), // Lavender
-                            Color(red: 0.70, green: 0.85, blue: 0.95), // Light Blue
+                            Color(red: 0.85, green: 0.75, blue: 0.92),    // Lavender
+                            Color(red: 0.70, green: 0.85, blue: 0.95),    // Light Blue
                             Color.white.opacity(0)
                         ]),
                         startPoint: animate ? .topLeading : .top,
                         endPoint: .bottom
                     )
-                    .frame(width: geometry.size.width, height: 100)
-                    .opacity(0.7)
-                    
+                    .frame(width: geometry.size.width, height: edgeSize)
                     Spacer()
                 }
-                .edgesIgnoringSafeArea(.all)
-                .padding(0)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                
-                // Bottom edge gradient: Peach to Soft Pink
-                VStack(spacing: 0) {
+
+                // 3) Bottom edge gradient
+                VStack {
                     Spacer()
-                    
                     LinearGradient(
                         gradient: Gradient(colors: [
                             Color.white.opacity(0),
-                            Color(red: 0.98, green: 0.80, blue: 0.90), // Soft Pink
-                            Color(red: 0.98, green: 0.80, blue: 0.70)  // Peach
+                            Color(red: 0.70, green: 0.85, blue: 0.95),
+                            Color(red: 0.85, green: 0.75, blue: 0.92)
                         ]),
                         startPoint: .top,
                         endPoint: animate ? .bottomTrailing : .bottom
                     )
-                    .frame(width: geometry.size.width, height: 100)
-                    .opacity(0.7)
+                    .frame(width: geometry.size.width, height: edgeSize)
                 }
-                .edgesIgnoringSafeArea(.all)
-                .padding(0)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                
-                // Left edge gradient: Mint Green to Pale Yellow
+
+                // 4) Left edge gradient
                 HStack(spacing: 0) {
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            Color(red: 0.75, green: 0.95, blue: 0.80), // Mint Green
-                            Color(red: 0.95, green: 0.95, blue: 0.75), // Pale Yellow
+                            Color(red: 0.85, green: 0.75, blue: 0.92),
+                            Color(red: 0.70, green: 0.85, blue: 0.95),
                             Color.white.opacity(0)
                         ]),
-                        startPoint: animate ? .bottomLeading : .leading,
+                        startPoint: animate ? .topLeading : .leading,
                         endPoint: .trailing
                     )
-                    .frame(width: 100, height: geometry.size.height)
-                    .opacity(0.7)
-                    
+                    .frame(width: edgeSize, height: geometry.size.height)
                     Spacer()
                 }
-                .edgesIgnoringSafeArea(.all)
-                .padding(0)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                
-                HStack(spacing: 0) {
+
+                // 5) Right edge gradient
+                HStack {
                     Spacer()
-                    
                     LinearGradient(
                         gradient: Gradient(colors: [
                             Color.white.opacity(0),
-                            Color(red: 0.60, green: 0.80, blue: 0.95), // Sky Blue
-                            Color(red: 0.95, green: 0.60, blue: 0.50)  // Coral
+                            Color(red: 0.70, green: 0.85, blue: 0.95),
+                            Color(red: 0.85, green: 0.75, blue: 0.92)
                         ]),
                         startPoint: .leading,
-                        endPoint: animate ? .topTrailing : .trailing
+                        endPoint: animate ? .bottomTrailing : .trailing
                     )
-                    .frame(width: 100, height: geometry.size.height)
-                    .opacity(0.7)
+                    .frame(width: edgeSize, height: geometry.size.height)
                 }
-                .edgesIgnoringSafeArea(.all)
-                .padding(0)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                
+
+                // 6) Your main content (e.g. Analyze button)
                 VStack {
                     Spacer()
-                    
                     Button(action: onAnalyzeButtonTapped) {
                         Text("Analyze Your Colors")
                             .font(.headline)
                             .foregroundColor(.white)
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 24)
-                            .background(Color(red: 0.22, green: 0.64, blue: 0.65))
-                            .cornerRadius(12)
-                            .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                            .padding()
+                            .background(Capsule().fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color(red: 0.85, green: 0.75, blue: 0.92),
+                                        Color(red: 0.70, green: 0.85, blue: 0.95)
+                                    ]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            ))
                     }
-                    .buttonStyle(AnimatedButtonStyle())
-                    .accessibilityLabel("Analyze Your Colors")
-                    .padding(.bottom, 24)
+                    Spacer().frame(height: 45)
                 }
             }
-            .ignoresSafeArea(.all)
-        }
-        .onAppear {
-            withAnimation(
-                Animation.linear(duration: 10)
-                    .repeatForever(autoreverses: true)
-            ) {
-                animate.toggle()
+            .onAppear {
+                withAnimation(
+                    Animation.linear(duration: 60)
+                        .repeatForever(autoreverses: true)
+                ) {
+                    animate.toggle()
+                }
             }
+            // 7) Gradient border overlay
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(red: 0.85, green: 0.75, blue: 0.92),
+                                Color(red: 0.70, green: 0.85, blue: 0.95)                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: borderWidth
+                    )
+                    .edgesIgnoringSafeArea(.all)
+            )
         }
-    }
-}
-
-struct AnimatedButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 
 struct LandingPageView_Previews: PreviewProvider {
     static var previews: some View {
-        LandingPageView(onAnalyzeButtonTapped: {})
+        LandingPageView(onAnalyzeButtonTapped: { })
     }
 }

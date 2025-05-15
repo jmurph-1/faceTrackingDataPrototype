@@ -40,271 +40,180 @@ protocol CameraViewModelDelegate: AnyObject {
 // MARK: - CameraViewModel
 class CameraViewModel: NSObject {
     // MARK: - Properties
-
-    // Public properties
     weak var delegate: CameraViewModelDelegate?
-
-    // Current state properties
     private(set) var isSessionRunning = false
-    private(set) var isFaceTrackingEnabled = false
     private(set) var currentFrameQualityScore: FrameQualityService.QualityScore?
     private(set) var currentColorInfo: MultiClassSegmentedImageRenderer.ColorInfo?
     private(set) var lastFaceLandmarks: [NormalizedLandmark]?
     private(set) var currentPixelBuffer: CVPixelBuffer?
     private(set) var currentFaceBoundingBox: CGRect?
 
-    // Services
     private let cameraService = CameraService()
     private let segmentationService = SegmentationService()
     private let classificationService = ClassificationService()
-
-    // Face landmarker service
     private var faceLandmarkerService: FaceLandmarkerService?
 
-    // Queues
     private let backgroundQueue = DispatchQueue(label: "com.google.mediapipe.cameraViewModel.backgroundQueue")
-
-    // Throttling properties
     private var lastProcessingTime: TimeInterval = 0
-    private var processingThrottleInterval: TimeInterval = 0.1  // Start at 10Hz throttle
-    private var lastFrameProcessingDuration: TimeInterval = 0
+    private var processingThrottleInterval: TimeInterval = 0.1
+
+    private var frameCount: Int = 0
+    private var lastFPSUpdateTime: TimeInterval = 0
+    private(set) var currentFPS: Float = 0.0
 
     // MARK: - Initialization
     override init() {
         super.init()
-
-        // Configure services
         cameraService.delegate = self
         segmentationService.delegate = self
         classificationService.delegate = self
+        LoggingService.info("CVM: init - Configuring services.")
+        configureInitialServices()
+    }
 
-        // Initialize segmentation
+    private func configureInitialServices() {
         configureSegmentationService()
+        configureFaceLandmarkerService()
     }
 
     // MARK: - Public Methods
-
-    /// Start camera session
     func startCamera() {
+        LoggingService.info("CVM: startCamera called. Session running: \(isSessionRunning)")
+        configureInitialServices() // Ensure services are ready
         cameraService.startLiveCameraSession { [weak self] configuration in
             DispatchQueue.main.async {
-                guard let self = self else { return }
-
+                guard let strongSelf = self else { return }
+                LoggingService.info("CVM: startCamera completion - Configuration: \(configuration)")
                 switch configuration {
                 case .success:
-                    self.isSessionRunning = true
-                    self.delegate?.viewModelDidStartCamera(self)
+                    strongSelf.isSessionRunning = true
+                    strongSelf.delegate?.viewModelDidStartCamera(strongSelf)
                 case .failed:
-                    self.delegate?.viewModel(self, didEncounterError: CameraError.configurationFailed)
+                    strongSelf.delegate?.viewModel(strongSelf, didEncounterError: CameraError.configurationFailed)
                 case .permissionDenied:
-                    self.delegate?.viewModel(self, didEncounterError: CameraError.permissionDenied)
-                default:
-                    break
+                    strongSelf.delegate?.viewModel(strongSelf, didEncounterError: CameraError.permissionDenied)
+                default: break
                 }
             }
         }
     }
 
-    /// Stop camera session
     func stopCamera() {
+        LoggingService.info("CVM: stopCamera called.")
         cameraService.stopSession()
         isSessionRunning = false
-        delegate?.viewModelDidStopCamera(self)
+        delegate?.viewModelDidStopCamera(self) // 'self' is fine here
         clearServices()
     }
 
-    /// Resume interrupted session
     func resumeCamera() {
+        LoggingService.info("CVM: resumeCamera called.")
         cameraService.resumeInterruptedSession { [weak self] isSessionRunning in
-            guard let self = self else { return }
-
+            guard let strongSelf = self else { return }
             if isSessionRunning {
-                self.isSessionRunning = true
-                self.delegate?.viewModelDidResumeSession(self)
-                self.configureServicesBasedOnMode()
+                strongSelf.isSessionRunning = true
+                strongSelf.delegate?.viewModelDidResumeSession(strongSelf)
+                LoggingService.info("CVM: resumeCamera - Reconfiguring services.")
+                strongSelf.configureInitialServices()
             }
         }
     }
 
-    /// Toggle between face tracking and segmentation modes
-    func toggleFaceTracking(enabled: Bool) {
-        if isFaceTrackingEnabled == enabled {
-            return // No change
-        }
-
-        isFaceTrackingEnabled = enabled
-        configureServicesBasedOnMode()
-    }
-
-    /// Analyze current frame
     func analyzeCurrentFrame() {
+        LoggingService.info("CVM: analyzeCurrentFrame called.")
         guard let pixelBuffer = currentPixelBuffer,
               let colorInfo = currentColorInfo,
               isFrameQualitySufficientForAnalysis else {
-            delegate?.viewModel(self, didEncounterError: AnalysisError.insufficientQuality)
+            LoggingService.warning("CVM: Insufficient quality/data for analysis.")
+            delegate?.viewModel(self, didEncounterError: AnalysisError.insufficientQuality) // 'self' is fine
             return
         }
-
         classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
     }
 
     // MARK: - Private Methods
+    private func configureSegmentationService() {
+        LoggingService.debug("CVM: Configuring SegmentationService.")
+        guard let modelPath = InferenceConfigurationManager.sharedInstance.model.modelPath else {
+            LoggingService.error("CVM: Segmentation model path is nil.")
+            delegate?.viewModel(self, didEncounterError: NSError(domain: "CameraViewModel", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Segmentation model path is nil."])) // 'self' fine
+            return
+        }
+        segmentationService.configure(with: modelPath)
+    }
 
-    /// Configure services based on the current mode (face tracking or segmentation)
-    private func configureServicesBasedOnMode() {
-        if isFaceTrackingEnabled {
-            // Enable face tracking, disable segmentation
-            segmentationService.clearImageSegmenterService()
-            configureFaceLandmarkerService()
-        } else {
-            // Enable segmentation, disable face tracking
+    private func configureFaceLandmarkerService() {
+        LoggingService.debug("CVM: Configuring FaceLandmarkerService.")
+        if faceLandmarkerService != nil {
             clearFaceLandmarkerService()
-            configureSegmentationService()
+        }
+        faceLandmarkerService = FaceLandmarkerService.liveStreamFaceLandmarkerService(
+            modelPath: Bundle.main.path(forResource: "face_landmarker", ofType: "task"),
+            liveStreamDelegate: self, // 'self' is fine (conformance)
+            delegate: InferenceConfigurationManager.sharedInstance.delegate
+        )
+        if faceLandmarkerService == nil {
+            LoggingService.error("CVM: FAILED to create FaceLandmarkerService.")
         }
     }
 
-    /// Configure segmentation service
-    private func configureSegmentationService() {
-        segmentationService.configure(with: InferenceConfigurationManager.sharedInstance.model.modelPath!)
-    }
-
-    /// Configure face landmarker service
-    private func configureFaceLandmarkerService() {
-        clearFaceLandmarkerService()
-
-        // Create a new face landmarker service
-        faceLandmarkerService = FaceLandmarkerService
-            .liveStreamFaceLandmarkerService(
-                modelPath: Bundle.main.path(forResource: "face_landmarker", ofType: "task"),
-                liveStreamDelegate: self,
-                delegate: InferenceConfigurationManager.sharedInstance.delegate)
-    }
-
-    /// Clear face landmarker service
     private func clearFaceLandmarkerService() {
+        LoggingService.debug("CVM: Clearing FaceLandmarkerService.")
         faceLandmarkerService = nil
-        // Clear landmarks
         lastFaceLandmarks = nil
-        delegate?.viewModel(self, didUpdateFaceLandmarks: nil)
+        delegate?.viewModel(self, didUpdateFaceLandmarks: nil) // 'self' is fine
     }
 
-    /// Clear all services
     private func clearServices() {
+        LoggingService.debug("CVM: Clearing all services.")
         segmentationService.clearImageSegmenterService()
         clearFaceLandmarkerService()
     }
 
-    /// Process current frame with adaptive throttling
     private func processFrame(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            return
-        }
-
-        // Store the current pixel buffer
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         currentPixelBuffer = pixelBuffer
-
-        // Get current time for throttling
+        
         let currentTime = Date().timeIntervalSince1970
-        let timeElapsedSinceLastProcessing = currentTime - lastProcessingTime
-        let shouldProcess = timeElapsedSinceLastProcessing >= processingThrottleInterval
+        guard currentTime - lastProcessingTime >= processingThrottleInterval else { return }
+        lastProcessingTime = currentTime
 
-        if shouldProcess {
-            // Update throttle timestamp
-            lastProcessingTime = currentTime
-            
-            let processingStartTime = CACurrentMediaTime()
-
-            // Process based on current mode
-            if isFaceTrackingEnabled {
-                // Process face landmarks
-                faceLandmarkerService?.detectLandmarksAsync(
-                    sampleBuffer: sampleBuffer,
-                    orientation: orientation,
-                    timeStamps: Int(currentTime * 1000)
-                )
-            } else {
-                // Process segmentation
-                segmentationService.processFrame(
-                    sampleBuffer: sampleBuffer,
-                    orientation: orientation,
-                    timeStamps: Int(currentTime * 1000)
-                )
-            }
-            
-            let processingDuration = CACurrentMediaTime() - processingStartTime
-            lastFrameProcessingDuration = processingDuration
-            updateThrottleInterval(processingTime: processingDuration)
+        frameCount += 1
+        if currentTime - lastFPSUpdateTime >= 1.0 { // Update FPS every second
+            currentFPS = Float(frameCount) / Float(currentTime - lastFPSUpdateTime)
+            frameCount = 0
+            lastFPSUpdateTime = currentTime
+            // Optional: Notify delegate about FPS update if needed elsewhere,
+            // but for debug overlay, direct access from RVC to viewModel.currentFPS is fine.
         }
+
+        faceLandmarkerService?.detectLandmarksAsync(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
+        segmentationService.processFrame(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
     }
     
-    private func updateThrottleInterval(processingTime: TimeInterval) {
-        if processingTime > 0.08 {  // Taking >80ms to process
-            processingThrottleInterval = min(processingThrottleInterval + 0.01, 0.2)
-        } else if processingTime < 0.04 && processingThrottleInterval > 0.05 {  // Fast processing
-            processingThrottleInterval = max(processingThrottleInterval - 0.01, 0.05)
-        }
-        
-        if Int(Date().timeIntervalSince1970 * 10) % 30 == 0 {
-            print("Processing time: \(String(format: "%.1f", processingTime * 1000))ms, Throttle: \(String(format: "%.1f", processingThrottleInterval * 1000))ms")
-        }
-    }
-
-    /// Check if the current frame quality is sufficient for analysis
     private var isFrameQualitySufficientForAnalysis: Bool {
         return currentFrameQualityScore?.isAcceptableForAnalysis ?? false
     }
 
-    /// Check frame for error conditions and provide guidance
     private func checkForErrorConditions() {
-        // Check if a face is detected
+        // The FrameQualityIndicatorView now provides this feedback.
+
         guard currentFaceBoundingBox != nil else {
-            delegate?.viewModel(self, didDisplayWarning: "No face detected. Please center your face in the frame.")
+            // delegate?.viewModel(self, didDisplayWarning: "No face detected. Please center your face in the frame.")
             return
         }
-
-        // Check for quality issues
         if let qualityScore = currentFrameQualityScore {
-            // Check overall quality first
-            if qualityScore.overall < FrameQualityService.minimumQualityScoreForAnalysis {
-                if let feedback = qualityScore.feedbackMessage {
-                    delegate?.viewModel(self, didDisplayWarning: feedback)
-                    return
-                }
+            if !qualityScore.isAcceptableForAnalysis, let feedback = qualityScore.feedbackMessage {
+                // delegate?.viewModel(self, didDisplayWarning: feedback)
+                // No return here, as FrameQualityIndicatorView shows its own comprehensive message.
             }
-
-            // Check brightness issues
+            /*
             if qualityScore.brightness < FrameQualityService.minimumBrightnessScoreForAnalysis {
-                if qualityScore.brightness < 0.3 {
-                    delegate?.viewModel(self, didDisplayWarning: "Too dark. Please move to a brighter area.")
-                } else if qualityScore.brightness > 0.9 {
-                    delegate?.viewModel(self, didDisplayWarning: "Too bright. Please reduce direct light on your face.")
-                } else {
-                    delegate?.viewModel(self, didDisplayWarning: "Poor lighting detected. Please find better lighting.")
-                }
+                // ...
                 return
             }
-
-            // Check face size and position
-            if qualityScore.faceSize < FrameQualityService.minimumFaceSizeScoreForAnalysis {
-                if qualityScore.faceSize < 0.3 {
-                    delegate?.viewModel(self, didDisplayWarning: "Face too small. Please move closer to the camera.")
-                } else {
-                    delegate?.viewModel(self, didDisplayWarning: "Face position issue. Please center your face.")
-                }
-                return
-            }
-
-            // Check position
-            if qualityScore.facePosition < FrameQualityService.minimumFacePositionScoreForAnalysis {
-                delegate?.viewModel(self, didDisplayWarning: "Please center your face in the frame.")
-                return
-            }
-
-            // Check sharpness
-            if qualityScore.sharpness < 0.5 {
-                delegate?.viewModel(self, didDisplayWarning: "Image is blurry. Please hold the device steady.")
-                return
-            }
+            // ... other checks ...
+            */
         }
     }
 }
@@ -312,75 +221,60 @@ class CameraViewModel: NSObject {
 // MARK: - CameraServiceDelegate
 extension CameraViewModel: CameraServiceDelegate {
     func didOutput(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
-        // Process the frame in background queue
         backgroundQueue.async { [weak self] in
             self?.processFrame(sampleBuffer: sampleBuffer, orientation: orientation)
         }
     }
 
     func sessionWasInterrupted(canResumeManually resumeManually: Bool) {
+        LoggingService.warning("CVM: Session interrupted. Can resume manually: \(resumeManually)")
         isSessionRunning = false
-        delegate?.viewModelDidDetectSessionInterruption(self, canResume: resumeManually)
+        delegate?.viewModelDidDetectSessionInterruption(self, canResume: resumeManually) // 'self' fine
         clearServices()
     }
 
     func sessionInterruptionEnded() {
-        delegate?.viewModelDidResumeSession(self)
-        configureServicesBasedOnMode()
+        LoggingService.info("CVM: Session interruption ended.")
+        isSessionRunning = true 
+        delegate?.viewModelDidResumeSession(self) // 'self' fine
+        configureInitialServices()
     }
 
     func didEncounterSessionRuntimeError() {
+        LoggingService.error("CVM: Session runtime error.")
         isSessionRunning = false
-        delegate?.viewModel(self, didEncounterError: CameraError.runtimeError)
+        delegate?.viewModel(self, didEncounterError: CameraError.runtimeError) // 'self' fine
     }
 }
 
 // MARK: - SegmentationServiceDelegate
 extension CameraViewModel: SegmentationServiceDelegate {
     func segmentationService(_ service: SegmentationService, didCompleteSegmentation result: SegmentationResult) {
-        // Update state with segmentation results
         currentColorInfo = result.colorInfo
         currentFaceBoundingBox = result.faceBoundingBox
 
-        // Notify delegate about the new segmented buffer
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let strongSelf = self else { return }
 
-            // Update delegate with segmented buffer
-            self.delegate?.viewModel(self, didUpdateSegmentedBuffer: result.outputPixelBuffer)
-
-            // Update delegate with color information
-            self.delegate?.viewModel(self, didUpdateColorInfo: result.colorInfo)
-
-            // Update UI elements that don't require frame quality evaluation
+            strongSelf.delegate?.viewModel(strongSelf, didUpdateSegmentedBuffer: result.outputPixelBuffer)
+            strongSelf.delegate?.viewModel(strongSelf, didUpdateColorInfo: result.colorInfo)
             
-            if let pixelBuffer = self.currentPixelBuffer {
-                self.backgroundQueue.async {
-                    let defaultFaceBoundingBox = CGRect(x: 0.3, y: 0.2, width: 0.4, height: 0.6)
+            if let pBuffer = strongSelf.currentPixelBuffer {
+                strongSelf.backgroundQueue.async { // strongSelf is captured
+                    let imgSize = CGSize(width: CVPixelBufferGetWidth(pBuffer), height: CVPixelBufferGetHeight(pBuffer))
+                    let qScore: FrameQualityService.QualityScore
+                    if let landmarks = result.faceLandmarks, !landmarks.isEmpty {
+                         qScore = FrameQualityService.evaluateFrameQualityWithLandmarks(pixelBuffer: pBuffer, landmarks: landmarks, imageSize: imgSize)
+                    } else {
+                        let bbox = result.faceBoundingBox ?? CGRect(x: 0.3, y: 0.2, width: 0.4, height: 0.6)
+                        qScore = FrameQualityService.evaluateFrameQuality(pixelBuffer: pBuffer, faceBoundingBox: bbox, imageSize: imgSize)
+                    }
                     
-                    let imageSize = CGSize(
-                        width: CVPixelBufferGetWidth(pixelBuffer),
-                        height: CVPixelBufferGetHeight(pixelBuffer)
-                    )
-                    
-                    let qualityScore = FrameQualityService.evaluateFrameQuality(
-                        pixelBuffer: pixelBuffer,
-                        faceBoundingBox: defaultFaceBoundingBox,
-                        imageSize: imageSize
-                    )
-                    
-                    // Update UI on main thread with results
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self = self else { return }
-                        
-                        // Update quality score
-                        self.currentFrameQualityScore = qualityScore
-                        
-                        // Notify delegate about quality update
-                        self.delegate?.viewModel(self, didUpdateFrameQuality: qualityScore)
-                        
-                        // Check for error conditions
-                        self.checkForErrorConditions()
+                    DispatchQueue.main.async { [weak self] in // Re-capture self weakly
+                        guard let innerSelf = self else { return }
+                        innerSelf.currentFrameQualityScore = qScore
+                        innerSelf.delegate?.viewModel(innerSelf, didUpdateFrameQuality: qScore)
+                        innerSelf.checkForErrorConditions()
                     }
                 }
             }
@@ -388,69 +282,67 @@ extension CameraViewModel: SegmentationServiceDelegate {
     }
 
     func segmentationService(_ service: SegmentationService, didFailWithError error: Error) {
-        delegate?.viewModel(self, didEncounterError: error)
+        LoggingService.error("CVM: Segmentation error: \(error.localizedDescription)")
+        DispatchQueue.main.async { [weak self] in // Ensure delegate call is on main thread
+            guard let strongSelf = self else { return }
+            strongSelf.delegate?.viewModel(strongSelf, didEncounterError: error)
+        }
     }
 }
 
 // MARK: - ClassificationServiceDelegate
 extension CameraViewModel: ClassificationServiceDelegate {
-    func classificationService(_ service: ClassificationService, didCompleteAnalysis result: AnalysisResult) {
-        // Forward the analysis result to the view controller
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-
-            // Raise a custom notification with the result
-            NotificationCenter.default.post(
-                name: Notification.Name("AnalysisResultReady"),
-                object: self,
-                userInfo: ["result": result]
-            )
-        }
+  func classificationService(_ service: ClassificationService, didCompleteAnalysis analysisResult: AnalysisResult) {
+    LoggingService.info("CVM: Classification complete.")
+    DispatchQueue.main.async { [weak self] in
+      guard let strongSelf = self else { return }
+      NotificationCenter.default.post(name: Notification.Name("AnalysisResultReady"), object: strongSelf, userInfo: ["result": analysisResult])
     }
+  }
 
-    func classificationService(_ service: ClassificationService, didFailWithError error: Error) {
-        delegate?.viewModel(self, didEncounterError: error)
+  func classificationService(_ service: ClassificationService, didFailWithError error: Error) {
+    LoggingService.error("CVM: Classification error: \(error.localizedDescription)")
+    DispatchQueue.main.async { [weak self] in // Ensure delegate call is on main thread
+        guard let strongSelf = self else { return }
+        strongSelf.delegate?.viewModel(strongSelf, didEncounterError: error)
     }
+  }
 }
 
 // MARK: - FaceLandmarkerServiceLiveStreamDelegate
 extension CameraViewModel: FaceLandmarkerServiceLiveStreamDelegate {
-    func faceLandmarkerService(_ faceLandmarkerService: FaceLandmarkerService, didFinishLandmarkDetection result: FaceLandmarkerResultBundle?, error: Error?) {
-        if let error = error {
-            delegate?.viewModel(self, didEncounterError: error)
+    func faceLandmarkerService(_ service: FaceLandmarkerService, didFinishLandmarkDetection result: FaceLandmarkerResultBundle?, error: Error?) {
+        if let e = error {
+            LoggingService.error("CVM: Landmark detection error: \(e.localizedDescription)")
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                strongSelf.delegate?.viewModel(strongSelf, didEncounterError: e)
+            }
             return
         }
 
-        // Only process if face tracking is still enabled
-        guard isFaceTrackingEnabled else { return }
-
-        // Process the landmarks if available
-        if let faceLandmarkerResults = result?.faceLandmarkerResults,
-           let firstResult = faceLandmarkerResults.first,
-           let faceLandmarkerResult = firstResult,
-           !faceLandmarkerResult.faceLandmarks.isEmpty,
-           let landmarks = faceLandmarkerResult.faceLandmarks.first {
-
-            // Update landmarks
-            lastFaceLandmarks = landmarks
-
-            // Update UI on main thread
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-
-                // If we have a valid pixel buffer, update preview
-                if let pixelBuffer = self.currentPixelBuffer {
-                    // Update the preview with the original camera frame
-                    self.delegate?.viewModel(self, didUpdateSegmentedBuffer: pixelBuffer)
-
-                    // Notify about landmarks update
-                    self.delegate?.viewModel(self, didUpdateFaceLandmarks: landmarks)
-                }
-            }
-        } else {
-            // No landmarks detected
+        guard let faceLandmarkerResults = result?.faceLandmarkerResults, // Ensure results array exists
+              let firstFaceLandmarkerResult = faceLandmarkerResults.first, // Get the first result (optional)
+              let actualLandmarkResult = firstFaceLandmarkerResult, // Ensure it's not nil (already covered by previous 'first', but good for clarity if needed)
+              !actualLandmarkResult.faceLandmarks.isEmpty, // Ensure landmarks array is not empty
+              let landmarksData = actualLandmarkResult.faceLandmarks.first // Get the first set of landmarks
+        else {
             lastFaceLandmarks = nil
-            delegate?.viewModel(self, didUpdateFaceLandmarks: nil)
+            segmentationService.updateFaceLandmarks(nil)
+            DispatchQueue.main.async { [weak self] in
+                // Ensure self is non-nil before force-unwrapping or calling delegate
+                guard let strongSelf = self else { return }
+                // The previous force unwrap here was risky, let's avoid it.
+                strongSelf.delegate?.viewModel(strongSelf, didUpdateFaceLandmarks: nil)
+            }
+            return
+        }
+
+        lastFaceLandmarks = landmarksData
+        segmentationService.updateFaceLandmarks(landmarksData)
+        DispatchQueue.main.async { [weak self] in
+             guard let strongSelf = self else { return }
+            strongSelf.delegate?.viewModel(strongSelf, didUpdateFaceLandmarks: landmarksData)
         }
     }
 }
@@ -464,4 +356,4 @@ enum CameraError: Error {
 
 enum AnalysisError: Error {
     case insufficientQuality
-}        
+}

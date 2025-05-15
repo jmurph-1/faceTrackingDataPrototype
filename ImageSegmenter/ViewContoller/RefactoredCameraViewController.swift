@@ -43,13 +43,10 @@ class RefactoredCameraViewController: UIViewController {
         brightness: 0.0,
         sharpness: 0.0
     ))
+    private var frameQualityHostingController: UIHostingController<FrameQualityIndicatorView>?
     private let analyzeButton = UIButton(type: .system)
 
-    // Face landmark detection toggle
-    private let faceTrackingLabel = UILabel()
-    private let faceTrackingSwitch = UISwitch()
-
-    // UI overlay for displaying landmarks 
+    // UI overlay for displaying landmarks
     private var landmarksOverlayView: UIView?
     private var landmarkDots: [UIView] = []
 
@@ -61,6 +58,8 @@ class RefactoredCameraViewController: UIViewController {
     private let viewModel = CameraViewModel()
     private let analysisViewModel = AnalysisResultViewModel()
     private var toastService: ToastService!
+    var shouldAutoStartAnalysis = false // Default is false
+    private var isAnalyzeButtonPressed = false
 
     // Delegate to report inference results
     weak var inferenceResultDeliveryDelegate: InferenceResultDeliveryDelegate?
@@ -73,7 +72,6 @@ class RefactoredCameraViewController: UIViewController {
         // Setup UI
         setupColorLabels()
         setupFrameQualityUI()
-        setupFaceTrackingControls()
         setupDebugOverlay()
         setupGestures()
 
@@ -82,6 +80,7 @@ class RefactoredCameraViewController: UIViewController {
 
         // Configure view model
         viewModel.delegate = self
+        print("RVC: viewDidLoad - self.shouldAutoStartAnalysis is: \(self.shouldAutoStartAnalysis)")
 
         // Register for app lifecycle notifications
         registerForAppLifecycleNotifications()
@@ -89,9 +88,23 @@ class RefactoredCameraViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print("RVC: viewWillAppear - self.shouldAutoStartAnalysis is \(self.shouldAutoStartAnalysis)")
+        // The camera will be started by RootViewController's call to 
+        // self.prepareAndStartCameraIfNeeded() after the transition,
+        // or by other explicit actions like resuming from interruption.
+    }
 
-        // Start camera when view appears
-        viewModel.startCamera()
+    func prepareAndStartCameraIfNeeded() {
+        print("RVC: prepareAndStartCameraIfNeeded called. shouldAutoStartAnalysis = \(self.shouldAutoStartAnalysis)")
+        if self.shouldAutoStartAnalysis {
+            print("RVC: prepareAndStartCameraIfNeeded - Calling viewModel.startCamera()")
+            viewModel.startCamera()
+        }
+    }
+
+    func stopCameraProcessing() {
+        print("RVC: stopCameraProcessing called.")
+        viewModel.stopCamera()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -113,14 +126,51 @@ class RefactoredCameraViewController: UIViewController {
         viewModel.resumeCamera()
     }
 
-    @objc private func faceTrackingSwitchChanged(_ sender: UISwitch) {
-        viewModel.toggleFaceTracking(enabled: sender.isOn)
-
-        // Update UI based on mode
-        updateUIForTrackingMode(isFaceTrackingEnabled: sender.isOn)
+    @objc private func handleThreeTap() {
+        // Toggle debug overlay visibility
+        isDebugOverlayVisible.toggle()
+        debugOverlayHostingController?.view.isHidden = !isDebugOverlayVisible
+        print("RVC: handleThreeTap - isDebugOverlayVisible: \(isDebugOverlayVisible), debugOverlay.isHidden: \(debugOverlayHostingController?.view.isHidden ?? true)")
     }
 
     @objc private func analyzeButtonTapped() {
+        print("ANALYZE_FLOW: analyzeButtonTapped called, isAnalyzeButtonPressed=\(isAnalyzeButtonPressed)")
+
+        if isAnalyzeButtonPressed {
+            print("ANALYZE_FLOW: Button already pressed, ignoring tap")
+            return
+        }
+
+        print("ANALYZE_FLOW: Setting isAnalyzeButtonPressed=true")
+        isAnalyzeButtonPressed = true
+
+        // Ensure button state is reset even if we return early
+        let resetButtonState = {
+            DispatchQueue.main.async {
+                print("ANALYZE_FLOW: Resetting isAnalyzeButtonPressed=false")
+                self.isAnalyzeButtonPressed = false
+                // Also remove loading indicator if it was added
+                for subview in self.view.subviews {
+                    if let indicator = subview as? UIActivityIndicatorView {
+                        indicator.removeFromSuperview()
+                    }
+                }
+            }
+        }
+
+        guard let currentQuality = viewModel.currentFrameQualityScore, currentQuality.isAcceptableForAnalysis else {
+            print("ANALYZE_FLOW: Frame quality insufficient, showing alert")
+            let alert = UIAlertController(
+                title: "Insufficient Frame Quality",
+                message: "Please adjust your position to improve frame quality before analyzing. Current overall score: \(String(format: "%.2f", viewModel.currentFrameQualityScore?.overall ?? 0))",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true)
+            resetButtonState()
+            return
+        }
+
         // Show loading indicator
         let loadingIndicator = UIActivityIndicatorView(style: .large)
         loadingIndicator.center = view.center
@@ -128,19 +178,41 @@ class RefactoredCameraViewController: UIViewController {
         view.addSubview(loadingIndicator)
 
         // Analyze current frame using view model
+        print("ANALYZE_FLOW: Calling analyzeCurrentFrame on ViewModel")
         viewModel.analyzeCurrentFrame()
-    }
+        // The ViewModel will post a notification "AnalysisResultReady"
+        // and handle removing the loading indicator upon receiving that notification or error.
+        // However, we should ensure the button state is reset.
+        // The loading indicator removal is handled in `handleAnalysisResultReady` or if an error occurs.
+        
+        // Reset button state after a short delay to allow processing to start
+        // The view model's `analyzeCurrentFrame` is asynchronous in its effect (notification)
+        // So, we reset the button state. The loading indicator is handled by `handleAnalysisResultReady`
+        // or by the error handler in the view model delegate.
+        // For now, let's keep it simple and reset button state.
+        // We'll rely on handleAnalysisResultReady to remove the spinner.
+        // The `resetButtonState` call already handles removing the spinner if it's still there.
+        // No, the viewModel.analyzeCurrentFrame() is synchronous in its internal call to classificationService.analyzeFrame.
+        // The result comes back via delegate. So, we only reset `isAnalyzeButtonPressed`.
+        // The spinner removal will be handled by `handleAnalysisResultReady` or error delegate.
 
-    @objc private func handleThreeTap() {
-        // Toggle debug overlay visibility
-        isDebugOverlayVisible.toggle()
-        debugOverlayHostingController?.view.isHidden = !isDebugOverlayVisible
+        // Reset button state. Spinner removal is handled by other delegate methods.
+        DispatchQueue.main.async {
+            print("ANALYZE_FLOW: Analysis initiated, resetting button state (isAnalyzeButtonPressed=false)")
+            self.isAnalyzeButtonPressed = false
+        }
     }
 
     @objc private func handleAppWillEnterForeground() {
-        // Reinitialize camera when app returns to foreground
-        viewModel.stopCamera()
-        viewModel.startCamera()
+        print("RVC: handleAppWillEnterForeground called. shouldAutoStartAnalysis: \(shouldAutoStartAnalysis)")
+        viewModel.stopCamera() // Stop any existing session first
+
+        if shouldAutoStartAnalysis && view.window != nil { // Check if view is part of a window hierarchy
+            print("RVC: handleAppWillEnterForeground - Starting camera because shouldAutoStartAnalysis is true and view is in window.")
+            viewModel.startCamera()
+        } else {
+            print("RVC: handleAppWillEnterForeground - Not starting camera. shouldAutoStartAnalysis: \(shouldAutoStartAnalysis), view.window: \(String(describing: view.window))")
+        }
     }
 
     @objc private func handleAnalysisResultReady(_ notification: Notification) {
@@ -193,38 +265,6 @@ class RefactoredCameraViewController: UIViewController {
 
     // setupFrameQualityUI method moved to extension
 
-    private func setupFaceTrackingControls() {
-        // Configure face tracking label
-        faceTrackingLabel.translatesAutoresizingMaskIntoConstraints = false
-        faceTrackingLabel.textColor = .white
-        faceTrackingLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        faceTrackingLabel.textAlignment = .center
-        faceTrackingLabel.layer.cornerRadius = 5
-        faceTrackingLabel.clipsToBounds = true
-        faceTrackingLabel.font = UIFont.systemFont(ofSize: 12)
-        faceTrackingLabel.text = "Face Tracking:"
-
-        // Configure face tracking switch
-        faceTrackingSwitch.translatesAutoresizingMaskIntoConstraints = false
-        faceTrackingSwitch.isOn = false // Default to segmentation mode
-        faceTrackingSwitch.addTarget(self, action: #selector(faceTrackingSwitchChanged(_:)), for: .valueChanged)
-
-        // Add to view
-        view.addSubview(faceTrackingLabel)
-        view.addSubview(faceTrackingSwitch)
-
-        // Position controls in top right corner
-        NSLayoutConstraint.activate([
-            faceTrackingLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -60),
-            faceTrackingLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            faceTrackingLabel.widthAnchor.constraint(equalToConstant: 100),
-            faceTrackingLabel.heightAnchor.constraint(equalToConstant: 30),
-
-            faceTrackingSwitch.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
-            faceTrackingSwitch.centerYAnchor.constraint(equalTo: faceTrackingLabel.centerYAnchor)
-        ])
-    }
-
     private func setupDebugOverlay() {
         // Create debug overlay view
         let debugOverlayView = DebugOverlayView(
@@ -239,19 +279,44 @@ class RefactoredCameraViewController: UIViewController {
         debugOverlayHostingController = UIHostingController(rootView: debugOverlayView)
         if let hostingController = debugOverlayHostingController {
             hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-            hostingController.view.backgroundColor = .clear
+            hostingController.view.backgroundColor = .clear // Important for transparency
 
             // Add to view hierarchy but initially hidden
             addChild(hostingController)
             view.addSubview(hostingController.view)
             hostingController.didMove(toParent: self)
 
-            // Position debug overlay with top padding
+            hostingController.view.isUserInteractionEnabled = true
+
+            // Ensure frameQualityHostingController.view is referenced safely if it might not be set up yet
+            // However, setupFrameQualityUI is called before setupDebugOverlay in viewDidLoad.
+            
+            let bottomAnchorConstraint: NSLayoutConstraint
+            if let frameQualityView = frameQualityHostingController?.view {
+                bottomAnchorConstraint = hostingController.view.bottomAnchor.constraint(lessThanOrEqualTo: frameQualityView.topAnchor, constant: -10)
+            } else {
+                // Fallback if frameQualityView is not available, go up from safe area bottom
+                bottomAnchorConstraint = hostingController.view.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -150) // Adjust constant as needed
+            }
+
+            // Define content hugging and compression resistance priorities.
+            // We want the hosting view to hug its content vertically.
+            hostingController.view.setContentHuggingPriority(.required, for: .vertical)
+            hostingController.view.setContentCompressionResistancePriority(.required, for: .vertical)
+            // For horizontal, it can expand.
+            hostingController.view.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
             NSLayoutConstraint.activate([
-                hostingController.view.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-                hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                hostingController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+                hostingController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+                hostingController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10), // This will define its width
+                // No explicit bottom anchor that defines height, let intrinsic content size try to dictate it,
+                // but it MUST NOT go below the frameQualityView.
+                // The 'bottomAnchorConstraint' (lessThanOrEqualTo) acts as an upper limit for its bottom edge.
+                // An explicit height constraint might be needed if intrinsic sizing is ambiguous.
+                // For now, let's rely on the SwiftUI view's intrinsic size primarily for height.
+                // The `lessThanOrEqualTo` constraint for the bottom anchor will prevent it from growing indefinitely downwards.
+                bottomAnchorConstraint // This is important to cap its maximum extent
             ])
 
             // Initially hidden
@@ -262,8 +327,7 @@ class RefactoredCameraViewController: UIViewController {
     private func setupGestures() {
         // Add 3-finger tap gesture for debug overlay
         let threeTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleThreeTap))
-        threeTapGesture.numberOfTouchesRequired = 3
-        threeTapGesture.numberOfTapsRequired = 1
+        threeTapGesture.numberOfTapsRequired = 3
         view.addGestureRecognizer(threeTapGesture)
     }
 
@@ -287,27 +351,13 @@ class RefactoredCameraViewController: UIViewController {
 
     // MARK: - UI Update Methods
 
+    // Landmark overlay visibility will be handled directly or tied to debug overlay.
+    /*
     private func updateUIForTrackingMode(isFaceTrackingEnabled: Bool) {
-        if isFaceTrackingEnabled {
-            // Face tracking mode - hide segmentation UI, show landmarks UI
-            skinColorLabel.isHidden = true
-            hairColorLabel.isHidden = true
-
-            // Create landmarks overlay if needed
-            if landmarksOverlayView == nil {
-                setupLandmarksOverlayView()
-            }
-            landmarksOverlayView?.isHidden = false
-        } else {
-            // Segmentation mode - show color labels, hide landmarks
-            skinColorLabel.isHidden = false
-            hairColorLabel.isHidden = false
-            landmarksOverlayView?.isHidden = true
-
-            // Clear landmarks
-            clearLandmarksOverlay()
-        }
+       landmarksOverlayView?.isHidden = true // Always hide
+       clearLandmarksOverlay()
     }
+    */
 
     private func updateColorDisplay(_ colorInfo: MultiClassSegmentedImageRenderer.ColorInfo) {
         // Update skin color label
@@ -343,11 +393,8 @@ class RefactoredCameraViewController: UIViewController {
         var deltaEs: [SeasonClassifier.Season: CGFloat]?
 
         if let colorInfo = colorInfo {
-            // Convert to Lab
             skinLab = ColorConverters.colorToLab(colorInfo.skinColor)
             hairLab = ColorConverters.colorToLab(colorInfo.hairColor)
-
-            // Calculate delta-E to each season
             if let skinColorLab = skinLab {
                 deltaEs = SeasonClassifier.calculateDeltaEToAllSeasons(skinLab: skinColorLab)
             }
@@ -355,14 +402,13 @@ class RefactoredCameraViewController: UIViewController {
 
         // Create updated overlay view
         let updatedOverlayView = DebugOverlayView(
-            fps: fps,
+            fps: viewModel.currentFPS,
             skinColorLab: skinLab,
             hairColorLab: hairLab,
             deltaEToSeasons: deltaEs,
             qualityScore: qualityScore
         )
 
-        // Update the hosting controller's root view
         hostingController.rootView = updatedOverlayView
     }
 
@@ -516,7 +562,9 @@ private extension RefactoredCameraViewController {
 
     func setupFrameQualityUI() {
         // Configure frame quality view
-        let frameQualityHostingController = UIHostingController(rootView: frameQualityView)
+        self.frameQualityHostingController = UIHostingController(rootView: frameQualityView)
+        guard let frameQualityHostingController = self.frameQualityHostingController else { return }
+
         frameQualityHostingController.view.translatesAutoresizingMaskIntoConstraints = false
         frameQualityHostingController.view.backgroundColor = .clear
 
@@ -568,12 +616,8 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            // Use the UIHostingController view hierarchy to find and update the view
-            for child in self.children {
-                if let hostingController = child as? UIHostingController<FrameQualityIndicatorView> {
-                    hostingController.rootView = updatedFrameQualityView
-                }
-            }
+            // Update the hosting controller's root view directly
+            self.frameQualityHostingController?.rootView = updatedFrameQualityView
 
             // Update analyze button state
             self.updateAnalyzeButtonState(isEnabled: quality.isAcceptableForAnalysis)
@@ -581,7 +625,7 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
             // Update debug overlay
             if self.isDebugOverlayVisible {
                 self.updateDebugOverlay(
-                    fps: 0, // FPS will be updated separately
+                    fps: viewModel.currentFPS,
                     colorInfo: viewModel.currentColorInfo,
                     qualityScore: quality
                 )
@@ -590,6 +634,7 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
     }
 
     func viewModel(_ viewModel: CameraViewModel, didUpdateSegmentedBuffer buffer: CVPixelBuffer) {
+        print("RVC: CameraViewModel didUpdateSegmentedBuffer. Assigning to previewView.")
         // Update preview with segmented buffer
         DispatchQueue.main.async { [weak self] in
             self?.previewView.pixelBuffer = buffer
@@ -604,15 +649,21 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
     }
 
     func viewModel(_ viewModel: CameraViewModel, didUpdateFaceLandmarks landmarks: [NormalizedLandmark]?) {
-        // Update landmarks overlay
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            if let landmarks = landmarks {
-                // Show landmarks
+            // Ensure the overlay view is set up if it's the first time.
+            if self.landmarksOverlayView == nil {
+                self.setupLandmarksOverlayView()
+            }
+            // Make sure the overlay is visible.
+            // We can decide later if this should be tied to the debug overlay's visibility.
+            // For now, let's make it always visible if landmarks are processed.
+            self.landmarksOverlayView?.isHidden = false
+
+            if let landmarks = landmarks, !landmarks.isEmpty {
                 self.updateLandmarksOverlay(with: landmarks)
             } else {
-                // Clear landmarks
                 self.clearLandmarksOverlay()
             }
         }
