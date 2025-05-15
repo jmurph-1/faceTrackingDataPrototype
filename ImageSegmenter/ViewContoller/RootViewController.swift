@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import UIKit
+import SwiftUI
+//import ImageSegmenter.Views
 
 protocol InferenceResultDeliveryDelegate: AnyObject {
   func didPerformInference(result: ResultBundle?)
@@ -26,18 +28,23 @@ class RootViewController: UIViewController {
   
   // MARK: Constants
   private struct Constants {
-    static let cameraViewControllerStoryBoardId = "CAMERA_VIEW_CONTROLLER"
+    static let refactoredCameraViewControllerStoryBoardId = "REFACTORED_CAMERA_VIEW_CONTROLLER" // Ensure this ID is set in your Storyboard for RefactoredCameraViewController
     static let storyBoardName = "Main"
   }
 
   // MARK: Controllers that manage functionality
-  private var cameraViewController: CameraViewController?
+  private var refactoredCameraViewController: RefactoredCameraViewController?
+  private var landingPageViewController: UIHostingController<LandingPageView>?
+  private var isShowingLandingPage = true
 
   // MARK: View Handling Methods
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    setupCameraViewController()
+    // Setup camera view controller but don't show it yet
+    setupRefactoredCameraViewController()
+    
+    setupLandingPageViewController()
     
     // Configure default settings
     // InferenceConfigurationManager.sharedInstance is already initialized with defaults
@@ -48,16 +55,17 @@ class RootViewController: UIViewController {
   }
 
   // MARK: Private Methods
-  private func setupCameraViewController() {
+  private func setupRefactoredCameraViewController() {
     guard let viewController = UIStoryboard(
       name: Constants.storyBoardName, bundle: .main)
       .instantiateViewController(
-        withIdentifier: Constants.cameraViewControllerStoryBoardId) as? CameraViewController else {
+        withIdentifier: Constants.refactoredCameraViewControllerStoryBoardId) as? RefactoredCameraViewController else {
+      print("Error: Could not instantiate RefactoredCameraViewController from storyboard. Make sure the Storyboard ID is correct.")
       return
     }
 
-    viewController.inferenceResultDeliveryDelegate = self
-    cameraViewController = viewController
+    viewController.inferenceResultDeliveryDelegate = self 
+    refactoredCameraViewController = viewController
     
     // Add camera view controller to container view
     addChild(viewController)
@@ -73,6 +81,56 @@ class RootViewController: UIViewController {
     ])
     
     viewController.didMove(toParent: self)
+  }
+  
+  private func setupLandingPageViewController() {
+    let landingPageView = LandingPageView(onAnalyzeButtonTapped: { [weak self] in
+      self?.showCameraView()
+    })
+    
+    let hostingController = UIHostingController(rootView: landingPageView)
+    landingPageViewController = hostingController
+    
+    // Add landing page view controller to container view
+    addChild(hostingController)
+    hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+    tabBarContainerView.addSubview(hostingController.view)
+    
+    // Setup constraints
+    NSLayoutConstraint.activate([
+      hostingController.view.leadingAnchor.constraint(equalTo: tabBarContainerView.leadingAnchor),
+      hostingController.view.trailingAnchor.constraint(equalTo: tabBarContainerView.trailingAnchor),
+      hostingController.view.topAnchor.constraint(equalTo: tabBarContainerView.topAnchor),
+      hostingController.view.bottomAnchor.constraint(equalTo: tabBarContainerView.bottomAnchor)
+    ])
+    
+    hostingController.didMove(toParent: self)
+    
+    refactoredCameraViewController?.view.isHidden = true
+  }
+  
+  private func showCameraView() {
+    refactoredCameraViewController?.shouldAutoStartAnalysis = true
+    
+    UIView.transition(with: tabBarContainerView, duration: 0.3, options: .transitionCrossDissolve) { [weak self] in
+      self?.landingPageViewController?.view.isHidden = true
+      self?.refactoredCameraViewController?.view.isHidden = false
+      self?.isShowingLandingPage = false
+    } completion: { [weak self] _ in
+        print("RootVC: Transition to camera view completed. Calling prepareAndStartCameraIfNeeded.")
+        self?.refactoredCameraViewController?.prepareAndStartCameraIfNeeded()
+    }
+  }
+  
+  private func showLandingPage() {
+    UIView.transition(with: tabBarContainerView, duration: 0.3, options: .transitionCrossDissolve) { [weak self] in
+      self?.landingPageViewController?.view.isHidden = false
+      self?.refactoredCameraViewController?.view.isHidden = true
+      self?.isShowingLandingPage = true
+    } completion: { [weak self] _ in
+        print("RootVC: Transition to landing page completed. Stopping camera.")
+        self?.refactoredCameraViewController?.stopCameraProcessing()
+    }
   }
 }
 

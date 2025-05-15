@@ -50,28 +50,40 @@ class ImageSegmenterService: NSObject {
   private init?(modelPath: String?,
                 runningMode: RunningMode,
                 delegate: Delegate) {
-    guard let modelPath = modelPath else { return nil }
+    print("ImageSegmenterService: init? called with modelPath: \(modelPath ?? "nil")")
+    guard let modelPath = modelPath else {
+        print("ImageSegmenterService: init? - modelPath is nil. Returning nil from initializer.")
+        return nil
+    }
     self.modelPath = modelPath
     self.runningMode = runningMode
     self.delegate = delegate
     super.init()
+    print("ImageSegmenterService: init? - Properties set. ModelPath: \(self.modelPath). Calling createImageSegmenter().")
 
     createImageSegmenter()
+    if self.imageSegmenter == nil {
+        print("ImageSegmenterService: init? - WARNING: createImageSegmenter() finished, but self.imageSegmenter is still nil. The MediaPipe ImageSegmenter might have failed to initialize.")
+        // Though the init doesn't return nil here, this is a critical state.
+    }
   }
 
   private func createImageSegmenter() {
+    print("ImageSegmenterService: createImageSegmenter() called. ModelPath for options: \(self.modelPath)")
     let imageSegmenterOptions = ImageSegmenterOptions()
     imageSegmenterOptions.runningMode = runningMode
     imageSegmenterOptions.shouldOutputCategoryMask = true
-    imageSegmenterOptions.baseOptions.modelAssetPath = modelPath
+    imageSegmenterOptions.baseOptions.modelAssetPath = self.modelPath 
     imageSegmenterOptions.baseOptions.delegate = self.delegate
     if runningMode == .liveStream {
       imageSegmenterOptions.imageSegmenterLiveStreamDelegate = self
     }
     do {
       imageSegmenter = try ImageSegmenter(options: imageSegmenterOptions)
+      print("ImageSegmenterService: createImageSegmenter - Successfully created MediaPipe ImageSegmenter.")
     } catch {
-      print(error)
+      print("ImageSegmenterService: createImageSegmenter - FAILED to create MediaPipe ImageSegmenter. Error: \(error)")
+      // self.imageSegmenter will remain nil
     }
   }
 
@@ -83,6 +95,12 @@ class ImageSegmenterService: NSObject {
         modelPath: modelPath,
         runningMode: .video,
       delegate: delegate)
+      print("ImageSegmenterService: videoImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
+      if imageSegmenterService == nil {
+          print("ImageSegmenterService: videoImageSegmenterService - ImageSegmenterService(init?) returned nil.")
+      } else {
+          print("ImageSegmenterService: videoImageSegmenterService - ImageSegmenterService(init?) succeeded.")
+      }
       return imageSegmenterService
     }
 
@@ -90,10 +108,16 @@ class ImageSegmenterService: NSObject {
     modelPath: String?,
     liveStreamDelegate: ImageSegmenterServiceLiveStreamDelegate?,
     delegate: Delegate) -> ImageSegmenterService? {
+      print("ImageSegmenterService: liveStreamImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
       let imageSegmenterService = ImageSegmenterService(
         modelPath: modelPath,
         runningMode: .liveStream,
       delegate: delegate)
+      if imageSegmenterService == nil {
+          print("ImageSegmenterService: liveStreamImageSegmenterService - ImageSegmenterService(init?) returned nil.")
+      } else {
+          print("ImageSegmenterService: liveStreamImageSegmenterService - ImageSegmenterService(init?) succeeded. Assigning liveStreamDelegate.")
+      }
       imageSegmenterService?.liveStreamDelegate = liveStreamDelegate
 
       return imageSegmenterService
@@ -106,7 +130,12 @@ class ImageSegmenterService: NSObject {
         modelPath: modelPath,
         runningMode: .image,
       delegate: delegate)
-
+      print("ImageSegmenterService: stillImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
+      if imageSegmenterService == nil {
+          print("ImageSegmenterService: stillImageSegmenterService - ImageSegmenterService(init?) returned nil.")
+      } else {
+          print("ImageSegmenterService: stillImageSegmenterService - ImageSegmenterService(init?) succeeded.")
+      }
       return imageSegmenterService
     }
 
