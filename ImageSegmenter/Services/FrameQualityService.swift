@@ -367,7 +367,9 @@ class FrameQualityService {
     /// - Returns: Quality score result
     static var enableFrameValidation = true
     
-    static let sharpnessValidationThreshold: Float = 0.14
+    static let sharpnessValidationThreshold: Float = 0.07
+    
+    static let validationFramesInfo = "Validation frames are saved to the app's Documents directory. Access them in Xcode 16.3 via: File > Devices and Simulators > [Your Device] > Files > [App Name]"
     
     private static func saveFrameForValidation(pixelBuffer: CVPixelBuffer, sharpnessScore: Float) {
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)

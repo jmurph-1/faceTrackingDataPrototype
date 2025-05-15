@@ -976,12 +976,18 @@ extension CameraViewController {
     }
 
     private func resumeAllProcessing() {
+        print("ANALYZE_FLOW: Resuming all processing")
         cameraService.startLiveCameraSession { _ in }
         initializeImageSegmenterServiceOnSessionResumption()
         initializeFaceLandmarkerServiceOnSessionResumption()
         
+        print("ANALYZE_FLOW: Resetting delegates")
+        segmentationService.delegate = self
+        classificationService.delegate = self
+        
         // Ensure UI components are visible when processing resumes
         previewView.isHidden = false
+        print("ANALYZE_FLOW: All processing resumed")
     }
 }
 
