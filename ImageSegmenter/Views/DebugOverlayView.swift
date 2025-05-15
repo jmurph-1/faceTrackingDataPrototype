@@ -93,6 +93,8 @@ struct DebugOverlayView: View {
 
                     // Quality scores
                     qualitySection()
+                    
+                    validationFramesSection()
                 }
                 .padding(8)
                 .background(Color.black.opacity(0.7))
@@ -282,6 +284,39 @@ struct DebugOverlayView: View {
             return .orange
         case .winter:
             return .purple
+        }
+    }
+    
+    /// Section for validation frames export
+    private func validationFramesSection() -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("VALIDATION FRAMES")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(.gray)
+            
+            HStack {
+                Text("Frames captured: \(FrameQualityService.savedValidationFrames.count)")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                Button(action: {
+                    FrameQualityService.exportAllValidationFrames()
+                }) {
+                    Text("Export to Photos")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.yellow)
+                        .cornerRadius(4)
+                }
+            }
+            
+            Text("Frames with sharpness > \(String(format: "%.2f", FrameQualityService.sharpnessValidationThreshold)) are saved automatically")
+                .font(.system(size: 8))
+                .foregroundColor(.gray)
         }
     }
 }

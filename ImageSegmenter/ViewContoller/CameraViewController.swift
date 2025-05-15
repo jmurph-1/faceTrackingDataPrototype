@@ -575,14 +575,7 @@ class CameraViewController: UIViewController {
           print("Retrying analysis, services reinitialized.")
           
           self?.isAnalyzeButtonPressed = false
-          
-          DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            guard let self = self else { return }
-            if !self.isAnalyzeButtonPressed {
-              self.analyzeButtonTapped()
-              print("Analyze button tapped after retry.")
-            }
-          }
+          print("ANALYZE_FLOW: Retry completed, waiting for user to tap analyze button")
         },
         onSeeDetails: { 
           print("See details tapped")

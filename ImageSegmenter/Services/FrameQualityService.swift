@@ -369,7 +369,9 @@ class FrameQualityService {
     
     static let sharpnessValidationThreshold: Float = 0.07
     
-    static let validationFramesInfo = "Validation frames are saved to the app's Documents directory. Access them in Xcode 16.3 via: File > Devices and Simulators > [Your Device] > Files > [App Name]"
+    static let validationFramesInfo = "Validation frames are saved to the app's Documents directory and can be accessed via the 'Export Validation Frames' button in the debug overlay."
+    
+    static var savedValidationFrames: [UIImage] = []
     
     private static func saveFrameForValidation(pixelBuffer: CVPixelBuffer, sharpnessScore: Float) {
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
@@ -377,6 +379,8 @@ class FrameQualityService {
         guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
         
         let uiImage = UIImage(cgImage: cgImage)
+        
+        savedValidationFrames.append(uiImage)
         
         // Create a unique filename with timestamp and sharpness score
         let timestamp = Int(Date().timeIntervalSince1970)
@@ -390,9 +394,20 @@ class FrameQualityService {
             do {
                 try data.write(to: fileURL)
                 print("Frame saved for validation: \(filename)")
+                
+                UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
+                print("Frame also saved to Photos album")
             } catch {
                 print("Error saving frame for validation: \(error)")
             }
+        }
+    }
+    
+    static func exportAllValidationFrames() {
+        print("Exporting \(savedValidationFrames.count) validation frames to Photos album")
+        for (index, image) in savedValidationFrames.enumerated() {
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+            print("Exported validation frame \(index+1)/\(savedValidationFrames.count)")
         }
     }
     
