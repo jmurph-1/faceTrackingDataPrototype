@@ -10,29 +10,18 @@ class SeasonViewModel: ObservableObject {
         self.seasonName = seasonName
         loadSeason()
     }
-
+    
     func loadSeason() {
         print("SeasonViewModel: Attempting to load file for season '\(self.seasonName)' using filename: '\(self.seasonName).json'")
-
-        // This assumes the JSON files are at the root of the bundle resources.
-        guard let url = Bundle.main.url(forResource: self.seasonName, withExtension: "json") else {
-            // If still not found, log and then try with the subdirectory as a fallback for debugging
-            print("Season JSON file not found for: '\(self.seasonName).json' at bundle root. Trying 'Seasons' subdirectory...")
-            
-            guard let urlWithSubdirectory = Bundle.main.url(forResource: self.seasonName, withExtension: "json", subdirectory: "Seasons") else {
-                 print("Season JSON file also not found in 'Seasons' subdirectory for: '\(self.seasonName).json'")
-                 self.season = nil
-                 self.colors = []
-                 return
-            }
-            // If found in subdirectory, proceed with that URL
-            print("Season JSON file found in 'Seasons' subdirectory for: '\(self.seasonName).json'")
-            decodeSeasonData(from: urlWithSubdirectory)
+        
+        guard let url = Bundle.main.url(forResource: self.seasonName, withExtension: "json", subdirectory: "Seasons") else {
+            print("Season JSON file not found in 'Seasons' subdirectory for: '\(self.seasonName).json'")
+            self.season = nil
+            self.colors = []
             return
         }
         
-        // If found at root, proceed with that URL
-        print("Season JSON file found at bundle root for: '\(self.seasonName).json'")
+        print("Season JSON file found in 'Seasons' subdirectory for: '\(self.seasonName).json'")
         decodeSeasonData(from: url)
     }
 

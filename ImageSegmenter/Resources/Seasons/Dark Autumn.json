@@ -49,7 +49,7 @@
       "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60c8529b2c253c5b8fa2972d_Dark%20Autumn%20Colour%20Palette.png",
       "description": "Dark Autumn is the colour season reminiscent of late autumn evenings. The last rays of the sun fall on the land, and shadows become long, but some warmth of the passing day remains. These colours are rich and dark, like the last brown leaves falling from the thinning treetops.",
       "hue": {
-        "value": "nuetral-warm",
+        "value": "neutral-warm",
         "explanation": "The colours lean towards the warm end of the scale but are not extremely warm. This means they contain more yellow than blue undertones. Even if you choose blue (which is the coolest colour of all), you will find only warmer shades, like turquoise and greenish blues that have a tint of yellow."
       },
       "value": {
@@ -85,7 +85,7 @@
         ],
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e80abd91d5957ba5719a_Dark%20Autumn%20Colours%20to%20Avoid.png"
       },
-      "ColourCombinations": {
+      "ColorCombinations": {
         "description": "Technically, you can combine any of the colours on the Dark Autumn palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the level of contrast naturally present in your appearance. Dark Autumn's natural appearance is highly contrasting. Therefore, the best colour combinations for your outfits are similarly contrasting. Specifically, Dark Autumn's contrast is a contrast in value rather than hue. This means pairing light with dark colours is the best way for you to create contrast. You can pair darker colours with lighter, brighter accent colours. If you have dark skin, you can create contrast by wearing outfits in lighter colours and accenting them with darker ones. If you want to create even more contrast, you can also opt for hue contrast. Pair hues that sit opposite each other on the colour wheel, such as yellow and blue. Less flattering colour combinations for Dark Autumn are those that have very little contrast, such as monochromatic looks. If you want to go down that road, make sure to combine the very lightest with the very darkest shade of your chosen hue; otherwise, your naturally contrasting appearance will look dull behind your gentle outfit. Similarly, neutrals-only combinations may look a bit bland on you.",
         "Combinations": [
           ["dark neutral", "light accent"],

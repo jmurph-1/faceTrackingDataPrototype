@@ -109,7 +109,7 @@
         ],
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ebef5515cc9002873466_Dark%20Winter%20Colours%20to%20Avoid.png"
       },
-      "ColourCombinations": {
+      "ColorCombinations": {
         "description": "Technically, you can combine any of the colours on the Dark Winter palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level naturally present in your appearance. Dark Winter's natural appearance is highly contrasting. Therefore, the best colour combinations for your outfits are similarly contrasting. Value contrast combined with hue contrast is especially flattering on you. To achieve this, pair a light neutral in one hue with a different dark accent hue, such as a light grey with a dark purple. This combination has not only value contrast (light and dark) but also hue contrast (grey and purple). You can also combine a darker neutral with a brighter accent colour, such as dark green with bright pink. An all-dark look also works for you. But your best combinations will have high contrast. An all-light look, though, will not be flattering since your natural colouring is dark. Another thing to bear in mind is that even though your natural colour contrast is high, it is not as extreme as that of a Bright Winter. So pairing colours that sit opposite each other on the colour wheel, such as yellow and purple, may look overpowering on you. Instead, always pair a neutral with an accent colour. Monochromatic and neutrals-only combinations will also look dull on you.",
         "Combinations": [
           [
@@ -139,7 +139,7 @@
               "Dark Winter pattern",
               "Light Spring accents"
             ],
-            "great": "Dark Winter pattern"
+            "great": ["Dark Winter pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8ec4eb418ce58fa1892c3_Dark%20Winter%20Patterns%20%26%20Prints.webp"
         },

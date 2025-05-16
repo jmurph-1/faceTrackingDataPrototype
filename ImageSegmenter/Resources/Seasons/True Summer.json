@@ -81,12 +81,12 @@
         ],
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c0a2cb599bdb7c6f9062_True%20Summer%20Colours%20to%20Avoid.png"
       },
-      "ColourCombinations": {
+      "ColorCombinations": {
         "description": "Technically, you can combine any of the colours on the True Summer palette with each other. But certain combinations will look much better than others. Those are the combinations that reflect the contrast level that is naturally present in your appearance. True Summer's natural appearance blends rather than contrasts. But there is still some contrast between the features. Therefore, the best colour combinations for your outfits are those that complement each other or that have medium contrast. One way to achieve a gentle contrast is through monochromatic colour combinations. Pair a lighter tint with a darker shade of the same hue, such as a light blue and a darker blue. This is called value contrast. You can achieve more contrast through hue contrast. You can combine neighbouring hues, as long as they have the same value, such as a pink with a lavender purple. If you want to incorporate neutrals into your outfits, choose a neutral and accent colour with similar or slightly different values. Due to the natural gentleness of your appearance, neutrals will never make you look washed out or boring. But be sure to combine them with a brighter accent colour. Avoid combining highly contrasting colours, especially colours that sit opposite each other on the colour wheel, such as yellow and purple. These combinations will overwhelm your delicate appearance and swallow you up.",
         "Combinations": [
           ["monochromatic combinations"],
           ["neighbouring hues"],
-          ["lighter neutral with darker accent"]
+          ["lighter neutral",  "dark accent"]
         ],
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc2cc7855152b4537a7e_Light%20Summer%20Colour%20Combinations.png"
       },
@@ -97,7 +97,7 @@
           "combinations": {
             "bad": ["True Summer pattern", "True Spring background"],
             "good": ["True Summer pattern", "True Spring accents"],
-            "great": "True Summer pattern"
+            "great": ["True Summer pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c1003cc3527963df3c5d_True%20Summer%20Patterns%20%26%20Prints.webp"
         },

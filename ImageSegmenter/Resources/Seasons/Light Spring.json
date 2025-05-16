@@ -81,7 +81,7 @@
         ],
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b5b233499357d610a95b_Light%20Spring%20Colours%20to%20Avoid.png"
       },
-      "ColourCombinations": {
+      "ColorCombinations": {
         "description": "Technically, you can combine any of the colours on the Light Spring palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level that is naturally present in your appearance. Out of the three Spring seasons, Light Spring has the lowest contrast and the most delicate appearance. However, this is not a blended, muted colour season. Light Spring needs vibrancy, contrast and playful colour combinations to come alive. To achieve this look, you can combine neighbouring hues, such as yellow and green. You can also pair colours that sit far from each other on the colour wheel, such as orange and blue. The further apart the colours, the higher the contrast between them. The third option is to combine neutrals with brighter accent colours. If you choose a dark neutral, select a lighter accent; whereas a lighter neutral combines better with a slightly darker accent. Make sure to select different hues to create additional hue contrast. In general, always aim for at least one bright colour in your outfit to achieve a colourful look. Avoid neutrals-only combinations and monochromatic looks, as these will look dull on you.",
         "Combinations": [
           ["neighbouring hues"],
@@ -97,7 +97,7 @@
           "combinations": {
             "bad": ["Light Spring pattern", "Dark Winter background"],
             "good": ["Light Spring pattern", "Dark Winter accents"],
-            "great": "Light Spring pattern"
+            "great": ["Light Spring pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b614c697620c328ef477_Light%20Spring%20Patterns%20%26%20Prints.webp"
         },
