@@ -135,14 +135,15 @@
             "oxidised": "bad"
           }
         },
-        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b6953cc352d334deefee_Light%20Spring%20Metals.png",
         "stones": {
           "description": "The best stones for Light Spring are aquamarine and rose quartz. These stones complement the season's light and warm characteristics.",
           "stones": [
             "aquamarine",
             "rose quartz"
           ]
-        }
+        },
+        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8b6953cc352d334deefee_Light%20Spring%20Metals.png"
+        
       }
     }
   }

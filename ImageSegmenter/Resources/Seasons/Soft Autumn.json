@@ -188,18 +188,18 @@
             "shiny": "bad"
           }
         },
-        "accessories": {
-          "description": "Wood and other natural materials also make great accessories for Autumns.",
-          "type": {
-            "wood": "great"
-          }
-        },
         "stones": {
           "description": "The best stones for Soft Autumn are citrine and amber. These stones complement the season's soft and warm characteristics.",
           "stones": [
             "citrine",
             "amber"
           ]
+        },
+        "accessories": {
+          "description": "Wood and other natural materials also make great accessories for Autumns.",
+          "type": {
+            "wood": "great"
+          }
         },
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d993bef2c602504a8887_Soft%20Autumn%20Metals.png"
       }

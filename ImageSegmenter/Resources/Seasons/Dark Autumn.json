@@ -145,7 +145,8 @@
             "hammered": "great",
             "matte": "good",
             "shiny": "bad"
-          },
+          }
+        },
           "stones": {
             "description": "The best stones for Dark Autumn are carnelian, garnet, jasper, and emerald. These stones complement the season's rich and warm characteristics.",
             "stones": [
@@ -154,8 +155,7 @@
               "jasper",
               "emerald"
             ]
-          }
-        },
+          },
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e8d03465c66d68d4cadc_Dark%20Autumn%20Metals.png"
       }
     }
