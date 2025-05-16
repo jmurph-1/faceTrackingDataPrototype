@@ -96,7 +96,7 @@
           "combinations": {
             "bad": ["True Spring pattern", "True Summer background"],
             "good": ["True Spring pattern", "True Summer accents"],
-            "great": "True Spring pattern"
+            "great": ["True Spring pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8a03010f77f8f6b0514fa_True%20Spring%20Patterns%20%26%20Prints.webp"
         },
@@ -132,14 +132,13 @@
             "matte": "bad"
           }
         },
-        "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8a0d510f77f2c670516cb_True%20Spring%20Metals.png"
-      },
-      "stones": {
-        "description": "The best stones for True Spring are amber and citrine. These stones complement the season's warm and fresh characteristics.",
-        "stones": [
-          "amber",
-          "citrine"
-        ]
+        "stones": {
+          "description": "The best stones for True Spring are amber and citrine. These stones complement the season's warm and fresh characteristics.",
+          "stones": [
+            "amber",
+            "citrine"
+          ]
+        }
       }
     }
   }

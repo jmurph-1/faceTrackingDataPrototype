@@ -117,9 +117,9 @@
         "color": {
           "description": "If a pattern contains some but not much colour from a Light Summer palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., muted warm golds). Since your natural colouring has low contrast, opt for patterns that reflect this naturally low contrast level rather than ones which are too bold. Great patterns for Light Summer are gentle and delicate – such as watercolour and floral textures, floral drawings, hand-drawn elements, and brush strokes.",
           "combinations": {
-            "bad": "Light Summer pattern with Dark Autumn background",
-            "good": "Light Summer pattern with Dark Autumn accents",
-            "great": "Light Summer pattern"
+            "bad": ["Light Summer pattern",  "Dark Autumn background"],
+            "good": ["Light Summer pattern",  "Dark Autumn accents"],
+            "great": ["Light Summer pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc5a0bfdaebac35061c2_Light%20Summer%20Patterns%20%26%20Prints.webp"
         },

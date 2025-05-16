@@ -101,7 +101,7 @@
           "combinations": {
             "bad": ["Dark Autumn pattern", "Light Summer background"],
             "good": ["Dark Autumn pattern", "Light Summer accents"],
-            "great": "Dark Autumn pattern"
+            "great": ["Dark Autumn pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8e853c5e15135168cec48_Dark%20Autumn%20Patterns%20%26%20Prints.webp"
         },

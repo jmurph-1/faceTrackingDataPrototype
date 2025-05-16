@@ -18,7 +18,7 @@
         },
         "skin": {
           "description": "Bright Spring skin comes in a broad range of shades: from fair to tan. It has either neutral or neutral-warm undertones - meaning both gold and silver look good against it, but gold look somewhat better.",
-          "skinTones:": {
+          "skinTones": {
             "1": [
               "neutral-warm",
               "neutral"
@@ -40,7 +40,7 @@
         },
         "hair": {
           "description": "Like the skin, the hair is typically warmer and tends to develop highlights when exposed to the sun. Medium golden to dark golden blonde with highlights are very common. But copper, auburn and medium brown with reddish undertones are also possible.",
-          "hairColors:": {
+          "hairColors": {
             "blonde": [
               "medium golden",
               "dark golden"
