@@ -4,78 +4,60 @@ struct LandingPageView: View {
     @State private var animate = false
     @State private var isPressed = false
     var onAnalyzeButtonTapped: () -> Void
+    var onSubSeasonTapped: (String) -> Void
 
-    private let edgeSize: CGFloat = 50
+    private struct MainSeasonDisplay: Identifiable {
+        let id = UUID()
+        let name: String
+        let subSeasons: [String]
+    }
+
+    private let mainSeasonDisplays: [MainSeasonDisplay] = [
+        MainSeasonDisplay(name: "SPRING", subSeasons: ["Light Spring", "True Spring", "Bright Spring"]),
+        MainSeasonDisplay(name: "SUMMER", subSeasons: ["Light Summer", "True Summer", "Soft Summer"]),
+        MainSeasonDisplay(name: "AUTUMN", subSeasons: ["Soft Autumn", "True Autumn", "Dark Autumn"]),
+        MainSeasonDisplay(name: "WINTER", subSeasons: ["Bright Winter", "True Winter", "Dark Winter"])
+    ]
+
+    private func getAbbreviation(for subSeasonName: String) -> String {
+        let words = subSeasonName.split(separator: " ").map { String($0) }
+        var abbreviation = ""
+        if let firstWord = words.first?.lowercased() {
+            switch firstWord {
+            case "bright": abbreviation = "brt"
+            case "true": abbreviation = "tru"
+            case "dark": abbreviation = "drk"
+            case "light": abbreviation = "lgt"
+            case "soft": abbreviation = "sft"
+            default:
+                if words.count >= 2 { abbreviation = String(words[0].prefix(1) + words[1].prefix(1)).lowercased() }
+                else if let first = words.first { abbreviation = String(first.prefix(1)).lowercased() }
+            }
+        }
+        return abbreviation
+    }
 
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Order Changed: Left and Right gradients are now drawn first
-                // so top and bottom can blend over them.
-
-                // Left edge gradient
-                HStack(spacing: 0) {
-                    LinearGradient(
-                        gradient: Gradient(stops: [
-                            .init(color: Color(red: 0.7, green: 0.9, blue: 0.7), location: 0.0),  // Mint Green
-                            .init(color: Color(red: 0.95, green: 0.95, blue: 0.7), location: 0.1), // Pale Yellow
-                            .init(color: Color.clear, location: 0.6)
-                        ]),
-                        startPoint: animate ? .bottomLeading : .topLeading,
-                        endPoint: .trailing
-                    )
-                    .frame(width: edgeSize, height: geometry.size.height)
-                    Spacer()
-                }
-
-                // Right edge gradient
-                HStack {
-                    Spacer()
-                    LinearGradient(
-                        gradient: Gradient(stops: [
-                            .init(color: Color.clear, location: 0.0),
-                            .init(color: Color(red: 0.8, green: 0.7, blue: 0.9), location: 0.4),  // Coral (approx)
-                            .init(color: Color(red: 0.5, green: 0.8, blue: 0.95), location: 0.9) // Sky Blue
-                        ]),
-                        startPoint: .leading,
-                        endPoint: animate ? .topTrailing : .bottomTrailing
-                    )
-                    .frame(width: edgeSize, height: geometry.size.height)
-                }
-                
-                // Top edge gradient (drawn after sides)
                 VStack(spacing: 0) {
-                    LinearGradient(
-                        gradient: Gradient(stops: [
-                            .init(color: Color(red: 0.85, green: 0.75, blue: 0.92), location: 0.0),    // Lavender
-                            .init(color: Color(red: 0.70, green: 0.85, blue: 0.95), location: 0.1),    // Light Blue
-                            .init(color: Color.clear, location: 0.6)
-                        ]),
-                        startPoint: animate ? .topTrailing : .topLeading,
-                        endPoint: .bottom
-                    )
-                    .frame(width: geometry.size.width, height: edgeSize)
-                    Spacer()
-                }
+                    Text("S13")
+                        .font(.system(size: 36, weight: .bold, design: .serif))
+                        .foregroundColor(Color(white: 0.2))
+                        .padding(.top, geometry.safeAreaInsets.top + 20)
+                        .padding(.bottom, 10)
 
-                // Bottom edge gradient (drawn after sides)
-                VStack {
-                    Spacer()
-                    LinearGradient(
-                        gradient: Gradient(stops: [
-                            .init(color: Color.clear, location: 0.0),
-                            .init(color: Color(red: 1.0, green: 0.8, blue: 0.7), location: 0.4), // Peach
-                            .init(color: Color(red: 0.95, green: 0.75, blue: 0.8), location: 0.9) // Soft Pink
-                        ]),
-                        startPoint: .top,
-                        endPoint: animate ? .bottomLeading : .bottomTrailing
-                    )
-                    .frame(width: geometry.size.width, height: edgeSize)
-                }
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(mainSeasonDisplays) { mainSeason in
+                                seasonModuleView(mainSeason: mainSeason)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
+                    }
+                    .frame(maxHeight: .infinity)
 
-                // Button VStack
-                VStack {
-                    Spacer()
                     Button(action: {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                             isPressed = true
@@ -86,21 +68,20 @@ struct LandingPageView: View {
                         }
                     }) {
                         Image(systemName: "camera.filters")
-                            .font(.title) // Make icon larger
-                            .foregroundColor(Color(white: 0.15)) // Dark icon for contrast on silver
-                            .padding(16) // Adjust padding for the icon
+                            .font(.title)
+                            .foregroundColor(Color(white: 0.15))
+                            .padding(16)
                     }
                     .buttonStyle(PlainButtonStyle())
                     .background(
-                        Capsule().fill( // Maintain capsule shape
+                        Capsule().fill(
                             LinearGradient(
                                 gradient: Gradient(colors: [
-                                    Color(white: 0.95), // Brightest silver for highlight
-                                    Color(white: 0.80), // Main silver body
-                                    Color(white: 0.70), // Darker silver for depth
-                                    Color(white: 0.85)  // Subtle reflected light
+                                    Color(white: 0.95),
+                                    Color(white: 0.80),
+                                    Color(white: 0.70),
+                                    Color(white: 0.85)
                                 ]),
-                                // Use the existing 'animate' state to make the shine move
                                 startPoint: animate ? UnitPoint(x: 0.1, y: 0.1) : UnitPoint(x: 0.9, y: 0.9),
                                 endPoint: animate ? UnitPoint(x: 0.9, y: 0.9) : UnitPoint(x: 0.1, y: 0.1)
                             )
@@ -123,15 +104,11 @@ struct LandingPageView: View {
                                 )
                         )
                     )
-                    .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 3) // Adjusted shadow slightly
+                    .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 3)
                     .scaleEffect(isPressed ? 0.95 : 1.0)
-                    .accessibilityLabel("Analyze Your Colors") // Keep accessibility label
-                    .padding(.bottom, 24)
+                    .accessibilityLabel("Analyze Your Colors")
+                    .padding(.bottom, geometry.safeAreaInsets.bottom + 24)
                 }
-                 .padding(.top, geometry.safeAreaInsets.top)
-                 .padding(.bottom, geometry.safeAreaInsets.bottom)
-                 .padding(.leading, geometry.safeAreaInsets.leading)
-                 .padding(.trailing, geometry.safeAreaInsets.trailing)
             }
             .background(Color.white)
             .edgesIgnoringSafeArea(.all)
@@ -145,10 +122,90 @@ struct LandingPageView: View {
             }
         }
     }
+
+    @ViewBuilder
+    private func seasonModuleView(mainSeason: MainSeasonDisplay) -> some View {
+        VStack(alignment: .center, spacing: 12) {
+            Text(mainSeason.name)
+                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                .foregroundColor(SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").textColor.opacity(0.8))
+
+            HStack(spacing: 15) {
+                ForEach(mainSeason.subSeasons, id: \.self) { subSeasonName in
+                    Button(action: {
+                        print("LandingPageView: Subseason circle tapped - \(subSeasonName)")
+                        onSubSeasonTapped(subSeasonName)
+                    }) {
+                        let theme = SeasonTheme.getTheme(for: subSeasonName)
+                        let abbreviation = getAbbreviation(for: subSeasonName)
+                        
+                        let circleTextColor = theme.primaryColor.isDark() ? Color.white : Color.black.opacity(0.7)
+
+                        Circle()
+                            .fill(theme.primaryColor)
+                            .frame(width: 50, height: 50)
+                            .overlay(
+                                Text(abbreviation)
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(Color.white.opacity(0.8)) // Ensure text is visible, might need adjustment based on theme
+                            )
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white.opacity(0.5), lineWidth: 1.5)
+                            )
+                            .shadow(color: theme.primaryColor.opacity(0.3), radius: 3, x: 0, y: 2)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background {
+            if mainSeason.name == "WINTER" {
+                Image("winter_background")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } else if mainSeason.name == "SPRING" {
+                Image("spring_background")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } else if mainSeason.name == "SUMMER" {
+                Image("summer_background")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } else if mainSeason.name == "AUTUMN" {
+                Image("autumn_background")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } else {
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").backgroundColor.opacity(0.7),
+                        SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").secondaryBackgroundColor.opacity(0.5)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
+        }
+        .cornerRadius(12)
+        .clipped()
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
+    }
+}
+
+extension Color {
+    func isDark() -> Bool {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a)
+        let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+        return luminance < 0.5
+    }
 }
 
 struct LandingPageView_Previews: PreviewProvider {
     static var previews: some View {
-        LandingPageView(onAnalyzeButtonTapped: { })
+        LandingPageView(onAnalyzeButtonTapped: { }, onSubSeasonTapped: { seasonName in print("\(seasonName) tapped") })
     }
 }
