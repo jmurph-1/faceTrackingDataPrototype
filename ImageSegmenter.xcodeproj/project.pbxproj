@@ -23,7 +23,6 @@
 		5222FDBB2DD3D67500EF3C65 /* True Spring.json in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDAD2DD3D67500EF3C65 /* True Spring.json */; };
 		5222FDBC2DD3D67500EF3C65 /* Light Spring.json in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDA82DD3D67500EF3C65 /* Light Spring.json */; };
 		5222FDBD2DD3D67500EF3C65 /* colors.json in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDB12DD3D67500EF3C65 /* colors.json */; };
-		5222FDBE2DD3D67500EF3C65 /* Light Summer.json in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDA92DD3D67500EF3C65 /* Light Summer.json */; };
 		5222FDBF2DD3D67500EF3C65 /* Dark Autumn.json in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDA62DD3D67500EF3C65 /* Dark Autumn.json */; };
 		5222FDC72DD3F8AD00EF3C65 /* frontend.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC22DD3F8AD00EF3C65 /* frontend.md */; };
 		5222FDC82DD3F8AD00EF3C65 /* status.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC52DD3F8AD00EF3C65 /* status.md */; };
@@ -78,6 +77,7 @@
 		523112B42DD6D39100FCFC91 /* SeasonTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112B12DD6D39100FCFC91 /* SeasonTheme.swift */; };
 		523112EB2DD6F76B00FCFC91 /* ColorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EA2DD6F76B00FCFC91 /* ColorData.swift */; };
 		523112ED2DD6F7C000FCFC91 /* SeasonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */; };
+		5231132F2DD728CF00FCFC91 /* Light Summer.json in Resources */ = {isa = PBXBuildFile; fileRef = 5231132E2DD728CF00FCFC91 /* Light Summer.json */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
@@ -130,7 +130,6 @@
 		5222FDA62DD3D67500EF3C65 /* Dark Autumn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Dark Autumn.json"; sourceTree = "<group>"; };
 		5222FDA72DD3D67500EF3C65 /* Dark Winter.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Dark Winter.json"; sourceTree = "<group>"; };
 		5222FDA82DD3D67500EF3C65 /* Light Spring.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Light Spring.json"; sourceTree = "<group>"; };
-		5222FDA92DD3D67500EF3C65 /* Light Summer.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Light Summer.json"; sourceTree = "<group>"; };
 		5222FDAA2DD3D67500EF3C65 /* Soft Autumn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Soft Autumn.json"; sourceTree = "<group>"; };
 		5222FDAB2DD3D67500EF3C65 /* Soft Summer.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Soft Summer.json"; sourceTree = "<group>"; };
 		5222FDAC2DD3D67500EF3C65 /* True Autumn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "True Autumn.json"; sourceTree = "<group>"; };
@@ -192,6 +191,7 @@
 		523112B12DD6D39100FCFC91 /* SeasonTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonTheme.swift; sourceTree = "<group>"; };
 		523112EA2DD6F76B00FCFC91 /* ColorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorData.swift; sourceTree = "<group>"; };
 		523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonViewModel.swift; sourceTree = "<group>"; };
+		5231132E2DD728CF00FCFC91 /* Light Summer.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Light Summer.json"; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -258,13 +258,13 @@
 				5222FDA62DD3D67500EF3C65 /* Dark Autumn.json */,
 				5222FDA72DD3D67500EF3C65 /* Dark Winter.json */,
 				5222FDA82DD3D67500EF3C65 /* Light Spring.json */,
-				5222FDA92DD3D67500EF3C65 /* Light Summer.json */,
 				5222FDAA2DD3D67500EF3C65 /* Soft Autumn.json */,
 				5222FDAB2DD3D67500EF3C65 /* Soft Summer.json */,
 				5222FDAC2DD3D67500EF3C65 /* True Autumn.json */,
 				5222FDAD2DD3D67500EF3C65 /* True Spring.json */,
 				5222FDAE2DD3D67500EF3C65 /* True Summer.json */,
 				5222FDAF2DD3D67500EF3C65 /* True Winter.json */,
+				5231132E2DD728CF00FCFC91 /* Light Summer.json */,
 			);
 			path = Seasons;
 			sourceTree = "<group>";
@@ -612,9 +612,9 @@
 				5222FDCC2DD3F8AD00EF3C65 /* backend.md in Resources */,
 				5222FDCD2DD3F8AD00EF3C65 /* flow.md in Resources */,
 				5222FDBD2DD3D67500EF3C65 /* colors.json in Resources */,
-				5222FDBE2DD3D67500EF3C65 /* Light Summer.json in Resources */,
 				5222FDD72DD40F5D00EF3C65 /* thresholds.json in Resources */,
 				5222FDBF2DD3D67500EF3C65 /* Dark Autumn.json in Resources */,
+				5231132F2DD728CF00FCFC91 /* Light Summer.json in Resources */,
 				BF6EBB562B1EB5BE00CD13FB /* Main.storyboard in Resources */,
 			);
 		};

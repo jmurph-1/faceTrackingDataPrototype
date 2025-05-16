@@ -203,9 +203,3 @@ extension Color {
         return luminance < 0.5
     }
 }
-
-struct LandingPageView_Previews: PreviewProvider {
-    static var previews: some View {
-        LandingPageView(onAnalyzeButtonTapped: { }, onSubSeasonTapped: { seasonName in print("\(seasonName) tapped") })
-    }
-}

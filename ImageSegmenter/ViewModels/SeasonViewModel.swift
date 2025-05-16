@@ -67,6 +67,9 @@ class SeasonViewModel: ObservableObject {
             let data = try Data(contentsOf: url)
             let allColors = try JSONDecoder().decode([ColorData].self, from: data)
             colors = allColors.filter { $0.season == seasonName }
+            if colors.isEmpty && !seasonName.isEmpty { // Also check seasonName is not empty
+                 print("Warning: No colors found for season '\(seasonName)' after filtering 'colors.json'. Ensure 'colors.json' contains entries with this exact season name.")
+            }
         } catch {
             print("Error loading colors: \(error)")
         }
