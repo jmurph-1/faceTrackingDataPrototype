@@ -72,8 +72,8 @@ struct Season: Identifiable, Decodable {
     struct Styling: Decodable {
         let neutrals: StyleDescription
         let colorsToAvoid: ColorsToAvoid
-        let ColourCombinations: ColourCombinationsDetail?
-        let PatternsAndPrints: PatternsAndPrintsDetail?
+        let colorCombinations: ColorCombinationsDetail?
+        let patternsAndPrints: PatternsAndPrintsDetail?
         let metalsAndAccessories: MetalsAndAccessoriesDetail?
 
         struct StyleDescription: Decodable {
@@ -87,9 +87,9 @@ struct Season: Identifiable, Decodable {
             let image: String?
         }
 
-        struct ColourCombinationsDetail: Decodable {
+        struct ColorCombinationsDetail: Decodable {
             let description: String?
-            let Combinations: [[String]]?
+            let combinations: [[String]]?
             let image: String?
         }
 
@@ -102,7 +102,7 @@ struct Season: Identifiable, Decodable {
 
         struct PatternsAndPrintsAspect: Decodable {
             let description: String?
-            let combinations: [String: String]?
+            let combinations: [String: [String]]?
             let image: String?
         }
         

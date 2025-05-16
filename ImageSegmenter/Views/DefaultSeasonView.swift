@@ -78,44 +78,65 @@ struct DefaultSeasonView: View {
     }
     
     private func headerViewContent() -> some View {
-        VStack(spacing: 16) {
-            Text(viewModel.seasonName)
-                .font(.system(size: textSizeHeader, weight: .bold, design: .serif))
-                .foregroundColor(primaryColor)
-            
-            if let season = viewModel.season {
-                Text(season.tagline)
-                    .font(.system(size: textSizeSubheader, design: .serif))
+        ZStack(alignment: .topLeading) {
+            // Back button in top left
+            Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(paletteWhite)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal) // Padding for tagline within its own bounds
-                    .padding(.top, 10)   // Specific top padding for tagline
-            }
-            
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            secondaryBackgroundColor,
-                            secondaryBackgroundColor.opacity(0.7),
-                            secondaryBackgroundColor
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                    .padding(8)
+                    .background(
+                        Circle()
+                            .fill(primaryColor.opacity(0.6))
+                            .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
                     )
-                )
-                .frame(height: 8)
-                .overlay(
-                    HStack(spacing: 12) {
-                        ForEach(0..<8) { _ in
-                            Circle()
-                                .fill(accentColor.opacity(0.3))
-                                .frame(width: 4, height: 4)
+            }
+            .padding(.leading, 10)
+            .padding(.top, 0)
+            .zIndex(1)
+            
+            // Existing header content
+            VStack(spacing: 16) {
+                Text(viewModel.seasonName)
+                    .font(.system(size: textSizeHeader, weight: .bold, design: .serif))
+                    .foregroundColor(primaryColor)
+                
+                if let season = viewModel.season {
+                    Text(season.tagline)
+                        .font(.system(size: textSizeSubheader, design: .serif))
+                        .foregroundColor(paletteWhite)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal) // Padding for tagline within its own bounds
+                        .padding(.top, 10)   // Specific top padding for tagline
+                }
+                
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                secondaryBackgroundColor,
+                                secondaryBackgroundColor.opacity(0.7),
+                                secondaryBackgroundColor
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(height: 8)
+                    .overlay(
+                        HStack(spacing: 12) {
+                            ForEach(0..<8) { _ in
+                                Circle()
+                                    .fill(accentColor.opacity(0.3))
+                                    .frame(width: 4, height: 4)
+                            }
                         }
-                    }
-                )
+                    )
+            }
+            .padding(.horizontal) // Only horizontal padding for the content block itself
         }
-        .padding(.horizontal) // Only horizontal padding for the content block itself
     }
     
     private var seasonPalletView: some View {

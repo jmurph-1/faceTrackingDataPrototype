@@ -14,7 +14,7 @@ class SeasonViewModel: ObservableObject {
     func loadSeason() {
         print("SeasonViewModel: Attempting to load file for season '\(self.seasonName)' using filename: '\(self.seasonName).json'")
         
-        guard let url = Bundle.main.url(forResource: self.seasonName, withExtension: "json", subdirectory: "Seasons") else {
+        guard let url = Bundle.main.url(forResource: self.seasonName, withExtension: "json") else {
             print("Season JSON file not found in 'Seasons' subdirectory for: '\(self.seasonName).json'")
             self.season = nil
             self.colors = []

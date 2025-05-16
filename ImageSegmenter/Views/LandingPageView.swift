@@ -139,56 +139,66 @@ struct LandingPageView: View {
                         let theme = SeasonTheme.getTheme(for: subSeasonName)
                         let abbreviation = getAbbreviation(for: subSeasonName)
                         
-                        let circleTextColor = theme.primaryColor.isDark() ? Color.white : Color.black.opacity(0.7)
-
-                        Circle()
-                            .fill(theme.primaryColor)
-                            .frame(width: 50, height: 50)
-                            .overlay(
-                                Text(abbreviation)
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(Color.white.opacity(0.8)) // Ensure text is visible, might need adjustment based on theme
-                            )
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.white.opacity(0.5), lineWidth: 1.5)
-                            )
-                            .shadow(color: theme.primaryColor.opacity(0.3), radius: 3, x: 0, y: 2)
+                        ZStack {
+                            Circle()
+                                .fill(theme.primaryColor)
+                                .frame(width: 50, height: 50)
+                                .shadow(color: theme.primaryColor.opacity(0.3), radius: 3, x: 0, y: 2)
+                            
+                            Text(abbreviation)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(Color.white.opacity(0.8))
+                            
+                            Circle()
+                                .stroke(Color.white.opacity(0.5), lineWidth: 1.5)
+                                .frame(width: 50, height: 50)
+                        }
+                        .contentShape(Circle())
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .frame(width: 60, height: 60) // Slightly larger hit area than the visual circle
+                    .contentShape(Circle()) // Apply content shape to the button itself
                 }
             }
+            .zIndex(1) // Ensure buttons are on top of any background
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background {
-            if mainSeason.name == "WINTER" {
-                Image("winter_background")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else if mainSeason.name == "SPRING" {
-                Image("spring_background")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else if mainSeason.name == "SUMMER" {
-                Image("summer_background")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else if mainSeason.name == "AUTUMN" {
-                Image("autumn_background")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else {
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").backgroundColor.opacity(0.7),
-                        SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").secondaryBackgroundColor.opacity(0.5)
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+        .background(
+            ZStack {
+                if mainSeason.name == "WINTER" {
+                    Image("winter_background")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .allowsHitTesting(false) // Prevent the background from intercepting touches
+                } else if mainSeason.name == "SPRING" {
+                    Image("spring_background")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .allowsHitTesting(false) // Prevent the background from intercepting touches
+                } else if mainSeason.name == "SUMMER" {
+                    Image("summer_background")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .allowsHitTesting(false) // Prevent the background from intercepting touches
+                } else if mainSeason.name == "AUTUMN" {
+                    Image("autumn_background")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .allowsHitTesting(false) // Prevent the background from intercepting touches
+                } else {
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").backgroundColor.opacity(0.7),
+                            SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").secondaryBackgroundColor.opacity(0.5)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .allowsHitTesting(false) // Prevent the gradient from intercepting touches
+                }
             }
-        }
+        )
         .cornerRadius(12)
         .clipped()
         .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 3)
@@ -197,9 +207,9 @@ struct LandingPageView: View {
 
 extension Color {
     func isDark() -> Bool {
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a)
-        let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        UIColor(self).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        let luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
         return luminance < 0.5
     }
 }
