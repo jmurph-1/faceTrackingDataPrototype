@@ -3,6 +3,7 @@ import SwiftUI
 struct LandingPageView: View {
     @State private var animate = false
     @State private var isPressed = false
+    @State private var animateBackground = false
     var onAnalyzeButtonTapped: () -> Void
     var onSubSeasonTapped: (String) -> Void
 
@@ -119,6 +120,12 @@ struct LandingPageView: View {
                 ) {
                     animate.toggle()
                 }
+                withAnimation(
+                    Animation.easeInOut(duration: 20)
+                        .repeatForever(autoreverses: true)
+                ) {
+                    animateBackground.toggle()
+                }
             }
         }
     }
@@ -166,38 +173,120 @@ struct LandingPageView: View {
         .frame(maxWidth: .infinity)
         .background(
             ZStack {
+                // Season gradient backgrounds
                 if mainSeason.name == "WINTER" {
-                    Image("winter_background")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .allowsHitTesting(false) // Prevent the background from intercepting touches
+                    // Winter gradient - cool blues and silvers
+                    LinearGradient(
+                        gradient: Gradient(stops: [
+                            .init(color: Color(hex: "#4682b4"), location: 0.0),  // Steel Blue
+                            .init(color: Color(hex: "#6a7faf"), location: 0.4),  // Blue Gray
+                            .init(color: Color(hex: "#7986cb"), location: 0.7),  // Cornflower Blue
+                            .init(color: Color(hex: "#5c6bc0"), location: 1.0)   // Indigo
+                        ]),
+                        startPoint: animateBackground ? UnitPoint(x: 0.1, y: 0.1) : UnitPoint(x: 0.9, y: 0.9),
+                        endPoint: animateBackground ? UnitPoint(x: 0.9, y: 0.9) : UnitPoint(x: 0.1, y: 0.1)
+                    )
+                    .blur(radius: 0.5)
+                    .overlay(
+                        ZStack {
+                            // Subtle gleam effect
+                            RadialGradient(
+                                gradient: Gradient(colors: [Color.white.opacity(0.1), Color.clear]),
+                                center: .topLeading,
+                                startRadius: 0,
+                                endRadius: 300
+                            )
+                        }
+                    )
+                    .allowsHitTesting(false)
                 } else if mainSeason.name == "SPRING" {
-                    Image("spring_background")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .allowsHitTesting(false) // Prevent the background from intercepting touches
+                    // Spring gradient - fresh greens and soft pinks
+                    LinearGradient(
+                        gradient: Gradient(stops: [
+                            .init(color: Color(hex: "#8BC34A"), location: 0.0),  // Light Green
+                            .init(color: Color(hex: "#AEEA00"), location: 0.3),  // Lime
+                            .init(color: Color(hex: "#C6FF00"), location: 0.6),  // Lime Accent
+                            .init(color: Color(hex: "#7CB342"), location: 1.0)   // Light Green
+                        ]),
+                        startPoint: animateBackground ? UnitPoint(x: 0.9, y: 0.1) : UnitPoint(x: 0.1, y: 0.9),
+                        endPoint: animateBackground ? UnitPoint(x: 0.1, y: 0.9) : UnitPoint(x: 0.9, y: 0.1)
+                    )
+                    .blur(radius: 0.5)
+                    .overlay(
+                        ZStack {
+                            // Subtle pink accent
+                            RadialGradient(
+                                gradient: Gradient(colors: [Color(hex: "#FFC0CB").opacity(0.2), Color.clear]),
+                                center: .bottomTrailing,
+                                startRadius: 20,
+                                endRadius: 250
+                            )
+                        }
+                    )
+                    .allowsHitTesting(false)
                 } else if mainSeason.name == "SUMMER" {
-                    Image("summer_background")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .allowsHitTesting(false) // Prevent the background from intercepting touches
+                    // Summer gradient - soft blues and gentle purples
+                    LinearGradient(
+                        gradient: Gradient(stops: [
+                            .init(color: Color(hex: "#90CAF9"), location: 0.0),  // Light Blue
+                            .init(color: Color(hex: "#80DEEA"), location: 0.3),  // Light Cyan
+                            .init(color: Color(hex: "#B39DDB"), location: 0.7),  // Light Purple
+                            .init(color: Color(hex: "#BBDEFB"), location: 1.0)   // Very Light Blue
+                        ]),
+                        startPoint: animateBackground ? UnitPoint(x: 0.1, y: 0.9) : UnitPoint(x: 0.9, y: 0.1),
+                        endPoint: animateBackground ? UnitPoint(x: 0.9, y: 0.1) : UnitPoint(x: 0.1, y: 0.9)
+                    )
+                    .blur(radius: 0.5)
+                    .overlay(
+                        ZStack {
+                            // Subtle gleam effect
+                            RadialGradient(
+                                gradient: Gradient(colors: [Color.white.opacity(0.2), Color.clear]),
+                                center: .center,
+                                startRadius: 50,
+                                endRadius: 200
+                            )
+                        }
+                    )
+                    .allowsHitTesting(false)
                 } else if mainSeason.name == "AUTUMN" {
-                    Image("autumn_background")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .allowsHitTesting(false) // Prevent the background from intercepting touches
+                    // Autumn gradient - warm oranges, reds and golden hues
+                    LinearGradient(
+                        gradient: Gradient(stops: [
+                            .init(color: Color(hex: "#FF9800"), location: 0.0),  // Orange
+                            .init(color: Color(hex: "#FF5722"), location: 0.3),  // Deep Orange
+                            .init(color: Color(hex: "#F57C00"), location: 0.6),  // Dark Orange
+                            .init(color: Color(hex: "#BF360C"), location: 1.0)   // Deep Orange Dark
+                        ]),
+                        startPoint: animateBackground ? UnitPoint(x: 0.9, y: 0.9) : UnitPoint(x: 0.1, y: 0.1),
+                        endPoint: animateBackground ? UnitPoint(x: 0.1, y: 0.1) : UnitPoint(x: 0.9, y: 0.9)
+                    )
+                    .blur(radius: 0.5)
+                    .overlay(
+                        ZStack {
+                            // Subtle gold accent
+                            RadialGradient(
+                                gradient: Gradient(colors: [Color(hex: "#FFD700").opacity(0.15), Color.clear]),
+                                center: .bottomLeading,
+                                startRadius: 20,
+                                endRadius: 250
+                            )
+                        }
+                    )
+                    .allowsHitTesting(false)
                 } else {
                     LinearGradient(
                         gradient: Gradient(colors: [
                             SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").backgroundColor.opacity(0.7),
                             SeasonTheme.getTheme(for: mainSeason.subSeasons.first ?? "Soft Summer").secondaryBackgroundColor.opacity(0.5)
                         ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                        startPoint: animateBackground ? UnitPoint(x: 0.2, y: 0.8) : UnitPoint(x: 0.8, y: 0.2),
+                        endPoint: animateBackground ? UnitPoint(x: 0.8, y: 0.2) : UnitPoint(x: 0.2, y: 0.8)
                     )
                     .allowsHitTesting(false) // Prevent the gradient from intercepting touches
                 }
             }
+            .opacity(0.4) // Reduce background intensity
         )
         .cornerRadius(12)
         .clipped()
