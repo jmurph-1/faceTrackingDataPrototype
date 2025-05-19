@@ -140,6 +140,30 @@ class SeasonClassifier {
         // Calculate chroma (color intensity)
         let skinChroma = sqrt(skinA * skinA + skinB * skinB)
 
+        // Lightness catgory
+        let lightnessCategoryResult = lightnessCategory(from: skinL)
+        print("Calc: Lightness Category:", lightnessCategoryResult, " ", skinL)
+        
+        // Chroma category
+        let chromaCategoryResult = chromaCategory(chroma: skinChroma)
+        print("Calc: Chroma Category:", chromaCategoryResult, " ", skinChroma)
+        
+        // Hue Angle
+        let hueDegrees = (atan2(skinB, skinA)) * 180 / .pi
+        print("Calc: Hue Degrees:", hueDegrees)
+        
+        // Undertone
+        let undertoneResult = undertone(from: hueDegrees)
+        print("Calc: Undertone:", undertoneResult, "\n")
+        
+        // Updated season classification
+        let updatedSeasonClassification = classifySeason(lightness: skinL, chroma: skinChroma, hue: hueDegrees)
+        print("Calc: 12 Season:", updatedSeasonClassification)
+        
+        // New seasons with confidence
+        let result = classifySeasonWithConfidence(lightness: skinL, chroma: skinChroma, hue: hueDegrees)
+        print("Season: \(result.season), confidence: \(result.confidence * 100)%")
+        
         // Feature 1: Undertone - Warm vs Cool (based on b* value)
         // b* >= 12 = warm, b* < 12 = cool
         let isWarm = skinB >= thresholds.warmCoolThreshold
@@ -260,5 +284,209 @@ class SeasonClassifier {
     static func calculateDeltaEToAllSeasons(skinLab: ColorConverters.LabColor) -> [Season: CGFloat] {
         let classifier = SeasonClassifier()
         return classifier.calculateDeltaEToSeasonReferences(labColor: skinLab)
+    }
+    
+    // Calculate undertone based on hue degrees
+    func undertone(from hue: Float) -> String {
+        switch hue {
+        case 30..<90:
+            return "warm"       // yellow → orange → red
+        case 180..<300:
+            return "cool"       // blue → purple
+        case 90..<180, 300..<360:
+            return "neutral"    // desaturated or ambiguous zones
+        default:
+            return "neutral"    // just in case
+        }
+    }
+    
+    func lightnessCategory(from lightness: Float) -> String {
+        switch lightness {
+        case 65.0...100.0:
+            return "light"   // Overall brightness; light skin/hair
+        case 45.0..<65.0:
+            return "medium"  // Balanced tones; neither extreme
+        case 15.0..<45.0:
+            return "dark"    // Lower lightness; deeper contrast
+        default:
+            return "unknown" // Out of expected LAB range
+        }
+    }
+    
+    func chromaCategory(chroma: Float) -> String {
+        switch chroma {
+        case ..<30.0:
+            return "soft"    // Muted / soft tones
+        case 30.0...50.0:
+            return "medium"  // Balanced saturation
+        case let val where val > 50.0:
+            return "bright"  // Vivid, jewel-like tones
+        default:
+            return "unknown" // Shouldn't happen for C* ≥ 0
+        }
+    }
+    
+    // Updated 12 seasons assignment
+    func classifySeason(lightness: Float, chroma: Float, hue: Float) -> String {
+        // Light Spring: 65–90, C 40–55, hue 60°–90°
+        if lightness >= 65 && lightness <= 90 &&
+           chroma >= 40 && chroma <= 55 &&
+           hue >= 60 && hue <= 90
+        {
+            return "Light Spring"
+        }
+        // True Spring: 55–70, C 50–65, hue 50°–80°
+        else if lightness >= 55 && lightness <= 70 &&
+                chroma >= 50 && chroma <= 65 &&
+                hue >= 50 && hue <= 80
+        {
+            return "True Spring"
+        }
+        // Bright Spring: 60–80, C >55, hue 50°–90°
+        else if lightness >= 60 && lightness <= 80 &&
+                chroma > 55 &&
+                hue >= 50 && hue <= 90
+        {
+            return "Bright Spring"
+        }
+        // Light Summer: 65–90, C 30–45, hue 180°–260°
+        else if lightness >= 65 && lightness <= 90 &&
+                chroma >= 30 && chroma <= 45 &&
+                hue >= 180 && hue <= 260
+        {
+            return "Light Summer"
+        }
+        // True Summer: 55–70, C 30–45, hue 200°–260°
+        else if lightness >= 55 && lightness <= 70 &&
+                chroma >= 30 && chroma <= 45 &&
+                hue >= 200 && hue <= 260
+        {
+            return "True Summer"
+        }
+        // Soft Summer: 50–65, C <30, hue 220°–280°
+        else if lightness >= 50 && lightness <= 65 &&
+                chroma < 30 &&
+                hue >= 220 && hue <= 280
+        {
+            return "Soft Summer"
+        }
+        // Soft Autumn: 45–60, C <30, hue 60°–110°
+        else if lightness >= 45 && lightness <= 60 &&
+                chroma < 30 &&
+                hue >= 60 && hue <= 110
+        {
+            return "Soft Autumn"
+        }
+        // True Autumn: 40–55, C 35–50, hue 60°–100°
+        else if lightness >= 40 && lightness <= 55 &&
+                chroma >= 35 && chroma <= 50 &&
+                hue >= 60 && hue <= 100
+        {
+            return "True Autumn"
+        }
+        // Deep Autumn: 30–50, C 30–45, hue 60°–100°
+        else if lightness >= 30 && lightness <= 50 &&
+                chroma >= 30 && chroma <= 45 &&
+                hue >= 60 && hue <= 100
+        {
+            return "Deep Autumn"
+        }
+        // Deep Winter: 25–50, C 40–60, hue 200°–260°
+        else if lightness >= 25 && lightness <= 50 &&
+                chroma >= 40 && chroma <= 60 &&
+                hue >= 200 && hue <= 260
+        {
+            return "Deep Winter"
+        }
+        // True Winter: 35–60, C 50–65, hue 220°–280°
+        else if lightness >= 35 && lightness <= 60 &&
+                chroma >= 50 && chroma <= 65 &&
+                hue >= 220 && hue <= 280
+        {
+            return "True Winter"
+        }
+        // Bright Winter: 45–70, C >55, hue 220°–280°
+        else if lightness >= 45 && lightness <= 70 &&
+                chroma > 55 &&
+                hue >= 220 && hue <= 280
+        {
+            return "Bright Winter"
+        }
+        // Fallback
+        else {
+            return "Unknown"
+        }
+    }
+    
+    func dimensionScore(value: Float, rangeMin: Float, rangeMax: Float) -> Float {
+        let mid    = (rangeMin + rangeMax) / 2.0
+        let half   = (rangeMax - rangeMin) / 2.0
+        guard half > 0 else { return value == mid ? 1.0 : 0.0 }
+        let dist   = abs(value - mid)
+        return Swift.max(0.0, 1 - (dist / half))
+    }
+
+    /// Encapsulates one season's ideal ranges
+    struct SeasonRule {
+        let name        : String
+        let lRange      : ClosedRange<Double>
+        let cRange      : ClosedRange<Double>
+        let hueRange    : ClosedRange<Double>
+    }
+
+    let seasonRules: [SeasonRule] = [
+        SeasonRule(name: "Light Spring",
+                   lRange: 65...90, cRange: 40...55, hueRange: 60...90),
+        SeasonRule(name: "True Spring",
+                   lRange: 55...70, cRange: 50...65, hueRange: 50...80),
+        SeasonRule(name: "Bright Spring",
+                   lRange: 60...80, cRange: 55...100, hueRange: 50...90),
+                   
+        SeasonRule(name: "Light Summer",
+                   lRange: 65...90, cRange: 30...45, hueRange: 180...260),
+        SeasonRule(name: "True Summer",
+                   lRange: 55...70, cRange: 30...45, hueRange: 200...260),
+        SeasonRule(name: "Soft Summer",
+                   lRange: 50...65, cRange: 0...30,  hueRange: 220...280),
+                   
+        SeasonRule(name: "Soft Autumn",
+                   lRange: 45...60, cRange: 0...30,  hueRange: 60...110),
+        SeasonRule(name: "True Autumn",
+                   lRange: 40...55, cRange: 35...50, hueRange: 60...100),
+        SeasonRule(name: "Deep Autumn",
+                   lRange: 30...50, cRange: 30...45, hueRange: 60...100),
+                   
+        SeasonRule(name: "Deep Winter",
+                   lRange: 25...50, cRange: 40...60, hueRange: 200...260),
+        SeasonRule(name: "True Winter",
+                   lRange: 35...60, cRange: 50...65, hueRange: 220...280),
+        SeasonRule(name: "Bright Winter",
+                   lRange: 45...70, cRange: 55...100, hueRange: 220...280)
+    ]
+
+    /// Returns the best‐matching season plus a confidence [0…1]
+    func classifySeasonWithConfidence(lightness: Float, chroma: Float, hue: Float) -> (season: String, confidence: Float) {
+        var bestSeason   = seasonRules[0].name
+        var bestScore: Float = -1.0
+        
+        for rule in seasonRules {
+            let lScore = dimensionScore(value: lightness,
+                                         rangeMin: Float(rule.lRange.lowerBound),
+                                         rangeMax: Float(rule.lRange.upperBound))
+            let cScore = dimensionScore(value: chroma,
+                                         rangeMin: Float(rule.cRange.lowerBound),
+                                         rangeMax: Float(rule.cRange.upperBound))
+            let hScore = dimensionScore(value: hue,
+                                         rangeMin: Float(rule.hueRange.lowerBound),
+                                         rangeMax: Float(rule.hueRange.upperBound))
+            
+            let avgScore = (lScore + cScore + hScore) / 3.0  // 3.0 literal converts to Float
+            if avgScore > bestScore {
+                bestScore   = avgScore
+                bestSeason  = rule.name
+            }
+        }
+        
+        return (bestSeason, bestScore)
     }
 }
