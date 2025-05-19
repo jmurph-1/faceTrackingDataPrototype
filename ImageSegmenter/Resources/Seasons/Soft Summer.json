@@ -1,5 +1,6 @@
 {
   "Soft Summer": {
+    "name": "Soft Summer",
     "tagline": "Soft and cool, like a misty summer day",
     "introduction": "Soft Summer is one of the three Summer seasons and sits between True Summer and Soft Autumn on the seasonal flow chart. Unlike Soft Autumn, this season is cool. However, both sister seasons are a blend of Autumn and Summer. And while Soft Autumn leans more towards Autumn, Soft Summer leans more towards the Summer.",
     "characteristics": {
@@ -22,19 +23,19 @@
           "skinTones": {
             "1": [
               "neutral-cool",
-              "nuetral"
+              "neutral"
             ],
             "2": [
               "neutral-cool",
-              "nuetral"
+              "neutral"
             ],
             "3": [
               "neutral-cool",
-              "nuetral"
+              "neutral"
             ],
             "4": [
               "neutral-cool",
-              "nuetral"
+              "neutral"
             ]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c49e488e4640626d1856_Soft%20Summer%20Skin.png"
@@ -49,9 +50,9 @@
             "brown": [
               "light ash",
               "medium ash"
-            ],
-            "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c5dc1595f97f46004808_Soft%20Summer%20Hair.webp"
-          }
+            ]
+          },
+          "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8c5dc1595f97f46004808_Soft%20Summer%20Hair.webp"
         },
         "contrast": {
           "value": "low-medium",
@@ -63,7 +64,7 @@
       "paletteImgUrl": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60d195b912a086265f293a3c_Soft%20Summer%20Colour%20Palette.png",
       "description": "Soft Summer is the colour season reminiscent of misty days when the heat carries the fog through the air after a cool summer rain. And the arrival of autumn is not far away. These colours are gentle and mysterious. They contain so many cold and warm tones that their collision gives rise to a surprisingly harmonious image. And like a chameleon, this colour season can show one side or another.",
       "hue": {
-        "value": "nuetral-cool",
+        "value": "neutral-cool",
         "explanation": "Thanks to Soft Summer's secondary aspect, the colours lean towards the cool end of the scale but are not extremely cool. That means they contain more blue than yellow undertones. As a result, you will find fewer shades of yellow (which is the warmest colour of all). And you will only see cooler shades of yellow that have a tint of blue. Instead, there are more blues, pinks and greys, which are naturally blue-based and thus cool."
       },
       "value": {
@@ -100,7 +101,7 @@
         ],
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d016dd41c20dcc5c0b62_Soft%20Summer%20Colours%20to%20Avoid.png"
       },
-      "ColourCombinations": {
+      "ColorCombinations": {
         "description": "Technically, you can combine any of the colours on the Soft Summer palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the level of contrast that is naturally present in your appearance. Soft Summer's natural appearance blends rather than contrasts. This season does not tolerate a lot of contrast. Therefore, your best colour combinations are those that complement each other. The best way to achieve this is through monochromatic colour combinations. You can pair slightly different shades of the same hue, such as a lighter green with a darker one. While hue contrast is not something Soft Summers generally wear well, you can combine neighbouring hues as long as they have the same value. For example, you could pair a lavender purple with a lighter blue. Another option is to mix a neutral with an accent colour of similar value, such as a light beige with a similarly light yellow. Generally, pastel and greyed out colours combined in a monochromatic combination will look best on Soft Summers. This might make other seasons look washed out, but on a Soft Summer, it is nothing but flattering. Avoid pairing highly contrasting colours, especially those that sit opposite each other on the colour wheel, such as blue and orange. These combinations will swallow up your delicate appearance and make you disappear behind them.",
         "Combinations": [
           [
@@ -129,7 +130,7 @@
               "Soft Summer pattern",
               "Bright Spring accents"
             ],
-            "great": "Soft Summer pattern"
+            "great": ["Soft Summer pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8d061bef2c69ce84a59cc_Soft%20Summer%20Patterns%20%26%20Prints.webp"
         },

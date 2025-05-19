@@ -1,5 +1,6 @@
 {
   "True Winter": {
+    "name": "True Winter",
     "tagline": "The original winter. Cool and bright, extremes of light and dark, winter at its peak",
     "introduction": "True Winter is the original Winter season in the four seasons colour analysis and sits between Dark Winter and Bright Winter on the seasonal flow chart. Its opposite season is True Summer. And in contrast to the latter, True Winter's appearance is brilliant and highly contrasted.",
     "characteristics": {
@@ -97,7 +98,7 @@
         ],
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f5982f71a8bece66236b_True%20Winter%20Colours%20to%20Avoid.png"
       },
-      "ColourCombinations": {
+      "ColorCombinations": {
         "description": "Technically, you can combine any of the colours on the True Winter palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level that is naturally present in your appearance. The classic colour combination of True Winter is black and white. No other season can pull this combination off. But you can also pair other darker neutrals with lighter accent colours, such as dark blue and bright blue. Or you can combine lighter neutrals with brighter accents, such as light grey with bright pink. A True Winter will also look okay in an all-dark or all-light monochromatic look. However, contrast is always the better option. Another thing to bear in mind is that even though your natural colour contrast is high, it is not as extreme as that of a Bright Winter. So pairing colours that sit opposite each other on the colour wheel, such as yellow and purple, can be overpowering. Instead, always opt for a neutral and an accent colour.",
         "Combinations": [
           [
@@ -128,7 +129,7 @@
               "True Winter pattern",
               "True Autumn accents"
             ],
-            "great": "True Winter pattern"
+            "great": ["True Winter pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8f640281858dc4f0194fd_True%20Winter%20Patterns%20%26%20Prints%20Elements.webp"
         },

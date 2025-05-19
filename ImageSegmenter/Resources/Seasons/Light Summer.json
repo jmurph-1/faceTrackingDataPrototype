@@ -1,5 +1,6 @@
 {
   "Light Summer": {
+    "name": "Light Summer",
     "tagline": "Light and cool, with a gentle freshness like a summer morning breeze",
     "introduction": "Light Summer is one of the three Summer seasons and sits between Light Spring and True Summer on the seasonal flow chart. Unlike Light Spring, this season is cool. However, both sister seasons are a blend of Spring and Summer, with Light Spring leaning more towards the Spring palette and Light Summer leaning more towards the Summer palette.",
     "characteristics": {
@@ -95,7 +96,7 @@
         ],
         "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc067e54188025e6033b_Light%20Summer%20Colours%20to%20Avoid.png"
       },
-      "ColourCombinations": {
+      "ColorCombinations": {
         "description": "Technically, you can combine any of the colours on the Light Summer palette with each other. But certain combinations will look much better than others. Those are the combinations that repeat the contrast level that is naturally present in your appearance. Light Summer sits between colourful, vibrant Spring and gentle, muted Summer. This season's colours are brighter than those of the other two Summer seasons, but its appearance is also delicate. Therefore, the best colour combinations for your outfits are somewhat contrasting. One way to achieve a delicate, yet brighter look is through monochromatic combinations. You can combine slightly different tints of one hue, such as a light blue with a medium blue, which have little value contrast between them. Hue contrast can also be flattering on Light Summers. And you can combine neighbouring hues, such as a pink and a lavender purple, or even colours that sit further apart on the colour wheel. Another way to achieve some contrast is by pairing a neutral with a brighter colour, such as a medium grey with a brighter rose. In general, aim to incorporate at least one brighter colour into your outfits to keep your look colourful. Avoid neutrals-only combinations, which look very bland on Light Summers.",
         "Combinations": [
           [
@@ -105,7 +106,7 @@
             "neighbouring hues"
           ],
           [
-            "light nuetral",
+            "light neutral",
             "dark accent"
           ]
         ],
@@ -116,15 +117,9 @@
         "color": {
           "description": "If a pattern contains some but not much colour from a Light Summer palette, you can also wear it. Avoid patterns with disharmonious colours (e.g., muted warm golds). Since your natural colouring has low contrast, opt for patterns that reflect this naturally low contrast level rather than ones which are too bold. Great patterns for Light Summer are gentle and delicate – such as watercolour and floral textures, floral drawings, hand-drawn elements, and brush strokes.",
           "combinations": {
-            "bad": [
-              "Light Summer pattern",
-              "Dark Autumn background"
-            ],
-            "good": [
-              "Light Summer pattern",
-              "Dark Autumn accents"
-            ],
-            "great": "Light Summer pattern"
+            "bad": ["Light Summer pattern",  "Dark Autumn background"],
+            "good": ["Light Summer pattern",  "Dark Autumn accents"],
+            "great": ["Light Summer pattern"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bc5a0bfdaebac35061c2_Light%20Summer%20Patterns%20%26%20Prints.webp"
         },
@@ -140,18 +135,8 @@
         "elements": {
           "description": "Great patterns for Light Summer are gentle and delicate – such as watercolour and floral textures, floral drawings, hand-drawn elements, and brush strokes. The elements of the pattern should be small, dense, and loosely arranged. Avoid ordered arrangements, big elements, and stiff geometric patterns – like in the first example.",
           "combinations": {
-            "bad": [
-              "big",
-              "stiff",
-              "geometric"
-            ],
-            "great": [
-              "small",
-              "delicate",
-              "watercolour",
-              "floral",
-              "hand-drawn"
-            ]
+            "bad": ["big", "stiff", "geometric"],
+            "great": ["small", "delicate", "watercolour", "floral", "hand-drawn"]
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b8bcb83cc3522e97df2a5f_Light%20Summer%20Patterns%20%26%20Prints%20Elements.webp"
         }
