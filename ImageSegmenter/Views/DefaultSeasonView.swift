@@ -48,7 +48,7 @@ struct DefaultSeasonView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                backgroundColor.ignoresSafeArea() // Full screen background color
+                Color(.systemBackground).ignoresSafeArea()
                 
                 ScrollView {
                     VStack(spacing: 32) {
@@ -72,20 +72,20 @@ struct DefaultSeasonView: View {
     }
     
     private func headerViewContent() -> some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 12) { 
             HStack {
+                Spacer()
+                
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
-                    Image(systemName: "chevron.left")
+                    Image(systemName: "xmark")
                         .font(.system(size: 20, weight: .light))
                         .foregroundColor(paletteWhite)
                         .frame(width: 44, height: 44)
                         .background(primaryColor.opacity(0.2))
                         .clipShape(Circle())
                 }
-                
-                Spacer()
             }
             .padding(.horizontal)
             

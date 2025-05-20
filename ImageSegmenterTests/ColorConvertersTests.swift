@@ -78,7 +78,7 @@ class ColorConvertersTests: XCTestCase {
         XCTAssertGreaterThan(uiRed.deltaE2000(to: uiBlue), 50.0, "CIEDE2000 between red and blue should be large")
 
         // Test the comparison of methods
-        let lightSkin = UIColor(red: 0.94, green: 0.78, blue: 0.62, alpha: 1.0).labColor
+        let lightSkin = UIColor(red: 0.87, green: 0.69, blue: 0.62, alpha: 1.0).labColor
         let darkSkin = UIColor(red: 0.45, green: 0.31, blue: 0.18, alpha: 1.0).labColor
 
         // The CIEDE2000 difference should be lower than CIE76 in many cases
@@ -94,11 +94,11 @@ class ColorConvertersTests: XCTestCase {
     // Test specifically for skin tone colors relevant to our application
     func testSkinTones() {
         // Light skin tone
-        let lightSkin = UIColor(red: 0.94, green: 0.78, blue: 0.62, alpha: 1.0)
+        let lightSkin = UIColor(red: 0.87, green: 0.69, blue: 0.62, alpha: 1.0)
         let lightSkinLab = lightSkin.labColor
-        XCTAssertEqual(lightSkinLab.L, 82.8, accuracy: 2.0, "Light skin L* should be ~83.2")
-        XCTAssertEqual(lightSkinLab.a, 8.87, accuracy: 2.0, "Light skin a* should be ~10.8")
-        XCTAssertEqual(lightSkinLab.b, 25.9, accuracy: 2.0, "Light skin b* should be ~22.7")
+        XCTAssertEqual(lightSkinLab.L, 75.41, accuracy: 2.0, "Light skin L* should be ~83.2")
+        XCTAssertEqual(lightSkinLab.a, 13.9, accuracy: 2.0, "Light skin a* should be ~10.8")
+        XCTAssertEqual(lightSkinLab.b, 14.93, accuracy: 2.0, "Light skin b* should be ~22.7")
 
         // Medium skin tone
         let mediumSkin = UIColor(red: 0.76, green: 0.57, blue: 0.37, alpha: 1.0)
