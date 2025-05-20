@@ -89,7 +89,7 @@ class RefactoredCameraViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("RVC: viewWillAppear - self.shouldAutoStartAnalysis is \(self.shouldAutoStartAnalysis)")
-        // The camera will be started by RootViewController's call to 
+        // The camera will be started by RootViewController's call to
         // self.prepareAndStartCameraIfNeeded() after the transition,
         // or by other explicit actions like resuming from interruption.
     }
@@ -490,6 +490,15 @@ class RefactoredCameraViewController: UIViewController {
     // MARK: - Result Presentation
 
     private func presentAnalysisResultView(result: AnalysisResult) {
+        // Stop all camera processing before showing results
+        viewModel.stopCamera()
+        previewView.pixelBuffer = nil
+        previewView.flushTextureCache()
+        
+        // Clear any overlays
+        clearLandmarksOverlay()
+        landmarksOverlayView?.isHidden = true
+        
         // Update analysis view model with the result
         analysisViewModel.updateWithResult(result)
 
@@ -498,13 +507,20 @@ class RefactoredCameraViewController: UIViewController {
             viewModel: analysisViewModel,
             onDismiss: { [weak self] in
                 self?.dismiss(animated: true)
+                // On dismiss, check if we should restart camera
+                if self?.shouldAutoStartAnalysis == true {
+                    self?.viewModel.startCamera()
+                }
             },
             onRetry: { [weak self] in
                 self?.dismiss(animated: true)
+                // On retry, restart camera
+                self?.viewModel.startCamera()
             },
             onSeeDetails: { [weak self] in
                 // Stub for future expansion
                 self?.dismiss(animated: true)
+                // Don't restart camera here since we're just seeing details
             }
         )
 
