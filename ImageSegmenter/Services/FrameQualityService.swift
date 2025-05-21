@@ -372,7 +372,7 @@ class FrameQualityService {
         landmarks: [NormalizedLandmark]?,
         imageSize: CGSize
     ) -> QualityScore {
-        print("Evaluating quality with landmarks: \(landmarks?.count ?? 0) points")
+        //print("Evaluating quality with landmarks: \(landmarks?.count ?? 0) points")
         
         // 1. Calculate face size score
         let faceSizeScore = FaceLandmarkQualityCalculator.calculateFaceSizeScore(
@@ -435,7 +435,7 @@ class FrameQualityService {
             pixelBuffer: pixelBuffer
         )
         
-        print("Sharpness from Landmarks: \(sharpnessScore)")
+        //print("Sharpness from Landmarks: \(sharpnessScore)")
         
 
         // 5. Calculate overall score (weighted average)

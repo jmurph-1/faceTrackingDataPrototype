@@ -80,7 +80,7 @@ class RefactoredCameraViewController: UIViewController {
 
         // Configure view model
         viewModel.delegate = self
-        print("RVC: viewDidLoad - self.shouldAutoStartAnalysis is: \(self.shouldAutoStartAnalysis)")
+        //print("RVC: viewDidLoad - self.shouldAutoStartAnalysis is: \(self.shouldAutoStartAnalysis)")
 
         // Register for app lifecycle notifications
         registerForAppLifecycleNotifications()
@@ -88,22 +88,22 @@ class RefactoredCameraViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("RVC: viewWillAppear - self.shouldAutoStartAnalysis is \(self.shouldAutoStartAnalysis)")
+        //print("RVC: viewWillAppear - self.shouldAutoStartAnalysis is \(self.shouldAutoStartAnalysis)")
         // The camera will be started by RootViewController's call to
         // self.prepareAndStartCameraIfNeeded() after the transition,
         // or by other explicit actions like resuming from interruption.
     }
 
     func prepareAndStartCameraIfNeeded() {
-        print("RVC: prepareAndStartCameraIfNeeded called. shouldAutoStartAnalysis = \(self.shouldAutoStartAnalysis)")
+        //print("RVC: prepareAndStartCameraIfNeeded called. shouldAutoStartAnalysis = \(self.shouldAutoStartAnalysis)")
         if self.shouldAutoStartAnalysis {
-            print("RVC: prepareAndStartCameraIfNeeded - Calling viewModel.startCamera()")
+            //print("RVC: prepareAndStartCameraIfNeeded - Calling viewModel.startCamera()")
             viewModel.startCamera()
         }
     }
 
     func stopCameraProcessing() {
-        print("RVC: stopCameraProcessing called.")
+        //print("RVC: stopCameraProcessing called.")
         viewModel.stopCamera()
     }
 
@@ -130,7 +130,7 @@ class RefactoredCameraViewController: UIViewController {
         // Toggle debug overlay visibility
         isDebugOverlayVisible.toggle()
         debugOverlayHostingController?.view.isHidden = !isDebugOverlayVisible
-        print("RVC: handleThreeTap - isDebugOverlayVisible: \(isDebugOverlayVisible), debugOverlay.isHidden: \(debugOverlayHostingController?.view.isHidden ?? true)")
+        //print("RVC: handleThreeTap - isDebugOverlayVisible: \(isDebugOverlayVisible), debugOverlay.isHidden: \(debugOverlayHostingController?.view.isHidden ?? true)")
     }
 
     @objc private func analyzeButtonTapped() {
@@ -204,14 +204,14 @@ class RefactoredCameraViewController: UIViewController {
     }
 
     @objc private func handleAppWillEnterForeground() {
-        print("RVC: handleAppWillEnterForeground called. shouldAutoStartAnalysis: \(shouldAutoStartAnalysis)")
+        //print("RVC: handleAppWillEnterForeground called. shouldAutoStartAnalysis: \(shouldAutoStartAnalysis)")
         viewModel.stopCamera() // Stop any existing session first
 
         if shouldAutoStartAnalysis && view.window != nil { // Check if view is part of a window hierarchy
-            print("RVC: handleAppWillEnterForeground - Starting camera because shouldAutoStartAnalysis is true and view is in window.")
+            //print("RVC: handleAppWillEnterForeground - Starting camera because shouldAutoStartAnalysis is true and view is in window.")
             viewModel.startCamera()
         } else {
-            print("RVC: handleAppWillEnterForeground - Not starting camera. shouldAutoStartAnalysis: \(shouldAutoStartAnalysis), view.window: \(String(describing: view.window))")
+            //print("RVC: handleAppWillEnterForeground - Not starting camera. shouldAutoStartAnalysis: \(shouldAutoStartAnalysis), view.window: \(String(describing: view.window))")
         }
     }
 
@@ -434,51 +434,7 @@ class RefactoredCameraViewController: UIViewController {
         landmarksOverlayView = overlayView
     }
 
-    private func updateLandmarksOverlay(with landmarks: [NormalizedLandmark]) {
-        guard let overlayView = landmarksOverlayView else { return }
-
-        // Remove previous landmark dots
-        for dot in landmarkDots {
-            dot.removeFromSuperview()
-        }
-        landmarkDots.removeAll()
-
-        // Only draw a subset of landmarks for better performance (e.g., every 5th landmark)
-        let strideAmount = 5
-        let selectedLandmarks = stride(from: 0, to: min(landmarks.count, 468), by: strideAmount)
-
-        for landmarkIndex in selectedLandmarks {
-            guard landmarkIndex < landmarks.count else { continue }
-            let landmark = landmarks[landmarkIndex]
-
-            // Convert normalized coordinates to view coordinates
-            let pointX = CGFloat(landmark.x) * overlayView.bounds.width
-            let pointY = CGFloat(landmark.y) * overlayView.bounds.height
-
-            // Create a dot to represent the landmark
-            let dotSize: CGFloat = 4.0
-            let dotView = UIView(frame: CGRect(x: pointX - dotSize/2, y: pointY - dotSize/2, width: dotSize, height: dotSize))
-
-            // Color based on landmark type/index
-            let dotColor: UIColor
-            if landmarkIndex < 36 { // Face contour
-                dotColor = .red
-            } else if landmarkIndex < 68 { // Eyes
-                dotColor = .green
-            } else if landmarkIndex < 106 { // Lips
-                dotColor = .blue
-            } else {
-                dotColor = .yellow
-            }
-
-            dotView.backgroundColor = dotColor
-            dotView.layer.cornerRadius = dotSize / 2
-
-            overlayView.addSubview(dotView)
-            landmarkDots.append(dotView)
-        }
-    }
-
+    
     private func clearLandmarksOverlay() {
         // Remove all landmark dots
         for dot in landmarkDots {
@@ -650,7 +606,7 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
     }
 
     func viewModel(_ viewModel: CameraViewModel, didUpdateSegmentedBuffer buffer: CVPixelBuffer) {
-        print("RVC: CameraViewModel didUpdateSegmentedBuffer. Assigning to previewView.")
+        //print("RVC: CameraViewModel didUpdateSegmentedBuffer. Assigning to previewView.")
         // Update preview with segmented buffer
         DispatchQueue.main.async { [weak self] in
             self?.previewView.pixelBuffer = buffer
@@ -665,24 +621,24 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
     }
 
     func viewModel(_ viewModel: CameraViewModel, didUpdateFaceLandmarks landmarks: [NormalizedLandmark]?) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-
-            // Ensure the overlay view is set up if it's the first time.
-            if self.landmarksOverlayView == nil {
-                self.setupLandmarksOverlayView()
-            }
-            // Make sure the overlay is visible.
-            // We can decide later if this should be tied to the debug overlay's visibility.
-            // For now, let's make it always visible if landmarks are processed.
-            self.landmarksOverlayView?.isHidden = false
-
-            if let landmarks = landmarks, !landmarks.isEmpty {
-                self.updateLandmarksOverlay(with: landmarks)
-            } else {
-                self.clearLandmarksOverlay()
-            }
-        }
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//
+//            // Ensure the overlay view is set up if it's the first time.
+//            if self.landmarksOverlayView == nil {
+//                self.setupLandmarksOverlayView()
+//            }
+//            // Make sure the overlay is visible.
+//            // We can decide later if this should be tied to the debug overlay's visibility.
+//            // For now, let's make it always visible if landmarks are processed.
+//            self.landmarksOverlayView?.isHidden = false
+//
+//            if let landmarks = landmarks, !landmarks.isEmpty {
+//                self.updateLandmarksOverlay(with: landmarks)
+//            } else {
+//                self.clearLandmarksOverlay()
+//            }
+//        }
     }
 
     func viewModel(_ viewModel: CameraViewModel, didEncounterError error: Error) {

@@ -50,7 +50,7 @@ class ImageSegmenterService: NSObject {
   private init?(modelPath: String?,
                 runningMode: RunningMode,
                 delegate: Delegate) {
-    print("ImageSegmenterService: init? called with modelPath: \(modelPath ?? "nil")")
+    //print("ImageSegmenterService: init? called with modelPath: \(modelPath ?? "nil")")
     guard let modelPath = modelPath else {
         print("ImageSegmenterService: init? - modelPath is nil. Returning nil from initializer.")
         return nil
@@ -59,7 +59,7 @@ class ImageSegmenterService: NSObject {
     self.runningMode = runningMode
     self.delegate = delegate
     super.init()
-    print("ImageSegmenterService: init? - Properties set. ModelPath: \(self.modelPath). Calling createImageSegmenter().")
+    //print("ImageSegmenterService: init? - Properties set. ModelPath: \(self.modelPath). Calling createImageSegmenter().")
 
     createImageSegmenter()
     if self.imageSegmenter == nil {
@@ -69,7 +69,7 @@ class ImageSegmenterService: NSObject {
   }
 
   private func createImageSegmenter() {
-    print("ImageSegmenterService: createImageSegmenter() called. ModelPath for options: \(self.modelPath)")
+    //print("ImageSegmenterService: createImageSegmenter() called. ModelPath for options: \(self.modelPath)")
     let imageSegmenterOptions = ImageSegmenterOptions()
     imageSegmenterOptions.runningMode = runningMode
     imageSegmenterOptions.shouldOutputCategoryMask = true
@@ -80,7 +80,7 @@ class ImageSegmenterService: NSObject {
     }
     do {
       imageSegmenter = try ImageSegmenter(options: imageSegmenterOptions)
-      print("ImageSegmenterService: createImageSegmenter - Successfully created MediaPipe ImageSegmenter.")
+      //print("ImageSegmenterService: createImageSegmenter - Successfully created MediaPipe ImageSegmenter.")
     } catch {
       print("ImageSegmenterService: createImageSegmenter - FAILED to create MediaPipe ImageSegmenter. Error: \(error)")
       // self.imageSegmenter will remain nil
@@ -95,7 +95,7 @@ class ImageSegmenterService: NSObject {
         modelPath: modelPath,
         runningMode: .video,
       delegate: delegate)
-      print("ImageSegmenterService: videoImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
+      //print("ImageSegmenterService: videoImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
       if imageSegmenterService == nil {
           print("ImageSegmenterService: videoImageSegmenterService - ImageSegmenterService(init?) returned nil.")
       } else {
@@ -108,7 +108,7 @@ class ImageSegmenterService: NSObject {
     modelPath: String?,
     liveStreamDelegate: ImageSegmenterServiceLiveStreamDelegate?,
     delegate: Delegate) -> ImageSegmenterService? {
-      print("ImageSegmenterService: liveStreamImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
+      //print("ImageSegmenterService: liveStreamImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
       let imageSegmenterService = ImageSegmenterService(
         modelPath: modelPath,
         runningMode: .liveStream,
@@ -130,7 +130,7 @@ class ImageSegmenterService: NSObject {
         modelPath: modelPath,
         runningMode: .image,
       delegate: delegate)
-      print("ImageSegmenterService: stillImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
+      //print("ImageSegmenterService: stillImageSegmenterService factory method called with modelPath: \(modelPath ?? "nil")")
       if imageSegmenterService == nil {
           print("ImageSegmenterService: stillImageSegmenterService - ImageSegmenterService(init?) returned nil.")
       } else {

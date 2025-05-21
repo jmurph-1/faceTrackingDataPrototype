@@ -51,6 +51,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     var hairColorHSV: (h: CGFloat, s: CGFloat, v: CGFloat) = (0, 0, 0)
   }
 
+  private let faceLandmarkRenderer = FaceLandmarkRenderer()
   private var lastColorInfo = ColorInfo()
   
   private var lastFaceLandmarks: [NormalizedLandmark]?
@@ -74,8 +75,6 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   private var textureCache: CVMetalTextureCache!
   private var downsampledTexture: MTLTexture?
   private var segmentationBuffer: MTLBuffer?
-  private var prevSegmentDatas: UnsafeMutablePointer<UInt8>?
-  private var prevSegmentDataSize: Int = 0
 
   let context: CIContext
   let textureLoader: MTKTextureLoader
@@ -94,6 +93,10 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     }
     context = CIContext(mtlDevice: metalDevice)
     textureLoader = MTKTextureLoader(device: metalDevice)
+    
+//    faceLandmarkRenderer.showMesh = false
+//    faceLandmarkRenderer.showContours = false
+//    faceLandmarkRenderer.landmarkSize = 1.0
   }
   
   func setLogLevel(_ level: LogLevel) {
@@ -142,6 +145,8 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       textureCache = metalTextureCache
     }
 
+    faceLandmarkRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: outputRetainedBufferCountHint, needChangeWidthHeight: needChangeWidthHeight)
+
     isPrepared = true
   }
 
@@ -158,12 +163,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     }
     segmentationBuffer = nil
 
-    if let prevData = prevSegmentDatas {
-      prevData.deallocate()
-      prevSegmentDatas = nil
-      prevSegmentDataSize = 0
-    }
-
+    faceLandmarkRenderer.reset()
     isPrepared = false
   }
   
@@ -318,46 +318,6 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     return newDownsampledTexture
   }
 
-  private func downsampleTextureCPU(source: MTLTexture, destination: MTLTexture, scale: Int) {
-    let srcWidth = source.width
-    let srcHeight = source.height
-    let dstWidth = destination.width
-    let dstHeight = destination.height
-
-    let bytesPerPixel = 4  // BGRA format
-    let srcBytesPerRow = srcWidth * bytesPerPixel
-    let dstBytesPerRow = dstWidth * bytesPerPixel
-    let srcBytes = UnsafeMutablePointer<UInt8>.allocate(
-      capacity: srcWidth * srcHeight * bytesPerPixel)
-    let dstBytes = UnsafeMutablePointer<UInt8>.allocate(
-      capacity: dstWidth * dstHeight * bytesPerPixel)
-
-    let srcRegion = MTLRegionMake2D(0, 0, srcWidth, srcHeight)
-    let dstRegion = MTLRegionMake2D(0, 0, dstWidth, dstHeight)
-
-    source.getBytes(srcBytes, bytesPerRow: srcBytesPerRow, from: srcRegion, mipmapLevel: 0)
-
-    for y in 0..<dstHeight {
-      for x in 0..<dstWidth {
-        let srcX = x * scale
-        let srcY = y * scale
-
-        let srcIndex = (srcY * srcWidth + srcX) * bytesPerPixel
-        let dstIndex = (y * dstWidth + x) * bytesPerPixel
-
-        for i in 0..<bytesPerPixel {
-          dstBytes[dstIndex + i] = srcBytes[srcIndex + i]
-        }
-      }
-    }
-
-    destination.replace(
-      region: dstRegion, mipmapLevel: 0, withBytes: dstBytes, bytesPerRow: dstBytesPerRow)
-
-    srcBytes.deallocate()
-    dstBytes.deallocate()
-  }
-
   private func allocateOutputBufferPool(
     with formatDescription: CMFormatDescription,
     outputRetainedBufferCountHint: Int,
@@ -502,81 +462,30 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
     processingStartTime = CACurrentMediaTime()
 
-    let pixelBufferWidth = CVPixelBufferGetWidth(pixelBuffer)
-    let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
-
-    if frameCounter % logFrameInterval == 0 {
-      //log("Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)", level: .info)
-    }
-
-    var outputBuffer: CVPixelBuffer?
-    let status = CVPixelBufferPoolCreatePixelBuffer(
-      kCFAllocatorDefault, outputPixelBufferPool!, &outputBuffer)
-    if status != kCVReturnSuccess {
-      log("Failed to create output pixel buffer: \(status)", level: .error)
-      return nil
-    }
-
-    guard let outputBuffer = outputBuffer else {
-      return nil
-    }
-
-    let result = Result(
-      size: CGSize(width: pixelBufferWidth, height: pixelBufferHeight),
-      imageSegmenterResult: ImageSegmenterResult(
-        categoryMask: segmentDatas,
-        width: pixelBufferWidth,
-        height: pixelBufferHeight
-      )
-    )
+    let result = processSegmentation(pixelBuffer: pixelBuffer, segmentDatas: segmentDatas)
     
-    // Only continue if we're properly prepared
-    guard isPrepared else {
-      log("MultiClassSegmentedImageRenderer not prepared", level: .error)
-      return nil
+    // If we have landmarks, render them using FaceLandmarkRenderer
+    if let landmarks = lastFaceLandmarks, let outputBuffer = result {
+        faceLandmarkRenderer.renderFaceLandmarks(on: outputBuffer, faceLandmarks: landmarks) { image in
+            if let cgImage = image?.cgImage {
+                // Convert CGImage back to CVPixelBuffer and blend with output
+                let width = CVPixelBufferGetWidth(outputBuffer)
+                let height = CVPixelBufferGetHeight(outputBuffer)
+                
+                CVPixelBufferLockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
+                let context = CGContext(data: CVPixelBufferGetBaseAddress(outputBuffer),
+                                     width: width,
+                                     height: height,
+                                     bitsPerComponent: 8,
+                                     bytesPerRow: CVPixelBufferGetBytesPerRow(outputBuffer),
+                                     space: CGColorSpaceCreateDeviceRGB(),
+                                     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+                
+                context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+                CVPixelBufferUnlockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
+            }
+        }
     }
-    
-    var outputPixelBuffer: CVPixelBuffer?
-    
-    outputPixelBuffer = PixelBufferPoolManager.shared.getPixelBuffer(
-      width: pixelBufferWidth,
-      height: pixelBufferHeight
-    )
-    
-    // Fall back to the standard pool if needed
-    if outputPixelBuffer == nil {
-      let status = CVPixelBufferPoolCreatePixelBuffer(
-        kCFAllocatorDefault, outputPixelBufferPool!, &outputPixelBuffer)
-      
-      if status != kCVReturnSuccess {
-        log("Cannot get pixel buffer from the pool. Status: \(status)", level: .error)
-        return nil
-      }
-    }
-    
-    guard let outputBuffer = outputPixelBuffer else {
-      log("Failed to get output pixel buffer", level: .error)
-      return nil
-    }
-    
-    // Check if GPU processing is available
-    if isGPUProcessingAvailable() {
-      // Try GPU processing
-      if !processWithGPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas, width: pixelBufferWidth, height: pixelBufferHeight) {
-        // Fall back to CPU if GPU processing fails
-        log("GPU processing failed, falling back to CPU", level: .warning)
-        processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
-      }
-    } else {
-      // Use CPU processing directly
-      log("GPU processing not available, using CPU", level: .warning)
-      processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
-    }
-
-    if frameCounter % frameSkip == 0 {
-      extractColorInformation(from: result.imageSegmenterResult!, pixelBuffer: pixelBuffer)
-    }
-    frameCounter += 1
 
     let currentProcessingTime = CACurrentMediaTime() - processingStartTime
     lastProcessingTime = currentProcessingTime
@@ -588,6 +497,47 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       frameSkip = max(frameSkip - 1, 15) // Decrease skip rate down to min of 15
       isProcessingHeavyLoad = false
     }
+
+    return result
+  }
+
+  private func processSegmentation(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>) -> CVPixelBuffer? {
+    let pixelBufferWidth = CVPixelBufferGetWidth(pixelBuffer)
+    let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
+
+    var outputBuffer: CVPixelBuffer?
+    let status = CVPixelBufferPoolCreatePixelBuffer(
+        kCFAllocatorDefault, outputPixelBufferPool!, &outputBuffer)
+    if status != kCVReturnSuccess {
+        log("Failed to create output pixel buffer: \(status)", level: .error)
+        return nil
+    }
+
+    guard let outputBuffer = outputBuffer else {
+        return nil
+    }
+
+    let result = Result(
+        size: CGSize(width: pixelBufferWidth, height: pixelBufferHeight),
+        imageSegmenterResult: ImageSegmenterResult(
+            categoryMask: segmentDatas,
+            width: pixelBufferWidth,
+            height: pixelBufferHeight
+        )
+    )
+
+    if isGPUProcessingAvailable() {
+        if !processWithGPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas, width: pixelBufferWidth, height: pixelBufferHeight) {
+            processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+        }
+    } else {
+        processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
+    }
+
+    if frameCounter % frameSkip == 0 {
+        extractColorInformation(from: result.imageSegmenterResult!, pixelBuffer: pixelBuffer)
+    }
+    frameCounter += 1
 
     return outputBuffer
   }
@@ -839,7 +789,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
             
             if segmentClass == SegmentationClass.hair.rawValue {
               hairPixels.append((r: r, g: g, b: b))
-            } 
+            }
             else if segmentClass == SegmentationClass.skin.rawValue && (cheekPoints.isEmpty && foreheadPoints.isEmpty) {
               skinPixels.append((r: r, g: g, b: b))
             }
