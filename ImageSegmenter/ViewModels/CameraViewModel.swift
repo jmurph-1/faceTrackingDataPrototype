@@ -23,7 +23,7 @@ protocol CameraViewModelDelegate: AnyObject {
     // UI updates
     func viewModel(_ viewModel: CameraViewModel, didUpdateFrameQuality quality: FrameQualityService.QualityScore)
     func viewModel(_ viewModel: CameraViewModel, didUpdateSegmentedBuffer buffer: CVPixelBuffer)
-    func viewModel(_ viewModel: CameraViewModel, didUpdateColorInfo colorInfo: MultiClassSegmentedImageRenderer.ColorInfo)
+    func viewModel(_ viewModel: CameraViewModel, didUpdateColorInfo colorInfo: ColorExtractor.ColorInfo)
     func viewModel(_ viewModel: CameraViewModel, didUpdateFaceLandmarks landmarks: [NormalizedLandmark]?)
 
     // Error handling
@@ -43,7 +43,7 @@ class CameraViewModel: NSObject {
     weak var delegate: CameraViewModelDelegate?
     private(set) var isSessionRunning = false
     private(set) var currentFrameQualityScore: FrameQualityService.QualityScore?
-    private(set) var currentColorInfo: MultiClassSegmentedImageRenderer.ColorInfo?
+    private(set) var currentColorInfo: ColorExtractor.ColorInfo?
     private(set) var lastFaceLandmarks: [NormalizedLandmark]?
     private(set) var currentPixelBuffer: CVPixelBuffer?
     private(set) var currentFaceBoundingBox: CGRect?

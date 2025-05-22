@@ -36,9 +36,8 @@ class ClassificationService {
     /// - Parameters:
     ///   - pixelBuffer: The current video pixel buffer for thumbnail creation
     ///   - colorInfo: Color information from segmentation
-    func analyzeFrame(pixelBuffer: CVPixelBuffer, colorInfo: MultiClassSegmentedImageRenderer.ColorInfo) {
-        // Check if we have valid colors to analyze - these are not optionals
-        if colorInfo.skinColor == nil || colorInfo.hairColor == nil {
+    func analyzeFrame(pixelBuffer: CVPixelBuffer, colorInfo: ColorExtractor.ColorInfo) {
+        if colorInfo.skinColor == .clear || colorInfo.hairColor == .clear {
             delegate?.classificationService(self, didFailWithError: ClassificationError.insufficientColorData)
             return
         }

@@ -20,7 +20,7 @@ class FaceLandmarkQualityCalculator {
         let imageArea = 1.0 // Normalized area (1.0 x 1.0)
         let ratio = Float(faceArea / imageArea)
         
-        print("Face area ratio: \(ratio)")
+        //print("Face area ratio: \(ratio)")
         
         if ratio < 0.05 {
             return max(0, ratio / 0.05)
@@ -74,15 +74,15 @@ class FaceLandmarkQualityCalculator {
         
         // Key facial points to sample brightness (forehead, cheeks, nose, chin)
         // Use safer indices well within the landmark count
-        let keyPointIndices = [10, 50, 152, 234, 300]
-        print("Calculating brightness using landmarks: \(keyPointIndices)")
+        let keyPointIndices = [50, 330, 151]
+        //print("Calculating brightness using landmarks: \(keyPointIndices)")
         
         CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
         defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
         
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
-        print("Pixel buffer dimensions: \(width)x\(height)")
+        //print("Pixel buffer dimensions: \(width)x\(height)")
         
         // Direct pixel buffer sampling instead of CIFilter
         guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer),
@@ -124,7 +124,7 @@ class FaceLandmarkQualityCalculator {
             totalBrightness += pointBrightness
             sampleCount += 1
             
-            print("Sample at point \(index) (\(pointX),\(pointY)): \(pointBrightness)")
+            //print("Sample at point \(index) (\(pointX),\(pointY)): \(pointBrightness)")
         }
         
         guard sampleCount > 0 else {
@@ -133,7 +133,7 @@ class FaceLandmarkQualityCalculator {
         }
         
         let averageBrightness = totalBrightness / Float(sampleCount)
-        print("Average brightness: \(averageBrightness)")
+        //print("Average brightness: \(averageBrightness)")
         
         // Map to quality score using same thresholds
         if averageBrightness < 0.2 {
@@ -156,11 +156,11 @@ class FaceLandmarkQualityCalculator {
             return 0.0
         }
         
-        print("Calculating sharpness with \(landmarks.count) landmarks")
+        //print("Calculating sharpness with \(landmarks.count) landmarks")
         
         // Sample points across the face for sharpness calculation
         // Use a simpler approach with key facial points rather than connections
-        let keyPointIndices = [10, 50, 152, 234, 300]
+        let keyPointIndices = [381, 153, 154, 464, 467, 474]
         
         CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
         defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
@@ -228,11 +228,11 @@ class FaceLandmarkQualityCalculator {
         }
         
         let averageGradient = gradientSum / Float(sampleCount)
-        print("Average gradient (sharpness): \(averageGradient)")
+        //print("Average gradient (sharpness): \(averageGradient)")
         
         // Normalize to 0-1 range
         let normalizedGradient = min(1.0, averageGradient / 0.1)
-        print("Normalized sharpness score: \(normalizedGradient)")
+        //print("Normalized sharpness score: \(normalizedGradient)")
         
         return normalizedGradient
     }

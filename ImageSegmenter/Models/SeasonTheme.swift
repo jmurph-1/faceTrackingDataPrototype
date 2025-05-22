@@ -204,14 +204,14 @@ struct SeasonTheme {
     // Dark Autumn Themes - Deep, Warm, Rich
     static let darkAutumnThemes: [SeasonTheme] = [
         SeasonTheme(
-            primaryColor: Color(hex: "#584d37"), // Millbrook - Deep Olive Brown
-            paletteWhite: Color(hex: "#efdece"), // Almond - Light Warm Beige
+            primaryColor: Color(hex: "#D8AF66"), // ochre, muted yellow type
+            paletteWhite: Color(hex: "#F2E1C1"), // Almond - Light Warm Beige
             accentColor: Color(hex: "#018381"), // Teal - Rich Teal
-            accentColor2: Color(hex: "#8d021f"), // Pohutukawa - Deep Berry Red
-            backgroundColor: Color(hex: "#cebbaa"), // Coral Reef - Muted Warm Beige
-            secondaryBackgroundColor: Color(hex: "#704d37"), // Shingle Fawn - Rich Brown
+            accentColor2: Color(hex: "#CE5C5B"), // Pohutukawa - Deep Berry Red
+            backgroundColor: Color(hex: "#EEDFCE"), // Coral Reef - Muted Warm Beige
+            secondaryBackgroundColor: Color(hex: "#311432"), // eggplant - deep purple
             textColor: Color(hex: "#362f29"), // Thunder - Darkest Brown
-            moduleColor: Color(hex: "#84563c") // Potters Clay - Terracotta Brown
+            moduleColor: Color(hex: "#8D011F") // Olive green
         ),
         SeasonTheme(
             primaryColor: Color(hex: "#619ea1"), // Gothic - Muted Teal

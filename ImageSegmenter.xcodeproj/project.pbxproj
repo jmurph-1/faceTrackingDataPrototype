@@ -37,7 +37,6 @@
 		5222FDDD2DD40F8400EF3C65 /* SeasonClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDDC2DD40F8400EF3C65 /* SeasonClassifier.swift */; };
 		5222FDDE2DD40F8400EF3C65 /* FrameQualityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDDB2DD40F8400EF3C65 /* FrameQualityService.swift */; };
 		5222FDDF2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDDA2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift */; };
-		5222FDE02DD40F8400EF3C65 /* ColorConversionShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDD82DD40F8400EF3C65 /* ColorConversionShader.metal */; };
 		5222FDE12DD40F8400EF3C65 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDD92DD40F8400EF3C65 /* CoreDataManager.swift */; };
 		5222FDEA2DD40FBE00EF3C65 /* ColorConverters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDE72DD40FBE00EF3C65 /* ColorConverters.swift */; };
 		5222FDEB2DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5222FDE82DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift */; };
@@ -78,10 +77,13 @@
 		523112EB2DD6F76B00FCFC91 /* ColorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EA2DD6F76B00FCFC91 /* ColorData.swift */; };
 		523112ED2DD6F7C000FCFC91 /* SeasonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */; };
 		5231132F2DD728CF00FCFC91 /* Light Summer.json in Resources */ = {isa = PBXBuildFile; fileRef = 5231132E2DD728CF00FCFC91 /* Light Summer.json */; };
+		523113312DDEA6E800FCFC91 /* ColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113302DDEA6C900FCFC91 /* ColorExtractor.swift */; };
+		523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */; };
+		523113352DDFD64300FCFC91 /* UIImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113342DDFD63100FCFC91 /* UIImageOrientation.swift */; };
+		523113372DDFD8D000FCFC91 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 523113362DDFD8D000FCFC91 /* Shaders.metal */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
-		52BEF1812DD2F93800957595 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1822DD2F93800957595 /* Shaders.metal */; };
 		52BEF1832DD3114B00957595 /* video_processing_plan.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1822DD3114B00957595 /* video_processing_plan.md */; };
 		52BEF1852DD312E200957595 /* rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF1842DD312D900957595 /* rules.md */; };
 		BF6EBB4F2B1EB5BE00CD13FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB4E2B1EB5BE00CD13FB /* AppDelegate.swift */; };
@@ -95,9 +97,7 @@
 		BF6EBB952B1EB75B00CD13FB /* InferenceConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB882B1EB75B00CD13FB /* InferenceConfigurationManager.swift */; };
 		BF6EBB962B1EB75B00CD13FB /* DefaultConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB892B1EB75B00CD13FB /* DefaultConstants.swift */; };
 		BF6EBB982B1EB75B00CD13FB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB8C2B1EB75B00CD13FB /* RootViewController.swift */; };
-		BF6EBB9A2B1EB75B00CD13FB /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB8E2B1EB75B00CD13FB /* CameraViewController.swift */; };
 		BF6EBB9C2B200D9400CD13FB /* PreviewMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBB9B2B200D9400CD13FB /* PreviewMetalView.swift */; };
-		BF6EBBA22B20531800CD13FB /* SegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBBA12B20531800CD13FB /* SegmentedImageRenderer.swift */; };
 		BF6EBBA62B2070F000CD13FB /* RenderToMtlViewShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = BF6EBBA52B2070F000CD13FB /* RenderToMtlViewShaders.metal */; };
 /* End PBXBuildFile section */
 
@@ -147,7 +147,6 @@
 		5222FDD02DD40F4200EF3C65 /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResult.swift; sourceTree = "<group>"; };
 		5222FDD32DD40F4200EF3C65 /* SeasonAnalysis.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SeasonAnalysis.xcdatamodel; sourceTree = "<group>"; };
 		5222FDD62DD40F5D00EF3C65 /* thresholds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = thresholds.json; sourceTree = "<group>"; };
-		5222FDD82DD40F8400EF3C65 /* ColorConversionShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ColorConversionShader.metal; sourceTree = "<group>"; };
 		5222FDD92DD40F8400EF3C65 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		5222FDDA2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameQualityAnalyzer.swift; sourceTree = "<group>"; };
 		5222FDDB2DD40F8400EF3C65 /* FrameQualityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameQualityService.swift; sourceTree = "<group>"; };
@@ -192,10 +191,13 @@
 		523112EA2DD6F76B00FCFC91 /* ColorData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorData.swift; sourceTree = "<group>"; };
 		523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonViewModel.swift; sourceTree = "<group>"; };
 		5231132E2DD728CF00FCFC91 /* Light Summer.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Light Summer.json"; sourceTree = "<group>"; };
+		523113302DDEA6C900FCFC91 /* ColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractor.swift; sourceTree = "<group>"; };
+		523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = accurate_color_extraction.swift; sourceTree = "<group>"; };
+		523113342DDFD63100FCFC91 /* UIImageOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageOrientation.swift; sourceTree = "<group>"; };
+		523113362DDFD8D000FCFC91 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
-		52BEF1822DD2F93800957595 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		52BEF1822DD3114B00957595 /* video_processing_plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = video_processing_plan.md; sourceTree = "<group>"; };
 		52BEF1842DD312D900957595 /* rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = rules.md; sourceTree = "<group>"; };
 		BF6EBB4B2B1EB5BE00CD13FB /* ImageSegmenter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageSegmenter.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -213,9 +215,7 @@
 		BF6EBB882B1EB75B00CD13FB /* InferenceConfigurationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InferenceConfigurationManager.swift; sourceTree = "<group>"; };
 		BF6EBB892B1EB75B00CD13FB /* DefaultConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultConstants.swift; sourceTree = "<group>"; usesTabs = 0; };
 		BF6EBB8C2B1EB75B00CD13FB /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		BF6EBB8E2B1EB75B00CD13FB /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		BF6EBB9B2B200D9400CD13FB /* PreviewMetalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewMetalView.swift; sourceTree = "<group>"; };
-		BF6EBBA12B20531800CD13FB /* SegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedImageRenderer.swift; sourceTree = "<group>"; };
 		BF6EBBA52B2070F000CD13FB /* RenderToMtlViewShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = RenderToMtlViewShaders.metal; sourceTree = "<group>"; };
 		CB81BA1A32936BF6829D8CD6 /* Pods_ImageSegmenter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ImageSegmenter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -295,6 +295,7 @@
 		5222FDE92DD40FBE00EF3C65 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				523113342DDFD63100FCFC91 /* UIImageOrientation.swift */,
 				523112A12DD5043900FCFC91 /* LoggingService.swift */,
 				5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */,
 				5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */,
@@ -422,23 +423,23 @@
 		BF6EBB812B1EB75B00CD13FB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */,
+				523113302DDEA6C900FCFC91 /* ColorExtractor.swift */,
 				5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */,
 				5222FE282DD4729F00EF3C65 /* ClassificationService.swift */,
 				5222FE292DD4729F00EF3C65 /* ToastService.swift */,
 				5222FE202DD46A7900EF3C65 /* SegmentationService.swift */,
 				5222FE1E2DD4690200EF3C65 /* CameraService.swift */,
-				5222FDD82DD40F8400EF3C65 /* ColorConversionShader.metal */,
 				5222FDD92DD40F8400EF3C65 /* CoreDataManager.swift */,
 				5222FDDA2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift */,
 				5222FDDB2DD40F8400EF3C65 /* FrameQualityService.swift */,
 				5222FDDC2DD40F8400EF3C65 /* SeasonClassifier.swift */,
 				BF6EBB822B1EB75B00CD13FB /* ImageSegmenterService.swift */,
 				BF6EBB832B1EB75B00CD13FB /* CameraFeedService.swift */,
-				BF6EBBA12B20531800CD13FB /* SegmentedImageRenderer.swift */,
 				52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */,
-				52BEF1822DD2F93800957595 /* Shaders.metal */,
 				5222FD9C2DD3AF6100EF3C65 /* FaceLandmarkerService.swift */,
 				5222FD9D2DD3AF6100EF3C65 /* FaceLandmarkRenderer.swift */,
+				523113362DDFD8D000FCFC91 /* Shaders.metal */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -468,7 +469,6 @@
 				523112972DD4799F00FCFC91 /* RefactoredCameraViewController.swift */,
 				5222FDEC2DD40FDA00EF3C65 /* AnalysisResultViewModel.swift */,
 				BF6EBB8C2B1EB75B00CD13FB /* RootViewController.swift */,
-				BF6EBB8E2B1EB75B00CD13FB /* CameraViewController.swift */,
 			);
 			path = ViewContoller;
 			sourceTree = "<group>";
@@ -662,10 +662,11 @@
 				5222FDDD2DD40F8400EF3C65 /* SeasonClassifier.swift in Sources */,
 				5222FDDE2DD40F8400EF3C65 /* FrameQualityService.swift in Sources */,
 				5222FE212DD46A7900EF3C65 /* SegmentationService.swift in Sources */,
+				523113352DDFD64300FCFC91 /* UIImageOrientation.swift in Sources */,
 				5222FDED2DD40FDA00EF3C65 /* AnalysisResultViewModel.swift in Sources */,
 				5222FDDF2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift in Sources */,
+				523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */,
 				523112982DD4799F00FCFC91 /* RefactoredCameraViewController.swift in Sources */,
-				5222FDE02DD40F8400EF3C65 /* ColorConversionShader.metal in Sources */,
 				5222FDE12DD40F8400EF3C65 /* CoreDataManager.swift in Sources */,
 				523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */,
 				BF6EBBA62B2070F000CD13FB /* RenderToMtlViewShaders.metal in Sources */,
@@ -674,11 +675,9 @@
 				523112ED2DD6F7C000FCFC91 /* SeasonViewModel.swift in Sources */,
 				5231129B2DD48A8900FCFC91 /* RendererProtocol.swift in Sources */,
 				5222FE232DD46BED00EF3C65 /* TexturePoolManager.swift in Sources */,
-				BF6EBBA22B20531800CD13FB /* SegmentedImageRenderer.swift in Sources */,
 				5222FE252DD46C1E00EF3C65 /* BufferPoolManager.swift in Sources */,
 				523112A82DD5CAA400FCFC91 /* LandingPageView.swift in Sources */,
 				52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */,
-				52BEF1812DD2F93800957595 /* Shaders.metal in Sources */,
 				5222FDEA2DD40FBE00EF3C65 /* ColorConverters.swift in Sources */,
 				5222FDEB2DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift in Sources */,
 				BF6EBB912B1EB75B00CD13FB /* ImageSegmenterService.swift in Sources */,
@@ -690,6 +689,7 @@
 				BF6EBB952B1EB75B00CD13FB /* InferenceConfigurationManager.swift in Sources */,
 				BF6EBB962B1EB75B00CD13FB /* DefaultConstants.swift in Sources */,
 				5222FE1F2DD4690200EF3C65 /* CameraService.swift in Sources */,
+				523113312DDEA6E800FCFC91 /* ColorExtractor.swift in Sources */,
 				BF6EBB9C2B200D9400CD13FB /* PreviewMetalView.swift in Sources */,
 				5222FD9E2DD3AF6100EF3C65 /* FaceLandmarkerService.swift in Sources */,
 				5222FD9F2DD3AF6100EF3C65 /* FaceLandmarkRenderer.swift in Sources */,
@@ -700,7 +700,6 @@
 				523112B42DD6D39100FCFC91 /* SeasonTheme.swift in Sources */,
 				5222FDD52DD40F4200EF3C65 /* AnalysisResult.swift in Sources */,
 				BF6EBB512B1EB5BE00CD13FB /* SceneDelegate.swift in Sources */,
-				BF6EBB9A2B1EB75B00CD13FB /* CameraViewController.swift in Sources */,
 				BF6EBB932B1EB75B00CD13FB /* MergeColorShaders.metal in Sources */,
 				5231129E2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift in Sources */,
 				5222FDF22DD40FEF00EF3C65 /* FrameQualityIndicatorView.swift in Sources */,
@@ -708,6 +707,7 @@
 				5222FE272DD46C4C00EF3C65 /* PixelBufferPoolManager.swift in Sources */,
 				5222FDF42DD40FEF00EF3C65 /* AnalysisResultView.swift in Sources */,
 				5222FDF52DD40FEF00EF3C65 /* SavedResultsView.swift in Sources */,
+				523113372DDFD8D000FCFC91 /* Shaders.metal in Sources */,
 				5222FDA12DD3B52400EF3C65 /* FaceLandmarkShaders.metal in Sources */,
 			);
 		};
