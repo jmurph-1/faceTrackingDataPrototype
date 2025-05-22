@@ -54,7 +54,6 @@ class SegmentationService {
   }
 
   // Renderers
-  private let render = SegmentedImageRenderer()
   private let multiClassRenderer = MultiClassSegmentedImageRenderer()
 
   // State tracking
