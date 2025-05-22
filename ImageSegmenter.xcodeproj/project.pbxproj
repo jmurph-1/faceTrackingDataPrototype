@@ -79,6 +79,7 @@
 		523112ED2DD6F7C000FCFC91 /* SeasonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */; };
 		5231132F2DD728CF00FCFC91 /* Light Summer.json in Resources */ = {isa = PBXBuildFile; fileRef = 5231132E2DD728CF00FCFC91 /* Light Summer.json */; };
 		523113312DDEA6E800FCFC91 /* ColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113302DDEA6C900FCFC91 /* ColorExtractor.swift */; };
+		523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
@@ -193,6 +194,7 @@
 		523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonViewModel.swift; sourceTree = "<group>"; };
 		5231132E2DD728CF00FCFC91 /* Light Summer.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Light Summer.json"; sourceTree = "<group>"; };
 		523113302DDEA6C900FCFC91 /* ColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractor.swift; sourceTree = "<group>"; };
+		523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = accurate_color_extraction.swift; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -422,6 +424,7 @@
 		BF6EBB812B1EB75B00CD13FB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */,
 				523113302DDEA6C900FCFC91 /* ColorExtractor.swift */,
 				5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */,
 				5222FE282DD4729F00EF3C65 /* ClassificationService.swift */,
@@ -664,6 +667,7 @@
 				5222FE212DD46A7900EF3C65 /* SegmentationService.swift in Sources */,
 				5222FDED2DD40FDA00EF3C65 /* AnalysisResultViewModel.swift in Sources */,
 				5222FDDF2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift in Sources */,
+				523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */,
 				523112982DD4799F00FCFC91 /* RefactoredCameraViewController.swift in Sources */,
 				5222FDE02DD40F8400EF3C65 /* ColorConversionShader.metal in Sources */,
 				5222FDE12DD40F8400EF3C65 /* CoreDataManager.swift in Sources */,

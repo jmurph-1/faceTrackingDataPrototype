@@ -34,12 +34,15 @@ class FaceLandmarkRenderer: RendererProtocol {
     private let landmarkColor = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0)
     private let meshLinesColor = UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 0.7)
     private let contourColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.8)
+    private let landmarkIDColor = UIColor.yellow
+    private let polygonColor = UIColor(red: 0.0, green: 1.0, blue: 1.0, alpha: 0.8)
 
     // Configuration options
     var showLandmarks: Bool = true
     var showMesh: Bool = true
     var showContours: Bool = true
     var landmarkSize: Float = 3.0
+    var highlightedLandmarkIndices: Set<Int>? = nil
 
     init() {
         // Initialize Metal if available, otherwise use CoreGraphics-only approach
@@ -135,38 +138,61 @@ class FaceLandmarkRenderer: RendererProtocol {
                             viewportSize: viewportSize,
                             color: meshLinesColor)
         }
+        
+        // Draw polygon outlines
+        drawPolygonOutlines(context: context,
+                           landmarks: faceLandmarks,
+                           viewportSize: viewportSize)
 
         let outputImage = UIGraphicsGetImageFromCurrentImageContext()
         completion(outputImage)
     }
 
-    // Draw points for landmarks
+    // Draw landmark IDs only for specified highlightedLandmarkIndices
     private func drawPoints(
         context: CGContext,
         landmarks: [NormalizedLandmark],
         viewportSize: CGSize,
         color: UIColor
     ) {
-        context.saveGState()
+        // Only draw indices that are highlighted if set
+        if let indicesToDraw = highlightedLandmarkIndices {
+            context.setFillColor(UIColor.yellow.cgColor) // Highlight color
+            
+            for (index, landmark) in landmarks.enumerated() where indicesToDraw.contains(index) {
+                let point = CGPoint(
+                    x: CGFloat(landmark.x) * viewportSize.width,
+                    y: CGFloat(landmark.y) * viewportSize.height
+                )
+                
+                // Draw landmark ID
+                let text = "\(index)" as NSString
+                let attributes = [
+                    NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16),
+                    NSAttributedString.Key.foregroundColor: UIColor.yellow
+                ]
+                
+                text.draw(at: point, withAttributes: attributes)
+            }
+        }
+        
+        // Draw all points normally
         context.setFillColor(color.cgColor)
-
         for landmark in landmarks {
             let point = CGPoint(
                 x: CGFloat(landmark.x) * viewportSize.width,
                 y: CGFloat(landmark.y) * viewportSize.height
             )
-
+            
             let rect = CGRect(
                 x: point.x - CGFloat(landmarkSize/2),
                 y: point.y - CGFloat(landmarkSize/2),
                 width: CGFloat(landmarkSize),
                 height: CGFloat(landmarkSize)
             )
-
+            
             context.fillEllipse(in: rect)
         }
-
-        context.restoreGState()
     }
 
     // Draw connections between landmarks
@@ -204,6 +230,60 @@ class FaceLandmarkRenderer: RendererProtocol {
             context.strokePath()
         }
 
+        context.restoreGState()
+    }
+
+    // Draw polygon outlines
+    private func drawPolygonOutlines(
+        context: CGContext,
+        landmarks: [NormalizedLandmark],
+        viewportSize: CGSize
+    ) {
+        // Define the three polygons
+        let leftCheekIndices = [117, 118, 101, 36, 205, 187, 123]
+        let rightCheekIndices = [348, 347, 346, 280, 425, 266, 371, 329]
+        let foreheadIndices = [10, 338, 297, 299, 337, 9, 108, 69, 67, 109] 
+        
+        context.saveGState()
+        context.setStrokeColor(polygonColor.cgColor)
+        context.setLineWidth(2.0)
+        
+        let polygons = [leftCheekIndices, rightCheekIndices, foreheadIndices]
+        
+        for indices in polygons {
+            guard !indices.isEmpty else { continue }
+            
+            // Move to first point
+            if let firstIndex = indices.first, firstIndex < landmarks.count {
+                let firstPoint = CGPoint(
+                    x: CGFloat(landmarks[firstIndex].x) * viewportSize.width,
+                    y: CGFloat(landmarks[firstIndex].y) * viewportSize.height
+                )
+                context.move(to: firstPoint)
+            }
+            
+            // Draw lines to subsequent points
+            for index in indices.dropFirst() {
+                guard index < landmarks.count else { continue }
+                let point = CGPoint(
+                    x: CGFloat(landmarks[index].x) * viewportSize.width,
+                    y: CGFloat(landmarks[index].y) * viewportSize.height
+                )
+                context.addLine(to: point)
+            }
+            
+            // Close the polygon
+            if let firstIndex = indices.first, firstIndex < landmarks.count {
+                let firstPoint = CGPoint(
+                    x: CGFloat(landmarks[firstIndex].x) * viewportSize.width,
+                    y: CGFloat(landmarks[firstIndex].y) * viewportSize.height
+                )
+                context.addLine(to: firstPoint)
+            }
+            
+            context.strokePath()
+        }
+        
         context.restoreGState()
     }
 

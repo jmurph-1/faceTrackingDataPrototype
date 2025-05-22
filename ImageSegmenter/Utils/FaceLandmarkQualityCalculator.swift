@@ -74,7 +74,7 @@ class FaceLandmarkQualityCalculator {
         
         // Key facial points to sample brightness (forehead, cheeks, nose, chin)
         // Use safer indices well within the landmark count
-        let keyPointIndices = [10, 50, 152, 234, 300]
+        let keyPointIndices = [50, 330, 151]
         //print("Calculating brightness using landmarks: \(keyPointIndices)")
         
         CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
@@ -160,7 +160,7 @@ class FaceLandmarkQualityCalculator {
         
         // Sample points across the face for sharpness calculation
         // Use a simpler approach with key facial points rather than connections
-        let keyPointIndices = [10, 50, 152, 234, 300]
+        let keyPointIndices = [381, 153, 154, 464, 467, 474]
         
         CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
         defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }

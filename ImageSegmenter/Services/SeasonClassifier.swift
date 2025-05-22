@@ -136,7 +136,9 @@ class SeasonClassifier {
         let skinL = Float(skinColor.L)
         let skinA = Float(skinColor.a)
         let skinB = Float(skinColor.b)
-
+        
+        print("Calc: Skin L:", skinL, " Skin A:", skinA, " Skin B:", skinB, "\n")
+        
         // Calculate chroma (color intensity)
         let skinChroma = sqrt(skinA * skinA + skinB * skinB)
 

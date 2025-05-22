@@ -63,7 +63,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   private var computePipelineState: MTLComputePipelineState?
   private var downsampleComputePipelineState: MTLComputePipelineState?
 
-  private var textureCache: CVMetalTextureCache! 
+  private var textureCache: CVMetalTextureCache!
   private var downsampledTexture: MTLTexture?
   private var segmentationBuffer: MTLBuffer?
 
@@ -97,6 +97,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     
     colorExtractor = ColorExtractor(metalDevice: self.metalDevice, commandQueue: cq)
     
+    faceLandmarkRenderer.highlightedLandmarkIndices = ColorExtractor.relevantLandmarkIndices
 //    faceLandmarkRenderer.showMesh = false
 //    faceLandmarkRenderer.showContours = false
 //    faceLandmarkRenderer.landmarkSize = 1.0
@@ -671,8 +672,8 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       let categoryMask = segmenterResult.categoryMask {
 
       if frameCounter % frameSkip == 0 {
-         colorExtractor.extractColorsOptimized(
-            from: texture, 
+         colorExtractor.extractColorsHighAccuracy(
+            from: texture,
             segmentMask: categoryMask,
             width: segmenterResult.width,
             height: segmenterResult.height

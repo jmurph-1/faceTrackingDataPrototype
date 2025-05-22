@@ -8,6 +8,13 @@ import CoreGraphics // For CGPoint, CGFloat
 
 class ColorExtractor {
 
+    static var relevantLandmarkIndices: Set<Int> {
+        let leftCheekIndices = [117, 118, 101, 205, 187, 123, 50]
+        let rightCheekIndices = [329, 348, 347, 346, 280, 425, 266, 330]
+        let foreheadIndices = [9, 108, 67, 109, 10, 338, 297, 299, 336, 151, 337]
+        return Set(leftCheekIndices + rightCheekIndices + foreheadIndices)
+    }
+
     struct ColorInfo {
         var skinColor: UIColor = .clear
         var hairColor: UIColor = .clear
@@ -15,12 +22,12 @@ class ColorExtractor {
         var hairColorHSV: (h: CGFloat, s: CGFloat, v: CGFloat) = (0, 0, 0)
     }
 
-    private var lastColorInfo = ColorInfo()
-    private let smoothingFactor: Float
-    private var lastFaceLandmarks: [NormalizedLandmark]?
+    public var lastColorInfo = ColorInfo()
+    public let smoothingFactor: Float
+    public var lastFaceLandmarks: [NormalizedLandmark]?
 
-    private let metalDevice: MTLDevice
-    private let commandQueue: MTLCommandQueue?
+    public let metalDevice: MTLDevice
+    public let commandQueue: MTLCommandQueue?
 
     init(metalDevice: MTLDevice, commandQueue: MTLCommandQueue?, smoothingFactor: Float = 0.3) {
         self.metalDevice = metalDevice
@@ -36,11 +43,15 @@ class ColorExtractor {
         return lastColorInfo
     }
 
+    // MARK: - Original Optimization Method (Commented Out)
+    
+    /*
+    // OLD IMPLEMENTATION - can uncomment to revert
     func extractColorsOptimized(
         from texture: MTLTexture,
         segmentMask: UnsafePointer<UInt8>,
-        width: Int, // width of the segment mask and should match texture.width
-        height: Int // height of the segment mask and should match texture.height
+        width: Int,
+        height: Int
     ) {
         let processingWidth = texture.width
         let processingHeight = texture.height
@@ -104,9 +115,10 @@ class ColorExtractor {
             
             if let landmarks = self.lastFaceLandmarks, !landmarks.isEmpty {
                 print("Extracting colors with landmarks")
-                let leftCheekIndices = [117, 118, 119, 120, 121, 122, 123, 147, 187, 207, 206, 203, 204]
-                let rightCheekIndices = [348, 349, 350, 351, 352, 353, 354, 376, 411, 427, 426, 423, 424]
-                let foreheadIndices = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 71, 63, 105, 66, 107, 55, 65, 52, 53]
+                let relevantIndices = ColorExtractor.relevantLandmarkIndices
+                let leftCheekIndices = [117, 118, 101, 205, 187, 123, 50]
+                let rightCheekIndices = [329, 348, 347, 346, 280, 425, 266, 330]
+                let foreheadIndices = [9, 108, 67, 109, 10, 338, 297, 299, 336, 151, 337]
                 
                 for index in leftCheekIndices + rightCheekIndices {
                     if index < landmarks.count {
@@ -212,8 +224,25 @@ class ColorExtractor {
         }
         cmdBuffer.commit()
     }
+    */
 
-    private func blendColors(newColor: UIColor, oldColor: UIColor, factor: Float) -> UIColor {
+    // MARK: - New Implementation Delegation
+    func extractColorsOptimized(
+        from texture: MTLTexture,
+        segmentMask: UnsafePointer<UInt8>,
+        width: Int,
+        height: Int
+    ) {
+        // Delegate to new high accuracy implementation
+        extractColorsHighAccuracy(
+            from: texture,
+            segmentMask: segmentMask,
+            width: width,
+            height: height
+        )
+    }
+
+    public func blendColors(newColor: UIColor, oldColor: UIColor, factor: Float) -> UIColor {
         let factorCG = CGFloat(factor)
         var (nR, nG, nB, nA): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
         var (oR, oG, oB, oA): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
