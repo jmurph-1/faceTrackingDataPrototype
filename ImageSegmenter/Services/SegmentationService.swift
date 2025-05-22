@@ -26,7 +26,7 @@ protocol SegmentationServiceDelegate: AnyObject {
 struct SegmentationResult {
   let outputPixelBuffer: CVPixelBuffer
   let segmentationMask: Data?
-  let colorInfo: MultiClassSegmentedImageRenderer.ColorInfo
+  let colorInfo: ColorExtractor.ColorInfo
   let faceBoundingBox: CGRect?
   let faceLandmarks: [NormalizedLandmark]?
   let inferenceTime: TimeInterval?
@@ -166,7 +166,7 @@ class SegmentationService {
   }
 
   // Get current color information for analysis
-  func getCurrentColorInfo() -> MultiClassSegmentedImageRenderer.ColorInfo {
+  func getCurrentColorInfo() -> ColorExtractor.ColorInfo {
     return multiClassRenderer.getCurrentColorInfo()
   }
   

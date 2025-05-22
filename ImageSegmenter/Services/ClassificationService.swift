@@ -36,9 +36,14 @@ class ClassificationService {
     /// - Parameters:
     ///   - pixelBuffer: The current video pixel buffer for thumbnail creation
     ///   - colorInfo: Color information from segmentation
-    func analyzeFrame(pixelBuffer: CVPixelBuffer, colorInfo: MultiClassSegmentedImageRenderer.ColorInfo) {
+    func analyzeFrame(pixelBuffer: CVPixelBuffer, colorInfo: ColorExtractor.ColorInfo) {
         // Check if we have valid colors to analyze - these are not optionals
-        if colorInfo.skinColor == nil || colorInfo.hairColor == nil {
+        // Assuming ColorInfo struct still uses UIColor? for skinColor and hairColor.
+        // If they are non-optional UIColor.clear by default, this check needs adjustment.
+        // Based on ColorExtractor, they are non-optional UIColor and default to .clear.
+        // So, `colorInfo.skinColor == nil` will always be false.
+        // The check should be against .clear if that's the "invalid" state.
+        if colorInfo.skinColor == .clear || colorInfo.hairColor == .clear {
             delegate?.classificationService(self, didFailWithError: ClassificationError.insufficientColorData)
             return
         }

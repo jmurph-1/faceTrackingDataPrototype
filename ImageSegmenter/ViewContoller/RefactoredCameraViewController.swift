@@ -180,21 +180,6 @@ class RefactoredCameraViewController: UIViewController {
         // Analyze current frame using view model
         print("ANALYZE_FLOW: Calling analyzeCurrentFrame on ViewModel")
         viewModel.analyzeCurrentFrame()
-        // The ViewModel will post a notification "AnalysisResultReady"
-        // and handle removing the loading indicator upon receiving that notification or error.
-        // However, we should ensure the button state is reset.
-        // The loading indicator removal is handled in `handleAnalysisResultReady` or if an error occurs.
-        
-        // Reset button state after a short delay to allow processing to start
-        // The view model's `analyzeCurrentFrame` is asynchronous in its effect (notification)
-        // So, we reset the button state. The loading indicator is handled by `handleAnalysisResultReady`
-        // or by the error handler in the view model delegate.
-        // For now, let's keep it simple and reset button state.
-        // We'll rely on handleAnalysisResultReady to remove the spinner.
-        // The `resetButtonState` call already handles removing the spinner if it's still there.
-        // No, the viewModel.analyzeCurrentFrame() is synchronous in its internal call to classificationService.analyzeFrame.
-        // The result comes back via delegate. So, we only reset `isAnalyzeButtonPressed`.
-        // The spinner removal will be handled by `handleAnalysisResultReady` or error delegate.
 
         // Reset button state. Spinner removal is handled by other delegate methods.
         DispatchQueue.main.async {
@@ -310,12 +295,6 @@ class RefactoredCameraViewController: UIViewController {
                 hostingController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
                 hostingController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
                 hostingController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10), // This will define its width
-                // No explicit bottom anchor that defines height, let intrinsic content size try to dictate it,
-                // but it MUST NOT go below the frameQualityView.
-                // The 'bottomAnchorConstraint' (lessThanOrEqualTo) acts as an upper limit for its bottom edge.
-                // An explicit height constraint might be needed if intrinsic sizing is ambiguous.
-                // For now, let's rely on the SwiftUI view's intrinsic size primarily for height.
-                // The `lessThanOrEqualTo` constraint for the bottom anchor will prevent it from growing indefinitely downwards.
                 bottomAnchorConstraint // This is important to cap its maximum extent
             ])
 
@@ -351,15 +330,7 @@ class RefactoredCameraViewController: UIViewController {
 
     // MARK: - UI Update Methods
 
-    // Landmark overlay visibility will be handled directly or tied to debug overlay.
-    /*
-    private func updateUIForTrackingMode(isFaceTrackingEnabled: Bool) {
-       landmarksOverlayView?.isHidden = true // Always hide
-       clearLandmarksOverlay()
-    }
-    */
-
-    private func updateColorDisplay(_ colorInfo: MultiClassSegmentedImageRenderer.ColorInfo) {
+    private func updateColorDisplay(_ colorInfo: ColorExtractor.ColorInfo) {
         // Update skin color label
         if let skinRGB = colorInfo.skinColor.cgColor.components, skinRGB.count >= 3 {
             let skinHSV = colorInfo.skinColorHSV
@@ -382,7 +353,7 @@ class RefactoredCameraViewController: UIViewController {
         analyzeButton.alpha = isEnabled ? 1.0 : 0.5
     }
 
-    private func updateDebugOverlay(fps: Float, colorInfo: MultiClassSegmentedImageRenderer.ColorInfo?, qualityScore: FrameQualityService.QualityScore?) {
+    private func updateDebugOverlay(fps: Float, colorInfo: ColorExtractor.ColorInfo?, qualityScore: FrameQualityService.QualityScore?) {
         guard isDebugOverlayVisible, let hostingController = debugOverlayHostingController else {
             return
         }
@@ -613,7 +584,7 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
         }
     }
 
-    func viewModel(_ viewModel: CameraViewModel, didUpdateColorInfo colorInfo: MultiClassSegmentedImageRenderer.ColorInfo) {
+    func viewModel(_ viewModel: CameraViewModel, didUpdateColorInfo colorInfo: ColorExtractor.ColorInfo) {
         // Update color display
         DispatchQueue.main.async { [weak self] in
             self?.updateColorDisplay(colorInfo)
