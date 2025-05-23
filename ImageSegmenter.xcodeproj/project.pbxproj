@@ -81,6 +81,7 @@
 		523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */; };
 		523113352DDFD64300FCFC91 /* UIImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113342DDFD63100FCFC91 /* UIImageOrientation.swift */; };
 		523113372DDFD8D000FCFC91 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 523113362DDFD8D000FCFC91 /* Shaders.metal */; };
+		5231133B2DE0284D00FCFC91 /* ColorExtractor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231133A2DE0283C00FCFC91 /* ColorExtractor+Utils.swift */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
@@ -195,6 +196,7 @@
 		523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = accurate_color_extraction.swift; sourceTree = "<group>"; };
 		523113342DDFD63100FCFC91 /* UIImageOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageOrientation.swift; sourceTree = "<group>"; };
 		523113362DDFD8D000FCFC91 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		5231133A2DE0283C00FCFC91 /* ColorExtractor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorExtractor+Utils.swift"; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -295,6 +297,8 @@
 		5222FDE92DD40FBE00EF3C65 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				5231133A2DE0283C00FCFC91 /* ColorExtractor+Utils.swift */,
+				5222FDE72DD40FBE00EF3C65 /* ColorConverters.swift */,
 				523113342DDFD63100FCFC91 /* UIImageOrientation.swift */,
 				523112A12DD5043900FCFC91 /* LoggingService.swift */,
 				5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */,
@@ -302,7 +306,6 @@
 				5222FE262DD46C3C00EF3C65 /* PixelBufferPoolManager.swift */,
 				5222FE242DD46C1200EF3C65 /* BufferPoolManager.swift */,
 				5222FE222DD46BE000EF3C65 /* TexturePoolManager.swift */,
-				5222FDE72DD40FBE00EF3C65 /* ColorConverters.swift */,
 				5222FDE82DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift */,
 			);
 			path = Utils;
@@ -648,6 +651,7 @@
 				"",
 				"",
 				"",
+				"",
 			);
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -678,6 +682,7 @@
 				5222FE252DD46C1E00EF3C65 /* BufferPoolManager.swift in Sources */,
 				523112A82DD5CAA400FCFC91 /* LandingPageView.swift in Sources */,
 				52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */,
+				5231133B2DE0284D00FCFC91 /* ColorExtractor+Utils.swift in Sources */,
 				5222FDEA2DD40FBE00EF3C65 /* ColorConverters.swift in Sources */,
 				5222FDEB2DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift in Sources */,
 				BF6EBB912B1EB75B00CD13FB /* ImageSegmenterService.swift in Sources */,

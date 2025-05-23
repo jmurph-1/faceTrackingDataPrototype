@@ -6,8 +6,12 @@ import CoreGraphics // For CGPoint, CGFloat
 // Assuming LoggingService and BufferPoolManager are globally accessible singletons as in the original file.
 // Assuming SegmentationClass will be accessible from MultiClassSegmentedImageRenderer or a shared file.
 
+// MARK: - Segmentation-class constants
+/// ID used by MediaPipe’s multi-class model for *face* skin
 class ColorExtractor {
-
+    
+    static let faceSkinClassID: UInt8 = 3
+    
     static var relevantLandmarkIndices: Set<Int> {
         let leftCheekIndices = [117, 118, 101, 205, 187, 123, 50]
         let rightCheekIndices = [329, 348, 347, 346, 280, 425, 266, 330]
@@ -25,6 +29,10 @@ class ColorExtractor {
     public var lastColorInfo = ColorInfo()
     public let smoothingFactor: Float
     public var lastFaceLandmarks: [NormalizedLandmark]?
+    #if DEBUG
+    private(set) var latestTextureFrameIndex: Int = -1
+    private(set) var latestMaskFrameIndex: Int   = -1
+    #endif
 
     public let metalDevice: MTLDevice
     public let commandQueue: MTLCommandQueue?
@@ -43,14 +51,40 @@ class ColorExtractor {
         return lastColorInfo
     }
 
-    // MARK: - New Implementation Delegation
+    #if DEBUG
+    /// Call right after you publish a texture
+    func updateTextureFrameIndex(_ index: Int) {
+        latestTextureFrameIndex = index
+    }
+
+    /// Call right after you publish a segmentation mask
+    func updateMaskFrameIndex(_ index: Int) {
+        latestMaskFrameIndex = index
+    }
+    #endif
+
+    /// Logs whether the most recent texture / mask indices line up.
+    /// Pass a short `context` so the log tells you which call-path performed the check.
+    func debugCheckFrameSync(context: String) {
+        #if DEBUG
+        guard latestTextureFrameIndex >= 0, latestMaskFrameIndex >= 0 else { return }
+
+        if latestTextureFrameIndex == latestMaskFrameIndex {
+            LoggingService.info("ColorExtractor: Frame sync OK (\(context)) – idx \(latestTextureFrameIndex)")
+        } else {
+            LoggingService.warning("ColorExtractor: FRAME DESYNC (\(context)) – texture \(latestTextureFrameIndex) vs mask \(latestMaskFrameIndex)")
+        }
+        #endif
+    }
+
+    // MARK: - Public extraction entry point
     func extractColorsOptimized(
         from texture: MTLTexture,
         segmentMask: UnsafePointer<UInt8>,
         width: Int,
         height: Int
     ) {
-        // Delegate to new high accuracy implementation
+        // Production path → highest-accuracy algorithm
         extractColorsHighAccuracy(
             from: texture,
             segmentMask: segmentMask,

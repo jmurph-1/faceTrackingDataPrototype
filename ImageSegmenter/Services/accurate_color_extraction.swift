@@ -32,7 +32,7 @@ extension ColorExtractor {
             return
         }
         
-        guard let commandQueue = self.commandQueue, 
+        guard let commandQueue = self.commandQueue,
               let cmdBuffer = commandQueue.makeCommandBuffer() else {
             LoggingService.error("ColorExtractor: Failed to create command buffer.")
             BufferPoolManager.shared.recycleBuffer(textureBuffer)
@@ -78,7 +78,7 @@ extension ColorExtractor {
         cmdBuffer.commit()
     }
     
-    // MARK: - High Accuracy Region-Based Extraction
+    // MARK: - High Accuracy Region-Based Extraction with Per-Region Analysis
     
     private func extractColorsFromFaceRegions(
         pixelData: UnsafePointer<UInt8>,
@@ -93,32 +93,61 @@ extension ColorExtractor {
             return self.lastColorInfo
         }
         
-        // Create accurate polygons for each facial region
+        // Build polygons for each facial region
         let leftCheekPolygon = createOrderedPolygon(
             from: landmarks,
-            indices: [117, 118, 101, 36, 205, 187, 123] // Ordered for proper polygon
+            indices: [187, 205, 36, 101, 118, 117, 123] // Ordered for proper polygon
         )
         
         let rightCheekPolygon = createOrderedPolygon(
             from: landmarks,
-            indices: [348, 347, 346, 280, 425, 266, 371, 329] // Ordered for proper polygon
+            indices: [425, 280, 346, 347, 348, 329, 371, 266] // Ordered for proper polygon
         )
         
         let foreheadPolygon = createOrderedPolygon(
             from: landmarks,
-            indices: [10, 338, 297, 299, 337, 9, 108, 69, 67, 109] // Ordered for proper polygon
+            indices: [9, 337, 299, 297, 338, 10, 109, 67, 69, 108] // Ordered for proper polygon
         )
         
-        // Extract colors with high precision
-        let skinPixels = extractPixelsFromRegions(
+        // Extract colors from each region separately for validation
+        let leftCheekPixels = extractPixelsFromRegions(
             pixelData: pixelData,
             segmentMask: segmentMask,
-            polygons: [leftCheekPolygon, rightCheekPolygon, foreheadPolygon],
-            targetSegmentClass: MultiClassSegmentedImageRenderer.SegmentationClass.skin.rawValue,
+            polygons: [leftCheekPolygon],
+            targetSegmentClass: ColorExtractor.faceSkinClassID,
             processingWidth: processingWidth,
             processingHeight: processingHeight,
             maskWidth: maskWidth,
             maskHeight: maskHeight
+        )
+        
+        let rightCheekPixels = extractPixelsFromRegions(
+            pixelData: pixelData,
+            segmentMask: segmentMask,
+            polygons: [rightCheekPolygon],
+            targetSegmentClass: ColorExtractor.faceSkinClassID,
+            processingWidth: processingWidth,
+            processingHeight: processingHeight,
+            maskWidth: maskWidth,
+            maskHeight: maskHeight
+        )
+        
+        let foreheadPixels = extractPixelsFromRegions(
+            pixelData: pixelData,
+            segmentMask: segmentMask,
+            polygons: [foreheadPolygon],
+            targetSegmentClass: ColorExtractor.faceSkinClassID,
+            processingWidth: processingWidth,
+            processingHeight: processingHeight,
+            maskWidth: maskWidth,
+            maskHeight: maskHeight
+        )
+        
+        // Validate regional consistency before combining
+        let allSkinPixels = validateAndCombineRegionalData(
+            leftCheek: leftCheekPixels,
+            rightCheek: rightCheekPixels,
+            forehead: foreheadPixels
         )
         
         let hairPixels = extractPixelsFromSegmentation(
@@ -131,12 +160,12 @@ extension ColorExtractor {
             maskHeight: maskHeight
         )
         
-        return calculateColorInfo(skinPixels: skinPixels, hairPixels: hairPixels)
+        return calculateColorInfo(skinPixels: allSkinPixels, hairPixels: hairPixels)
     }
     
     // MARK: - Ordered Polygon Creation
     
-    private func createOrderedPolygon(from landmarks: [NormalizedLandmark], indices: [Int]) -> [CGPoint] {
+    public func createOrderedPolygon(from landmarks: [NormalizedLandmark], indices: [Int]) -> [CGPoint] {
         var points: [CGPoint] = []
         
         for index in indices {
@@ -149,26 +178,7 @@ extension ColorExtractor {
         // Ensure we have enough points for a valid polygon
         guard points.count >= 3 else { return points }
         
-        // Order points to create a proper polygon (counter-clockwise)
-        return orderPointsCounterClockwise(points)
-    }
-    
-    private func orderPointsCounterClockwise(_ points: [CGPoint]) -> [CGPoint] {
-        guard points.count >= 3 else { return points }
-        
-        // Find centroid
-        let centroidX = points.map { $0.x }.reduce(0, +) / CGFloat(points.count)
-        let centroidY = points.map { $0.y }.reduce(0, +) / CGFloat(points.count)
-        let centroid = CGPoint(x: centroidX, y: centroidY)
-        
-        // Sort points by angle from centroid
-        let sortedPoints = points.sorted { point1, point2 in
-            let angle1 = atan2(point1.y - centroid.y, point1.x - centroid.x)
-            let angle2 = atan2(point2.y - centroid.y, point2.x - centroid.x)
-            return angle1 < angle2
-        }
-        
-        return sortedPoints
+        return ColorExtractor.orderPointsCCW(points)
     }
     
     // MARK: - High Precision Pixel Extraction
@@ -190,11 +200,15 @@ extension ColorExtractor {
         let subPixelSteps = 3 // Sample 3x3 grid per pixel for better accuracy
         let subPixelOffset = 1.0 / (CGFloat(subPixelSteps * 2))
         
+        typealias Px = ColorExtractor.Pixel
+        
+        // Use sub-pixel sampling for maximum accuracy
         for polygon in polygons {
             guard polygon.count >= 3 else { continue }
             
-            // Get bounding box to optimize search area
-            let boundingBox = getBoundingBox(for: polygon)
+            // Get bounding box to optimise search area
+            let boundingBox = ColorExtractor.boundingBox(of: polygon)
+            
             let startX = max(0, Int((boundingBox.minX - 0.01) * CGFloat(processingWidth)))
             let endX = min(processingWidth, Int((boundingBox.maxX + 0.01) * CGFloat(processingWidth)))
             let startY = max(0, Int((boundingBox.minY - 0.01) * CGFloat(processingHeight)))
@@ -211,7 +225,7 @@ extension ColorExtractor {
                             let sampleY = (CGFloat(y) + subPixelOffset + CGFloat(subY) / CGFloat(subPixelSteps)) / CGFloat(processingHeight)
                             let samplePoint = CGPoint(x: sampleX, y: sampleY)
                             
-                            if isPointInPolygon(samplePoint, polygon: polygon) {
+                            if ColorExtractor.point(samplePoint, inside: polygon) {
                                 samplesInside += 1
                             }
                         }
@@ -232,9 +246,10 @@ extension ColorExtractor {
                                 let g = Float(pixelData[pixelOffset + 1])
                                 let r = Float(pixelData[pixelOffset + 2])
                                 
-                                // Quality filtering - reject very dark or very bright pixels
+                                // Quality filtering
                                 let brightness = (r + g + b) / 3.0
-                                if brightness > 20.0 && brightness < 240.0 {
+                                if brightness > Threshold.minSkinBrightness &&
+                                   brightness < Threshold.maxSkinBrightness {
                                     pixels.append((r: r, g: g, b: b))
                                 }
                             }
@@ -244,41 +259,7 @@ extension ColorExtractor {
             }
         }
         
-        return pixels
-    }
-    
-    // MARK: - Robust Point-in-Polygon Test
-    
-    private func isPointInPolygon(_ point: CGPoint, polygon: [CGPoint]) -> Bool {
-        guard polygon.count >= 3 else { return false }
-        
-        var inside = false
-        var j = polygon.count - 1
-        
-        for i in 0..<polygon.count {
-            let xi = polygon[i].x
-            let yi = polygon[i].y
-            let xj = polygon[j].x
-            let yj = polygon[j].y
-            
-            if ((yi > point.y) != (yj > point.y)) &&
-               (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi) {
-                inside = !inside
-            }
-            j = i
-        }
-        return inside
-    }
-    
-    private func getBoundingBox(for points: [CGPoint]) -> CGRect {
-        guard !points.isEmpty else { return .zero }
-        
-        let minX = points.map { $0.x }.min()!
-        let maxX = points.map { $0.x }.max()!
-        let minY = points.map { $0.y }.min()!
-        let maxY = points.map { $0.y }.max()!
-        
-        return CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+        return pixels as [Px]
     }
     
     // MARK: - Hair Pixel Extraction (Full Segmentation)
@@ -321,7 +302,7 @@ extension ColorExtractor {
         return pixels
     }
     
-    // MARK: - Advanced Color Calculation
+    // MARK: - Advanced Color Calculation with Reliability Validation
     
     private func calculateColorInfo(
         skinPixels: [(r: Float, g: Float, b: Float)],
@@ -330,11 +311,17 @@ extension ColorExtractor {
         
         var newColorInfo = ColorInfo()
         
-        // Advanced skin color calculation with outlier removal
+        // Advanced skin color calculation with reliability validation
         if !skinPixels.isEmpty {
-            let filteredSkinPixels = removeColorOutliers(skinPixels)
-            if !filteredSkinPixels.isEmpty {
-                let avgColor = calculateWeightedAverage(filteredSkinPixels)
+            LoggingService.info("ColorExtractor: raw skin pixel count: \(skinPixels.count)")
+            let filteredSkinPixels = ColorExtractor.removeOutliers(skinPixels)
+            
+            let finalSkinPixels: [(r: Float, g: Float, b: Float)] =
+                filteredSkinPixels.count >= 10 ? filteredSkinPixels : skinPixels
+            LoggingService.info("ColorExtractor: pixels after outlier filter: \(finalSkinPixels.count)")
+            
+            if !finalSkinPixels.isEmpty {
+                let avgColor = ColorExtractor.weightedAverage(finalSkinPixels)
                 let calculatedSkinColor = UIColor(
                     red: CGFloat(avgColor.r / 255.0),
                     green: CGFloat(avgColor.g / 255.0),
@@ -342,16 +329,24 @@ extension ColorExtractor {
                     alpha: 1.0
                 )
                 
-                newColorInfo.skinColor = lastColorInfo.skinColor != .clear ?
-                    blendColors(newColor: calculatedSkinColor, oldColor: lastColorInfo.skinColor, factor: smoothingFactor) :
-                    calculatedSkinColor
-                    
-                newColorInfo.skinColor.getHue(
-                    &newColorInfo.skinColorHSV.h,
-                    saturation: &newColorInfo.skinColorHSV.s,
-                    brightness: &newColorInfo.skinColorHSV.v,
-                    alpha: nil
-                )
+                // Validate if this skin color reading is reliable before updating
+                if isSkinColorReadingReliable(calculatedSkinColor, pixelCount: finalSkinPixels.count) {
+                    newColorInfo.skinColor = lastColorInfo.skinColor != .clear ?
+                        blendColors(newColor: calculatedSkinColor, oldColor: lastColorInfo.skinColor, factor: smoothingFactor) :
+                        calculatedSkinColor
+                        
+                    newColorInfo.skinColor.getHue(
+                        &newColorInfo.skinColorHSV.h,
+                        saturation: &newColorInfo.skinColorHSV.s,
+                        brightness: &newColorInfo.skinColorHSV.v,
+                        alpha: nil
+                    )
+                } else {
+                    // Keep previous values if current reading is unreliable
+                    LoggingService.info("ColorExtractor: Skipping unreliable skin color reading")
+                    newColorInfo.skinColor = lastColorInfo.skinColor
+                    newColorInfo.skinColorHSV = lastColorInfo.skinColorHSV
+                }
             } else {
                 newColorInfo.skinColor = lastColorInfo.skinColor
                 newColorInfo.skinColorHSV = lastColorInfo.skinColorHSV
@@ -363,9 +358,9 @@ extension ColorExtractor {
         
         // Advanced hair color calculation with outlier removal
         if !hairPixels.isEmpty {
-            let filteredHairPixels = removeColorOutliers(hairPixels)
+            let filteredHairPixels = hairPixels
             if !filteredHairPixels.isEmpty {
-                let avgColor = calculateWeightedAverage(filteredHairPixels)
+                let avgColor = calculateSimpleAverage(filteredHairPixels)
                 let calculatedHairColor = UIColor(
                     red: CGFloat(avgColor.r / 255.0),
                     green: CGFloat(avgColor.g / 255.0),
@@ -395,49 +390,229 @@ extension ColorExtractor {
         return newColorInfo
     }
     
-    // MARK: - Statistical Color Processing
+    // MARK: - Regional Data Validation and Reliability Checks
     
-    private func removeColorOutliers(_ pixels: [(r: Float, g: Float, b: Float)]) -> [(r: Float, g: Float, b: Float)] {
-        guard pixels.count > 10 else { return pixels } // Need sufficient samples
+    private func validateAndCombineRegionalData(
+        leftCheek: [(r: Float, g: Float, b: Float)],
+        rightCheek: [(r: Float, g: Float, b: Float)],
+        forehead: [(r: Float, g: Float, b: Float)]
+    ) -> [(r: Float, g: Float, b: Float)] {
         
-        // Calculate median color
-        let sortedR = pixels.map { $0.r }.sorted()
-        let sortedG = pixels.map { $0.g }.sorted()
-        let sortedB = pixels.map { $0.b }.sorted()
+        // More lenient validation - start with basic checks
+        let minPixelsPerRegion = 5 // Reduced from 15 to 5
+        let totalPixels = leftCheek.count + rightCheek.count + forehead.count
         
-        let medianR = sortedR[pixels.count / 2]
-        let medianG = sortedG[pixels.count / 2]
-        let medianB = sortedB[pixels.count / 2]
+        LoggingService.info("ColorExtractor: Regional pixel counts - L:\(leftCheek.count) R:\(rightCheek.count) F:\(forehead.count) Total:\(totalPixels)")
         
-        // Calculate standard deviation
-        let avgR = pixels.map { $0.r }.reduce(0, +) / Float(pixels.count)
-        let avgG = pixels.map { $0.g }.reduce(0, +) / Float(pixels.count)
-        let avgB = pixels.map { $0.b }.reduce(0, +) / Float(pixels.count)
+        // Check if we have ANY reasonable data
+        guard totalPixels >= 10 else {
+            LoggingService.info("ColorExtractor: Total pixels too low: \(totalPixels)")
+            return []
+        }
         
-        let varianceR = pixels.map { pow($0.r - avgR, 2) }.reduce(0, +) / Float(pixels.count)
-        let varianceG = pixels.map { pow($0.g - avgG, 2) }.reduce(0, +) / Float(pixels.count)
-        let varianceB = pixels.map { pow($0.b - avgB, 2) }.reduce(0, +) / Float(pixels.count)
+        // Collect all non-empty regions
+        var validRegions: [[(r: Float, g: Float, b: Float)]] = []
+        var regionAverages: [(r: Float, g: Float, b: Float)] = []
         
-        let stdDevR = sqrt(varianceR)
-        let stdDevG = sqrt(varianceG)
-        let stdDevB = sqrt(varianceB)
+        if leftCheek.count >= minPixelsPerRegion {
+            let avg = calculateSimpleAverage(leftCheek)
+            if !isTooBlack(avg) {
+                validRegions.append(leftCheek)
+                regionAverages.append(avg)
+                LoggingService.info("ColorExtractor: Left cheek valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
+            } else {
+                LoggingService.info("ColorExtractor: Left cheek too dark")
+            }
+        }
         
-        // Filter outliers (within 2 standard deviations)
-        return pixels.filter { pixel in
-            abs(pixel.r - avgR) <= 2 * stdDevR &&
-            abs(pixel.g - avgG) <= 2 * stdDevG &&
-            abs(pixel.b - avgB) <= 2 * stdDevB
+        if rightCheek.count >= minPixelsPerRegion {
+            let avg = calculateSimpleAverage(rightCheek)
+            if !isTooBlack(avg) {
+                validRegions.append(rightCheek)
+                regionAverages.append(avg)
+                LoggingService.info("ColorExtractor: Right cheek valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
+            } else {
+                LoggingService.info("ColorExtractor: Right cheek too dark")
+            }
+        }
+        
+        if forehead.count >= minPixelsPerRegion {
+            let avg = calculateSimpleAverage(forehead)
+            if !isTooBlack(avg) {
+                validRegions.append(forehead)
+                regionAverages.append(avg)
+                LoggingService.info("ColorExtractor: Forehead valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
+            } else {
+                LoggingService.info("ColorExtractor: Forehead too dark")
+            }
+        }
+        
+        // Need at least 2 valid regions for consistency check
+        guard validRegions.count >= 2 else {
+            LoggingService.info("ColorExtractor: Only \(validRegions.count) valid regions - combining all available data")
+            // If we have any valid data, use it (relaxed approach)
+            return validRegions.flatMap { $0 }
+        }
+        
+        // Check consistency between valid regions only
+        if areRegionalColorsConsistent(regionAverages) {
+            LoggingService.info("ColorExtractor: Regional colors consistent - combining \(validRegions.count) regions")
+            return validRegions.flatMap { $0 }
+        } else {
+            LoggingService.info("ColorExtractor: Regional colors inconsistent but using largest region")
+            // Fallback: use the region with most pixels
+            let largestRegion = validRegions.max(by: { $0.count < $1.count }) ?? []
+            return largestRegion
         }
     }
     
-    private func calculateWeightedAverage(_ pixels: [(r: Float, g: Float, b: Float)]) -> (r: Float, g: Float, b: Float) {
-        // Weight pixels towards center values to reduce noise
+    private func calculateSimpleAverage(_ pixels: [(r: Float, g: Float, b: Float)]) -> (r: Float, g: Float, b: Float) {
+        guard !pixels.isEmpty else { return (0, 0, 0) }
+        
+        let count = Float(pixels.count)
         let totalR = pixels.map { $0.r }.reduce(0, +)
         let totalG = pixels.map { $0.g }.reduce(0, +)
         let totalB = pixels.map { $0.b }.reduce(0, +)
-        let count = Float(pixels.count)
         
         return (r: totalR / count, g: totalG / count, b: totalB / count)
+    }
+    
+    private func isTooBlack(_ color: (r: Float, g: Float, b: Float)) -> Bool {
+        let brightness = (color.r + color.g + color.b) / 3.0
+        let isTooBlack = brightness < 15.0 // Reduced from 30.0 to 15.0
+        if isTooBlack {
+            LoggingService.info("ColorExtractor: Color too black - brightness: \(brightness)")
+        }
+        return isTooBlack
+    }
+    
+    private func areRegionalColorsConsistent(_ regionAverages: [(r: Float, g: Float, b: Float)]) -> Bool {
+        guard regionAverages.count >= 2 else { return true }
+        
+        var maxDistance: Float = 0
+        
+        // Check all pairs of regions
+        for i in 0..<regionAverages.count {
+            for j in (i+1)..<regionAverages.count {
+                let distance = colorDistance(regionAverages[i], regionAverages[j])
+                maxDistance = max(maxDistance, distance)
+                LoggingService.info("ColorExtractor: Distance between regions \(i) and \(j): \(distance)")
+            }
+        }
+        
+        let consistencyThreshold: Float = 50.0 // Increased from 35.0 to 50.0
+        let isConsistent = maxDistance <= consistencyThreshold
+        
+        LoggingService.info("ColorExtractor: Max regional distance: \(maxDistance), threshold: \(consistencyThreshold), consistent: \(isConsistent)")
+        
+        return isConsistent
+    }
+    
+    private func colorDistance(_ color1: (r: Float, g: Float, b: Float), _ color2: (r: Float, g: Float, b: Float)) -> Float {
+        let deltaR = color1.r - color2.r
+        let deltaG = color1.g - color2.g
+        let deltaB = color1.b - color2.b
+        return sqrt(deltaR * deltaR + deltaG * deltaG + deltaB * deltaB)
+    }
+    
+    private func isSkinColorReadingReliable(_ color: UIColor, pixelCount: Int) -> Bool {
+        LoggingService.info("ColorExtractor: Validating skin color reading with \(pixelCount) pixels")
+        
+        if lastColorInfo.skinColor == .clear {
+            LoggingService.info("ColorExtractor: First skin reading – bypassing reliability gate")
+            return true
+        }
+        
+        guard pixelCount >= 10 else {
+            LoggingService.info("ColorExtractor: Insufficient total pixels: \(pixelCount)")
+            return false
+        }
+        
+        // Check 2: Color is not too black (likely an error)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
+        color.getRed(&r, green: &g, blue: &b, alpha: nil)
+        
+        let brightness = (Float(r) + Float(g) + Float(b)) / 3.0
+        LoggingService.info("ColorExtractor: Color brightness: \(brightness), RGB: (\(r), \(g), \(b))")
+        
+        guard brightness >= 0.08 else { // Reduced from 0.15 to 0.08 (8% minimum)
+            LoggingService.info("ColorExtractor: Color too dark: \(brightness)")
+            return false
+        }
+        
+        // Check 3: Color passes basic skin color validation (more lenient)
+        let skinColorValid = isSkinColorFast(r: Float(r * 255), g: Float(g * 255), b: Float(b * 255))
+        LoggingService.info("ColorExtractor: Skin color validation result: \(skinColorValid)")
+        
+        // Make skin validation optional for initial frames
+        if lastColorInfo.skinColor == .clear {
+            // For first-time detection, skip skin color validation
+            LoggingService.info("ColorExtractor: First time detection - skipping skin validation")
+        } else if !skinColorValid {
+            LoggingService.info("ColorExtractor: Color failed skin validation")
+            return false
+        }
+        
+        // Check 4: If we already have a skin color, new color shouldn't be drastically different
+        if lastColorInfo.skinColor != .clear {
+            var lastR: CGFloat = 0, lastG: CGFloat = 0, lastB: CGFloat = 0
+            lastColorInfo.skinColor.getRed(&lastR, green: &lastG, blue: &lastB, alpha: nil)
+            
+            let colorChange = sqrt(
+                pow(Float(r - lastR), 2) +
+                pow(Float(g - lastG), 2) +
+                pow(Float(b - lastB), 2)
+            )
+            
+            LoggingService.info("ColorExtractor: Color change magnitude: \(colorChange)")
+            
+            // ----------------------------------------------------------
+            // Allow larger jumps when we have a *lot* of data or
+            // make the threshold adaptive to sample size
+            // ----------------------------------------------------------
+            let baseThreshold: Float = 0.5         // old static value
+            let adaptiveBoost = min(Float(pixelCount) / 5000.0, 1.0) * 0.5
+            let maxChangeThreshold = baseThreshold + adaptiveBoost
+            if colorChange > maxChangeThreshold {
+                LoggingService.info(
+                    "ColorExtractor: Change \(colorChange) > \(maxChangeThreshold) – rejected"
+                )
+                return false
+            }
+        }
+        
+        LoggingService.info("ColorExtractor: Skin color reading validated successfully")
+        return true
+    }
+    
+    // MARK: - Fast Skin Detection (for validation)
+    
+    private func isSkinColorFast(r: Float, g: Float, b: Float) -> Bool {
+        let red = r / 255.0
+        let green = g / 255.0
+        let blue = b / 255.0
+        
+        // Use YCbCr method for validation
+        let ycbcr = rgbToYCbCrSimple(r: red, g: green, b: blue)
+        let cb = ycbcr.cb
+        let cr = ycbcr.cr
+        
+        // Skin detection ranges
+        let skinRegion1 = (cb >= 70 && cb <= 135) && (cr >= 125 && cr <= 180)
+        let skinRegion2 = (cb >= 80 && cb <= 140) && (cr >= 130 && cr <= 185)
+        
+        return skinRegion1 || skinRegion2
+    }
+    
+    private func rgbToYCbCrSimple(r: Float, g: Float, b: Float) -> (cb: Float, cr: Float) {
+        let r255 = r * 255.0
+        let g255 = g * 255.0
+        let b255 = b * 255.0
+        
+        let cb = -0.169 * r255 - 0.331 * g255 + 0.500 * b255 + 128
+        let cr = 0.500 * r255 - 0.419 * g255 - 0.081 * b255 + 128
+        
+        return (cb: cb, cr: cr)
     }
     
     private func updateColorInfo(with newInfo: ColorInfo) {

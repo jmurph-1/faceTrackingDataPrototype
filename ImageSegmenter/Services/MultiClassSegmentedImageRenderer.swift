@@ -36,12 +36,12 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   }
 
   public enum SegmentationClass: UInt8 {
-    case background = 0
-    case hair = 1
-    case skin = 2
-    case lips = 3
-    case eyes = 4
-    case eyebrows = 5
+    case background  = 0
+    case hair        = 1
+    case bodySkin    = 2   // torso / arms etc.
+    case faceSkin    = 3   // what we need for cheek / forehead
+    case clothes     = 4
+    case accessories = 5   // glasses, hats, etc.
   }
 
   private let faceLandmarkRenderer = FaceLandmarkRenderer()
@@ -436,14 +436,25 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
         memcpy(destPixel, srcPixel, 4)
 
-        if segmentClass > 0 {  // Not background
+        if segmentClass > 0 {  // Anything except background
           switch segmentClass {
           case SegmentationClass.hair.rawValue:
             let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
             destBGRA[0] = UInt8(min(255, Int(Float(destBGRA[0]) * 1.1)))  // B
             destBGRA[1] = UInt8(min(255, Int(Float(destBGRA[1]) * 1.1)))  // G
             destBGRA[2] = UInt8(min(255, Int(Float(destBGRA[2]) * 1.1)))  // R
-          case SegmentationClass.skin.rawValue:
+          case SegmentationClass.faceSkin.rawValue,
+               SegmentationClass.bodySkin.rawValue:
+            let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
+            destBGRA[0] = UInt8(min(255, Int(Float(destBGRA[0]) * 1.05)))  // B
+            destBGRA[1] = UInt8(min(255, Int(Float(destBGRA[1]) * 1.05)))  // G
+            destBGRA[2] = UInt8(min(255, Int(Float(destBGRA[2]) * 1.05)))  // R
+          case SegmentationClass.clothes.rawValue:
+            let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
+            destBGRA[0] = UInt8(min(255, Int(Float(destBGRA[0]) * 1.05)))  // B
+            destBGRA[1] = UInt8(min(255, Int(Float(destBGRA[1]) * 1.05)))  // G
+            destBGRA[2] = UInt8(min(255, Int(Float(destBGRA[2]) * 1.05)))  // R
+          case SegmentationClass.accessories.rawValue:
             let destBGRA = destPixel.bindMemory(to: UInt8.self, capacity: 4)
             destBGRA[0] = UInt8(min(255, Int(Float(destBGRA[0]) * 1.05)))  // B
             destBGRA[1] = UInt8(min(255, Int(Float(destBGRA[1]) * 1.05)))  // G
