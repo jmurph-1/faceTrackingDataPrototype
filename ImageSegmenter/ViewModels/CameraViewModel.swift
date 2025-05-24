@@ -18,6 +18,7 @@ import AVFoundation
 import CoreVideo
 import MediaPipeTasksVision
 
+
 // MARK: - CameraViewModel Delegate Protocol
 protocol CameraViewModelDelegate: AnyObject {
     // UI updates

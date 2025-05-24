@@ -46,7 +46,7 @@ struct DebugOverlayView: View {
         
         //print("DebugOverlayView initialized with qualityScore: \(String(describing: qualityScore))")
         if let quality = qualityScore {
-            print("Quality values - Overall: \(quality.overall), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
+            //print("Quality values - Overall: \(quality.overall), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
         }
     }
 

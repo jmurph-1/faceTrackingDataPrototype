@@ -496,7 +496,7 @@ extension ColorExtractor {
             for j in (i+1)..<regionAverages.count {
                 let distance = colorDistance(regionAverages[i], regionAverages[j])
                 maxDistance = max(maxDistance, distance)
-                LoggingService.info("ColorExtractor: Distance between regions \(i) and \(j): \(distance)")
+                //LoggingService.info("ColorExtractor: Distance between regions \(i) and \(j): \(distance)")
             }
         }
         
@@ -516,15 +516,25 @@ extension ColorExtractor {
     }
     
     private func isSkinColorReadingReliable(_ color: UIColor, pixelCount: Int) -> Bool {
-        LoggingService.info("ColorExtractor: Validating skin color reading with \(pixelCount) pixels")
+        //LoggingService.info("ColorExtractor: Validating skin color reading with \(pixelCount) pixels")
         
-        if lastColorInfo.skinColor == .clear {
-            LoggingService.info("ColorExtractor: First skin reading – bypassing reliability gate")
+        let isFirstReading = lastColorInfo.skinColor == .clear
+        if isFirstReading {
+            //LoggingService.info("ColorExtractor: First skin reading – bypassing reliability gate")
+            // Require higher brightness for first reading
+            var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
+            color.getRed(&r, green: &g, blue: &b, alpha: nil)
+            let brightness = (Float(r) + Float(g) + Float(b)) / 3.0
+            
+            if brightness < 0.2 { // Higher threshold for first reading
+                //LoggingService.info("ColorExtractor: First reading too dark: \(brightness)")
+                return false
+            }
             return true
         }
         
         guard pixelCount >= 10 else {
-            LoggingService.info("ColorExtractor: Insufficient total pixels: \(pixelCount)")
+            //LoggingService.info("ColorExtractor: Insufficient total pixels: \(pixelCount)")
             return false
         }
         
@@ -533,7 +543,7 @@ extension ColorExtractor {
         color.getRed(&r, green: &g, blue: &b, alpha: nil)
         
         let brightness = (Float(r) + Float(g) + Float(b)) / 3.0
-        LoggingService.info("ColorExtractor: Color brightness: \(brightness), RGB: (\(r), \(g), \(b))")
+        //LoggingService.info("ColorExtractor: Color brightness: \(brightness), RGB: (\(r), \(g), \(b))")
         
         guard brightness >= 0.08 else { // Reduced from 0.15 to 0.08 (8% minimum)
             LoggingService.info("ColorExtractor: Color too dark: \(brightness)")
@@ -542,12 +552,12 @@ extension ColorExtractor {
         
         // Check 3: Color passes basic skin color validation (more lenient)
         let skinColorValid = isSkinColorFast(r: Float(r * 255), g: Float(g * 255), b: Float(b * 255))
-        LoggingService.info("ColorExtractor: Skin color validation result: \(skinColorValid)")
+        //LoggingService.info("ColorExtractor: Skin color validation result: \(skinColorValid)")
         
         // Make skin validation optional for initial frames
         if lastColorInfo.skinColor == .clear {
             // For first-time detection, skip skin color validation
-            LoggingService.info("ColorExtractor: First time detection - skipping skin validation")
+            //LoggingService.info("ColorExtractor: First time detection - skipping skin validation")
         } else if !skinColorValid {
             LoggingService.info("ColorExtractor: Color failed skin validation")
             return false
@@ -564,7 +574,7 @@ extension ColorExtractor {
                 pow(Float(b - lastB), 2)
             )
             
-            LoggingService.info("ColorExtractor: Color change magnitude: \(colorChange)")
+            //LoggingService.info("ColorExtractor: Color change magnitude: \(colorChange)")
             
             // ----------------------------------------------------------
             // Allow larger jumps when we have a *lot* of data or
@@ -574,7 +584,7 @@ extension ColorExtractor {
             let adaptiveBoost = min(Float(pixelCount) / 5000.0, 1.0) * 0.5
             let maxChangeThreshold = baseThreshold + adaptiveBoost
             if colorChange > maxChangeThreshold {
-                LoggingService.info(
+                LoggingService.warning(
                     "ColorExtractor: Change \(colorChange) > \(maxChangeThreshold) – rejected"
                 )
                 return false
@@ -616,6 +626,8 @@ extension ColorExtractor {
     }
     
     private func updateColorInfo(with newInfo: ColorInfo) {
+        self.lastColorInfo = newInfo
+        //LoggingService.info("ColorExtractor: running average skin color: \(newInfo.skinColor)")
         DispatchQueue.main.async {
             self.lastColorInfo = newInfo
         }
