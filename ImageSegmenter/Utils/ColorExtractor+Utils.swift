@@ -61,7 +61,7 @@ extension ColorExtractor {
     // MARK: Statistics --------------------------------------------------
     static func weightedAverage(_ pixels: [Pixel]) -> Pixel {
         let cnt = Float(pixels.count)
-        let sums = pixels.reduce((0,0,0)) { res, px in
+        let sums = pixels.reduce((0, 0, 0)) { res, px in
             (res.0 + px.r, res.1 + px.g, res.2 + px.b)
         }
         return (sums.0 / cnt, sums.1 / cnt, sums.2 / cnt)
@@ -92,7 +92,7 @@ extension ColorExtractor {
     enum Threshold {
         static let minSkinBrightness: Float = 20.0
         static let maxSkinBrightness: Float = 240.0
-        
+
         static let minHairBrightness: Float = 5.0
         static let maxHairBrightness: Float = 250.0
     }

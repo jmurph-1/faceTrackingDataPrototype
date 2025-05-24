@@ -10,7 +10,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
   var description: String = "MultiClass Renderer"
   var isPrepared = false
-  
+
   // Current log level - set to info by default
   private var logLevel: LogLevel = .info
 
@@ -22,7 +22,6 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     case debug = 4
     case verbose = 5
   }
-
 
   struct ImageSegmenterResult {
     let categoryMask: UnsafePointer<UInt8>?
@@ -45,7 +44,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   }
 
   private let faceLandmarkRenderer = FaceLandmarkRenderer()
-  
+
   private var lastFaceLandmarks: [NormalizedLandmark]?
 
   private var frameCounter: Int = 0
@@ -76,7 +75,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
 
   required init() {
     let defaultLibrary = metalDevice.makeDefaultLibrary()
-    
+
     if let kernelFunction = defaultLibrary?.makeFunction(name: "processMultiClass") {
         do {
           computePipelineState = try metalDevice.makeComputePipelineState(function: kernelFunction)
@@ -88,21 +87,21 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
         print("Could not load default library or kernel function 'processMultiClass'.")
         computePipelineState = nil
     }
-    
+
     context = CIContext(mtlDevice: metalDevice)
     textureLoader = MTKTextureLoader(device: metalDevice)
-    
+
     let cq = metalDevice.makeCommandQueue()
     self.commandQueue = cq
-    
+
     colorExtractor = ColorExtractor(metalDevice: self.metalDevice, commandQueue: cq)
-    
+
     faceLandmarkRenderer.highlightedLandmarkIndices = ColorExtractor.relevantLandmarkIndices
 //    faceLandmarkRenderer.showMesh = false
 //    faceLandmarkRenderer.showContours = false
 //    faceLandmarkRenderer.landmarkSize = 1.0
   }
-  
+
   func setLogLevel(_ level: LogLevel) {
     logLevel = level
   }
@@ -170,25 +169,25 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     faceLandmarkRenderer.reset()
     isPrepared = false
   }
-  
+
   func handleMemoryWarning() {
     log("Handling memory warning in MultiClassSegmentedImageRenderer", level: .warning)
-    
+
     // Recycle the downsampled texture
     if let texture = downsampledTexture {
       TexturePoolManager.shared.recycleTexture(texture)
       downsampledTexture = nil
     }
-    
+
     if let buffer = segmentationBuffer {
       BufferPoolManager.shared.recycleBuffer(buffer)
       segmentationBuffer = nil
     }
-    
+
     TexturePoolManager.shared.clearPool()
     BufferPoolManager.shared.clearPool()
     PixelBufferPoolManager.shared.clearPools()
-    
+
     if textureCache != nil {
       CVMetalTextureCacheFlush(textureCache, 0)
     }
@@ -478,7 +477,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     processingStartTime = CACurrentMediaTime()
 
     let result = processSegmentation(pixelBuffer: pixelBuffer, segmentDatas: segmentDatas)
-    
+
     // If we have landmarks, render them using FaceLandmarkRenderer
     if let landmarks = lastFaceLandmarks, let outputBuffer = result {
         faceLandmarkRenderer.renderFaceLandmarks(on: outputBuffer, faceLandmarks: landmarks) { image in
@@ -486,7 +485,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
                 // Convert CGImage back to CVPixelBuffer and blend with output
                 let width = CVPixelBufferGetWidth(outputBuffer)
                 let height = CVPixelBufferGetHeight(outputBuffer)
-                
+
                 CVPixelBufferLockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
                 let context = CGContext(data: CVPixelBufferGetBaseAddress(outputBuffer),
                                      width: width,
@@ -495,7 +494,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
                                      bytesPerRow: CVPixelBufferGetBytesPerRow(outputBuffer),
                                      space: CGColorSpaceCreateDeviceRGB(),
                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
-                
+
                 context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
                 CVPixelBufferUnlockBaseAddress(outputBuffer, CVPixelBufferLockFlags(rawValue: 0))
             }
@@ -550,7 +549,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
             )
         )).imageSegmenterResult,
            let categoryMask = imageSegmenterResult.categoryMask {
-            
+
             if let textureForColorExtraction = makeTextureFromCVPixelBuffer(pixelBuffer: pixelBuffer, textureFormat: .bgra8Unorm) {
                  colorExtractor.extractColorsOptimized(
                     from: textureForColorExtraction,
@@ -693,7 +692,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       // Let's assume frameCounter is primarily for processSegmentation path. If this render path is also called per frame, frameCounter logic might need adjustment.
       // For now, assume processSegmentation is the primary frame processing path.
     }
-    
+
     commandBuffer.makeCommandBuffer()?.addCompletedHandler { (_: MTLCommandBuffer) in
       // TexturePoolManager.shared.recycleTexture(texture)
     }
@@ -705,15 +704,15 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   func getCurrentColorInfo() -> ColorExtractor.ColorInfo {
     return colorExtractor.getCurrentColorInfo()
   }
-  
+
   func getFaceLandmarks() -> [NormalizedLandmark]? {
     return lastFaceLandmarks
   }
-  
+
   func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
     lastFaceLandmarks = landmarks
     colorExtractor.updateFaceLandmarks(landmarks)
-    //LoggingService.debug("Updated face landmarks in MultiClassSegmentedImageRenderer: \(landmarks?.count ?? 0) points")
+    // LoggingService.debug("Updated face landmarks in MultiClassSegmentedImageRenderer: \(landmarks?.count ?? 0) points")
   }
 
   func getFaceBoundingBox() -> CGRect {
@@ -723,27 +722,27 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       var minY: CGFloat = 1.0
       var maxX: CGFloat = 0.0
       var maxY: CGFloat = 0.0
-      
+
       for index in faceOvalIndices {
         guard index < landmarks.count else { continue }
         let x = CGFloat(landmarks[index].x)
         let y = CGFloat(landmarks[index].y)
-        
+
         minX = min(minX, x)
         minY = min(minY, y)
         maxX = max(maxX, x)
         maxY = max(maxY, y)
       }
-      
+
       let padding: CGFloat = 0.05
       minX = max(0, minX - padding)
       minY = max(0, minY - padding)
       maxX = min(1, maxX + padding)
       maxY = min(1, maxY + padding)
-      
+
       return CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
-    
+
     return CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
   }
 }

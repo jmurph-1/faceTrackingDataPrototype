@@ -8,10 +8,10 @@ struct DebugOverlayView: View {
             LoggingService.debug("No quality score available")
             return
         }
-        
+
         // Split into multiple lines to avoid exceeding character limit
-        //LoggingService.debug("Quality scores - Overall: \(quality.overall), FaceSize: \(quality.faceSize)")
-        //LoggingService.debug("Quality scores - Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
+        // LoggingService.debug("Quality scores - Overall: \(quality.overall), FaceSize: \(quality.faceSize)")
+        // LoggingService.debug("Quality scores - Position: \(quality.facePosition), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
     }
 
     /// FPS measurement
@@ -31,23 +31,21 @@ struct DebugOverlayView: View {
 
     /// Flag to control expanded view
     @State private var isExpanded: Bool = false
-    
+
     // Init with logging
-    init(fps: Float, 
-         skinColorLab: ColorConverters.LabColor?, 
-         hairColorLab: ColorConverters.LabColor?, 
-         deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?, 
+    init(fps: Float,
+         skinColorLab: ColorConverters.LabColor?,
+         hairColorLab: ColorConverters.LabColor?,
+         deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?,
          qualityScore: FrameQualityService.QualityScore?) {
         self.fps = fps
         self.skinColorLab = skinColorLab
         self.hairColorLab = hairColorLab
         self.deltaEToSeasons = deltaEToSeasons
         self.qualityScore = qualityScore
-        
-        //print("DebugOverlayView initialized with qualityScore: \(String(describing: qualityScore))")
-        if let quality = qualityScore {
-            //print("Quality values - Overall: \(quality.overall), Brightness: \(quality.brightness), Sharpness: \(quality.sharpness)")
-        }
+
+        // print("DebugOverlayView initialized with qualityScore: \(String(describing: qualityScore))")
+
     }
 
     // MARK: - Body
@@ -204,8 +202,8 @@ struct DebugOverlayView: View {
 
     /// Section for displaying quality scores
     private func qualitySection() -> some View {
-        //LoggingService.debug("DebugOverlayView qualitySection called with qualityScore: \(String(describing: qualityScore))")
-        
+        // LoggingService.debug("DebugOverlayView qualitySection called with qualityScore: \(String(describing: qualityScore))")
+
         return VStack(alignment: .leading, spacing: 4) {
             Text("QUALITY SCORES")
                 .font(.system(size: 10, weight: .bold))

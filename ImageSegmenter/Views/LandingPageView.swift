@@ -31,8 +31,7 @@ struct LandingPageView: View {
             case "light": abbreviation = "lgt"
             case "soft": abbreviation = "sft"
             default:
-                if words.count >= 2 { abbreviation = String(words[0].prefix(1) + words[1].prefix(1)).lowercased() }
-                else if let first = words.first { abbreviation = String(first.prefix(1)).lowercased() }
+                if words.count >= 2 { abbreviation = String(words[0].prefix(1) + words[1].prefix(1)).lowercased() } else if let first = words.first { abbreviation = String(first.prefix(1)).lowercased() }
             }
         }
         return abbreviation
@@ -145,17 +144,17 @@ struct LandingPageView: View {
                     }) {
                         let theme = SeasonTheme.getTheme(for: subSeasonName)
                         let abbreviation = getAbbreviation(for: subSeasonName)
-                        
+
                         ZStack {
                             Circle()
                                 .fill(theme.primaryColor)
                                 .frame(width: 50, height: 50)
                                 .shadow(color: theme.primaryColor.opacity(0.3), radius: 3, x: 0, y: 2)
-                            
+
                             Text(abbreviation)
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(Color.white.opacity(0.8))
-                            
+
                             Circle()
                                 .stroke(Color.white.opacity(0.5), lineWidth: 1.5)
                                 .frame(width: 50, height: 50)

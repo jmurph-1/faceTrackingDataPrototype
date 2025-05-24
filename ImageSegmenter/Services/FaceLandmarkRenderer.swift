@@ -20,10 +20,10 @@ import Metal
 import MetalKit
 
 class FaceLandmarkRenderer: RendererProtocol {
-    
+
     var description: String = "Face Landmark Renderer"
     var isPrepared = false
-    
+
     private let device: MTLDevice?
     private let commandQueue: MTLCommandQueue?
     private var renderPipelineState: MTLRenderPipelineState?
@@ -42,7 +42,7 @@ class FaceLandmarkRenderer: RendererProtocol {
     var showMesh: Bool = true
     var showContours: Bool = true
     var landmarkSize: Float = 3.0
-    var highlightedLandmarkIndices: Set<Int>? = nil
+    var highlightedLandmarkIndices: Set<Int>?
 
     init() {
         // Initialize Metal if available, otherwise use CoreGraphics-only approach
@@ -138,7 +138,7 @@ class FaceLandmarkRenderer: RendererProtocol {
                             viewportSize: viewportSize,
                             color: meshLinesColor)
         }
-        
+
         // Draw polygon outlines
         drawPolygonOutlines(context: context,
                            landmarks: faceLandmarks,
@@ -158,24 +158,24 @@ class FaceLandmarkRenderer: RendererProtocol {
         // Only draw indices that are highlighted if set
         if let indicesToDraw = highlightedLandmarkIndices {
             context.setFillColor(UIColor.yellow.cgColor) // Highlight color
-            
+
             for (index, landmark) in landmarks.enumerated() where indicesToDraw.contains(index) {
                 let point = CGPoint(
                     x: CGFloat(landmark.x) * viewportSize.width,
                     y: CGFloat(landmark.y) * viewportSize.height
                 )
-                
+
                 // Draw landmark ID
                 let text = "\(index)" as NSString
                 let attributes = [
                     NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16),
                     NSAttributedString.Key.foregroundColor: UIColor.yellow
                 ]
-                
+
                 text.draw(at: point, withAttributes: attributes)
             }
         }
-        
+
         // Draw all points normally
         context.setFillColor(color.cgColor)
         for landmark in landmarks {
@@ -183,14 +183,14 @@ class FaceLandmarkRenderer: RendererProtocol {
                 x: CGFloat(landmark.x) * viewportSize.width,
                 y: CGFloat(landmark.y) * viewportSize.height
             )
-            
+
             let rect = CGRect(
                 x: point.x - CGFloat(landmarkSize/2),
                 y: point.y - CGFloat(landmarkSize/2),
                 width: CGFloat(landmarkSize),
                 height: CGFloat(landmarkSize)
             )
-            
+
             context.fillEllipse(in: rect)
         }
     }
@@ -242,17 +242,17 @@ class FaceLandmarkRenderer: RendererProtocol {
         // Define the three polygons
         let leftCheekIndices = [117, 118, 101, 36, 205, 187, 123]
         let rightCheekIndices = [348, 347, 346, 280, 425, 266, 371, 329]
-        let foreheadIndices = [10, 338, 297, 299, 337, 9, 108, 69, 67, 109] 
-        
+        let foreheadIndices = [10, 338, 297, 299, 337, 9, 108, 69, 67, 109]
+
         context.saveGState()
         context.setStrokeColor(polygonColor.cgColor)
         context.setLineWidth(2.0)
-        
+
         let polygons = [leftCheekIndices, rightCheekIndices, foreheadIndices]
-        
+
         for indices in polygons {
             guard !indices.isEmpty else { continue }
-            
+
             // Move to first point
             if let firstIndex = indices.first, firstIndex < landmarks.count {
                 let firstPoint = CGPoint(
@@ -261,7 +261,7 @@ class FaceLandmarkRenderer: RendererProtocol {
                 )
                 context.move(to: firstPoint)
             }
-            
+
             // Draw lines to subsequent points
             for index in indices.dropFirst() {
                 guard index < landmarks.count else { continue }
@@ -271,7 +271,7 @@ class FaceLandmarkRenderer: RendererProtocol {
                 )
                 context.addLine(to: point)
             }
-            
+
             // Close the polygon
             if let firstIndex = indices.first, firstIndex < landmarks.count {
                 let firstPoint = CGPoint(
@@ -280,10 +280,10 @@ class FaceLandmarkRenderer: RendererProtocol {
                 )
                 context.addLine(to: firstPoint)
             }
-            
+
             context.strokePath()
         }
-        
+
         context.restoreGState()
     }
 
@@ -293,24 +293,23 @@ class FaceLandmarkRenderer: RendererProtocol {
         // This would use the Metal pipeline set up earlier
         return texture
     }
-    
-    
+
     func prepare(with formatDescription: CMFormatDescription, outputRetainedBufferCountHint: Int, needChangeWidthHeight: Bool) {
         isPrepared = true
         outputFormatDescription = formatDescription
         setupPipeline()
     }
-    
+
     func render(pixelBuffer: CVPixelBuffer, segmentDatas: UnsafePointer<UInt8>?) -> CVPixelBuffer? {
         // This renderer doesn't use segmentation data, but instead would use landmarks
         return pixelBuffer
     }
-    
+
     func reset() {
         isPrepared = false
         outputFormatDescription = nil
     }
-    
+
     func handleMemoryWarning() {
     }
 }

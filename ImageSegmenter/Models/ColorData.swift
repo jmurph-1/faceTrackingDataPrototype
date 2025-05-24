@@ -7,14 +7,14 @@ struct ColorData: Identifiable, Decodable {
     let hexValue: String
     let category: String
     let season: String
-    
+
     enum CodingKeys: String, CodingKey {
                case name
                case hexValue
                case category
                case season
     }
-    
+
     var color: Color {
         Color(hex: hexValue)
     }

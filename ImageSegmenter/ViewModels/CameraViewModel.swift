@@ -18,7 +18,6 @@ import AVFoundation
 import CoreVideo
 import MediaPipeTasksVision
 
-
 // MARK: - CameraViewModel Delegate Protocol
 protocol CameraViewModelDelegate: AnyObject {
     // UI updates
@@ -174,7 +173,7 @@ class CameraViewModel: NSObject {
     private func processFrame(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         currentPixelBuffer = pixelBuffer
-        
+
         let currentTime = Date().timeIntervalSince1970
         guard currentTime - lastProcessingTime >= processingThrottleInterval else { return }
         lastProcessingTime = currentTime
@@ -191,7 +190,7 @@ class CameraViewModel: NSObject {
         faceLandmarkerService?.detectLandmarksAsync(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
         segmentationService.processFrame(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
     }
-    
+
     private var isFrameQualitySufficientForAnalysis: Bool {
         return currentFrameQualityScore?.isAcceptableForAnalysis ?? false
     }
@@ -236,7 +235,7 @@ extension CameraViewModel: CameraServiceDelegate {
 
     func sessionInterruptionEnded() {
         LoggingService.info("CVM: Session interruption ended.")
-        isSessionRunning = true 
+        isSessionRunning = true
         delegate?.viewModelDidResumeSession(self) // 'self' fine
         configureInitialServices()
     }
@@ -259,7 +258,7 @@ extension CameraViewModel: SegmentationServiceDelegate {
 
             strongSelf.delegate?.viewModel(strongSelf, didUpdateSegmentedBuffer: result.outputPixelBuffer)
             strongSelf.delegate?.viewModel(strongSelf, didUpdateColorInfo: result.colorInfo)
-            
+
             if let pBuffer = strongSelf.currentPixelBuffer {
                 strongSelf.backgroundQueue.async { // strongSelf is captured
                     let imgSize = CGSize(width: CVPixelBufferGetWidth(pBuffer), height: CVPixelBufferGetHeight(pBuffer))
@@ -270,7 +269,7 @@ extension CameraViewModel: SegmentationServiceDelegate {
                         let bbox = result.faceBoundingBox ?? CGRect(x: 0.3, y: 0.2, width: 0.4, height: 0.6)
                         qScore = FrameQualityService.evaluateFrameQuality(pixelBuffer: pBuffer, faceBoundingBox: bbox, imageSize: imgSize)
                     }
-                    
+
                     DispatchQueue.main.async { [weak self] in // Re-capture self weakly
                         guard let innerSelf = self else { return }
                         innerSelf.currentFrameQualityScore = qScore

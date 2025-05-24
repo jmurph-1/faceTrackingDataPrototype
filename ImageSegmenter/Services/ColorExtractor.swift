@@ -9,9 +9,9 @@ import CoreGraphics // For CGPoint, CGFloat
 // MARK: - Segmentation-class constants
 /// ID used by MediaPipe’s multi-class model for *face* skin
 class ColorExtractor {
-    
+
     static let faceSkinClassID: UInt8 = 3
-    
+
     static var relevantLandmarkIndices: Set<Int> {
         let leftCheekIndices = [117, 118, 101, 205, 187, 123, 50]
         let rightCheekIndices = [329, 348, 347, 346, 280, 425, 266, 330]

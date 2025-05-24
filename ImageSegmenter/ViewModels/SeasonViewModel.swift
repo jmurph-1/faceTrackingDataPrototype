@@ -10,17 +10,17 @@ class SeasonViewModel: ObservableObject {
         self.seasonName = seasonName
         loadSeason()
     }
-    
+
     func loadSeason() {
         print("SeasonViewModel: Attempting to load file for season '\(self.seasonName)' using filename: '\(self.seasonName).json'")
-        
+
         guard let url = Bundle.main.url(forResource: self.seasonName, withExtension: "json") else {
             print("Season JSON file not found in 'Seasons' subdirectory for: '\(self.seasonName).json'")
             self.season = nil
             self.colors = []
             return
         }
-        
+
         print("Season JSON file found in 'Seasons' subdirectory for: '\(self.seasonName).json'")
         decodeSeasonData(from: url)
     }
@@ -28,17 +28,17 @@ class SeasonViewModel: ObservableObject {
     private func decodeSeasonData(from url: URL) {
         do {
             let data = try Data(contentsOf: url)
-            let seasonData = try JSONDecoder().decode([String: Season].self, from: data) 
-            
+            let seasonData = try JSONDecoder().decode([String: Season].self, from: data)
+
             if let loadedSeason = seasonData[self.seasonName] {
                 self.season = loadedSeason
-                loadColors() 
+                loadColors()
             } else {
                 print("Season data for key '\(self.seasonName)' not found in decoded JSON from file at URL: \(url.path).")
                 self.season = nil
                 self.colors = []
             }
-            
+
         } catch {
             print("Error loading season \(self.seasonName) (from URL \(url.path)): \(error)")
             self.season = nil
@@ -51,7 +51,7 @@ class SeasonViewModel: ObservableObject {
             print("Colors JSON file not found")
             return
         }
-        
+
         do {
             let data = try Data(contentsOf: url)
             let allColors = try JSONDecoder().decode([ColorData].self, from: data)

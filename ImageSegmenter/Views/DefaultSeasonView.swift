@@ -10,8 +10,8 @@ import SwiftUI
 struct DefaultSeasonView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject private var viewModel: SeasonViewModel
-    @State private var selectedModule: String? = nil
-    
+    @State private var selectedModule: String?
+
     // Customizable colors for UI elements
     private let primaryColor: Color
     private let paletteWhite: Color
@@ -21,10 +21,10 @@ struct DefaultSeasonView: View {
     private let secondaryBackgroundColor: Color
     private let textColor: Color
     private let moduleColor: Color
-    
+
     private let textSizeHeader = 45.0
     private let textSizeSubheader = 28.0
-    
+
     init(seasonName: String,
          primaryColor: Color,
          paletteWhite: Color,
@@ -44,20 +44,20 @@ struct DefaultSeasonView: View {
         self.textColor = textColor
         self.moduleColor = moduleColor
     }
-    
+
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             ZStack {
                 Color(.systemBackground).ignoresSafeArea()
-                
+
                 ScrollView {
                     VStack(spacing: 32) {
                         headerViewContent()
-                        
+
                         if selectedModule == nil {
                             colorPaletteGrid
                                 .padding(.horizontal)
-                            
+
                             modulesGridView
                                 .padding()
                         } else {
@@ -70,12 +70,12 @@ struct DefaultSeasonView: View {
             .foregroundColor(textColor)
         }
     }
-    
+
     private func headerViewContent() -> some View {
-        VStack(spacing: 12) { 
+        VStack(spacing: 12) {
             HStack {
                 Spacer()
-                
+
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
@@ -88,11 +88,11 @@ struct DefaultSeasonView: View {
                 }
             }
             .padding(.horizontal)
-            
+
             Text(viewModel.seasonName)
                 .font(.system(size: textSizeHeader, weight: .bold, design: .serif))
                 .foregroundColor(primaryColor)
-            
+
             if let season = viewModel.season {
                 Text(season.tagline)
                     .font(.system(size: textSizeSubheader, weight: .light, design: .serif))
@@ -100,7 +100,7 @@ struct DefaultSeasonView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
-            
+
             Divider()
                 .frame(height: 1)
                 .overlay(primaryColor.opacity(0.2))
@@ -113,7 +113,7 @@ struct DefaultSeasonView: View {
                 .shadow(color: primaryColor.opacity(0.1), radius: 10, x: 0, y: 5)
         )
     }
-    
+
     private var colorPaletteGrid: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 8), spacing: 12) {
             ForEach(viewModel.colors) { color in
@@ -124,7 +124,7 @@ struct DefaultSeasonView: View {
             }
         }
     }
-    
+
     private var modulesGridView: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 24) {
             moduleCard("Season Overview", icon: "sun.haze.fill", color: primaryColor)
@@ -136,7 +136,7 @@ struct DefaultSeasonView: View {
         }
         .padding(.horizontal, 16)
     }
-    
+
     private func moduleCard(_ title: String, icon: String, color: Color) -> some View {
         Button(action: {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -147,7 +147,7 @@ struct DefaultSeasonView: View {
                 Image(systemName: icon)
                     .font(.system(size: 32, weight: .light))
                     .foregroundColor(color)
-                
+
                 Text(title)
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(paletteWhite)
@@ -165,7 +165,7 @@ struct DefaultSeasonView: View {
             ScaleButtonStyle()
         )
     }
-    
+
     private var detailView: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .center) {
@@ -179,13 +179,13 @@ struct DefaultSeasonView: View {
                     }
                     .foregroundColor(secondaryBackgroundColor)
                 }
-                
+
                 Text(selectedModule ?? "")
                     .font(.system(size: textSizeSubheader, weight: .bold, design: .serif))
                     .foregroundColor(textColor)
             }
             .padding(.bottom)
-            
+
             switch selectedModule {
             case "Season Overview":
                 seasonOverviewView
@@ -204,24 +204,24 @@ struct DefaultSeasonView: View {
             }
         }
     }
-    
+
     private var seasonOverviewView: some View {
         VStack(alignment: .leading, spacing: 20) {
             if let season = viewModel.season {
-                
+
                 Text(season.characteristics.overview)
                     .font(.body)
-                
+
                 VStack(spacing: 16) {
                     Text("\(viewModel.seasonName) Mood")
                         .font(.headline)
                         .foregroundColor(textColor)
-                    
+
                     HStack(spacing: 12) {
                         moodImage("Landscape", color: primaryColor)
                         moodImage("Floral", color: accentColor2)
                     }
-                    
+
                     HStack(spacing: 12) {
                         moodImage("Texture", color: accentColor)
                         moodImage("Nature", color: primaryColor)
@@ -236,7 +236,7 @@ struct DefaultSeasonView: View {
             }
         }
     }
-    
+
     private func moodImage(_ title: String, color: Color) -> some View {
         VStack {
             RoundedRectangle(cornerRadius: 8)
@@ -249,7 +249,7 @@ struct DefaultSeasonView: View {
                 )
         }
     }
-    
+
     private var characteristicsView: some View {
         VStack(alignment: .leading, spacing: 20) {
             if let season = viewModel.season {
@@ -262,25 +262,25 @@ struct DefaultSeasonView: View {
                             .fill(backgroundColor)
                             .shadow(color: primaryColor.opacity(0.1), radius: 5, x: 0, y: 2)
                     )
-                
+
                 characteristicSection(
                     title: "Eyes",
                     description: season.characteristics.features.eyes.description,
                     color: textColor
                 )
-                
+
                 characteristicSection(
                     title: "Skin",
                     description: season.characteristics.features.skin.description,
                     color: textColor
                 )
-                
+
                 characteristicSection(
                     title: "Hair",
                     description: season.characteristics.features.hair.description,
                     color: textColor
                 )
-                
+
                 characteristicSection(
                     title: "Contrast",
                     description: season.characteristics.features.contrast.description,
@@ -289,16 +289,16 @@ struct DefaultSeasonView: View {
             }
         }
     }
-    
+
     private func characteristicSection(title: String, description: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.headline)
                 .foregroundColor(color)
-            
+
             Text(description)
                 .font(.body)
-            
+
             HStack(spacing: 12) {
                 Circle()
                     .fill(color.opacity(0.3))
@@ -310,19 +310,19 @@ struct DefaultSeasonView: View {
                             .font(.system(size: 24))
                             .foregroundColor(color)
                     )
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Typical Colors")
                         .font(.caption)
                         .foregroundColor(textColor.opacity(0.7))
-                    
+
                     HStack(spacing: 8) {
                         let categoryFilter = title == "Eyes" ? "Base Colors" :
                                             title == "Skin" ? "Neutrals" :
                                             title == "Hair" ? "Neutrals" : "Base Colors"
-                        
+
                         let colors = viewModel.colors.filter { $0.category == categoryFilter }.prefix(5)
-                        
+
                         ForEach(Array(colors.enumerated()), id: \.element.id) { _, color in
                             Circle()
                                 .fill(color.color)
@@ -344,56 +344,56 @@ struct DefaultSeasonView: View {
         }
         .padding(.bottom, 8)
     }
-    
+
     private var paletteBreakdownView: some View {
         VStack(alignment: .leading, spacing: 20) {
-            
+
             if let season = viewModel.season {
                 Text(season.palette.description)
                     .font(.body)
-                
+
                 paletteAspectSection(
                     title: "Hue: \(season.palette.hue.value)",
                     description: season.palette.hue.explanation,
                     color: textColor
                 )
-                
+
                 paletteAspectSection(
                     title: "Value: \(season.palette.value.value)",
                     description: season.palette.value.explanation,
                     color: textColor
                 )
-                
+
                 paletteAspectSection(
                     title: "Chroma: \(season.palette.chroma.value)",
                     description: season.palette.chroma.explanation,
                     color: textColor
                 )
             }
-            
+
             VStack(alignment: .leading, spacing: 20) {
                 let categories = viewModel.colorsByCategory()
-                
+
                 ForEach(Array(categories.keys.sorted()), id: \.self) { category in
                     Text(category)
                         .font(.headline)
                         .foregroundColor(textColor)
-                    
+
                     colorGalleryGrid(colors: categories[category] ?? [])
                 }
             }
         }
     }
-    
+
     private func paletteAspectSection(title: String, description: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.headline)
                 .foregroundColor(color)
-            
+
             Text(description)
                 .font(.body)
-            
+
             if title.contains("Hue") {
                 let hueColors = getHueColors()
                 colorGradient(colors: hueColors)
@@ -407,7 +407,7 @@ struct DefaultSeasonView: View {
         }
         .padding(.bottom, 8)
     }
-    
+
     private func getHueColors() -> [Color] {
         if let season = viewModel.season {
             if season.palette.hue.value.lowercased().contains("warm") {
@@ -422,7 +422,7 @@ struct DefaultSeasonView: View {
         }
         return [Color.gray, Color.gray.opacity(0.5)]
     }
-    
+
     private func getValueColors() -> [Color] {
         if let season = viewModel.season {
             if season.palette.value.value.lowercased().contains("light") {
@@ -435,7 +435,7 @@ struct DefaultSeasonView: View {
         }
         return [Color.white, Color.gray, Color.black]
     }
-    
+
     private func getChromaColors() -> [Color] {
         if let season = viewModel.season {
             if season.palette.chroma.value.lowercased().contains("high") {
@@ -448,7 +448,7 @@ struct DefaultSeasonView: View {
         }
         return [Color.gray.opacity(0.3), Color.gray]
     }
-    
+
     private func colorGradient(colors: [Color]) -> some View {
         HStack(spacing: 0) {
             ForEach(0..<colors.count, id: \.self) { index in
@@ -463,7 +463,7 @@ struct DefaultSeasonView: View {
         )
         .padding(.vertical, 8)
     }
-    
+
     private func colorGalleryGrid(colors: [ColorData]) -> some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
             ForEach(colors) { color in
@@ -472,7 +472,7 @@ struct DefaultSeasonView: View {
         }
         .padding(.bottom, 16)
     }
-    
+
     private func colorGalleryItem(_ color: ColorData) -> some View {
         VStack(spacing: 8) {
             RoundedRectangle(cornerRadius: 8)
@@ -482,24 +482,24 @@ struct DefaultSeasonView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.white, lineWidth: 1)
                 )
-            
+
             Text(color.name)
                 .font(.caption)
                 .lineLimit(1)
                 .foregroundColor(textColor)
-            
+
             Text(color.hexValue)
                 .font(.system(size: 10))
                 .foregroundColor(textColor.opacity(0.7))
         }
     }
-    
+
     private var sisterPalettesView: some View {
         VStack(alignment: .leading, spacing: 20) {
             if let season = viewModel.season {
                 Text(season.palette.sisterPalettes.description)
                     .font(.body)
-                
+
                 VStack(spacing: 0) {
                     comparisonTableRow("Season", "Hue", "Value", "Chroma", isHeader: true)
                     comparisonTableRow(viewModel.seasonName, season.palette.hue.value, season.palette.value.value, season.palette.chroma.value)
@@ -515,7 +515,7 @@ struct DefaultSeasonView: View {
                         .fill(paletteWhite)
                         .shadow(color: primaryColor.opacity(0.1), radius: 5, x: 0, y: 2)
                 )
-                
+
                 Text("Seasonal Flow")
                     .font(.headline)
                     .foregroundColor(textColor)
@@ -543,7 +543,7 @@ struct DefaultSeasonView: View {
             }
         }
     }
-    
+
     private func comparisonTableRow(_ col1: String, _ col2: String, _ col3: String, _ col4: String, isHeader: Bool = false) -> some View {
         HStack {
             Text(col1)
@@ -569,7 +569,7 @@ struct DefaultSeasonView: View {
             alignment: .bottom
         )
     }
-    
+
     private func seasonFlowBox(_ title: String, color: Color) -> some View {
         Text(title)
             .font(.caption)
@@ -581,7 +581,7 @@ struct DefaultSeasonView: View {
                     .stroke(color.opacity(0.99), lineWidth: 1)
             )
     }
-    
+
     private var stylingGuideView: some View {
         VStack(alignment: .leading, spacing: 20) {
             if let season = viewModel.season {
@@ -590,64 +590,64 @@ struct DefaultSeasonView: View {
                     description: season.styling.neutrals.description,
                     color: textColor
                 )
-                
+
                 Text("Color Combinations")
                     .font(.headline)
                     .foregroundColor(textColor)
-                
+
                 let baseColors = viewModel.colors.filter { $0.category == "Base Colors" }
                 let accentColors = viewModel.colors.filter { $0.category == "Accent Colors" }
                 let neutralColors = viewModel.colors.filter { $0.category == "Neutrals" }
-                
+
                 if let color1 = baseColors.first?.color, let color2 = baseColors.dropFirst().first?.color {
                     colorCombinationExample(
                         title: "Monochromatic",
                         colors: [color1, color2]
                     )
                 }
-                
+
                 if let color1 = baseColors.first?.color, let color2 = accentColors.first?.color {
                     colorCombinationExample(
                         title: "Neighboring Hues",
                         colors: [color1, color2]
                     )
                 }
-                
+
                 if let color1 = neutralColors.first?.color, let color2 = accentColors.first?.color {
                     colorCombinationExample(
                         title: "Neutral with Accent",
                         colors: [color1, color2]
                     )
                 }
-                
+
                 Text("Patterns & Prints")
                     .font(.headline)
                     .foregroundColor(textColor)
                     .padding(.top)
-                
+
                 patternExample(
                     title: "Great: \(viewModel.seasonName) Pattern",
                     description: "Appropriate pattern for this season",
                     color: accentColor
                 )
-                
+
                 patternExample(
                     title: "Good: Low Contrast Pattern",
                     description: "Seasonal colors with minimal contrast",
                     color: accentColor2
                 )
-                
+
                 patternExample(
                     title: "Avoid: High Contrast Pattern",
                     description: "Too bold for this season",
                     color: Color(hex: "#bc4a4e").opacity(0.7)
                 )
-                
+
                 Text("Metals & Accessories")
                     .font(.headline)
                     .foregroundColor(textColor)
                     .padding(.top)
-                
+
                 HStack(spacing: 16) {
                     metalExample(name: "Silver", isGood: true)
                     metalExample(name: "Rose Gold", isGood: true)
@@ -657,25 +657,25 @@ struct DefaultSeasonView: View {
             }
         }
     }
-    
+
     private func stylingSection(title: String, description: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.headline)
                 .foregroundColor(color)
-            
+
             Text(description)
                 .font(.body)
         }
         .padding(.bottom, 8)
     }
-    
+
     private func colorCombinationExample(title: String, colors: [Color]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.subheadline)
                 .foregroundColor(textColor)
-            
+
             HStack(spacing: 12) {
                 ForEach(0..<colors.count, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 8)
@@ -687,18 +687,18 @@ struct DefaultSeasonView: View {
                         )
                 }
             }
-            
+
             HStack {
                 Image(systemName: "tshirt.fill")
                     .font(.system(size: 24))
                     .foregroundColor(colors[0])
-                
+
                 Image(systemName: "bag.fill")
                     .font(.system(size: 20))
                     .foregroundColor(colors[1])
-                
+
                 Spacer()
-                
+
                 Text("Example outfit")
                     .font(.caption)
                     .foregroundColor(textColor.opacity(0.7))
@@ -713,7 +713,7 @@ struct DefaultSeasonView: View {
         )
         .padding(.bottom, 8)
     }
-    
+
     private func patternExample(title: String, description: String, color: Color) -> some View {
         HStack(spacing: 16) {
             RoundedRectangle(cornerRadius: 8)
@@ -722,7 +722,7 @@ struct DefaultSeasonView: View {
                 .overlay(
                     ZStack {
                         if title.contains("Great") {
-                            ForEach(0..<10) { i in
+                            ForEach(0..<10) { _ in
                                 Circle()
                                     .fill(color.opacity(Double.random(in: 0.1...0.3)))
                                     .frame(width: Double.random(in: 10...30))
@@ -760,12 +760,12 @@ struct DefaultSeasonView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.white, lineWidth: 1)
                 )
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
                     .foregroundColor(title.contains("Avoid") ? color : textColor)
-                
+
                 Text(description)
                     .font(.caption)
                     .foregroundColor(textColor.opacity(0.7))
@@ -779,7 +779,7 @@ struct DefaultSeasonView: View {
         )
         .padding(.bottom, 8)
     }
-    
+
     private func metalExample(name: String, isGood: Bool) -> some View {
         VStack(spacing: 8) {
             Circle()
@@ -791,16 +791,16 @@ struct DefaultSeasonView: View {
                     Circle()
                         .stroke(Color.white, lineWidth: 1)
                 )
-            
+
             Text(name)
                 .font(.caption)
                 .foregroundColor(textColor)
-            
+
             Image(systemName: isGood ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .foregroundColor(isGood ? accentColor : Color(hex: "#bc4a4e").opacity(0.7))
         }
     }
-    
+
     private func getMetalGradient(name: String, isGood: Bool) -> LinearGradient {
         switch name.lowercased() {
         case "silver":
@@ -871,13 +871,13 @@ struct DefaultSeasonView: View {
             )
         }
     }
-    
+
     private var colorsToAvoidView: some View {
         VStack(alignment: .leading, spacing: 20) {
             if let season = viewModel.season {
                 Text(season.styling.colorsToAvoid.description)
                     .font(.body)
-                
+
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
                     if let colorsToAvoid = season.styling.colorsToAvoid.colors {
                         ForEach(colorsToAvoid, id: \.self) { colorName in
@@ -885,25 +885,25 @@ struct DefaultSeasonView: View {
                         }
                     }
                 }
-                
+
                 Text("Comparison Examples")
                     .font(.headline)
                     .foregroundColor(textColor)
                     .padding(.top)
-                
+
                 if let goodColor = viewModel.colors.first?.color {
                     comparisonExample(
                         title: "\(viewModel.seasonName) Blue vs. Intense Blue",
                         goodColor: goodColor,
                         badColor: Color(hex: "#0180ff")
                     )
-                    
+
                     comparisonExample(
                         title: "\(viewModel.seasonName) Pink vs. Orangey Red",
                         goodColor: accentColor2,
                         badColor: Color(hex: "#ff6449")
                     )
-                    
+
                     comparisonExample(
                         title: "\(viewModel.seasonName) Neutral vs. Black",
                         goodColor: Color(hex: "#4f525d"),
@@ -913,7 +913,7 @@ struct DefaultSeasonView: View {
             }
         }
     }
-    
+
     private func colorToAvoidCard(_ colorName: String) -> some View {
         VStack(spacing: 16) {
             Circle()
@@ -923,13 +923,12 @@ struct DefaultSeasonView: View {
                     Circle()
                         .stroke(Color.white, lineWidth: 1)
                 )
-            
+
             VStack(alignment: .center, spacing: 4) {
                 Text(colorName)
                     .font(.subheadline)
                     .foregroundColor(textColor)
-                    
-                
+
                 Text("Avoid this color")
                     .font(.caption)
                     .foregroundColor(Color(hex: "#bc4a4e").opacity(0.7))
@@ -945,7 +944,7 @@ struct DefaultSeasonView: View {
         )
         .padding(.bottom, 8)
     }
-    
+
     private func getColorToAvoid(_ colorName: String) -> Color {
         switch colorName.lowercased() {
         case let name where name.contains("intense pink"):
@@ -964,13 +963,13 @@ struct DefaultSeasonView: View {
             return Color.gray
         }
     }
-    
+
     private func comparisonExample(title: String, goodColor: Color, badColor: Color) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title)
                 .font(.subheadline)
                 .foregroundColor(textColor)
-            
+
             HStack {
                 VStack {
                     Circle()
@@ -980,18 +979,18 @@ struct DefaultSeasonView: View {
                             Circle()
                                 .stroke(Color.white, lineWidth: 1)
                         )
-                    
+
                     Text("Flattering")
                         .font(.caption)
                         .foregroundColor(accentColor)
-                    
+
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(accentColor)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(backgroundColor)
-                
+
                 VStack {
                     Circle()
                         .fill(badColor)
@@ -1000,11 +999,11 @@ struct DefaultSeasonView: View {
                             Circle()
                                 .stroke(Color.white, lineWidth: 1)
                         )
-                    
+
                     Text("Unflattering")
                         .font(.caption)
                         .foregroundColor(Color(hex: "#bc4a4e").opacity(0.7))
-                    
+
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(Color(hex: "#bc4a4e").opacity(0.7))
                 }
@@ -1017,7 +1016,7 @@ struct DefaultSeasonView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(primaryColor.opacity(0.2), lineWidth: 1)
             )
-            
+
             Text("The unflattering color will make your complexion appear dull or yellowish and emphasize imperfections.")
                 .font(.caption)
                 .foregroundColor(textColor.opacity(0.7))
@@ -1025,7 +1024,7 @@ struct DefaultSeasonView: View {
         }
         .padding(.bottom, 8)
     }
-    
+
     private struct ScaleButtonStyle: ButtonStyle {
         func makeBody(configuration: Configuration) -> some View {
             configuration.label

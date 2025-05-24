@@ -74,11 +74,11 @@ class SegmentationService {
 
   // MARK: - Public Methods
   func configure(with modelPath: String) {
-      //print("SegmentationService: configure(with modelPath: \(modelPath)) CALLED.")
+      // print("SegmentationService: configure(with modelPath: \(modelPath)) CALLED.")
 
     imageSegmenterServiceQueue.sync(flags: .barrier) {
         self._imageSegmenterService = nil
-        //print("SegmentationService: configure - _imageSegmenterService cleared synchronously.")
+        // print("SegmentationService: configure - _imageSegmenterService cleared synchronously.")
     }
 
     let newService = ImageSegmenterService
@@ -89,12 +89,12 @@ class SegmentationService {
 
     imageSegmenterServiceQueue.sync(flags: .barrier) {
         self._imageSegmenterService = newService
-        //print("SegmentationService: configure - _imageSegmenterService has been set synchronously. Is nil: \(self._imageSegmenterService == nil)")
+        // print("SegmentationService: configure - _imageSegmenterService has been set synchronously. Is nil: \(self._imageSegmenterService == nil)")
     }
   }
 
   func processFrame(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation, timeStamps: Int) {
-    //print("SegmentationService: processFrame called for timestamp: \(timeStamps)")
+    // print("SegmentationService: processFrame called for timestamp: \(timeStamps)")
 
     // Store the current pixel buffer for use in the segmentation callback
     if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
@@ -111,19 +111,19 @@ class SegmentationService {
     let timeElapsed = currentTime - lastSegmentationTime
 
     guard let currentImageSegmenter = self.imageSegmenterService else {
-        //print("SegmentationService: processFrame - ERROR: self.imageSegmenterService (computed property) is nil!")
+        // print("SegmentationService: processFrame - ERROR: self.imageSegmenterService (computed property) is nil!")
         return
     }
-    
-    //print("SegmentationService: processFrame - Attempting to call imageSegmenterService.segmentAsync")
+
+    // print("SegmentationService: processFrame - Attempting to call imageSegmenterService.segmentAsync")
     do {
         try currentImageSegmenter.segmentAsync(
             sampleBuffer: sampleBuffer,
             orientation: orientation,
             timeStamps: timeStamps)
-        //print("SegmentationService: processFrame - Called imageSegmenterService.segmentAsync for timestamp: \(timeStamps)")
+        // print("SegmentationService: processFrame - Called imageSegmenterService.segmentAsync for timestamp: \(timeStamps)")
     } catch {
-        //print("SegmentationService: processFrame - Error calling segmentAsync: \(error)")
+        // print("SegmentationService: processFrame - Error calling segmentAsync: \(error)")
         delegate?.segmentationService(self, didFailWithError: error)
     }
 
@@ -136,19 +136,19 @@ class SegmentationService {
   func clearImageSegmenterService() {
     imageSegmenterServiceQueue.sync(flags: .barrier) {
         self._imageSegmenterService = nil
-        //print("SegmentationService: clearImageSegmenterService - _imageSegmenterService cleared synchronously.")
+        // print("SegmentationService: clearImageSegmenterService - _imageSegmenterService cleared synchronously.")
     }
   }
 
   // MARK: - Helper Methods
   private func prepareRendererIfNeeded() {
     guard let formatDescription = formatDescription else {
-      //print("Cannot prepare renderer: formatDescription is nil")
+      // print("Cannot prepare renderer: formatDescription is nil")
       return
     }
 
     if !multiClassRenderer.isPrepared {
-        //print("Preparing multiClassRenderer with format: \(CMFormatDescriptionGetExtensions(formatDescription) ?? [:] as CFDictionary)")
+        // print("Preparing multiClassRenderer with format: \(CMFormatDescriptionGetExtensions(formatDescription) ?? [:] as CFDictionary)")
       multiClassRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
     }
 
@@ -168,7 +168,7 @@ class SegmentationService {
   func getCurrentColorInfo() -> ColorExtractor.ColorInfo {
     return multiClassRenderer.getCurrentColorInfo()
   }
-  
+
   // Update face landmarks for quality calculation
   func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
     multiClassRenderer.updateFaceLandmarks(landmarks)
@@ -178,10 +178,10 @@ class SegmentationService {
 // MARK: - ImageSegmenterServiceLiveStreamDelegate
 extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
   func imageSegmenterService(_ imageSegmenterService: ImageSegmenterService, didFinishSegmention result: ResultBundle?, error: Error?) {
-    //print("SegmentationService: imageSegmenterService.didFinishSegmention delegate called.")
+    // print("SegmentationService: imageSegmenterService.didFinishSegmention delegate called.")
     // Handle errors
     if let error = error {
-      //print("SegmentationService: didFinishSegmention - Error: \(error.localizedDescription)")
+      // print("SegmentationService: didFinishSegmention - Error: \(error.localizedDescription)")
       delegate?.segmentationService(self, didFailWithError: error)
       return
     }
@@ -190,10 +190,10 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
     guard let imageSegmenterResult = result?.imageSegmenterResults.first as? ImageSegmenterResult,
           let confidenceMasks = imageSegmenterResult.categoryMask,
           let pixelBuffer = videoPixelBuffer else {
-      //print("SegmentationService: didFinishSegmention - Missing segmentation data or video pixel buffer")
+      // print("SegmentationService: didFinishSegmention - Missing segmentation data or video pixel buffer")
       // If videoPixelBuffer is nil, we can't proceed. Maybe return an error or a specific result.
       if videoPixelBuffer == nil {
-          //print("SegmentationService: videoPixelBuffer is nil, cannot render.")
+          // print("SegmentationService: videoPixelBuffer is nil, cannot render.")
           // Consider what to do here. Maybe a specific error or skip frame.
           // For now, let's just return, which means no update to the delegate.
           return
@@ -213,11 +213,11 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
     let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
 
     // Debug log
-    //print("SegmentationService: didFinishSegmention - Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)")
+    // print("SegmentationService: didFinishSegmention - Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)")
 
     // Render the segmentation
     guard let outputPixelBuffer = multiClassRenderer.render(pixelBuffer: pixelBuffer, segmentDatas: confidenceMask) else {
-      //print("SegmentationService: didFinishSegmention - Failed to render segmentation - renderer returned nil")
+      // print("SegmentationService: didFinishSegmention - Failed to render segmentation - renderer returned nil")
 
       // If we can't render, use the original pixel buffer for preview
       let colorInfo = multiClassRenderer.getCurrentColorInfo()
@@ -256,7 +256,7 @@ extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
     )
 
     // Notify delegate
-    //print("SegmentationService: didFinishSegmention - Successfully created SegmentationResult. Notifying delegate.")
+    // print("SegmentationService: didFinishSegmention - Successfully created SegmentationResult. Notifying delegate.")
     delegate?.segmentationService(self, didCompleteSegmentation: segmentationResult)
   }
 }

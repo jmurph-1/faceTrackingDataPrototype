@@ -12,43 +12,43 @@ struct Season: Identifiable, Decodable {
     let characteristics: Characteristics
     let palette: Palette
     let styling: Styling
-    
+
     struct Characteristics: Decodable {
         let note: String
         let overview: String
         let features: Features
-        
+
         struct Features: Decodable {
             let eyes: EyeFeatureDescription
             let skin: SkinFeatureDescription
             let hair: HairFeatureDescription
             let contrast: Contrast
-            
+
             struct EyeFeatureDescription: Decodable {
                 let description: String
                 let eyeColors: [String]?
                 let image: String?
             }
-            
+
             struct SkinFeatureDescription: Decodable {
                 let description: String
                 let skinTones: [String: [String]]?
                 let image: String?
             }
-            
+
             struct HairFeatureDescription: Decodable {
                 let description: String
                 let hairColors: [String: [String]]?
                 let image: String?
             }
-            
+
             struct Contrast: Decodable {
                 let value: String
                 let description: String
             }
         }
     }
-    
+
     struct Palette: Decodable {
         let description: String
         let hue: ColorAspect
@@ -61,14 +61,14 @@ struct Season: Identifiable, Decodable {
             let value: String
             let explanation: String
         }
-        
+
         struct SisterPalettes: Decodable {
             let description: String
             let sisters: [String]
             let image: String?
         }
     }
-    
+
     struct Styling: Decodable {
         let neutrals: StyleDescription
         let colorsToAvoid: ColorsToAvoid
@@ -80,7 +80,7 @@ struct Season: Identifiable, Decodable {
             let description: String
             let image: String?
         }
-        
+
         struct ColorsToAvoid: Decodable {
             let description: String
             let colors: [String]?
@@ -105,7 +105,7 @@ struct Season: Identifiable, Decodable {
             let combinations: [String: [String]]?
             let image: String?
         }
-        
+
         struct PatternsAndPrintsElementsAspect: Decodable {
             let description: String?
             let combinations: [String: [String]]?

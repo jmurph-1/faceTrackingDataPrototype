@@ -267,11 +267,11 @@ class PreviewMetalView: MTKView {
   override func draw(_ rect: CGRect) {
     guard let pixelBuffer = self.pixelBuffer else {
       #if DEBUG
-      //print("Skipping draw: pixelBuffer is nil")
+      // print("Skipping draw: pixelBuffer is nil")
       #endif
       return
     }
-    
+
     var mirroring = false
     var rotation: Rotation = .rotate0Degrees
 
