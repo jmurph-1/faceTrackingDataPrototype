@@ -35,6 +35,15 @@ protocol CameraViewModelDelegate: AnyObject {
     func viewModelDidStopCamera(_ viewModel: CameraViewModel)
     func viewModelDidDetectSessionInterruption(_ viewModel: CameraViewModel, canResume: Bool)
     func viewModelDidResumeSession(_ viewModel: CameraViewModel)
+
+    func viewModel(_ viewModel: CameraViewModel, didEnterCalibrationMode: Bool)
+    func viewModel(_ viewModel: CameraViewModel, didUpdateCalibrationProgress: Float)
+    func viewModel(_ viewModel: CameraViewModel, didCompleteCalibration: WhiteBalanceCalibration)
+}
+
+enum CameraMode {
+    case calibration
+    case analysis
 }
 
 // MARK: - CameraViewModel
@@ -61,13 +70,23 @@ class CameraViewModel: NSObject {
     private var lastFPSUpdateTime: TimeInterval = 0
     private(set) var currentFPS: Float = 0.0
 
+    private(set) var currentMode: CameraMode = .calibration
+    private(set) var whiteBalanceCalibration: WhiteBalanceCalibration?
+    private(set) var isCalibrated: Bool = false
+    private var calibrationFrameCount: Int = 0
+    private let requiredCalibrationFrames: Int = 5
+    private var calibrationAccumulator: [(r: Float, g: Float, b: Float)] = []
+    private(set) var detectedWhiteRegion: CGRect?
+    private(set) var isDetectingWhiteReference: Bool = false
+    private var shouldProcessFrames: Bool = false
+
     // MARK: - Initialization
     override init() {
         super.init()
         cameraService.delegate = self
         segmentationService.delegate = self
         classificationService.delegate = self
-        LoggingService.info("CVM: init - Configuring services.")
+        LoggingService.info("CVM: Initializing and configuring services")
         configureInitialServices()
     }
 
@@ -78,19 +97,21 @@ class CameraViewModel: NSObject {
 
     // MARK: - Public Methods
     func startCamera() {
-        LoggingService.info("CVM: startCamera called. Session running: \(isSessionRunning)")
+        LoggingService.info("CVM: Starting camera session")
         configureInitialServices() // Ensure services are ready
         cameraService.startLiveCameraSession { [weak self] configuration in
             DispatchQueue.main.async {
                 guard let strongSelf = self else { return }
-                LoggingService.info("CVM: startCamera completion - Configuration: \(configuration)")
                 switch configuration {
                 case .success:
                     strongSelf.isSessionRunning = true
                     strongSelf.delegate?.viewModelDidStartCamera(strongSelf)
+                    LoggingService.info("CVM: Camera session started successfully")
                 case .failed:
+                    LoggingService.error("CVM: Camera configuration failed")
                     strongSelf.delegate?.viewModel(strongSelf, didEncounterError: CameraError.configurationFailed)
                 case .permissionDenied:
+                    LoggingService.error("CVM: Camera permission denied")
                     strongSelf.delegate?.viewModel(strongSelf, didEncounterError: CameraError.permissionDenied)
                 default: break
                 }
@@ -99,10 +120,10 @@ class CameraViewModel: NSObject {
     }
 
     func stopCamera() {
-        LoggingService.info("CVM: stopCamera called.")
+        LoggingService.info("CVM: Stopping camera session")
         cameraService.stopSession()
         isSessionRunning = false
-        delegate?.viewModelDidStopCamera(self) // 'self' is fine here
+        delegate?.viewModelDidStopCamera(self)
         clearServices()
     }
 
@@ -131,41 +152,224 @@ class CameraViewModel: NSObject {
         classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
     }
 
+    func startCalibrationMode() {
+        LoggingService.info("CALIBRATION_FLOW: Starting calibration")
+        currentMode = .calibration
+        isDetectingWhiteReference = false  // Don't start detecting until explicitly triggered
+        calibrationFrameCount = 0
+        calibrationAccumulator.removeAll()
+        shouldProcessFrames = false  // Ensure we're not processing frames until calibration starts
+        delegate?.viewModel(self, didEnterCalibrationMode: true)
+    }
+
+    @objc func captureWhiteReference() {
+        LoggingService.info("CALIBRATION_FLOW: Starting white reference capture")
+        currentMode = .calibration
+        isDetectingWhiteReference = true
+        calibrationFrameCount = 0
+        calibrationAccumulator.removeAll()
+        
+        // Ensure we're receiving frames
+        if !isSessionRunning {
+            LoggingService.warning("CALIBRATION_FLOW: Camera session not running, starting camera")
+            startCamera()
+        } else {
+            LoggingService.info("CALIBRATION_FLOW: Camera session already running")
+        }
+    }
+
+    func processFrame(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation, timeStamps: Int) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            LoggingService.warning("FRAME_FLOW: Failed to get pixel buffer from sample buffer")
+            return
+        }
+        currentPixelBuffer = pixelBuffer
+        
+        // Always update preview buffer
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.viewModel(self, didUpdateSegmentedBuffer: pixelBuffer)
+        }
+        
+        // Process frames based on mode
+        if currentMode == .calibration && isDetectingWhiteReference {
+            LoggingService.info("FRAME_FLOW: Processing frame for calibration")
+            processCalibrationFrame()
+            return
+        }
+        
+        // Normal frame processing
+        if shouldProcessFrames {
+            let currentTime = Date().timeIntervalSince1970
+            guard currentTime - lastProcessingTime >= processingThrottleInterval else {
+                return
+            }
+            lastProcessingTime = currentTime
+            
+            frameCount += 1
+            if currentTime - lastFPSUpdateTime >= 1.0 {
+                currentFPS = Float(frameCount) / Float(currentTime - lastFPSUpdateTime)
+                frameCount = 0
+                lastFPSUpdateTime = currentTime
+            }
+            
+            faceLandmarkerService?.detectLandmarksAsync(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
+            segmentationService.processFrame(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
+        }
+    }
+
+    private func processCalibrationFrame() {
+        LoggingService.debug("CALIBRATION_FLOW: Processing calibration frame")
+        guard let pixelBuffer = currentPixelBuffer else {
+            LoggingService.warning("CALIBRATION_FLOW: Cannot process calibration frame - no pixel buffer")
+            return
+        }
+
+        // Always update preview during calibration
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.delegate?.viewModel(self, didUpdateSegmentedBuffer: pixelBuffer)
+        }
+        
+        // Ensure segmentation service is ready
+        if !segmentationService.isPrepared {
+            let attrs = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+                        kCVPixelBufferWidthKey as String: CVPixelBufferGetWidth(pixelBuffer),
+                        kCVPixelBufferHeightKey as String: CVPixelBufferGetHeight(pixelBuffer)] as [String : Any]
+            
+            var formatDescription: CMFormatDescription?
+            let status = CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault,
+                                                                     imageBuffer: pixelBuffer,
+                                                                     formatDescriptionOut: &formatDescription)
+            
+            if status == noErr, let formatDescription = formatDescription {
+                segmentationService.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+            } else {
+                LoggingService.warning("CALIBRATION_FLOW: Failed to create format description")
+                return
+            }
+        }
+        
+        guard let texture = segmentationService.makeTextureFromPixelBuffer(pixelBuffer) else {
+            LoggingService.warning("CALIBRATION_FLOW: Cannot process calibration frame - failed to create texture")
+            return
+        }
+
+        // Define white reference region (smaller region in center for better accuracy)
+        let centerRegion = CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1)  // 10% of frame in center
+        detectedWhiteRegion = centerRegion
+        
+        // Extract color from white region
+        if let whiteColor = segmentationService.extractWhiteReferenceColor(
+            from: texture,
+            region: centerRegion,
+            width: CVPixelBufferGetWidth(pixelBuffer),
+            height: CVPixelBufferGetHeight(pixelBuffer)
+        ) {
+            let frameMsg = "Frame \(calibrationFrameCount + 1)/\(requiredCalibrationFrames)"
+            let rgbMsg = "RGB(\(Int(whiteColor.r)), \(Int(whiteColor.g)), \(Int(whiteColor.b)))"
+            LoggingService.info("CALIBRATION_FLOW: \(frameMsg) - White reference \(rgbMsg)")
+            
+            calibrationAccumulator.append(whiteColor)
+            calibrationFrameCount += 1
+            
+            let progress = Float(calibrationFrameCount) / Float(requiredCalibrationFrames)
+            delegate?.viewModel(self, didUpdateCalibrationProgress: progress)
+            
+            if calibrationFrameCount >= requiredCalibrationFrames {
+                LoggingService.info("CALIBRATION_FLOW: Required frames collected, finalizing calibration")
+                finalizeCalibration()
+            }
+        } else {
+            LoggingService.warning("CALIBRATION_FLOW: Failed to extract white reference from frame - ensure white reference card is centered and well-lit")
+        }
+    }
+
+    private func finalizeCalibration() {
+        LoggingService.info("CALIBRATION_FLOW: Starting calibration finalization")
+        
+        // Calculate average white reference color
+        let avgColor = calibrationAccumulator.reduce((r: 0.0, g: 0.0, b: 0.0)) { acc, color in
+            (r: acc.r + color.r, g: acc.g + color.g, b: acc.b + color.b)
+        }
+        let count = Float(calibrationAccumulator.count)
+        let finalColor = (
+            r: avgColor.r / count,
+            g: avgColor.g / count,
+            b: avgColor.b / count
+        )
+        
+        LoggingService.info("CALIBRATION_FLOW: Average white reference - RGB(\(Int(finalColor.r)), \(Int(finalColor.g)), \(Int(finalColor.b)))")
+        
+        // Calculate white balance calibration
+        let calibration = WhiteBalanceCalibration.calculate(from: finalColor)
+        whiteBalanceCalibration = calibration
+        
+        let factors = "R:\(String(format: "%.2f", calibration.redFactor)) "
+            + "G:\(String(format: "%.2f", calibration.greenFactor)) "
+            + "B:\(String(format: "%.2f", calibration.blueFactor))"
+        LoggingService.info("CALIBRATION_FLOW: Calculated white balance factors - \(factors)")
+        
+        // Apply calibration to services
+        segmentationService.setWhiteBalanceCalibration(calibration)
+        
+        // Update state
+        isCalibrated = true
+        currentMode = .analysis
+        isDetectingWhiteReference = false
+        detectedWhiteRegion = nil
+        shouldProcessFrames = true
+        
+        LoggingService.info("CALIBRATION_FLOW: Calibration complete - Entering analysis mode")
+        
+        // Notify delegate
+        delegate?.viewModel(self, didCompleteCalibration: calibration)
+    }
+    
+    func skipCalibration() {
+        LoggingService.info("CALIBRATION_FLOW: Skipping calibration - Using identity white balance")
+        whiteBalanceCalibration = .identity
+        segmentationService.setWhiteBalanceCalibration(.identity)
+        isCalibrated = true
+        currentMode = .analysis
+        isDetectingWhiteReference = false
+        detectedWhiteRegion = nil
+        shouldProcessFrames = true
+        delegate?.viewModel(self, didCompleteCalibration: .identity)
+    }
+
     // MARK: - Private Methods
     private func configureSegmentationService() {
-        LoggingService.debug("CVM: Configuring SegmentationService.")
         guard let modelPath = InferenceConfigurationManager.sharedInstance.model.modelPath else {
-            LoggingService.error("CVM: Segmentation model path is nil.")
-            delegate?.viewModel(self, didEncounterError: NSError(domain: "CameraViewModel", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Segmentation model path is nil."])) // 'self' fine
+            LoggingService.error("CVM: Failed to configure segmentation - model path is nil")
+            delegate?.viewModel(self, didEncounterError: NSError(domain: "CameraViewModel", code: 1001, userInfo: [NSLocalizedDescriptionKey: "Segmentation model path is nil."]))
             return
         }
         segmentationService.configure(with: modelPath)
     }
 
     private func configureFaceLandmarkerService() {
-        LoggingService.debug("CVM: Configuring FaceLandmarkerService.")
         if faceLandmarkerService != nil {
             clearFaceLandmarkerService()
         }
         faceLandmarkerService = FaceLandmarkerService.liveStreamFaceLandmarkerService(
             modelPath: Bundle.main.path(forResource: "face_landmarker", ofType: "task"),
-            liveStreamDelegate: self, // 'self' is fine (conformance)
+            liveStreamDelegate: self,
             delegate: InferenceConfigurationManager.sharedInstance.delegate
         )
         if faceLandmarkerService == nil {
-            LoggingService.error("CVM: FAILED to create FaceLandmarkerService.")
+            LoggingService.error("CVM: Failed to create FaceLandmarkerService")
         }
     }
 
     private func clearFaceLandmarkerService() {
-        LoggingService.debug("CVM: Clearing FaceLandmarkerService.")
         faceLandmarkerService = nil
         lastFaceLandmarks = nil
-        delegate?.viewModel(self, didUpdateFaceLandmarks: nil) // 'self' is fine
+        delegate?.viewModel(self, didUpdateFaceLandmarks: nil)
     }
 
     private func clearServices() {
-        LoggingService.debug("CVM: Clearing all services.")
+        LoggingService.debug("CVM: Clearing services")
         segmentationService.clearImageSegmenterService()
         clearFaceLandmarkerService()
     }
@@ -216,13 +420,50 @@ class CameraViewModel: NSObject {
             */
         }
     }
+
+    private func makeTextureFromPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> MTLTexture? {
+        var textureOut: CVMetalTexture?
+        let width = CVPixelBufferGetWidth(pixelBuffer)
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        
+        guard let textureCache = segmentationService.textureCache else {
+            return nil
+        }
+        
+        let status = CVMetalTextureCacheCreateTextureFromImage(
+            kCFAllocatorDefault,
+            textureCache,
+            pixelBuffer,
+            nil,
+            .bgra8Unorm,
+            width,
+            height,
+            0,
+            &textureOut
+        )
+        
+        guard status == kCVReturnSuccess,
+              let cvTexture = textureOut,
+              let texture = CVMetalTextureGetTexture(cvTexture) else {
+            return nil
+        }
+        
+        return texture
+    }
 }
 
 // MARK: - CameraServiceDelegate
 extension CameraViewModel: CameraServiceDelegate {
     func didOutput(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
+        // Only log if there's an issue with the sample buffer
+        if CMSampleBufferIsValid(sampleBuffer) == false {
+            LoggingService.warning("FRAME_FLOW: Received invalid sample buffer")
+            return
+        }
+        
+        let timestamp = Int(Date().timeIntervalSince1970 * 1000)
         backgroundQueue.async { [weak self] in
-            self?.processFrame(sampleBuffer: sampleBuffer, orientation: orientation)
+            self?.processFrame(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: timestamp)
         }
     }
 
@@ -312,11 +553,11 @@ extension CameraViewModel: ClassificationServiceDelegate {
 // MARK: - FaceLandmarkerServiceLiveStreamDelegate
 extension CameraViewModel: FaceLandmarkerServiceLiveStreamDelegate {
     func faceLandmarkerService(_ service: FaceLandmarkerService, didFinishLandmarkDetection result: FaceLandmarkerResultBundle?, error: Error?) {
-        if let e = error {
-            LoggingService.error("CVM: Landmark detection error: \(e.localizedDescription)")
+        if let error = error {
+            LoggingService.error("CVM: Landmark detection error: \(error.localizedDescription)")
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
-                strongSelf.delegate?.viewModel(strongSelf, didEncounterError: e)
+                strongSelf.delegate?.viewModel(strongSelf, didEncounterError: error)
             }
             return
         }

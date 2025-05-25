@@ -61,11 +61,18 @@ class SegmentationService {
   private let segmentationThrottleInterval: TimeInterval = 0.1  // 10Hz throttle
 
   private var formatDescription: CMFormatDescription?
+  private(set) var isPrepared: Bool = false
 
   weak var delegate: SegmentationServiceDelegate?
 
   // Keep track of the most recent video pixel buffer for processing
   private var videoPixelBuffer: CVPixelBuffer?
+
+  private var isCalibrated: Bool = false
+
+  var textureCache: CVMetalTextureCache? {
+    return multiClassRenderer.textureCache
+  }
 
   // MARK: - Initialization
   init() {
@@ -74,11 +81,10 @@ class SegmentationService {
 
   // MARK: - Public Methods
   func configure(with modelPath: String) {
-      // print("SegmentationService: configure(with modelPath: \(modelPath)) CALLED.")
+    LoggingService.info("SEGMENTATION_FLOW: Configuring service with model")
 
     imageSegmenterServiceQueue.sync(flags: .barrier) {
         self._imageSegmenterService = nil
-        // print("SegmentationService: configure - _imageSegmenterService cleared synchronously.")
     }
 
     let newService = ImageSegmenterService
@@ -89,21 +95,19 @@ class SegmentationService {
 
     imageSegmenterServiceQueue.sync(flags: .barrier) {
         self._imageSegmenterService = newService
-        // print("SegmentationService: configure - _imageSegmenterService has been set synchronously. Is nil: \(self._imageSegmenterService == nil)")
+        LoggingService.info("SEGMENTATION_FLOW: Service configured successfully")
     }
   }
 
   func processFrame(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation, timeStamps: Int) {
-    // print("SegmentationService: processFrame called for timestamp: \(timeStamps)")
-
     // Store the current pixel buffer for use in the segmentation callback
     if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
-      videoPixelBuffer = pixelBuffer
-      // print("SegmentationService: videoPixelBuffer assigned.")
-
-      // Update format description every time to ensure it's current
-      formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer)
-      // print("SegmentationService: formatDescription updated.")
+        videoPixelBuffer = pixelBuffer
+        // Update format description every time to ensure it's current
+        formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer)
+    } else {
+        LoggingService.warning("SEGMENTATION_FLOW: Failed to get pixel buffer from sample buffer")
+        return
     }
 
     // Check for throttling
@@ -111,45 +115,43 @@ class SegmentationService {
     let timeElapsed = currentTime - lastSegmentationTime
 
     guard let currentImageSegmenter = self.imageSegmenterService else {
-        // print("SegmentationService: processFrame - ERROR: self.imageSegmenterService (computed property) is nil!")
+        LoggingService.error("SEGMENTATION_FLOW: Cannot process frame - image segmenter service is nil")
         return
     }
 
-    // print("SegmentationService: processFrame - Attempting to call imageSegmenterService.segmentAsync")
+    // Process frame for segmentation
     do {
         try currentImageSegmenter.segmentAsync(
             sampleBuffer: sampleBuffer,
             orientation: orientation,
             timeStamps: timeStamps)
-        // print("SegmentationService: processFrame - Called imageSegmenterService.segmentAsync for timestamp: \(timeStamps)")
     } catch {
-        // print("SegmentationService: processFrame - Error calling segmentAsync: \(error)")
+        LoggingService.error("SEGMENTATION_FLOW: Error calling segmentAsync: \(error)")
         delegate?.segmentationService(self, didFailWithError: error)
     }
 
     // Update timestamp if processing a full frame
     if timeElapsed >= segmentationThrottleInterval {
-      lastSegmentationTime = currentTime
+        lastSegmentationTime = currentTime
     }
   }
 
   func clearImageSegmenterService() {
     imageSegmenterServiceQueue.sync(flags: .barrier) {
         self._imageSegmenterService = nil
-        // print("SegmentationService: clearImageSegmenterService - _imageSegmenterService cleared synchronously.")
     }
   }
 
   // MARK: - Helper Methods
   private func prepareRendererIfNeeded() {
     guard let formatDescription = formatDescription else {
-      // print("Cannot prepare renderer: formatDescription is nil")
-      return
+        LoggingService.warning("SEGMENTATION_FLOW: Cannot prepare renderer - missing format description")
+        return
     }
 
     if !multiClassRenderer.isPrepared {
-        // print("Preparing multiClassRenderer with format: \(CMFormatDescriptionGetExtensions(formatDescription) ?? [:] as CFDictionary)")
-      multiClassRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+        multiClassRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
+        LoggingService.info("SEGMENTATION_FLOW: Renderer prepared")
     }
 
     // Debug dimensions
@@ -173,90 +175,143 @@ class SegmentationService {
   func updateFaceLandmarks(_ landmarks: [NormalizedLandmark]?) {
     multiClassRenderer.updateFaceLandmarks(landmarks)
   }
+
+  // Add white balance calibration method
+  func setWhiteBalanceCalibration(_ calibration: WhiteBalanceCalibration) {
+    LoggingService.info("SEGMENTATION_FLOW: Applying white balance calibration")
+    multiClassRenderer.setWhiteBalanceCalibration(calibration)
+    isCalibrated = true
+  }
+
+  func extractWhiteReferenceColor(
+      from texture: MTLTexture,
+      region: CGRect,
+      width: Int,
+      height: Int
+  ) -> (r: Float, g: Float, b: Float)? {
+    LoggingService.debug("SEGMENTATION_FLOW: Attempting to extract white reference color from region: \(region)")
+    let result = multiClassRenderer.extractWhiteReferenceColor(
+        from: texture,
+        region: region,
+        width: width,
+        height: height
+    )
+    
+    if let color = result {
+        LoggingService.debug("SEGMENTATION_FLOW: Successfully extracted white reference color - R:\(color.r) G:\(color.g) B:\(color.b)")
+    } else {
+        LoggingService.warning("SEGMENTATION_FLOW: Failed to extract white reference color")
+    }
+    
+    return result
+  }
+
+  func makeTextureFromPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> MTLTexture? {
+    guard let textureCache = multiClassRenderer.textureCache else {
+      LoggingService.warning("SEGMENTATION_FLOW: Texture cache not available")
+      return nil
+    }
+    
+    let width = CVPixelBufferGetWidth(pixelBuffer)
+    let height = CVPixelBufferGetHeight(pixelBuffer)
+    
+    var cvTextureOut: CVMetalTexture?
+    let result = CVMetalTextureCacheCreateTextureFromImage(
+      kCFAllocatorDefault,
+      textureCache,
+      pixelBuffer,
+      nil,
+      .bgra8Unorm,
+      width,
+      height,
+      0,
+      &cvTextureOut)
+      
+    if result != kCVReturnSuccess {
+      LoggingService.error("SEGMENTATION_FLOW: Could not create Metal texture from pixel buffer: \(result)")
+      return nil
+    }
+    
+    guard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {
+      LoggingService.error("SEGMENTATION_FLOW: Could not get Metal texture from CVMetalTexture")
+      return nil
+    }
+    
+    return texture
+  }
+
+  func prepare(with formatDescription: CMFormatDescription, outputRetainedBufferCountHint: Int = 3) {
+    self.formatDescription = formatDescription
+    multiClassRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: outputRetainedBufferCountHint)
+    isPrepared = true
+    LoggingService.info("SEGMENTATION_FLOW: Service prepared successfully")
+  }
 }
 
 // MARK: - ImageSegmenterServiceLiveStreamDelegate
 extension SegmentationService: ImageSegmenterServiceLiveStreamDelegate {
-  func imageSegmenterService(_ imageSegmenterService: ImageSegmenterService, didFinishSegmention result: ResultBundle?, error: Error?) {
-    // print("SegmentationService: imageSegmenterService.didFinishSegmention delegate called.")
-    // Handle errors
-    if let error = error {
-      // print("SegmentationService: didFinishSegmention - Error: \(error.localizedDescription)")
-      delegate?.segmentationService(self, didFailWithError: error)
-      return
+    func imageSegmenterService(_ imageSegmenterService: ImageSegmenterService, didFinishSegmention result: ResultBundle?, error: Error?) {
+        // Handle errors
+        if let error = error {
+            LoggingService.error("SEGMENTATION_FLOW: Segmentation error: \(error.localizedDescription)")
+            delegate?.segmentationService(self, didFailWithError: error)
+            return
+        }
+
+        // Ensure we have segmentation results and a valid pixel buffer
+        guard let imageSegmenterResult = result?.imageSegmenterResults.first as? ImageSegmenterResult,
+              let confidenceMasks = imageSegmenterResult.categoryMask,
+              let pixelBuffer = videoPixelBuffer else {
+            LoggingService.warning("SEGMENTATION_FLOW: Missing required data for segmentation processing")
+            return
+        }
+
+        let confidenceMask = confidenceMasks.uint8Data
+
+        // Make sure renderers are prepared with current format description
+        prepareRendererIfNeeded()
+
+        // Render the segmentation
+        guard let outputPixelBuffer = multiClassRenderer.render(pixelBuffer: pixelBuffer, segmentDatas: confidenceMask) else {
+            LoggingService.error("SEGMENTATION_FLOW: Failed to render segmentation")
+
+            // If we can't render, use the original pixel buffer for preview
+            let colorInfo = multiClassRenderer.getCurrentColorInfo()
+            let fallbackResult = SegmentationResult(
+                outputPixelBuffer: pixelBuffer,
+                segmentationMask: nil,
+                colorInfo: colorInfo,
+                faceBoundingBox: multiClassRenderer.getFaceBoundingBox(),
+                faceLandmarks: multiClassRenderer.getFaceLandmarks(),
+                inferenceTime: result?.inferenceTime
+            )
+
+            delegate?.segmentationService(self, didCompleteSegmentation: fallbackResult)
+            return
+        }
+
+        // Extract color information only if calibrated
+        let colorInfo: ColorExtractor.ColorInfo
+        if isCalibrated {
+            colorInfo = multiClassRenderer.getCurrentColorInfo()
+        } else {
+            colorInfo = ColorExtractor.ColorInfo() // Return empty color info
+        }
+
+        // Create segmentation mask data
+        let maskData = Data(bytes: confidenceMask,
+                           count: Int(confidenceMasks.width * confidenceMasks.height))
+
+        // Create result object
+        let segmentationResult = SegmentationResult(
+            outputPixelBuffer: outputPixelBuffer,
+            segmentationMask: maskData,
+            colorInfo: colorInfo,
+            faceBoundingBox: multiClassRenderer.getFaceBoundingBox(),
+            faceLandmarks: multiClassRenderer.getFaceLandmarks(),
+            inferenceTime: result?.inferenceTime
+        )
+
+        delegate?.segmentationService(self, didCompleteSegmentation: segmentationResult)
     }
-
-    // Ensure we have segmentation results and a valid pixel buffer
-    guard let imageSegmenterResult = result?.imageSegmenterResults.first as? ImageSegmenterResult,
-          let confidenceMasks = imageSegmenterResult.categoryMask,
-          let pixelBuffer = videoPixelBuffer else {
-      // print("SegmentationService: didFinishSegmention - Missing segmentation data or video pixel buffer")
-      // If videoPixelBuffer is nil, we can't proceed. Maybe return an error or a specific result.
-      if videoPixelBuffer == nil {
-          // print("SegmentationService: videoPixelBuffer is nil, cannot render.")
-          // Consider what to do here. Maybe a specific error or skip frame.
-          // For now, let's just return, which means no update to the delegate.
-          return
-      }
-      // If only segmentation data is missing, we might still want to pass the original frame.
-      // However, the guard condition above handles this by returning.
-      return
-    }
-
-    let confidenceMask = confidenceMasks.uint8Data
-
-    // Make sure renderers are prepared with current format description
-    prepareRendererIfNeeded()
-
-    // Double-check dimensions before rendering
-    let pixelBufferWidth = CVPixelBufferGetWidth(pixelBuffer)
-    let pixelBufferHeight = CVPixelBufferGetHeight(pixelBuffer)
-
-    // Debug log
-    // print("SegmentationService: didFinishSegmention - Rendering segmentation for buffer: \(pixelBufferWidth)x\(pixelBufferHeight)")
-
-    // Render the segmentation
-    guard let outputPixelBuffer = multiClassRenderer.render(pixelBuffer: pixelBuffer, segmentDatas: confidenceMask) else {
-      // print("SegmentationService: didFinishSegmention - Failed to render segmentation - renderer returned nil")
-
-      // If we can't render, use the original pixel buffer for preview
-      let colorInfo = multiClassRenderer.getCurrentColorInfo()
-      let fallbackResult = SegmentationResult(
-        outputPixelBuffer: pixelBuffer, // Use original buffer
-        segmentationMask: nil,
-        colorInfo: colorInfo,
-        faceBoundingBox: multiClassRenderer.getFaceBoundingBox(),
-        faceLandmarks: multiClassRenderer.getFaceLandmarks(),
-        inferenceTime: result?.inferenceTime
-      )
-
-      // Notify delegate with fallback result
-      delegate?.segmentationService(self, didCompleteSegmentation: fallbackResult)
-      return
-    }
-
-    // Extract color information
-    let colorInfo = multiClassRenderer.getCurrentColorInfo()
-
-    // Get face bounding box
-    let faceBoundingBox = multiClassRenderer.getFaceBoundingBox()
-
-    // Create segmentation mask data
-    let maskData = Data(bytes: confidenceMask,
-                       count: Int(confidenceMasks.width * confidenceMasks.height))
-
-    // Create result object
-    let segmentationResult = SegmentationResult(
-      outputPixelBuffer: outputPixelBuffer,
-      segmentationMask: maskData,
-      colorInfo: colorInfo,
-      faceBoundingBox: faceBoundingBox,
-      faceLandmarks: multiClassRenderer.getFaceLandmarks(),
-      inferenceTime: result?.inferenceTime
-    )
-
-    // Notify delegate
-    // print("SegmentationService: didFinishSegmention - Successfully created SegmentationResult. Notifying delegate.")
-    delegate?.segmentationService(self, didCompleteSegmentation: segmentationResult)
-  }
 }

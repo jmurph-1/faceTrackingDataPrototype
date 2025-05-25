@@ -62,7 +62,8 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   private var computePipelineState: MTLComputePipelineState?
   private var downsampleComputePipelineState: MTLComputePipelineState?
 
-  private var textureCache: CVMetalTextureCache!
+  private var internalTextureCache: CVMetalTextureCache?
+  var textureCache: CVMetalTextureCache? { return internalTextureCache }
   private var downsampledTexture: MTLTexture?
   private var segmentationBuffer: MTLBuffer?
 
@@ -72,6 +73,8 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   private let commandQueue: MTLCommandQueue?
 
   private let colorExtractor: ColorExtractor
+
+  private var isCalibrated: Bool = false
 
   required init() {
     let defaultLibrary = metalDevice.makeDefaultLibrary()
@@ -141,12 +144,13 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     }
 
     var metalTextureCache: CVMetalTextureCache?
-    if CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, metalDevice, nil, &metalTextureCache)
-      != kCVReturnSuccess {
-      assertionFailure("Unable to allocate texture cache")
-    } else {
-      textureCache = metalTextureCache
+    let status = CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, metalDevice, nil, &metalTextureCache)
+    if status != kCVReturnSuccess {
+      log("Unable to allocate texture cache: \(status)", level: .error)
+      return
     }
+    
+    internalTextureCache = metalTextureCache
 
     faceLandmarkRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: outputRetainedBufferCountHint, needChangeWidthHeight: needChangeWidthHeight)
 
@@ -156,7 +160,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   func reset() {
     outputPixelBufferPool = nil
     outputFormatDescription = nil
-    textureCache = nil
+    internalTextureCache = nil
     if let texture = downsampledTexture {
       TexturePoolManager.shared.recycleTexture(texture)
     }
@@ -188,7 +192,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     BufferPoolManager.shared.clearPool()
     PixelBufferPoolManager.shared.clearPools()
 
-    if textureCache != nil {
+    if let textureCache = internalTextureCache {
       CVMetalTextureCacheFlush(textureCache, 0)
     }
   }
@@ -196,6 +200,11 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   private func makeTextureFromCVPixelBuffer(
     pixelBuffer: CVPixelBuffer, textureFormat: MTLPixelFormat
   ) -> MTLTexture? {
+    guard let textureCache = internalTextureCache else {
+      log("Texture cache not available", level: .error)
+      return nil
+    }
+    
     let width = CVPixelBufferGetWidth(pixelBuffer)
     let height = CVPixelBufferGetHeight(pixelBuffer)
 
@@ -204,11 +213,11 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       kCFAllocatorDefault, textureCache, pixelBuffer, nil, textureFormat, width, height, 0,
       &cvTextureOut)
     if result != kCVReturnSuccess {
-      print("Error: Could not create Metal texture from pixel buffer: \(result)")
+      log("Error: Could not create Metal texture from pixel buffer: \(result)", level: .error)
       return nil
     }
     guard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {
-      print("Error: Could not get Metal texture from CVMetalTexture")
+      log("Error: Could not get Metal texture from CVMetalTexture", level: .error)
       return nil
     }
 
@@ -539,7 +548,8 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
         processFallbackCPU(inputBuffer: pixelBuffer, outputBuffer: outputBuffer, segmentDatas: segmentDatas)
     }
 
-    if frameCounter % frameSkip == 0 {
+    // Only process colors if calibrated
+    if isCalibrated && frameCounter % frameSkip == 0 {
         if let imageSegmenterResult = (Result(
             size: CGSize(width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer)),
             imageSegmenterResult: ImageSegmenterResult(
@@ -744,5 +754,25 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
     }
 
     return CGRect(x: 0.25, y: 0.2, width: 0.5, height: 0.6)
+  }
+
+  func setWhiteBalanceCalibration(_ calibration: WhiteBalanceCalibration) {
+    colorExtractor.setWhiteBalance(calibration)
+    isCalibrated = true
+    log("White balance calibration set", level: .info)
+  }
+
+  func extractWhiteReferenceColor(
+    from texture: MTLTexture,
+    region: CGRect,
+    width: Int,
+    height: Int
+  ) -> (r: Float, g: Float, b: Float)? {
+    return colorExtractor.extractWhiteReferenceColor(
+      from: texture,
+      region: region,
+      width: width,
+      height: height
+    )
   }
 }

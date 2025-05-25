@@ -53,6 +53,14 @@ class RefactoredCameraViewController: UIViewController {
   private var debugOverlayHostingController: UIHostingController<DebugOverlayView>?
   private var isDebugOverlayVisible = false
 
+  // Calibration UI elements
+  private var calibrationOverlayView: UIView?
+  private var calibrationGuideView: UIView?
+  private var calibrationInstructionLabel: UILabel?
+  private var calibrationProgressView: UIProgressView?
+  private var calibrationCaptureButton: UIButton?
+  private var calibrationSkipButton: UIButton?
+
   // MARK: - Properties
   private let viewModel = CameraViewModel()
   private let analysisViewModel = AnalysisResultViewModel()
@@ -73,6 +81,7 @@ class RefactoredCameraViewController: UIViewController {
     setupFrameQualityUI()
     setupDebugOverlay()
     setupGestures()
+    setupCalibrationUI()
 
     // Initialize toast service
     toastService = ToastService(containerView: view)
@@ -83,6 +92,9 @@ class RefactoredCameraViewController: UIViewController {
 
     // Register for app lifecycle notifications
     registerForAppLifecycleNotifications()
+
+    // Start in calibration mode
+    viewModel.startCalibrationMode()
   }
 
   func prepareAndStartCameraIfNeeded() {
@@ -463,6 +475,186 @@ class RefactoredCameraViewController: UIViewController {
     hostingController.modalPresentationStyle = .pageSheet
 
     present(hostingController, animated: true)
+  }
+
+  // MARK: - Calibration UI Setup
+
+  private func setupCalibrationUI() {
+    // Create overlay view with semi-transparent background
+    let overlay = UIView(frame: view.bounds)
+    overlay.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+    overlay.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(overlay)
+    calibrationOverlayView = overlay
+    
+    // Create a mask layer for the overlay to create a clear center box
+    let maskLayer = CAShapeLayer()
+    let path = CGMutablePath()
+    
+    // Add the outer rectangle (full overlay)
+    path.addRect(overlay.bounds)
+    
+    // Calculate the center box dimensions (250x250)
+    let boxSize: CGFloat = 250
+    let centerX = overlay.bounds.midX - boxSize/2
+    let centerY = overlay.bounds.midY - boxSize/2
+    let centerBox = CGRect(x: centerX, y: centerY, width: boxSize, height: boxSize)
+    
+    // Subtract the center box to make it transparent
+    path.addRect(centerBox)
+    maskLayer.path = path
+    maskLayer.fillRule = .evenOdd // This makes the intersection transparent
+    overlay.layer.mask = maskLayer
+    
+    // Create guide view (white border around the clear box)
+    let guide = UIView()
+    guide.backgroundColor = .clear
+    guide.layer.borderColor = UIColor.white.cgColor
+    guide.layer.borderWidth = 2
+    guide.translatesAutoresizingMaskIntoConstraints = false
+    overlay.addSubview(guide)
+    calibrationGuideView = guide
+    
+    // Create instruction label
+    let label = UILabel()
+    label.text = "Place a white piece of paper in the box"
+    label.textColor = .white
+    label.textAlignment = .center
+    label.numberOfLines = 0
+    label.font = .systemFont(ofSize: 18, weight: .medium)
+    label.translatesAutoresizingMaskIntoConstraints = false
+    overlay.addSubview(label)
+    calibrationInstructionLabel = label
+    
+    // Create progress view
+    let progress = UIProgressView(progressViewStyle: .default)
+    progress.progressTintColor = .white
+    progress.trackTintColor = UIColor.white.withAlphaComponent(0.3)
+    progress.isHidden = true
+    progress.translatesAutoresizingMaskIntoConstraints = false
+    overlay.addSubview(progress)
+    calibrationProgressView = progress
+    
+    // Create capture button
+    let captureButton = UIButton(type: .system)
+    captureButton.setTitle("Capture White Reference", for: .normal)
+    captureButton.setTitleColor(.white, for: .normal)
+    captureButton.backgroundColor = UIColor.systemBlue
+    captureButton.layer.cornerRadius = 22
+    captureButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+    captureButton.addTarget(self, action: #selector(captureWhiteReference), for: .touchUpInside)
+    captureButton.translatesAutoresizingMaskIntoConstraints = false
+    overlay.addSubview(captureButton)
+    calibrationCaptureButton = captureButton
+    
+    // Create skip button
+    let skipButton = UIButton(type: .system)
+    skipButton.setTitle("Skip Calibration", for: .normal)
+    skipButton.setTitleColor(.white, for: .normal)
+    skipButton.titleLabel?.font = .systemFont(ofSize: 16)
+    skipButton.addTarget(self, action: #selector(skipCalibration), for: .touchUpInside)
+    skipButton.translatesAutoresizingMaskIntoConstraints = false
+    overlay.addSubview(skipButton)
+    calibrationSkipButton = skipButton
+    
+    // Setup constraints
+    NSLayoutConstraint.activate([
+        // Overlay constraints
+        overlay.topAnchor.constraint(equalTo: view.topAnchor),
+        overlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        overlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        overlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        
+        // Guide view constraints (250x250 in center)
+        guide.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
+        guide.centerYAnchor.constraint(equalTo: overlay.centerYAnchor),
+        guide.widthAnchor.constraint(equalToConstant: 250),
+        guide.heightAnchor.constraint(equalToConstant: 250),
+        
+        // Instruction label constraints
+        label.bottomAnchor.constraint(equalTo: guide.topAnchor, constant: -20),
+        label.leadingAnchor.constraint(equalTo: overlay.leadingAnchor, constant: 20),
+        label.trailingAnchor.constraint(equalTo: overlay.trailingAnchor, constant: -20),
+        
+        // Progress view constraints
+        progress.topAnchor.constraint(equalTo: guide.bottomAnchor, constant: 20),
+        progress.leadingAnchor.constraint(equalTo: overlay.leadingAnchor, constant: 40),
+        progress.trailingAnchor.constraint(equalTo: overlay.trailingAnchor, constant: -40),
+        
+        // Capture button constraints
+        captureButton.topAnchor.constraint(equalTo: progress.bottomAnchor, constant: 20),
+        captureButton.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
+        captureButton.widthAnchor.constraint(equalToConstant: 250),
+        captureButton.heightAnchor.constraint(equalToConstant: 44),
+        
+        // Skip button constraints
+        skipButton.topAnchor.constraint(equalTo: captureButton.bottomAnchor, constant: 12),
+        skipButton.centerXAnchor.constraint(equalTo: overlay.centerXAnchor)
+    ])
+    
+    // Update mask when layout changes
+    overlay.layoutIfNeeded()
+    maskLayer.frame = overlay.bounds
+  }
+
+  // MARK: - Calibration Actions
+
+  @objc private func captureWhiteReference() {
+    LoggingService.info("UI_FLOW: White reference capture button pressed")
+    calibrationCaptureButton?.isEnabled = false
+    calibrationSkipButton?.isEnabled = false
+    calibrationProgressView?.isHidden = false
+    calibrationProgressView?.progress = 0.0
+    calibrationInstructionLabel?.text = "Hold still while calibrating..."
+    
+    // Ensure camera is running and ready
+    if !viewModel.isSessionRunning {
+      LoggingService.info("UI_FLOW: Starting camera for calibration")
+      viewModel.startCamera()
+      
+      // Wait for camera to start before beginning calibration
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+        self?.viewModel.captureWhiteReference()
+      }
+    } else {
+      viewModel.captureWhiteReference()
+    }
+  }
+
+  @objc private func skipCalibration() {
+    LoggingService.info("UI_FLOW: Skip calibration button pressed")
+    viewModel.skipCalibration()
+  }
+
+  // MARK: - CameraViewModelDelegate Calibration Methods
+
+  func viewModel(_ viewModel: CameraViewModel, didEnterCalibrationMode: Bool) {
+    DispatchQueue.main.async { [weak self] in
+      LoggingService.info("UI_FLOW: Showing calibration UI")
+      self?.calibrationOverlayView?.isHidden = false
+      self?.calibrationProgressView?.isHidden = true
+      self?.calibrationCaptureButton?.isEnabled = true
+      self?.calibrationSkipButton?.isEnabled = true
+    }
+  }
+
+  func viewModel(_ viewModel: CameraViewModel, didUpdateCalibrationProgress progress: Float) {
+    DispatchQueue.main.async { [weak self] in
+      LoggingService.debug("UI_FLOW: Updating calibration progress: \(Int(progress * 100))%")
+      self?.calibrationProgressView?.progress = progress
+    }
+  }
+
+  func viewModel(_ viewModel: CameraViewModel, didCompleteCalibration calibration: WhiteBalanceCalibration) {
+    DispatchQueue.main.async { [weak self] in
+      LoggingService.info("UI_FLOW: Calibration complete, hiding calibration UI")
+      UIView.animate(withDuration: 0.3) {
+        self?.calibrationOverlayView?.alpha = 0
+      } completion: { _ in
+        self?.calibrationOverlayView?.removeFromSuperview()
+        self?.calibrationOverlayView = nil
+      }
+    }
   }
 }
 
