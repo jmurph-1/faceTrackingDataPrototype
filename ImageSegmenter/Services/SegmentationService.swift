@@ -196,13 +196,13 @@ class SegmentationService {
         width: width,
         height: height
     )
-    
+
     if let color = result {
         LoggingService.debug("SEGMENTATION_FLOW: Successfully extracted white reference color - R:\(color.r) G:\(color.g) B:\(color.b)")
     } else {
         LoggingService.warning("SEGMENTATION_FLOW: Failed to extract white reference color")
     }
-    
+
     return result
   }
 
@@ -211,10 +211,10 @@ class SegmentationService {
       LoggingService.warning("SEGMENTATION_FLOW: Texture cache not available")
       return nil
     }
-    
+
     let width = CVPixelBufferGetWidth(pixelBuffer)
     let height = CVPixelBufferGetHeight(pixelBuffer)
-    
+
     var cvTextureOut: CVMetalTexture?
     let result = CVMetalTextureCacheCreateTextureFromImage(
       kCFAllocatorDefault,
@@ -226,17 +226,17 @@ class SegmentationService {
       height,
       0,
       &cvTextureOut)
-      
+
     if result != kCVReturnSuccess {
       LoggingService.error("SEGMENTATION_FLOW: Could not create Metal texture from pixel buffer: \(result)")
       return nil
     }
-    
+
     guard let cvTexture = cvTextureOut, let texture = CVMetalTextureGetTexture(cvTexture) else {
       LoggingService.error("SEGMENTATION_FLOW: Could not get Metal texture from CVMetalTexture")
       return nil
     }
-    
+
     return texture
   }
 

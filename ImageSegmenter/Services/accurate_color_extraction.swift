@@ -402,7 +402,7 @@ extension ColorExtractor {
         let minPixelsPerRegion = 5 // Reduced from 15 to 5
         let totalPixels = leftCheek.count + rightCheek.count + forehead.count
 
-        LoggingService.info("ColorExtractor: Regional pixel counts - L:\(leftCheek.count) R:\(rightCheek.count) F:\(forehead.count) Total:\(totalPixels)")
+        // LoggingService.info("ColorExtractor: Regional pixel counts - L:\(leftCheek.count) R:\(rightCheek.count) F:\(forehead.count) Total:\(totalPixels)")
 
         // Check if we have ANY reasonable data
         guard totalPixels >= 10 else {

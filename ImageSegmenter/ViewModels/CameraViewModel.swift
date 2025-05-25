@@ -168,7 +168,7 @@ class CameraViewModel: NSObject {
         isDetectingWhiteReference = true
         calibrationFrameCount = 0
         calibrationAccumulator.removeAll()
-        
+
         // Ensure we're receiving frames
         if !isSessionRunning {
             LoggingService.warning("CALIBRATION_FLOW: Camera session not running, starting camera")
@@ -184,20 +184,20 @@ class CameraViewModel: NSObject {
             return
         }
         currentPixelBuffer = pixelBuffer
-        
+
         // Always update preview buffer
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.delegate?.viewModel(self, didUpdateSegmentedBuffer: pixelBuffer)
         }
-        
+
         // Process frames based on mode
         if currentMode == .calibration && isDetectingWhiteReference {
             LoggingService.info("FRAME_FLOW: Processing frame for calibration")
             processCalibrationFrame()
             return
         }
-        
+
         // Normal frame processing
         if shouldProcessFrames {
             let currentTime = Date().timeIntervalSince1970
@@ -205,14 +205,14 @@ class CameraViewModel: NSObject {
                 return
             }
             lastProcessingTime = currentTime
-            
+
             frameCount += 1
             if currentTime - lastFPSUpdateTime >= 1.0 {
                 currentFPS = Float(frameCount) / Float(currentTime - lastFPSUpdateTime)
                 frameCount = 0
                 lastFPSUpdateTime = currentTime
             }
-            
+
             faceLandmarkerService?.detectLandmarksAsync(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
             segmentationService.processFrame(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
         }
@@ -230,18 +230,18 @@ class CameraViewModel: NSObject {
             guard let self = self else { return }
             self.delegate?.viewModel(self, didUpdateSegmentedBuffer: pixelBuffer)
         }
-        
+
         // Ensure segmentation service is ready
         if !segmentationService.isPrepared {
             let attrs = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
                         kCVPixelBufferWidthKey as String: CVPixelBufferGetWidth(pixelBuffer),
-                        kCVPixelBufferHeightKey as String: CVPixelBufferGetHeight(pixelBuffer)] as [String : Any]
-            
+                        kCVPixelBufferHeightKey as String: CVPixelBufferGetHeight(pixelBuffer)] as [String: Any]
+
             var formatDescription: CMFormatDescription?
             let status = CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault,
                                                                      imageBuffer: pixelBuffer,
                                                                      formatDescriptionOut: &formatDescription)
-            
+
             if status == noErr, let formatDescription = formatDescription {
                 segmentationService.prepare(with: formatDescription, outputRetainedBufferCountHint: 3)
             } else {
@@ -249,7 +249,7 @@ class CameraViewModel: NSObject {
                 return
             }
         }
-        
+
         guard let texture = segmentationService.makeTextureFromPixelBuffer(pixelBuffer) else {
             LoggingService.warning("CALIBRATION_FLOW: Cannot process calibration frame - failed to create texture")
             return
@@ -258,7 +258,7 @@ class CameraViewModel: NSObject {
         // Define white reference region (smaller region in center for better accuracy)
         let centerRegion = CGRect(x: 0.45, y: 0.45, width: 0.1, height: 0.1)  // 10% of frame in center
         detectedWhiteRegion = centerRegion
-        
+
         // Extract color from white region
         if let whiteColor = segmentationService.extractWhiteReferenceColor(
             from: texture,
@@ -269,13 +269,13 @@ class CameraViewModel: NSObject {
             let frameMsg = "Frame \(calibrationFrameCount + 1)/\(requiredCalibrationFrames)"
             let rgbMsg = "RGB(\(Int(whiteColor.r)), \(Int(whiteColor.g)), \(Int(whiteColor.b)))"
             LoggingService.info("CALIBRATION_FLOW: \(frameMsg) - White reference \(rgbMsg)")
-            
+
             calibrationAccumulator.append(whiteColor)
             calibrationFrameCount += 1
-            
+
             let progress = Float(calibrationFrameCount) / Float(requiredCalibrationFrames)
             delegate?.viewModel(self, didUpdateCalibrationProgress: progress)
-            
+
             if calibrationFrameCount >= requiredCalibrationFrames {
                 LoggingService.info("CALIBRATION_FLOW: Required frames collected, finalizing calibration")
                 finalizeCalibration()
@@ -287,7 +287,7 @@ class CameraViewModel: NSObject {
 
     private func finalizeCalibration() {
         LoggingService.info("CALIBRATION_FLOW: Starting calibration finalization")
-        
+
         // Calculate average white reference color
         let avgColor = calibrationAccumulator.reduce((r: 0.0, g: 0.0, b: 0.0)) { acc, color in
             (r: acc.r + color.r, g: acc.g + color.g, b: acc.b + color.b)
@@ -298,34 +298,34 @@ class CameraViewModel: NSObject {
             g: avgColor.g / count,
             b: avgColor.b / count
         )
-        
+
         LoggingService.info("CALIBRATION_FLOW: Average white reference - RGB(\(Int(finalColor.r)), \(Int(finalColor.g)), \(Int(finalColor.b)))")
-        
+
         // Calculate white balance calibration
         let calibration = WhiteBalanceCalibration.calculate(from: finalColor)
         whiteBalanceCalibration = calibration
-        
+
         let factors = "R:\(String(format: "%.2f", calibration.redFactor)) "
             + "G:\(String(format: "%.2f", calibration.greenFactor)) "
             + "B:\(String(format: "%.2f", calibration.blueFactor))"
         LoggingService.info("CALIBRATION_FLOW: Calculated white balance factors - \(factors)")
-        
+
         // Apply calibration to services
         segmentationService.setWhiteBalanceCalibration(calibration)
-        
+
         // Update state
         isCalibrated = true
         currentMode = .analysis
         isDetectingWhiteReference = false
         detectedWhiteRegion = nil
         shouldProcessFrames = true
-        
+
         LoggingService.info("CALIBRATION_FLOW: Calibration complete - Entering analysis mode")
-        
+
         // Notify delegate
         delegate?.viewModel(self, didCompleteCalibration: calibration)
     }
-    
+
     func skipCalibration() {
         LoggingService.info("CALIBRATION_FLOW: Skipping calibration - Using identity white balance")
         whiteBalanceCalibration = .identity
@@ -425,11 +425,11 @@ class CameraViewModel: NSObject {
         var textureOut: CVMetalTexture?
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
-        
+
         guard let textureCache = segmentationService.textureCache else {
             return nil
         }
-        
+
         let status = CVMetalTextureCacheCreateTextureFromImage(
             kCFAllocatorDefault,
             textureCache,
@@ -441,13 +441,13 @@ class CameraViewModel: NSObject {
             0,
             &textureOut
         )
-        
+
         guard status == kCVReturnSuccess,
               let cvTexture = textureOut,
               let texture = CVMetalTextureGetTexture(cvTexture) else {
             return nil
         }
-        
+
         return texture
     }
 }
@@ -460,7 +460,7 @@ extension CameraViewModel: CameraServiceDelegate {
             LoggingService.warning("FRAME_FLOW: Received invalid sample buffer")
             return
         }
-        
+
         let timestamp = Int(Date().timeIntervalSince1970 * 1000)
         backgroundQueue.async { [weak self] in
             self?.processFrame(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: timestamp)

@@ -486,26 +486,26 @@ class RefactoredCameraViewController: UIViewController {
     overlay.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(overlay)
     calibrationOverlayView = overlay
-    
+
     // Create a mask layer for the overlay to create a clear center box
     let maskLayer = CAShapeLayer()
     let path = CGMutablePath()
-    
+
     // Add the outer rectangle (full overlay)
     path.addRect(overlay.bounds)
-    
+
     // Calculate the center box dimensions (250x250)
     let boxSize: CGFloat = 250
     let centerX = overlay.bounds.midX - boxSize/2
     let centerY = overlay.bounds.midY - boxSize/2
     let centerBox = CGRect(x: centerX, y: centerY, width: boxSize, height: boxSize)
-    
+
     // Subtract the center box to make it transparent
     path.addRect(centerBox)
     maskLayer.path = path
     maskLayer.fillRule = .evenOdd // This makes the intersection transparent
     overlay.layer.mask = maskLayer
-    
+
     // Create guide view (white border around the clear box)
     let guide = UIView()
     guide.backgroundColor = .clear
@@ -514,7 +514,7 @@ class RefactoredCameraViewController: UIViewController {
     guide.translatesAutoresizingMaskIntoConstraints = false
     overlay.addSubview(guide)
     calibrationGuideView = guide
-    
+
     // Create instruction label
     let label = UILabel()
     label.text = "Place a white piece of paper in the box"
@@ -525,7 +525,7 @@ class RefactoredCameraViewController: UIViewController {
     label.translatesAutoresizingMaskIntoConstraints = false
     overlay.addSubview(label)
     calibrationInstructionLabel = label
-    
+
     // Create progress view
     let progress = UIProgressView(progressViewStyle: .default)
     progress.progressTintColor = .white
@@ -534,7 +534,7 @@ class RefactoredCameraViewController: UIViewController {
     progress.translatesAutoresizingMaskIntoConstraints = false
     overlay.addSubview(progress)
     calibrationProgressView = progress
-    
+
     // Create capture button
     let captureButton = UIButton(type: .system)
     captureButton.setTitle("Capture White Reference", for: .normal)
@@ -546,7 +546,7 @@ class RefactoredCameraViewController: UIViewController {
     captureButton.translatesAutoresizingMaskIntoConstraints = false
     overlay.addSubview(captureButton)
     calibrationCaptureButton = captureButton
-    
+
     // Create skip button
     let skipButton = UIButton(type: .system)
     skipButton.setTitle("Skip Calibration", for: .normal)
@@ -556,7 +556,7 @@ class RefactoredCameraViewController: UIViewController {
     skipButton.translatesAutoresizingMaskIntoConstraints = false
     overlay.addSubview(skipButton)
     calibrationSkipButton = skipButton
-    
+
     // Setup constraints
     NSLayoutConstraint.activate([
         // Overlay constraints
@@ -564,34 +564,34 @@ class RefactoredCameraViewController: UIViewController {
         overlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         overlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         overlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        
+
         // Guide view constraints (250x250 in center)
         guide.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
         guide.centerYAnchor.constraint(equalTo: overlay.centerYAnchor),
         guide.widthAnchor.constraint(equalToConstant: 250),
         guide.heightAnchor.constraint(equalToConstant: 250),
-        
+
         // Instruction label constraints
         label.bottomAnchor.constraint(equalTo: guide.topAnchor, constant: -20),
         label.leadingAnchor.constraint(equalTo: overlay.leadingAnchor, constant: 20),
         label.trailingAnchor.constraint(equalTo: overlay.trailingAnchor, constant: -20),
-        
+
         // Progress view constraints
         progress.topAnchor.constraint(equalTo: guide.bottomAnchor, constant: 20),
         progress.leadingAnchor.constraint(equalTo: overlay.leadingAnchor, constant: 40),
         progress.trailingAnchor.constraint(equalTo: overlay.trailingAnchor, constant: -40),
-        
+
         // Capture button constraints
         captureButton.topAnchor.constraint(equalTo: progress.bottomAnchor, constant: 20),
         captureButton.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
         captureButton.widthAnchor.constraint(equalToConstant: 250),
         captureButton.heightAnchor.constraint(equalToConstant: 44),
-        
+
         // Skip button constraints
         skipButton.topAnchor.constraint(equalTo: captureButton.bottomAnchor, constant: 12),
         skipButton.centerXAnchor.constraint(equalTo: overlay.centerXAnchor)
     ])
-    
+
     // Update mask when layout changes
     overlay.layoutIfNeeded()
     maskLayer.frame = overlay.bounds
@@ -606,12 +606,12 @@ class RefactoredCameraViewController: UIViewController {
     calibrationProgressView?.isHidden = false
     calibrationProgressView?.progress = 0.0
     calibrationInstructionLabel?.text = "Hold still while calibrating..."
-    
+
     // Ensure camera is running and ready
     if !viewModel.isSessionRunning {
       LoggingService.info("UI_FLOW: Starting camera for calibration")
       viewModel.startCamera()
-      
+
       // Wait for camera to start before beginning calibration
       DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
         self?.viewModel.captureWhiteReference()

@@ -149,7 +149,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       log("Unable to allocate texture cache: \(status)", level: .error)
       return
     }
-    
+
     internalTextureCache = metalTextureCache
 
     faceLandmarkRenderer.prepare(with: formatDescription, outputRetainedBufferCountHint: outputRetainedBufferCountHint, needChangeWidthHeight: needChangeWidthHeight)
@@ -204,7 +204,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
       log("Texture cache not available", level: .error)
       return nil
     }
-    
+
     let width = CVPixelBufferGetWidth(pixelBuffer)
     let height = CVPixelBufferGetHeight(pixelBuffer)
 
