@@ -96,6 +96,18 @@ extension ColorExtractor {
         static let minHairBrightness: Float = 5.0
         static let maxHairBrightness: Float = 250.0
     }
+    
+    // Eye color extraction thresholds
+    enum EyeExtractionThreshold {
+        static let minIrisBrightness: Float = 30.0  // Increased from 10.0 to better exclude pupil
+        static let maxIrisBrightness: Float = 200.0
+        static let minPixelCount: Int = 20
+        static let maxReflectionBrightness: Float = 240.0
+        static let minConfidenceScore: Float = 0.3
+        static let minSaturation: Float = 0.1  // Minimum saturation to exclude very desaturated pixels
+        static let maxPupilBrightness: Float = 50.0  // Maximum brightness for pupil detection
+        static let pupilExclusionRadius: Float = 0.3  // Radius around pupil center to exclude (as fraction of iris)
+    }
 }
 
 // MARK: - CGPoint helpers ----------------------------------------------

@@ -32,6 +32,9 @@ class RefactoredCameraViewController: UIViewController {
   // UI elements for displaying color information
   private let skinColorLabel = UILabel()
   private let hairColorLabel = UILabel()
+  private let leftEyeColorLabel = UILabel()
+  private let rightEyeColorLabel = UILabel()
+  private let averageEyeColorLabel = UILabel()
 
   // Frame quality UI elements
   private let frameQualityView = FrameQualityIndicatorView(
@@ -364,6 +367,38 @@ class RefactoredCameraViewController: UIViewController {
         format: " HSV(%.0f,%.0f,%.0f)", hairHSV.h * 360, hairHSV.s * 100, hairHSV.v * 100)
       hairColorLabel.text = hairRGBString + hairHSVString
     }
+
+    // Update left eye color label
+    if colorInfo.leftEyeConfidence > 0, let leftEyeRGB = colorInfo.leftEyeColor.cgColor.components, leftEyeRGB.count >= 3 {
+      let leftEyeHSV = colorInfo.leftEyeColorHSV
+      let rgbString = String(format: "L Eye: RGB(%.0f,%.0f,%.0f)", leftEyeRGB[0] * 255, leftEyeRGB[1] * 255, leftEyeRGB[2] * 255)
+      let hsvString = String(format: " HSV(%.0f,%.0f,%.0f)", leftEyeHSV.h * 360, leftEyeHSV.s * 100, leftEyeHSV.v * 100)
+      let confidenceString = String(format: " C:%.2f", colorInfo.leftEyeConfidence)
+      leftEyeColorLabel.text = rgbString + hsvString + confidenceString
+    } else {
+      leftEyeColorLabel.text = "L Eye: N/A"
+    }
+
+    // Update right eye color label
+    if colorInfo.rightEyeConfidence > 0, let rightEyeRGB = colorInfo.rightEyeColor.cgColor.components, rightEyeRGB.count >= 3 {
+      let rightEyeHSV = colorInfo.rightEyeColorHSV
+      let rgbString = String(format: "R Eye: RGB(%.0f,%.0f,%.0f)", rightEyeRGB[0] * 255, rightEyeRGB[1] * 255, rightEyeRGB[2] * 255)
+      let hsvString = String(format: " HSV(%.0f,%.0f,%.0f)", rightEyeHSV.h * 360, rightEyeHSV.s * 100, rightEyeHSV.v * 100)
+      let confidenceString = String(format: " C:%.2f", colorInfo.rightEyeConfidence)
+      rightEyeColorLabel.text = rgbString + hsvString + confidenceString
+    } else {
+      rightEyeColorLabel.text = "R Eye: N/A"
+    }
+
+    // Update average eye color label
+    if colorInfo.averageEyeColor != .clear, let avgEyeRGB = colorInfo.averageEyeColor.cgColor.components, avgEyeRGB.count >= 3 {
+      let avgEyeHSV = colorInfo.averageEyeColorHSV
+      let rgbString = String(format: "Avg Eye: RGB(%.0f,%.0f,%.0f)", avgEyeRGB[0] * 255, avgEyeRGB[1] * 255, avgEyeRGB[2] * 255)
+      let hsvString = String(format: " HSV(%.0f,%.0f,%.0f)", avgEyeHSV.h * 360, avgEyeHSV.s * 100, avgEyeHSV.v * 100)
+      averageEyeColorLabel.text = rgbString + hsvString
+    } else {
+      averageEyeColorLabel.text = "Avg Eye: N/A"
+    }
   }
 
   private func updateAnalyzeButtonState(isEnabled: Bool) {
@@ -382,11 +417,22 @@ class RefactoredCameraViewController: UIViewController {
     // Convert color values to Lab if available
     var skinLab: ColorConverters.LabColor?
     var hairLab: ColorConverters.LabColor?
+    var leftEyeLab: ColorConverters.LabColor?
+    var rightEyeLab: ColorConverters.LabColor?
     var deltaEs: [SeasonClassifier.Season: CGFloat]?
 
     if let colorInfo = colorInfo {
       skinLab = ColorConverters.colorToLab(colorInfo.skinColor)
       hairLab = ColorConverters.colorToLab(colorInfo.hairColor)
+      
+      // Convert eye colors to Lab if available
+      if colorInfo.leftEyeConfidence > 0 {
+        leftEyeLab = ColorConverters.colorToLab(colorInfo.leftEyeColor)
+      }
+      if colorInfo.rightEyeConfidence > 0 {
+        rightEyeLab = ColorConverters.colorToLab(colorInfo.rightEyeColor)
+      }
+      
       if let skinColorLab = skinLab {
         deltaEs = SeasonClassifier.calculateDeltaEToAllSeasons(skinLab: skinColorLab)
       }
@@ -397,6 +443,10 @@ class RefactoredCameraViewController: UIViewController {
       fps: viewModel.currentFPS,
       skinColorLab: skinLab,
       hairColorLab: hairLab,
+      leftEyeColorLab: leftEyeLab,
+      rightEyeColorLab: rightEyeLab,
+      leftEyeConfidence: colorInfo?.leftEyeConfidence,
+      rightEyeConfidence: colorInfo?.rightEyeConfidence,
       deltaEToSeasons: deltaEs,
       qualityScore: qualityScore
     )
@@ -681,9 +731,42 @@ extension RefactoredCameraViewController {
     hairColorLabel.font = UIFont.systemFont(ofSize: 12)
     hairColorLabel.text = "Hair: N/A"
 
+    // Configure left eye color label
+    leftEyeColorLabel.translatesAutoresizingMaskIntoConstraints = false
+    leftEyeColorLabel.textColor = .white
+    leftEyeColorLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+    leftEyeColorLabel.textAlignment = .center
+    leftEyeColorLabel.layer.cornerRadius = 5
+    leftEyeColorLabel.clipsToBounds = true
+    leftEyeColorLabel.font = UIFont.systemFont(ofSize: 12)
+    leftEyeColorLabel.text = "L Eye: N/A"
+
+    // Configure right eye color label
+    rightEyeColorLabel.translatesAutoresizingMaskIntoConstraints = false
+    rightEyeColorLabel.textColor = .white
+    rightEyeColorLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+    rightEyeColorLabel.textAlignment = .center
+    rightEyeColorLabel.layer.cornerRadius = 5
+    rightEyeColorLabel.clipsToBounds = true
+    rightEyeColorLabel.font = UIFont.systemFont(ofSize: 12)
+    rightEyeColorLabel.text = "R Eye: N/A"
+
+    // Configure average eye color label
+    averageEyeColorLabel.translatesAutoresizingMaskIntoConstraints = false
+    averageEyeColorLabel.textColor = .white
+    averageEyeColorLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+    averageEyeColorLabel.textAlignment = .center
+    averageEyeColorLabel.layer.cornerRadius = 5
+    averageEyeColorLabel.clipsToBounds = true
+    averageEyeColorLabel.font = UIFont.systemFont(ofSize: 12)
+    averageEyeColorLabel.text = "Avg Eye: N/A"
+
     // Add labels to view
     view.addSubview(skinColorLabel)
     view.addSubview(hairColorLabel)
+    view.addSubview(leftEyeColorLabel)
+    view.addSubview(rightEyeColorLabel)
+    view.addSubview(averageEyeColorLabel)
 
     // Set constraints to position labels in top left corner
     NSLayoutConstraint.activate([
@@ -691,19 +774,40 @@ extension RefactoredCameraViewController {
         equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
       skinColorLabel.topAnchor.constraint(
         equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-      skinColorLabel.widthAnchor.constraint(equalToConstant: 180),
+      skinColorLabel.widthAnchor.constraint(equalToConstant: 200),
       skinColorLabel.heightAnchor.constraint(equalToConstant: 30),
 
       hairColorLabel.leadingAnchor.constraint(
         equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
       hairColorLabel.topAnchor.constraint(equalTo: skinColorLabel.bottomAnchor, constant: 5),
-      hairColorLabel.widthAnchor.constraint(equalToConstant: 180),
-      hairColorLabel.heightAnchor.constraint(equalToConstant: 30)
+      hairColorLabel.widthAnchor.constraint(equalToConstant: 200),
+      hairColorLabel.heightAnchor.constraint(equalToConstant: 30),
+
+      leftEyeColorLabel.leadingAnchor.constraint(
+        equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+      leftEyeColorLabel.topAnchor.constraint(equalTo: hairColorLabel.bottomAnchor, constant: 5),
+      leftEyeColorLabel.widthAnchor.constraint(equalToConstant: 250),
+      leftEyeColorLabel.heightAnchor.constraint(equalToConstant: 30),
+
+      rightEyeColorLabel.leadingAnchor.constraint(
+        equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+      rightEyeColorLabel.topAnchor.constraint(equalTo: leftEyeColorLabel.bottomAnchor, constant: 5),
+      rightEyeColorLabel.widthAnchor.constraint(equalToConstant: 250),
+      rightEyeColorLabel.heightAnchor.constraint(equalToConstant: 30),
+
+      averageEyeColorLabel.leadingAnchor.constraint(
+        equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+      averageEyeColorLabel.topAnchor.constraint(equalTo: rightEyeColorLabel.bottomAnchor, constant: 5),
+      averageEyeColorLabel.widthAnchor.constraint(equalToConstant: 250),
+      averageEyeColorLabel.heightAnchor.constraint(equalToConstant: 30)
     ])
 
     // Initially hide the labels
     skinColorLabel.isHidden = true
     hairColorLabel.isHidden = true
+    leftEyeColorLabel.isHidden = true
+    rightEyeColorLabel.isHidden = true
+    averageEyeColorLabel.isHidden = true
   }
 
   fileprivate func setupFrameQualityUI() {

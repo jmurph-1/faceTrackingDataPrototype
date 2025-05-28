@@ -45,10 +45,18 @@ class ClassificationService {
         // Get colors for analysis
         let skinColor = colorInfo.skinColor
         let hairColor = colorInfo.hairColor
+        let leftEyeColor = colorInfo.leftEyeColor != .clear ? colorInfo.leftEyeColor : nil
+        let rightEyeColor = colorInfo.rightEyeColor != .clear ? colorInfo.rightEyeColor : nil
+        let averageEyeColor = colorInfo.averageEyeColor != .clear ? colorInfo.averageEyeColor : nil
 
         // Convert colors to Lab space
         let skinLab = ColorUtils.convertRGBToLab(color: skinColor)
         let hairLab = ColorUtils.convertRGBToLab(color: hairColor)
+        
+        // Convert eye colors to Lab space if available
+        let leftEyeLab = leftEyeColor != nil ? ColorUtils.convertRGBToLab(color: leftEyeColor!) : nil
+        let rightEyeLab = rightEyeColor != nil ? ColorUtils.convertRGBToLab(color: rightEyeColor!) : nil
+        let averageEyeLab = averageEyeColor != nil ? ColorUtils.convertRGBToLab(color: averageEyeColor!) : nil
 
         // Perform classification with the season classifier
         let classificationResult = SeasonClassifier.classifySeason(
@@ -69,6 +77,14 @@ class ClassificationService {
             skinColorLab: skinLab,
             hairColor: hairColor,
             hairColorLab: hairLab,
+            leftEyeColor: leftEyeColor,
+            leftEyeColorLab: leftEyeLab != nil ? (L: CGFloat(leftEyeLab!.L), a: CGFloat(leftEyeLab!.a), b: CGFloat(leftEyeLab!.b)) : nil,
+            rightEyeColor: rightEyeColor,
+            rightEyeColorLab: rightEyeLab != nil ? (L: CGFloat(rightEyeLab!.L), a: CGFloat(rightEyeLab!.a), b: CGFloat(rightEyeLab!.b)) : nil,
+            averageEyeColor: averageEyeColor,
+            averageEyeColorLab: averageEyeLab != nil ? (L: CGFloat(averageEyeLab!.L), a: CGFloat(averageEyeLab!.a), b: CGFloat(averageEyeLab!.b)) : nil,
+            leftEyeConfidence: colorInfo.leftEyeConfidence,
+            rightEyeConfidence: colorInfo.rightEyeConfidence,
             thumbnail: thumbnail
         )
 

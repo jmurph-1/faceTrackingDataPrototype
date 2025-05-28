@@ -160,7 +160,23 @@ extension ColorExtractor {
             maskHeight: maskHeight
         )
 
-        return calculateColorInfo(skinPixels: allSkinPixels, hairPixels: hairPixels)
+        // NEW: Extract eye colors
+        let eyeColors = extractIrisColors(
+            pixelData: pixelData,
+            segmentMask: segmentMask,
+            landmarks: landmarks,
+            processingWidth: processingWidth,
+            processingHeight: processingHeight,
+            maskWidth: maskWidth,
+            maskHeight: maskHeight
+        )
+
+        return calculateColorInfoWithEyes(
+            skinPixels: allSkinPixels,
+            hairPixels: hairPixels,
+            leftEyePixels: eyeColors.leftEye,
+            rightEyePixels: eyeColors.rightEye
+        )
     }
 
     // MARK: - Ordered Polygon Creation
@@ -179,6 +195,34 @@ extension ColorExtractor {
         guard points.count >= 3 else { return points }
 
         return ColorExtractor.orderPointsCCW(points)
+    }
+
+    // MARK: - Eye Region Polygon Creation
+
+    private func createLeftEyeIrisPolygon(from landmarks: [NormalizedLandmark]) -> [CGPoint] {
+        // Use iris landmarks if available, otherwise fallback to eye contour
+        let irisIndices = [468, 469, 470, 471, 472]
+        let fallbackIndices = [33, 7, 163, 144, 145, 153, 154, 155, 133]
+        
+        let indicesToUse = landmarks.count > 477 ? irisIndices : fallbackIndices
+        return createOrderedPolygon(from: landmarks, indices: indicesToUse)
+    }
+
+    private func createRightEyeIrisPolygon(from landmarks: [NormalizedLandmark]) -> [CGPoint] {
+        // Use iris landmarks if available, otherwise fallback to eye contour
+        let irisIndices = [473, 474, 475, 476, 477]
+        let fallbackIndices = [362, 382, 381, 380, 374, 373, 390, 249, 263]
+        
+        let indicesToUse = landmarks.count > 477 ? irisIndices : fallbackIndices
+        return createOrderedPolygon(from: landmarks, indices: indicesToUse)
+    }
+
+    private func createEyeBoundingPolygon(from landmarks: [NormalizedLandmark], isLeftEye: Bool) -> [CGPoint] {
+        let indices = isLeftEye ? 
+            [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161] :
+            [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384]
+        
+        return createOrderedPolygon(from: landmarks, indices: indices)
     }
 
     // MARK: - High Precision Pixel Extraction
@@ -302,16 +346,185 @@ extension ColorExtractor {
         return pixels
     }
 
+    // MARK: - Eye Color Extraction
+
+    private func extractIrisColors(
+        pixelData: UnsafePointer<UInt8>,
+        segmentMask: UnsafePointer<UInt8>,
+        landmarks: [NormalizedLandmark],
+        processingWidth: Int,
+        processingHeight: Int,
+        maskWidth: Int,
+        maskHeight: Int
+    ) -> (leftEye: [(r: Float, g: Float, b: Float)], rightEye: [(r: Float, g: Float, b: Float)]) {
+        
+        let leftIrisPolygon = createLeftEyeIrisPolygon(from: landmarks)
+        let rightIrisPolygon = createRightEyeIrisPolygon(from: landmarks)
+        
+        let leftEyeBounds = createEyeBoundingPolygon(from: landmarks, isLeftEye: true)
+        let rightEyeBounds = createEyeBoundingPolygon(from: landmarks, isLeftEye: false)
+        
+        let leftEyePixels = extractIrisPixelsFromRegion(
+            pixelData: pixelData,
+            irisPolygon: leftIrisPolygon,
+            eyeBounds: leftEyeBounds,
+            processingWidth: processingWidth,
+            processingHeight: processingHeight
+        )
+        
+        let rightEyePixels = extractIrisPixelsFromRegion(
+            pixelData: pixelData,
+            irisPolygon: rightIrisPolygon,
+            eyeBounds: rightEyeBounds,
+            processingWidth: processingWidth,
+            processingHeight: processingHeight
+        )
+        
+        return (leftEye: leftEyePixels, rightEye: rightEyePixels)
+    }
+
+    private func extractIrisPixelsFromRegion(
+        pixelData: UnsafePointer<UInt8>,
+        irisPolygon: [CGPoint],
+        eyeBounds: [CGPoint],
+        processingWidth: Int,
+        processingHeight: Int
+    ) -> [(r: Float, g: Float, b: Float)] {
+        
+        var pixels: [(r: Float, g: Float, b: Float)] = []
+        
+        guard irisPolygon.count >= 3 && eyeBounds.count >= 3 else { return pixels }
+        
+        let irisBBox = ColorExtractor.boundingBox(of: irisPolygon)
+        let eyeBBox = ColorExtractor.boundingBox(of: eyeBounds)
+        
+        // Calculate iris center for pupil exclusion
+        let irisCenter = CGPoint(
+            x: irisBBox.midX,
+            y: irisBBox.midY
+        )
+        let irisRadius = min(irisBBox.width, irisBBox.height) / 2.0
+        let pupilExclusionRadius = irisRadius * CGFloat(ColorExtractor.EyeExtractionThreshold.pupilExclusionRadius)
+        
+        // Use eye bounding box to limit search area
+        let startX = max(0, Int((eyeBBox.minX - 0.01) * CGFloat(processingWidth)))
+        let endX = min(processingWidth, Int((eyeBBox.maxX + 0.01) * CGFloat(processingWidth)))
+        let startY = max(0, Int((eyeBBox.minY - 0.01) * CGFloat(processingHeight)))
+        let endY = min(processingHeight, Int((eyeBBox.maxY + 0.01) * CGFloat(processingHeight)))
+        
+        // Sub-pixel sampling for accuracy
+        let subPixelSteps = 2 // Slightly less than skin for performance
+        let subPixelOffset = 1.0 / (CGFloat(subPixelSteps * 2))
+        
+        for yCoord in startY..<endY {
+            for xCoord in startX..<endX {
+                var samplesInIris = 0
+                var samplesInEye = 0
+                
+                // Sub-pixel sampling
+                for subY in 0..<subPixelSteps {
+                    for subX in 0..<subPixelSteps {
+                        let sampleX = (CGFloat(xCoord) + subPixelOffset + CGFloat(subX) / CGFloat(subPixelSteps)) / CGFloat(processingWidth)
+                        let sampleY = (CGFloat(yCoord) + subPixelOffset + CGFloat(subY) / CGFloat(subPixelSteps)) / CGFloat(processingHeight)
+                        let samplePoint = CGPoint(x: sampleX, y: sampleY)
+                        
+                        // Check if point is too close to pupil center
+                        let distanceFromCenter = sqrt(
+                            pow(samplePoint.x - irisCenter.x, 2) + 
+                            pow(samplePoint.y - irisCenter.y, 2)
+                        )
+                        
+                        if distanceFromCenter <= pupilExclusionRadius {
+                            continue // Skip pixels too close to pupil center
+                        }
+                        
+                        if ColorExtractor.point(samplePoint, inside: eyeBounds) {
+                            samplesInEye += 1
+                            if ColorExtractor.point(samplePoint, inside: irisPolygon) {
+                                samplesInIris += 1
+                            }
+                        }
+                    }
+                }
+                
+                // Include pixel if it's in the iris region
+                let totalSamples = subPixelSteps * subPixelSteps
+                let irisThreshold = totalSamples / 2
+                
+                if samplesInIris > irisThreshold && samplesInEye > 0 {
+                    let pixelOffset = (yCoord * processingWidth + xCoord) * 4
+                    if pixelOffset + 2 < processingWidth * processingHeight * 4 {
+                        let blueValue = Float(pixelData[pixelOffset])
+                        let greenValue = Float(pixelData[pixelOffset + 1])
+                        let redValue = Float(pixelData[pixelOffset + 2])
+                        
+                        // Quality filtering for iris pixels
+                        if isValidIrisPixel(r: redValue, g: greenValue, b: blueValue) {
+                            pixels.append((r: redValue, g: greenValue, b: blueValue))
+                        }
+                    }
+                }
+            }
+        }
+        
+        return pixels
+    }
+
+    private func isValidIrisPixel(r: Float, g: Float, b: Float) -> Bool {
+        let brightness = (r + g + b) / 3.0
+        
+        // Filter out pupil (too dark) and reflections (too bright)
+        guard brightness >= ColorExtractor.EyeExtractionThreshold.minIrisBrightness &&
+              brightness <= ColorExtractor.EyeExtractionThreshold.maxIrisBrightness &&
+              brightness < ColorExtractor.EyeExtractionThreshold.maxReflectionBrightness else {
+            return false
+        }
+        
+        // Additional pupil detection - very dark pixels are likely pupil
+        if brightness <= ColorExtractor.EyeExtractionThreshold.maxPupilBrightness {
+            return false
+        }
+        
+        // Calculate HSV to check saturation
+        let maxChannel = max(r, max(g, b))
+        let minChannel = min(r, min(g, b))
+        let delta = maxChannel - minChannel
+        
+        // Calculate saturation
+        let saturation = maxChannel > 0 ? delta / maxChannel : 0
+        
+        // Filter out very desaturated pixels (likely pupil or sclera)
+        guard saturation >= ColorExtractor.EyeExtractionThreshold.minSaturation else {
+            return false
+        }
+        
+        // Ensure there's reasonable color variation (not pure black/white)
+        let contrast = maxChannel - minChannel
+        guard contrast > 8.0 && contrast < 150.0 else {
+            return false
+        }
+        
+        // Additional check: reject pixels that are too close to pure black or white
+        let normalizedBrightness = brightness / 255.0
+        guard normalizedBrightness > 0.15 && normalizedBrightness < 0.85 else {
+            return false
+        }
+        
+        return true
+    }
+
     // MARK: - Advanced Color Calculation with Reliability Validation
 
-    private func calculateColorInfo(
+    private func calculateColorInfoWithEyes(
         skinPixels: [(r: Float, g: Float, b: Float)],
-        hairPixels: [(r: Float, g: Float, b: Float)]
+        hairPixels: [(r: Float, g: Float, b: Float)],
+        leftEyePixels: [(r: Float, g: Float, b: Float)],
+        rightEyePixels: [(r: Float, g: Float, b: Float)]
     ) -> ColorInfo {
 
         var newColorInfo = ColorInfo()
 
-        // Advanced skin color calculation with reliability validation
+        // Advanced skin color calculation with reliability validation (existing logic)
         if !skinPixels.isEmpty {
             LoggingService.info("ColorExtractor: raw skin pixel count: \(skinPixels.count)")
             let filteredSkinPixels = ColorExtractor.removeOutliers(skinPixels)
@@ -356,7 +569,7 @@ extension ColorExtractor {
             newColorInfo.skinColorHSV = lastColorInfo.skinColorHSV
         }
 
-        // Advanced hair color calculation with outlier removal
+        // Advanced hair color calculation with outlier removal (existing logic)
         if !hairPixels.isEmpty {
             let filteredHairPixels = hairPixels
             if !filteredHairPixels.isEmpty {
@@ -387,7 +600,185 @@ extension ColorExtractor {
             newColorInfo.hairColorHSV = lastColorInfo.hairColorHSV
         }
 
+        // NEW: Process left eye color
+        if !leftEyePixels.isEmpty {
+            let confidence = calculateEyeConfidence(leftEyePixels)
+            LoggingService.info("ColorExtractor: Left eye pixel count: \(leftEyePixels.count), confidence: \(confidence)")
+            
+            if confidence >= ColorExtractor.EyeExtractionThreshold.minConfidenceScore {
+                // Additional filtering to remove any remaining dark pixels
+                let brightnessFilteredPixels = filterDarkPixels(leftEyePixels)
+                let filteredPixels = ColorExtractor.removeOutliers(brightnessFilteredPixels)
+                let finalPixels = filteredPixels.isEmpty ? brightnessFilteredPixels : filteredPixels
+                let avgColor = ColorExtractor.weightedAverage(finalPixels.isEmpty ? leftEyePixels : finalPixels)
+                
+                let calculatedColor = UIColor(
+                    red: CGFloat(avgColor.r / 255.0),
+                    green: CGFloat(avgColor.g / 255.0),
+                    blue: CGFloat(avgColor.b / 255.0),
+                    alpha: 1.0
+                )
+                
+                newColorInfo.leftEyeColor = lastColorInfo.leftEyeColor != .clear ?
+                    blendColors(newColor: calculatedColor, oldColor: lastColorInfo.leftEyeColor, factor: smoothingFactor) :
+                    calculatedColor
+                
+                newColorInfo.leftEyeColor.getHue(
+                    &newColorInfo.leftEyeColorHSV.h,
+                    saturation: &newColorInfo.leftEyeColorHSV.s,
+                    brightness: &newColorInfo.leftEyeColorHSV.v,
+                    alpha: nil
+                )
+                
+                newColorInfo.leftEyeConfidence = confidence
+            } else {
+                // Keep previous values if confidence is too low
+                newColorInfo.leftEyeColor = lastColorInfo.leftEyeColor
+                newColorInfo.leftEyeColorHSV = lastColorInfo.leftEyeColorHSV
+                newColorInfo.leftEyeConfidence = lastColorInfo.leftEyeConfidence
+            }
+        } else {
+            newColorInfo.leftEyeColor = lastColorInfo.leftEyeColor
+            newColorInfo.leftEyeColorHSV = lastColorInfo.leftEyeColorHSV
+            newColorInfo.leftEyeConfidence = lastColorInfo.leftEyeConfidence
+        }
+
+        // NEW: Process right eye color (similar logic)
+        if !rightEyePixels.isEmpty {
+            let confidence = calculateEyeConfidence(rightEyePixels)
+            LoggingService.info("ColorExtractor: Right eye pixel count: \(rightEyePixels.count), confidence: \(confidence)")
+            
+            if confidence >= ColorExtractor.EyeExtractionThreshold.minConfidenceScore {
+                // Additional filtering to remove any remaining dark pixels
+                let brightnessFilteredPixels = filterDarkPixels(rightEyePixels)
+                let filteredPixels = ColorExtractor.removeOutliers(brightnessFilteredPixels)
+                let finalPixels = filteredPixels.isEmpty ? brightnessFilteredPixels : filteredPixels
+                let avgColor = ColorExtractor.weightedAverage(finalPixels.isEmpty ? rightEyePixels : finalPixels)
+                
+                let calculatedColor = UIColor(
+                    red: CGFloat(avgColor.r / 255.0),
+                    green: CGFloat(avgColor.g / 255.0),
+                    blue: CGFloat(avgColor.b / 255.0),
+                    alpha: 1.0
+                )
+                
+                newColorInfo.rightEyeColor = lastColorInfo.rightEyeColor != .clear ?
+                    blendColors(newColor: calculatedColor, oldColor: lastColorInfo.rightEyeColor, factor: smoothingFactor) :
+                    calculatedColor
+                
+                newColorInfo.rightEyeColor.getHue(
+                    &newColorInfo.rightEyeColorHSV.h,
+                    saturation: &newColorInfo.rightEyeColorHSV.s,
+                    brightness: &newColorInfo.rightEyeColorHSV.v,
+                    alpha: nil
+                )
+                
+                newColorInfo.rightEyeConfidence = confidence
+            } else {
+                // Keep previous values if confidence is too low
+                newColorInfo.rightEyeColor = lastColorInfo.rightEyeColor
+                newColorInfo.rightEyeColorHSV = lastColorInfo.rightEyeColorHSV
+                newColorInfo.rightEyeConfidence = lastColorInfo.rightEyeConfidence
+            }
+        } else {
+            newColorInfo.rightEyeColor = lastColorInfo.rightEyeColor
+            newColorInfo.rightEyeColorHSV = lastColorInfo.rightEyeColorHSV
+            newColorInfo.rightEyeConfidence = lastColorInfo.rightEyeConfidence
+        }
+
+        // NEW: Calculate average eye color from both eyes
+        if newColorInfo.leftEyeConfidence > 0 && newColorInfo.rightEyeConfidence > 0 {
+            newColorInfo.averageEyeColor = blendEyeColors(
+                leftColor: newColorInfo.leftEyeColor,
+                rightColor: newColorInfo.rightEyeColor,
+                leftConfidence: newColorInfo.leftEyeConfidence,
+                rightConfidence: newColorInfo.rightEyeConfidence
+            )
+        } else if newColorInfo.leftEyeConfidence > 0 {
+            newColorInfo.averageEyeColor = newColorInfo.leftEyeColor
+        } else if newColorInfo.rightEyeConfidence > 0 {
+            newColorInfo.averageEyeColor = newColorInfo.rightEyeColor
+        } else {
+            newColorInfo.averageEyeColor = lastColorInfo.averageEyeColor
+        }
+        
+        // Update HSV for average
+        if newColorInfo.averageEyeColor != .clear {
+            newColorInfo.averageEyeColor.getHue(
+                &newColorInfo.averageEyeColorHSV.h,
+                saturation: &newColorInfo.averageEyeColorHSV.s,
+                brightness: &newColorInfo.averageEyeColorHSV.v,
+                alpha: nil
+            )
+        }
+
         return newColorInfo
+    }
+
+    private func calculateEyeConfidence(_ pixels: [(r: Float, g: Float, b: Float)]) -> Float {
+        let pixelCount = pixels.count
+        let minCount = ColorExtractor.EyeExtractionThreshold.minPixelCount
+        
+        if pixelCount < minCount {
+            return 0.0
+        }
+        
+        // Base confidence from pixel count
+        let countConfidence = min(1.0, Float(pixelCount) / Float(minCount * 3))
+        
+        // Color consistency confidence
+        let avgColor = ColorExtractor.weightedAverage(pixels)
+        let colorVariance = pixels.map { pixel in
+            let deltaR = pixel.r - avgColor.r
+            let deltaG = pixel.g - avgColor.g
+            let deltaB = pixel.b - avgColor.b
+            return sqrt(deltaR * deltaR + deltaG * deltaG + deltaB * deltaB)
+        }.reduce(0, +) / Float(pixels.count)
+        
+        let consistencyConfidence = max(0.0, 1.0 - (colorVariance / 50.0))
+        
+        return (countConfidence + consistencyConfidence) / 2.0
+    }
+
+    private func blendEyeColors(
+        leftColor: UIColor,
+        rightColor: UIColor,
+        leftConfidence: Float,
+        rightConfidence: Float
+    ) -> UIColor {
+        let totalConfidence = leftConfidence + rightConfidence
+        let leftWeight = leftConfidence / totalConfidence
+        let rightWeight = rightConfidence / totalConfidence
+        
+        var leftR: CGFloat = 0, leftG: CGFloat = 0, leftB: CGFloat = 0
+        var rightR: CGFloat = 0, rightG: CGFloat = 0, rightB: CGFloat = 0
+        
+        leftColor.getRed(&leftR, green: &leftG, blue: &leftB, alpha: nil)
+        rightColor.getRed(&rightR, green: &rightG, blue: &rightB, alpha: nil)
+        
+        let blendedR = leftR * CGFloat(leftWeight) + rightR * CGFloat(rightWeight)
+        let blendedG = leftG * CGFloat(leftWeight) + rightG * CGFloat(rightWeight)
+        let blendedB = leftB * CGFloat(leftWeight) + rightB * CGFloat(rightWeight)
+        
+        return UIColor(red: blendedR, green: blendedG, blue: blendedB, alpha: 1.0)
+    }
+
+    private func filterDarkPixels(_ pixels: [(r: Float, g: Float, b: Float)]) -> [(r: Float, g: Float, b: Float)] {
+        return pixels.filter { pixel in
+            let brightness = (pixel.r + pixel.g + pixel.b) / 3.0
+            let normalizedBrightness = brightness / 255.0
+            
+            // Remove pixels that are too dark (likely pupil remnants)
+            guard normalizedBrightness > 0.2 else { return false }
+            
+            // Calculate saturation to filter out desaturated pixels
+            let maxChannel = max(pixel.r, max(pixel.g, pixel.b))
+            let minChannel = min(pixel.r, min(pixel.g, pixel.b))
+            let saturation = maxChannel > 0 ? (maxChannel - minChannel) / maxChannel : 0
+            
+            // Keep pixels with reasonable saturation (colored iris pixels)
+            return saturation > 0.15
+        }
     }
 
     // MARK: - Regional Data Validation and Reliability Checks

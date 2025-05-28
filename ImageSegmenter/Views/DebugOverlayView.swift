@@ -23,6 +23,18 @@ struct DebugOverlayView: View {
     /// Current hair color in Lab space
     let hairColorLab: ColorConverters.LabColor?
 
+    /// Current left eye color in Lab space
+    let leftEyeColorLab: ColorConverters.LabColor?
+
+    /// Current right eye color in Lab space
+    let rightEyeColorLab: ColorConverters.LabColor?
+
+    /// Left eye confidence score
+    let leftEyeConfidence: Float?
+
+    /// Right eye confidence score
+    let rightEyeConfidence: Float?
+
     /// Delta-E to each season
     let deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?
 
@@ -36,11 +48,19 @@ struct DebugOverlayView: View {
     init(fps: Float,
          skinColorLab: ColorConverters.LabColor?,
          hairColorLab: ColorConverters.LabColor?,
+         leftEyeColorLab: ColorConverters.LabColor? = nil,
+         rightEyeColorLab: ColorConverters.LabColor? = nil,
+         leftEyeConfidence: Float? = nil,
+         rightEyeConfidence: Float? = nil,
          deltaEToSeasons: [SeasonClassifier.Season: CGFloat]?,
          qualityScore: FrameQualityService.QualityScore?) {
         self.fps = fps
         self.skinColorLab = skinColorLab
         self.hairColorLab = hairColorLab
+        self.leftEyeColorLab = leftEyeColorLab
+        self.rightEyeColorLab = rightEyeColorLab
+        self.leftEyeConfidence = leftEyeConfidence
+        self.rightEyeConfidence = rightEyeConfidence
         self.deltaEToSeasons = deltaEToSeasons
         self.qualityScore = qualityScore
 
@@ -135,6 +155,32 @@ struct DebugOverlayView: View {
                 }
             } else {
                 Text("No hair color detected")
+                    .font(.system(size: 10))
+                    .foregroundColor(.gray)
+            }
+
+            if let leftEye = leftEyeColorLab, let leftConf = leftEyeConfidence {
+                HStack {
+                    colorSample(Color(UIColor(red: CGFloat(leftEye.L)/100, green: 0.5, blue: 0.5, alpha: 1.0)))
+                    Text("L Eye: L=\(String(format: "%.1f", leftEye.L)), a=\(String(format: "%.1f", leftEye.a)), b=\(String(format: "%.1f", leftEye.b)) C=\(String(format: "%.2f", leftConf))")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white)
+                }
+            } else {
+                Text("No left eye color detected")
+                    .font(.system(size: 10))
+                    .foregroundColor(.gray)
+            }
+
+            if let rightEye = rightEyeColorLab, let rightConf = rightEyeConfidence {
+                HStack {
+                    colorSample(Color(UIColor(red: CGFloat(rightEye.L)/100, green: 0.5, blue: 0.5, alpha: 1.0)))
+                    Text("R Eye: L=\(String(format: "%.1f", rightEye.L)), a=\(String(format: "%.1f", rightEye.a)), b=\(String(format: "%.1f", rightEye.b)) C=\(String(format: "%.2f", rightConf))")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white)
+                }
+            } else {
+                Text("No right eye color detected")
                     .font(.system(size: 10))
                     .foregroundColor(.gray)
             }

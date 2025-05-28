@@ -16,5 +16,19 @@
         <attribute name="skinColorLabB" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="skinColorLabL" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
+        <attribute name="leftEyeColorData" optional="YES" attributeType="Binary"/>
+        <attribute name="leftEyeColorLabA" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="leftEyeColorLabB" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="leftEyeColorLabL" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="leftEyeConfidence" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="rightEyeColorData" optional="YES" attributeType="Binary"/>
+        <attribute name="rightEyeColorLabA" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="rightEyeColorLabB" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="rightEyeColorLabL" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="rightEyeConfidence" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="averageEyeColorData" optional="YES" attributeType="Binary"/>
+        <attribute name="averageEyeColorLabA" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="averageEyeColorLabB" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="averageEyeColorLabL" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
 </model> 
