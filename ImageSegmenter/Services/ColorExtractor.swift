@@ -62,16 +62,16 @@ class ColorExtractor {
         let leftCheekIndices = [117, 118, 101, 205, 187, 123, 50]
         let rightCheekIndices = [329, 348, 347, 346, 280, 425, 266, 330]
         let foreheadIndices = [9, 108, 67, 109, 10, 338, 297, 299, 336, 151, 337]
-        
+
         // Eye landmarks for iris detection
         let leftEyeIndices = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161]
         let rightEyeIndices = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384]
-        
+
         // Iris-specific landmarks (MediaPipe face mesh v2)
         let leftIrisIndices = [468, 469, 470, 471, 472]
         let rightIrisIndices = [473, 474, 475, 476, 477]
-        
-        return Set(leftCheekIndices + rightCheekIndices + foreheadIndices + 
+
+        return Set(leftCheekIndices + rightCheekIndices + foreheadIndices +
                    leftEyeIndices + rightEyeIndices + leftIrisIndices + rightIrisIndices)
     }
 
@@ -81,13 +81,13 @@ class ColorExtractor {
         var leftEyeColor: UIColor = .clear
         var rightEyeColor: UIColor = .clear
         var averageEyeColor: UIColor = .clear
-        
+
         var skinColorHSV: (h: CGFloat, s: CGFloat, v: CGFloat) = (0, 0, 0)
         var hairColorHSV: (h: CGFloat, s: CGFloat, v: CGFloat) = (0, 0, 0)
         var leftEyeColorHSV: (h: CGFloat, s: CGFloat, v: CGFloat) = (0, 0, 0)
         var rightEyeColorHSV: (h: CGFloat, s: CGFloat, v: CGFloat) = (0, 0, 0)
         var averageEyeColorHSV: (h: CGFloat, s: CGFloat, v: CGFloat) = (0, 0, 0)
-        
+
         // Eye extraction confidence scores (0.0 - 1.0)
         var leftEyeConfidence: Float = 0.0
         var rightEyeConfidence: Float = 0.0

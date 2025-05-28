@@ -52,7 +52,7 @@ class ClassificationService {
         // Convert colors to Lab space
         let skinLab = ColorUtils.convertRGBToLab(color: skinColor)
         let hairLab = ColorUtils.convertRGBToLab(color: hairColor)
-        
+
         // Convert eye colors to Lab space if available
         let leftEyeLab = leftEyeColor != nil ? ColorUtils.convertRGBToLab(color: leftEyeColor!) : nil
         let rightEyeLab = rightEyeColor != nil ? ColorUtils.convertRGBToLab(color: rightEyeColor!) : nil

@@ -96,7 +96,7 @@ extension ColorExtractor {
         static let minHairBrightness: Float = 5.0
         static let maxHairBrightness: Float = 250.0
     }
-    
+
     // Eye color extraction thresholds
     enum EyeExtractionThreshold {
         static let minIrisBrightness: Float = 30.0  // Increased from 10.0 to better exclude pupil

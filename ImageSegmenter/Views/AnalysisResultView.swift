@@ -142,7 +142,7 @@ struct AnalysisResultView: View {
                     }
                 }
             }
-            
+
             // Second row: Eye colors (if available)
             if hasEyeColors(result) {
                 HStack(spacing: 15) {
@@ -194,7 +194,7 @@ struct AnalysisResultView: View {
             }
         }
     }
-    
+
     /// Check if the result has any eye color data
     private func hasEyeColors(_ result: AnalysisResult) -> Bool {
         return (result.leftEyeColor != nil && result.leftEyeConfidence > 0) ||

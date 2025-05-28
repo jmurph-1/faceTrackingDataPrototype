@@ -424,7 +424,7 @@ class RefactoredCameraViewController: UIViewController {
     if let colorInfo = colorInfo {
       skinLab = ColorConverters.colorToLab(colorInfo.skinColor)
       hairLab = ColorConverters.colorToLab(colorInfo.hairColor)
-      
+
       // Convert eye colors to Lab if available
       if colorInfo.leftEyeConfidence > 0 {
         leftEyeLab = ColorConverters.colorToLab(colorInfo.leftEyeColor)
@@ -432,7 +432,7 @@ class RefactoredCameraViewController: UIViewController {
       if colorInfo.rightEyeConfidence > 0 {
         rightEyeLab = ColorConverters.colorToLab(colorInfo.rightEyeColor)
       }
-      
+
       if let skinColorLab = skinLab {
         deltaEs = SeasonClassifier.calculateDeltaEToAllSeasons(skinLab: skinColorLab)
       }
