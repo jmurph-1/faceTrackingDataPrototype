@@ -30,5 +30,8 @@
         <attribute name="averageEyeColorLabA" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="averageEyeColorLabB" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="averageEyeColorLabL" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="contrastValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="contrastLevel" optional="YES" attributeType="String"/>
+        <attribute name="contrastDescription" optional="YES" attributeType="String"/>
     </entity>
 </model> 

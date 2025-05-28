@@ -237,6 +237,9 @@ struct SavedResultsView_Previews: PreviewProvider {
                     alpha: 1.0
                 ),
                 hairColorLab: (L: 30.0, a: 5.0, b: 10.0),
+                contrastValue: 0.5 + Double(index) * 0.1,
+                contrastLevel: ["low", "medium", "medium-high", "high"][index],
+                contrastDescription: "Sample contrast description for \(season.rawValue)",
                 thumbnail: nil,
                 date: Date().addingTimeInterval(-Double(index) * 86400) // Subtract days
             )

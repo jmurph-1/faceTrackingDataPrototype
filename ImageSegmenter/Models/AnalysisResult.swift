@@ -62,6 +62,11 @@ class AnalysisResult: NSObject, NSSecureCoding {
     /// Additional notes (optional)
     var notes: String?
 
+    /// Contrast analysis properties
+    let contrastValue: Double
+    let contrastLevel: String
+    let contrastDescription: String
+
     /// Create an analysis result
     /// - Parameters:
     ///   - season: The classified season
@@ -80,6 +85,9 @@ class AnalysisResult: NSObject, NSSecureCoding {
     ///   - averageEyeColorLab: Average eye color in Lab space (optional)
     ///   - leftEyeConfidence: Left eye confidence score (0.0 - 1.0)
     ///   - rightEyeConfidence: Right eye confidence score (0.0 - 1.0)
+    ///   - contrastValue: Contrast value
+    ///   - contrastLevel: Contrast level
+    ///   - contrastDescription: Contrast description
     ///   - thumbnail: Thumbnail image (optional)
     ///   - date: Date of analysis (defaults to current date)
     init(
@@ -99,6 +107,9 @@ class AnalysisResult: NSObject, NSSecureCoding {
         averageEyeColorLab: (L: CGFloat, a: CGFloat, b: CGFloat)? = nil,
         leftEyeConfidence: Float = 0.0,
         rightEyeConfidence: Float = 0.0,
+        contrastValue: Double,
+        contrastLevel: String,
+        contrastDescription: String,
         thumbnail: UIImage? = nil,
         date: Date = Date()
     ) {
@@ -118,6 +129,9 @@ class AnalysisResult: NSObject, NSSecureCoding {
         self.averageEyeColorLab = averageEyeColorLab
         self.leftEyeConfidence = leftEyeConfidence
         self.rightEyeConfidence = rightEyeConfidence
+        self.contrastValue = contrastValue
+        self.contrastLevel = contrastLevel
+        self.contrastDescription = contrastDescription
         self.thumbnail = thumbnail
         self.date = date
     }
@@ -153,6 +167,9 @@ class AnalysisResult: NSObject, NSSecureCoding {
         case averageEyeColorLabB
         case leftEyeConfidence
         case rightEyeConfidence
+        case contrastValue
+        case contrastLevel
+        case contrastDescription
         case date
         case thumbnail
         case notes
@@ -221,7 +238,12 @@ class AnalysisResult: NSObject, NSSecureCoding {
         coder.encode(leftEyeConfidence, forKey: CodingKeys.leftEyeConfidence.rawValue)
         coder.encode(rightEyeConfidence, forKey: CodingKeys.rightEyeConfidence.rawValue)
 
+        coder.encode(contrastValue, forKey: CodingKeys.contrastValue.rawValue)
+        coder.encode(contrastLevel, forKey: CodingKeys.contrastLevel.rawValue)
+        coder.encode(contrastDescription, forKey: CodingKeys.contrastDescription.rawValue)
+
         coder.encode(date, forKey: CodingKeys.date.rawValue)
+
         coder.encode(notes, forKey: CodingKeys.notes.rawValue)
 
         // Encode thumbnail as PNG data if present
@@ -330,6 +352,11 @@ class AnalysisResult: NSObject, NSSecureCoding {
         // Decode eye confidence scores
         self.leftEyeConfidence = coder.decodeFloat(forKey: CodingKeys.leftEyeConfidence.rawValue)
         self.rightEyeConfidence = coder.decodeFloat(forKey: CodingKeys.rightEyeConfidence.rawValue)
+
+        // Decode contrast values
+        self.contrastValue = coder.decodeDouble(forKey: CodingKeys.contrastValue.rawValue)
+        self.contrastLevel = coder.decodeObject(of: NSString.self, forKey: CodingKeys.contrastLevel.rawValue) as? String ?? ""
+        self.contrastDescription = coder.decodeObject(of: NSString.self, forKey: CodingKeys.contrastDescription.rawValue) as? String ?? ""
 
         // Decode date
         if let date = coder.decodeObject(of: NSDate.self, forKey: CodingKeys.date.rawValue) as Date? {
@@ -460,6 +487,11 @@ extension AnalysisResult {
         let leftEyeConfidence = managedObject.value(forKey: "leftEyeConfidence") as? Float ?? 0.0
         let rightEyeConfidence = managedObject.value(forKey: "rightEyeConfidence") as? Float ?? 0.0
 
+        // Decode contrast values
+        let contrastValue = managedObject.value(forKey: "contrastValue") as? Double ?? 0.0
+        let contrastLevel = managedObject.value(forKey: "contrastLevel") as? String ?? ""
+        let contrastDescription = managedObject.value(forKey: "contrastDescription") as? String ?? ""
+
         var thumbnail: UIImage?
         if let thumbnailData = managedObject.value(forKey: "thumbnailData") as? Data {
             thumbnail = UIImage(data: thumbnailData)
@@ -482,6 +514,9 @@ extension AnalysisResult {
             averageEyeColorLab: averageEyeLab,
             leftEyeConfidence: leftEyeConfidence,
             rightEyeConfidence: rightEyeConfidence,
+            contrastValue: contrastValue,
+            contrastLevel: contrastLevel,
+            contrastDescription: contrastDescription,
             thumbnail: thumbnail,
             date: date
         )
@@ -558,6 +593,14 @@ extension AnalysisResult {
         // Save eye confidence scores
         managedObject.setValue(leftEyeConfidence, forKey: "leftEyeConfidence")
         managedObject.setValue(rightEyeConfidence, forKey: "rightEyeConfidence")
+
+        // Save contrast values
+        managedObject.setValue(contrastValue, forKey: "contrastValue")
+        managedObject.setValue(contrastLevel, forKey: "contrastLevel")
+        managedObject.setValue(contrastDescription, forKey: "contrastDescription")
+
+        // Save date
+        managedObject.setValue(date, forKey: "date")
 
         // Save thumbnail
         if let thumbnail = thumbnail, let thumbnailData = thumbnail.pngData() {

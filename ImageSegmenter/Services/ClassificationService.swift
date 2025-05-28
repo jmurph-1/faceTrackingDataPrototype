@@ -58,6 +58,14 @@ class ClassificationService {
         let rightEyeLab = rightEyeColor != nil ? ColorUtils.convertRGBToLab(color: rightEyeColor!) : nil
         let averageEyeLab = averageEyeColor != nil ? ColorUtils.convertRGBToLab(color: averageEyeColor!) : nil
 
+        // Calculate contrast
+        let eyeColorForContrast = averageEyeColor ?? leftEyeColor ?? rightEyeColor ?? skinColor
+        let contrastResult = ContrastCalculator.analyzeContrast(
+            skinColor: skinColor,
+            hairColor: hairColor,
+            eyeColor: eyeColorForContrast
+        )
+
         // Perform classification with the season classifier
         let classificationResult = SeasonClassifier.classifySeason(
             skinLab: (skinLab.L, skinLab.a, skinLab.b),
@@ -85,6 +93,9 @@ class ClassificationService {
             averageEyeColorLab: averageEyeLab != nil ? (L: CGFloat(averageEyeLab!.L), a: CGFloat(averageEyeLab!.a), b: CGFloat(averageEyeLab!.b)) : nil,
             leftEyeConfidence: colorInfo.leftEyeConfidence,
             rightEyeConfidence: colorInfo.rightEyeConfidence,
+            contrastValue: contrastResult.value,
+            contrastLevel: contrastResult.level.rawValue,
+            contrastDescription: contrastResult.description,
             thumbnail: thumbnail
         )
 

@@ -84,6 +84,35 @@ struct AnalysisResultView: View {
                 }
             }
             .padding(.horizontal)
+
+            // Contrast information
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Contrast Level:")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    Text(result.contrastLevel.replacingOccurrences(of: "-", with: " ").capitalized)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    
+                    // Visual contrast indicator
+                    ContrastIndicator(value: result.contrastValue)
+                }
+                
+                Text(result.contrastDescription)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(8)
+            .padding(.horizontal)
+            .padding(.top, 8)
         }
     }
 
@@ -298,6 +327,34 @@ struct AnalysisResultView: View {
     }
 }
 
+// MARK: - Contrast Indicator View
+
+struct ContrastIndicator: View {
+    let value: Double
+    
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(0..<5) { index in
+                Rectangle()
+                    .fill(fillColor(for: index))
+                    .frame(width: 8, height: 16)
+                    .cornerRadius(2)
+            }
+        }
+    }
+    
+    private func fillColor(for index: Int) -> Color {
+        let threshold = Double(index) * 0.2
+        if value > threshold {
+            // Gradient from green (low contrast) to red (high contrast)
+            let hue = 0.3 - (value * 0.3)
+            return Color(hue: hue, saturation: 0.7, brightness: 0.8)
+        } else {
+            return Color.gray.opacity(0.3)
+        }
+    }
+}
+
 // MARK: - Preview
 struct AnalysisResultView_Previews: PreviewProvider {
     static var previews: some View {
@@ -320,6 +377,9 @@ struct AnalysisResultView_Previews: PreviewProvider {
             averageEyeColorLab: (L: 53.5, a: -16.5, b: 26.5),
             leftEyeConfidence: 0.8,
             rightEyeConfidence: 0.75,
+            contrastValue: 0.65,
+            contrastLevel: "medium-high",
+            contrastDescription: "Your features show clear distinction with noticeable contrast",
             thumbnail: nil
         )
         viewModel.updateWithResult(sampleResult)
