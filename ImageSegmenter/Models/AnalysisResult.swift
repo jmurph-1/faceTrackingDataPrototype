@@ -8,6 +8,9 @@ class AnalysisResult: NSObject, NSSecureCoding {
     /// The classified season
     let season: SeasonClassifier.Season
 
+    /// The detailed season name (e.g. "True Summer", "Soft Autumn")
+    let detailedSeasonName: String
+
     /// Confidence score (0-1)
     let confidence: Float
 
@@ -20,7 +23,7 @@ class AnalysisResult: NSObject, NSSecureCoding {
     /// Skin color (RGB)
     let skinColor: UIColor
 
-    /// Hair color (RGB)
+    /// Skin color (Lab)
     let skinColorLab: (L: CGFloat, a: CGFloat, b: CGFloat)?
 
     /// Hair color (RGB)
@@ -70,6 +73,7 @@ class AnalysisResult: NSObject, NSSecureCoding {
     /// Create an analysis result
     /// - Parameters:
     ///   - season: The classified season
+    ///   - detailedSeasonName: The specific 12-season name (e.g. "True Summer")
     ///   - confidence: Classification confidence (0-1)
     ///   - deltaEToNextClosest: Delta-E to the next closest season
     ///   - nextClosestSeason: Next closest season
@@ -92,6 +96,7 @@ class AnalysisResult: NSObject, NSSecureCoding {
     ///   - date: Date of analysis (defaults to current date)
     init(
         season: SeasonClassifier.Season,
+        detailedSeasonName: String,
         confidence: Float,
         deltaEToNextClosest: Float,
         nextClosestSeason: SeasonClassifier.Season,
@@ -114,6 +119,7 @@ class AnalysisResult: NSObject, NSSecureCoding {
         date: Date = Date()
     ) {
         self.season = season
+        self.detailedSeasonName = detailedSeasonName
         self.confidence = confidence
         self.deltaEToNextClosest = deltaEToNextClosest
         self.nextClosestSeason = nextClosestSeason
@@ -142,6 +148,7 @@ class AnalysisResult: NSObject, NSSecureCoding {
 
     enum CodingKeys: String {
         case season
+        case detailedSeasonName
         case confidence
         case deltaEToNextClosest
         case nextClosestSeason
@@ -177,6 +184,7 @@ class AnalysisResult: NSObject, NSSecureCoding {
 
     func encode(with coder: NSCoder) {
         coder.encode(season.rawValue, forKey: CodingKeys.season.rawValue)
+        coder.encode(detailedSeasonName, forKey: CodingKeys.detailedSeasonName.rawValue)
         coder.encode(confidence, forKey: CodingKeys.confidence.rawValue)
         coder.encode(deltaEToNextClosest, forKey: CodingKeys.deltaEToNextClosest.rawValue)
         coder.encode(nextClosestSeason.rawValue, forKey: CodingKeys.nextClosestSeason.rawValue)
@@ -259,6 +267,9 @@ class AnalysisResult: NSObject, NSSecureCoding {
             return nil
         }
         self.season = season
+        
+        // Decode detailed season name
+        self.detailedSeasonName = coder.decodeObject(of: NSString.self, forKey: CodingKeys.detailedSeasonName.rawValue) as String? ?? season.rawValue
 
         // Decode next closest season and ensure it's valid
         guard let nextSeasonString = coder.decodeObject(of: NSString.self, forKey: CodingKeys.nextClosestSeason.rawValue) as String?,
@@ -417,6 +428,9 @@ extension AnalysisResult {
 
         let confidence = managedObject.value(forKey: "confidence") as? Float ?? 0
         let deltaE = managedObject.value(forKey: "deltaE") as? Float ?? 0
+        
+        // Get detailed season name from Core Data, fall back to basic season name
+        let detailedSeasonName = managedObject.value(forKey: "detailedSeasonName") as? String ?? season.rawValue
 
         // Decode colors
         var skinColor = UIColor.clear
@@ -499,6 +513,7 @@ extension AnalysisResult {
 
         self.init(
             season: season,
+            detailedSeasonName: detailedSeasonName,
             confidence: confidence,
             deltaEToNextClosest: deltaE,
             nextClosestSeason: nextSeason,
@@ -528,6 +543,7 @@ extension AnalysisResult {
     func save(to managedObject: NSManagedObject) {
         // Save basic properties
         managedObject.setValue(season.rawValue, forKey: "season")
+        managedObject.setValue(detailedSeasonName, forKey: "detailedSeasonName")
         managedObject.setValue(confidence, forKey: "confidence")
         managedObject.setValue(deltaEToNextClosest, forKey: "deltaE")
         managedObject.setValue(nextClosestSeason.rawValue, forKey: "nextClosestSeason")

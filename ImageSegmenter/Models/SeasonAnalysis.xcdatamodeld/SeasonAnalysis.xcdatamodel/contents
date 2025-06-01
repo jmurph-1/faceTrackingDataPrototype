@@ -4,6 +4,7 @@
         <attribute name="confidence" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="deltaE" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="detailedSeasonName" optional="YES" attributeType="String"/>
         <attribute name="hairColorData" optional="YES" attributeType="Binary"/>
         <attribute name="hairColorLabA" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="hairColorLabB" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>

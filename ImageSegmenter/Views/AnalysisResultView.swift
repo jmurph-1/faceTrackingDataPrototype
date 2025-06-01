@@ -362,6 +362,7 @@ struct AnalysisResultView_Previews: PreviewProvider {
         let viewModel = AnalysisResultViewModel()
         let sampleResult = AnalysisResult(
             season: .autumn,
+            detailedSeasonName: "True Autumn",
             confidence: 0.85,
             deltaEToNextClosest: 1.2,
             nextClosestSeason: .winter,

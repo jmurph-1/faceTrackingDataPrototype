@@ -75,6 +75,15 @@ struct Season: Identifiable, Decodable {
         let colorCombinations: ColorCombinationsDetail?
         let patternsAndPrints: PatternsAndPrintsDetail?
         let metalsAndAccessories: MetalsAndAccessoriesDetail?
+        
+        // Custom coding keys to handle JSON property name differences
+        enum CodingKeys: String, CodingKey {
+            case neutrals
+            case colorsToAvoid
+            case colorCombinations = "ColorCombinations"
+            case patternsAndPrints = "PatternsAndPrints"
+            case metalsAndAccessories
+        }
 
         struct StyleDescription: Decodable {
             let description: String
@@ -91,13 +100,20 @@ struct Season: Identifiable, Decodable {
             let description: String?
             let combinations: [[String]]?
             let image: String?
+            
+            // Custom coding keys to handle JSON property name differences
+            enum CodingKeys: String, CodingKey {
+                case description
+                case combinations = "Combinations"
+                case image
+            }
         }
 
         struct PatternsAndPrintsDetail: Decodable {
             let description: String?
             let color: PatternsAndPrintsAspect?
-            let contrast: PatternsAndPrintsAspect?
-            let elements: PatternsAndPrintsElementsAspect?
+            let contrast: PatternsAndPrintsContrastAspect?
+            let elements: PatternsAndPrintsAspect?
         }
 
         struct PatternsAndPrintsAspect: Decodable {
@@ -106,9 +122,10 @@ struct Season: Identifiable, Decodable {
             let image: String?
         }
 
-        struct PatternsAndPrintsElementsAspect: Decodable {
+        // Separate struct for contrast combinations that use single strings
+        struct PatternsAndPrintsContrastAspect: Decodable {
             let description: String?
-            let combinations: [String: [String]]?
+            let combinations: [String: String]?
             let image: String?
         }
 

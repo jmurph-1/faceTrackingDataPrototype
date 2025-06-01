@@ -220,6 +220,7 @@ struct SavedResultsView_Previews: PreviewProvider {
         for (index, season) in seasons.enumerated() {
             let result = AnalysisResult(
                 season: season,
+                detailedSeasonName: "True \(season.rawValue)",
                 confidence: Float(0.7 + Double(index) * 0.05),
                 deltaEToNextClosest: Float(1.0 + Double(index) * 0.2),
                 nextClosestSeason: index < seasons.count - 1 ? seasons[index + 1] : seasons[0],

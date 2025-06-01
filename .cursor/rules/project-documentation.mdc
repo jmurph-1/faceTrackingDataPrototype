@@ -1,5 +1,25 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+**CRITICAL RULE: Always Update Project Directory Documentation**
+
+When making ANY of the following changes to the project:
+- Adding new files (.swift, .metal, .md, etc.)
+- Removing or renaming existing files  
+- Adding new functionality or features
+- Modifying existing services, utilities, or components
+- Updating the Core Data model
+- Adding new dependencies or frameworks
+- Changing the app architecture or flow
+
+**YOU MUST ALSO UPDATE** `ImageSegmenter/Knowledge/projectDirectory.md` to reflect these changes by:
+
+1. Adding new files to the appropriate sections with accurate descriptions
+2. Updating existing descriptions to reflect new functionality
+3. Modifying dependency relationships if the processing pipeline changed
+4. Adding details to the "Recent Updates" section
+5. Updating technology stack if new frameworks/libraries are added
+
+This ensures the project documentation stays current and accurate for future development and team onboarding.

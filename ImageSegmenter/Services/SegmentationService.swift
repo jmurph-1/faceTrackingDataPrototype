@@ -178,7 +178,7 @@ class SegmentationService {
 
   // Add white balance calibration method
   func setWhiteBalanceCalibration(_ calibration: WhiteBalanceCalibration) {
-    LoggingService.info("SEGMENTATION_FLOW: Applying white balance calibration")
+    //LoggingService.info("SEGMENTATION_FLOW: Applying white balance calibration")
     multiClassRenderer.setWhiteBalanceCalibration(calibration)
     isCalibrated = true
   }

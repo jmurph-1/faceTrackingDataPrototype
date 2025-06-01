@@ -1,5 +1,65 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+**CRITICAL RULE: Swift Best Practices Must Always Be Followed**
+
+## Naming Conventions
+- Use **PascalCase** for types (classes, structs, enums, protocols): `AnalysisResult`, `ContrastCalculator`
+- Use **camelCase** for variables, functions, properties: `contrastValue`, `calculateContrast()`
+- Use **SCREAMING_SNAKE_CASE** for constants: `MAX_RETRY_COUNT`
+- Variable names must be **minimum 3 characters** (avoid single letters like `r`, `g`, `b`)
+- Use descriptive names: `skinColor` not `sc`, `contrastValue` not `cv`
+
+## Code Organization
+- **MARK:** comments for organizing code sections: `// MARK: - Properties`, `// MARK: - Public Methods`
+- Group related functionality together
+- Keep files under 500 lines when possible
+- Separate concerns into appropriate files (Utils/, Services/, Views/, etc.)
+
+## Error Handling
+- **Always** handle errors for async operations
+- Use `do-catch` blocks for throwing functions
+- Provide meaningful error messages
+- Never use `try!` in production code unless absolutely certain
+- Use `guard` statements for early returns and validation
+
+## Memory Management
+- Use `weak` references to break retain cycles in closures and delegates
+- Prefer `unowned` only when lifetime is guaranteed
+- Always use `[weak self]` in async closures
+- Dispose of observations and subscriptions properly
+
+## SwiftUI Best Practices
+- Keep view bodies under 10 lines when possible
+- Extract complex views into separate components
+- Use `@State` for local view state, `@ObservedObject` for external state
+- Prefer `private` for internal view properties
+- Use meaningful preview data
+
+## Core Data
+- **Always** handle Core Data errors gracefully
+- Use background contexts for heavy operations
+- Validate managed object changes before saving
+- Use optionals appropriately for Core Data relationships
+
+## Performance
+- Use `lazy` for expensive computed properties
+- Prefer `struct` over `class` when possible
+- Use `@autoclosure` for expensive debug operations
+- Avoid force unwrapping with `!` - use proper optional handling
+
+## Documentation
+- Add documentation comments for all public APIs using `///`
+- Include parameter descriptions and return values
+- Document complex algorithms and business logic
+- Keep comments up to date with code changes
+
+## Testing Considerations
+- Write testable code with dependency injection
+- Avoid singletons when possible
+- Make functions pure when feasible
+- Use protocols for mockable dependencies
+
+**FAILURE TO FOLLOW THESE PRACTICES WILL RESULT IN CODE REVIEW REJECTION**

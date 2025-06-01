@@ -537,7 +537,7 @@ extension CameraViewModel: ClassificationServiceDelegate {
     LoggingService.info("CVM: Classification complete.")
     DispatchQueue.main.async { [weak self] in
       guard let strongSelf = self else { return }
-      NotificationCenter.default.post(name: Notification.Name("AnalysisResultReady"), object: strongSelf, userInfo: ["result": analysisResult])
+      NotificationManager.postAnalysisResult(analysisResult, from: strongSelf)
     }
   }
 
@@ -546,6 +546,22 @@ extension CameraViewModel: ClassificationServiceDelegate {
     DispatchQueue.main.async { [weak self] in // Ensure delegate call is on main thread
         guard let strongSelf = self else { return }
         strongSelf.delegate?.viewModel(strongSelf, didEncounterError: error)
+    }
+  }
+  
+  func classificationService(_ service: ClassificationService, didCompletePersonalization personalizedData: PersonalizedSeasonData) {
+    LoggingService.info("CVM: Personalization complete.")
+    DispatchQueue.main.async { [weak self] in
+      guard let strongSelf = self else { return }
+      NotificationManager.postPersonalizationReady(personalizedData, from: strongSelf)
+    }
+  }
+  
+  func classificationService(_ service: ClassificationService, didFailPersonalization error: Error, fallbackResult: AnalysisResult) {
+    LoggingService.info("CVM: Personalization failed, using default season view. Error: \(error.localizedDescription)")
+    DispatchQueue.main.async { [weak self] in
+      guard let strongSelf = self else { return }
+      NotificationManager.postPersonalizationFailed(error, fallbackResult: fallbackResult, from: strongSelf)
     }
   }
 }

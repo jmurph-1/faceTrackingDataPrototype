@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-/// A rule-based classifier for the 4 macro-seasons
+/// A rule-based classifier for the 4 macro-seasons and 12 detailed seasons
 class SeasonClassifier {
 
     /// The four macro-seasons
@@ -26,9 +26,95 @@ class SeasonClassifier {
         }
     }
 
-    /// Classification result with season and confidence metrics
+    /// The twelve detailed seasons
+    enum DetailedSeason: String, CaseIterable {
+        case lightSpring = "Light Spring"
+        case trueSpring = "True Spring"
+        case brightSpring = "Bright Spring"
+        case lightSummer = "Light Summer"
+        case trueSummer = "True Summer"
+        case softSummer = "Soft Summer"
+        case softAutumn = "Soft Autumn"
+        case trueAutumn = "True Autumn"
+        case deepAutumn = "Deep Autumn"
+        case deepWinter = "Deep Winter"
+        case trueWinter = "True Winter"
+        case brightWinter = "Bright Winter"
+        case unknown = "Unknown"
+
+        /// Get the macro season for this detailed season
+        var macroSeason: Season {
+            switch self {
+            case .lightSpring, .trueSpring, .brightSpring:
+                return .spring
+            case .lightSummer, .trueSummer, .softSummer:
+                return .summer
+            case .softAutumn, .trueAutumn, .deepAutumn:
+                return .autumn
+            case .deepWinter, .trueWinter, .brightWinter:
+                return .winter
+            case .unknown:
+                return .spring // Default fallback
+            }
+        }
+
+        /// Get a description of the detailed season
+        var description: String {
+            switch self {
+            case .lightSpring:
+                return "Light, warm, and delicate with soft brightness"
+            case .trueSpring:
+                return "Clear, warm, and vibrant with medium intensity"
+            case .brightSpring:
+                return "Bright, warm, and vivid with high contrast"
+            case .lightSummer:
+                return "Light, cool, and soft with gentle contrast"
+            case .trueSummer:
+                return "Cool, soft, and muted with medium lightness"
+            case .softSummer:
+                return "Soft, cool, and gentle with low contrast"
+            case .softAutumn:
+                return "Soft, warm, and muted with gentle earthiness"
+            case .trueAutumn:
+                return "Rich, warm, and earthy with medium depth"
+            case .deepAutumn:
+                return "Deep, warm, and rich with strong earthiness"
+            case .deepWinter:
+                return "Deep, cool, and dramatic with high contrast"
+            case .trueWinter:
+                return "Clear, cool, and vivid with strong intensity"
+            case .brightWinter:
+                return "Bright, cool, and striking with maximum contrast"
+            case .unknown:
+                return "Unable to determine specific season characteristics"
+            }
+        }
+
+        /// Initialize from string name
+        init?(from name: String) {
+            switch name {
+            case "Light Spring": self = .lightSpring
+            case "True Spring": self = .trueSpring
+            case "Bright Spring": self = .brightSpring
+            case "Light Summer": self = .lightSummer
+            case "True Summer": self = .trueSummer
+            case "Soft Summer": self = .softSummer
+            case "Soft Autumn": self = .softAutumn
+            case "True Autumn": self = .trueAutumn
+            case "Deep Autumn": self = .deepAutumn
+            case "Deep Winter": self = .deepWinter
+            case "True Winter": self = .trueWinter
+            case "Bright Winter": self = .brightWinter
+            case "Unknown": self = .unknown
+            default: return nil
+            }
+        }
+    }
+
+    /// Classification result with detailed season and confidence metrics
     struct ClassificationResult {
-        let season: Season
+        let detailedSeason: DetailedSeason
+        let macroSeason: Season
         let confidence: Float
         let deltaEToNextClosest: Float
         let nextClosestSeason: Season
@@ -122,11 +208,11 @@ class SeasonClassifier {
         return seasonScores
     }
 
-    /// Classify colors into one of the four seasons
+    /// Classify colors into one of the twelve detailed seasons
     /// - Parameters:
     ///   - skinColor: The skin color in Lab color space
     ///   - hairColor: The hair color in Lab color space (optional, not currently used)
-    /// - Returns: Classification result with season and confidence metrics
+    /// - Returns: Classification result with detailed season and confidence metrics
     func classify(
         skinColor: ColorConverters.LabColor,
         hairColor: ColorConverters.LabColor? = nil
@@ -158,40 +244,22 @@ class SeasonClassifier {
         let undertoneResult = undertone(from: hueDegrees)
         print("Calc: Undertone:", undertoneResult, "\n")
 
-        // Updated season classification
-        let updatedSeasonClassification = classifySeason(lightness: skinL, chroma: skinChroma, hue: hueDegrees)
-        print("Calc: 12 Season:", updatedSeasonClassification)
-
-        // New seasons with confidence
+        // Use the 12-season classification with confidence
         let result = classifySeasonWithConfidence(lightness: skinL, chroma: skinChroma, hue: hueDegrees)
         print("Season: \(result.season), confidence: \(result.confidence * 100)%")
 
-        // Feature 1: Undertone - Warm vs Cool (based on b* value)
-        // b* >= 12 = warm, b* < 12 = cool
-        let isWarm = skinB >= thresholds.warmCoolThreshold
+        // Convert string season name to DetailedSeason enum
+        let detailedSeason = DetailedSeason(from: result.season) ?? .unknown
+        let macroSeason = detailedSeason.macroSeason
 
-        // Feature 2: Value - Light vs Dark (based on L* value)
-        // L* >= 65 = light, L* < 65 = dark
+        // For backwards compatibility, also calculate basic 4-season features for deltaE calculation
+        let isWarm = skinB >= thresholds.warmCoolThreshold
         let isLight = skinL >= thresholds.lightDarkThreshold
 
-        // Determine the season based on the rule-based approach (ignoring softness)
-        let season = determineSeasonFromProperties(isWarm: isWarm, isLight: isLight)
-
-        // Calculate scores for confidence calculation
+        // Calculate scores for additional confidence metrics (using basic seasons for deltaE)
         let seasonScores = calculateSeasonScores(isWarm: isWarm, isLight: isLight)
-
-        // Sort seasons by score
         let sortedSeasons = seasonScores.sorted { $0.value > $1.value }
-        let bestScore = sortedSeasons[0].value
         let secondBestSeason = sortedSeasons[1].key
-        let secondBestScore = sortedSeasons[1].value
-
-        // Calculate confidence based on the difference between best and second best
-        let scoreDifference = bestScore - secondBestScore
-        let maxPossibleScore: Float = 3.0
-
-        // Calculate confidence as a ratio of the difference to the maximum possible difference
-        let confidence = min(0.95, (scoreDifference / 1.5) + 0.5)
 
         // Calculate actual deltaE using color difference to reference colors
         let skinLabColor = ColorConverters.LabColor(L: CGFloat(skinL), a: CGFloat(skinA), b: CGFloat(skinB))
@@ -199,7 +267,6 @@ class SeasonClassifier {
 
         // Sort seasons by deltaE (lower is better)
         let sortedDeltaEs = deltaEs.sorted { $0.value < $1.value }
-
         let bestSeasonDeltaE = sortedDeltaEs[0].value
         let secondBestSeasonDeltaE = sortedDeltaEs[1].value
 
@@ -207,8 +274,9 @@ class SeasonClassifier {
         let deltaE = Float(secondBestSeasonDeltaE - bestSeasonDeltaE)
 
         return ClassificationResult(
-            season: season,
-            confidence: confidence,
+            detailedSeason: detailedSeason,
+            macroSeason: macroSeason,
+            confidence: result.confidence,
             deltaEToNextClosest: deltaE,
             nextClosestSeason: secondBestSeason
         )
@@ -259,11 +327,11 @@ class SeasonClassifier {
 
     // MARK: - Static helper methods
 
-    /// Static helper to classify skin and hair colors into a season
+    /// Static helper to classify skin and hair colors into a detailed season
     /// - Parameters:
     ///   - skinLab: Skin color in Lab space as a tuple
     ///   - hairLab: Hair color in Lab space as a tuple (optional)
-    /// - Returns: Classification result
+    /// - Returns: Classification result with detailed season
     static func classifySeason(
         skinLab: (L: CGFloat, a: CGFloat, b: CGFloat),
         hairLab: (L: CGFloat, a: CGFloat, b: CGFloat)? = nil
@@ -282,7 +350,7 @@ class SeasonClassifier {
 
     /// Calculate delta-E to all season reference colors using CIEDE2000
     /// - Parameter skinLab: Skin color in Lab space
-    /// - Returns: Dictionary mapping seasons to delta-E values
+    /// - Returns: Dictionary mapping basic seasons to delta-E values
     static func calculateDeltaEToAllSeasons(skinLab: ColorConverters.LabColor) -> [Season: CGFloat] {
         let classifier = SeasonClassifier()
         return classifier.calculateDeltaEToSeasonReferences(labColor: skinLab)
@@ -325,86 +393,6 @@ class SeasonClassifier {
             return "bright"  // Vivid, jewel-like tones
         default:
             return "unknown" // Shouldn't happen for C* ≥ 0
-        }
-    }
-
-    // Updated 12 seasons assignment
-    func classifySeason(lightness: Float, chroma: Float, hue: Float) -> String {
-        // Light Spring: 65–90, C 40–55, hue 60°–90°
-        if lightness >= 65 && lightness <= 90 &&
-           chroma >= 40 && chroma <= 55 &&
-           hue >= 60 && hue <= 90 {
-            return "Light Spring"
-        }
-        // True Spring: 55–70, C 50–65, hue 50°–80°
-        else if lightness >= 55 && lightness <= 70 &&
-                chroma >= 50 && chroma <= 65 &&
-                hue >= 50 && hue <= 80 {
-            return "True Spring"
-        }
-        // Bright Spring: 60–80, C >55, hue 50°–90°
-        else if lightness >= 60 && lightness <= 80 &&
-                chroma > 55 &&
-                hue >= 50 && hue <= 90 {
-            return "Bright Spring"
-        }
-        // Light Summer: 65–90, C 30–45, hue 180°–260°
-        else if lightness >= 65 && lightness <= 90 &&
-                chroma >= 30 && chroma <= 45 &&
-                hue >= 180 && hue <= 260 {
-            return "Light Summer"
-        }
-        // True Summer: 55–70, C 30–45, hue 200°–260°
-        else if lightness >= 55 && lightness <= 70 &&
-                chroma >= 30 && chroma <= 45 &&
-                hue >= 200 && hue <= 260 {
-            return "True Summer"
-        }
-        // Soft Summer: 50–65, C <30, hue 220°–280°
-        else if lightness >= 50 && lightness <= 65 &&
-                chroma < 30 &&
-                hue >= 220 && hue <= 280 {
-            return "Soft Summer"
-        }
-        // Soft Autumn: 45–60, C <30, hue 60°–110°
-        else if lightness >= 45 && lightness <= 60 &&
-                chroma < 30 &&
-                hue >= 60 && hue <= 110 {
-            return "Soft Autumn"
-        }
-        // True Autumn: 40–55, C 35–50, hue 60°–100°
-        else if lightness >= 40 && lightness <= 55 &&
-                chroma >= 35 && chroma <= 50 &&
-                hue >= 60 && hue <= 100 {
-            return "True Autumn"
-        }
-        // Deep Autumn: 30–50, C 30–45, hue 60°–100°
-        else if lightness >= 30 && lightness <= 50 &&
-                chroma >= 30 && chroma <= 45 &&
-                hue >= 60 && hue <= 100 {
-            return "Deep Autumn"
-        }
-        // Deep Winter: 25–50, C 40–60, hue 200°–260°
-        else if lightness >= 25 && lightness <= 50 &&
-                chroma >= 40 && chroma <= 60 &&
-                hue >= 200 && hue <= 260 {
-            return "Deep Winter"
-        }
-        // True Winter: 35–60, C 50–65, hue 220°–280°
-        else if lightness >= 35 && lightness <= 60 &&
-                chroma >= 50 && chroma <= 65 &&
-                hue >= 220 && hue <= 280 {
-            return "True Winter"
-        }
-        // Bright Winter: 45–70, C >55, hue 220°–280°
-        else if lightness >= 45 && lightness <= 70 &&
-                chroma > 55 &&
-                hue >= 220 && hue <= 280 {
-            return "Bright Winter"
-        }
-        // Fallback
-        else {
-            return "Unknown"
         }
     }
 

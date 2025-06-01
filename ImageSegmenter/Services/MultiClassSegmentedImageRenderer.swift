@@ -759,7 +759,7 @@ class MultiClassSegmentedImageRenderer: RendererProtocol {
   func setWhiteBalanceCalibration(_ calibration: WhiteBalanceCalibration) {
     colorExtractor.setWhiteBalance(calibration)
     isCalibrated = true
-    log("White balance calibration set", level: .info)
+    //log("White balance calibration set", level: .info)
   }
 
   func extractWhiteReferenceColor(

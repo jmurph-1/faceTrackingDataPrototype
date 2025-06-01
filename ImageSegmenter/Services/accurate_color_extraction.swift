@@ -526,12 +526,12 @@ extension ColorExtractor {
 
         // Advanced skin color calculation with reliability validation (existing logic)
         if !skinPixels.isEmpty {
-            LoggingService.info("ColorExtractor: raw skin pixel count: \(skinPixels.count)")
+            //LoggingService.info("ColorExtractor: raw skin pixel count: \(skinPixels.count)")
             let filteredSkinPixels = ColorExtractor.removeOutliers(skinPixels)
 
             let finalSkinPixels: [(r: Float, g: Float, b: Float)] =
                 filteredSkinPixels.count >= 10 ? filteredSkinPixels : skinPixels
-            LoggingService.info("ColorExtractor: pixels after outlier filter: \(finalSkinPixels.count)")
+            //LoggingService.info("ColorExtractor: pixels after outlier filter: \(finalSkinPixels.count)")
 
             if !finalSkinPixels.isEmpty {
                 let avgColor = ColorExtractor.weightedAverage(finalSkinPixels)
@@ -603,7 +603,7 @@ extension ColorExtractor {
         // NEW: Process left eye color
         if !leftEyePixels.isEmpty {
             let confidence = calculateEyeConfidence(leftEyePixels)
-            LoggingService.info("ColorExtractor: Left eye pixel count: \(leftEyePixels.count), confidence: \(confidence)")
+            //LoggingService.info("ColorExtractor: Left eye pixel count: \(leftEyePixels.count), confidence: \(confidence)")
 
             if confidence >= ColorExtractor.EyeExtractionThreshold.minConfidenceScore {
                 // Additional filtering to remove any remaining dark pixels
@@ -646,7 +646,7 @@ extension ColorExtractor {
         // NEW: Process right eye color (similar logic)
         if !rightEyePixels.isEmpty {
             let confidence = calculateEyeConfidence(rightEyePixels)
-            LoggingService.info("ColorExtractor: Right eye pixel count: \(rightEyePixels.count), confidence: \(confidence)")
+            //LoggingService.info("ColorExtractor: Right eye pixel count: \(rightEyePixels.count), confidence: \(confidence)")
 
             if confidence >= ColorExtractor.EyeExtractionThreshold.minConfidenceScore {
                 // Additional filtering to remove any remaining dark pixels
@@ -810,7 +810,7 @@ extension ColorExtractor {
             if !isTooBlack(avg) {
                 validRegions.append(leftCheek)
                 regionAverages.append(avg)
-                LoggingService.info("ColorExtractor: Left cheek valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
+                //LoggingService.info("ColorExtractor: Left cheek valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
             } else {
                 LoggingService.info("ColorExtractor: Left cheek too dark")
             }
@@ -821,7 +821,7 @@ extension ColorExtractor {
             if !isTooBlack(avg) {
                 validRegions.append(rightCheek)
                 regionAverages.append(avg)
-                LoggingService.info("ColorExtractor: Right cheek valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
+                //LoggingService.info("ColorExtractor: Right cheek valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
             } else {
                 LoggingService.info("ColorExtractor: Right cheek too dark")
             }
@@ -832,7 +832,7 @@ extension ColorExtractor {
             if !isTooBlack(avg) {
                 validRegions.append(forehead)
                 regionAverages.append(avg)
-                LoggingService.info("ColorExtractor: Forehead valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
+                //LoggingService.info("ColorExtractor: Forehead valid - avg: R:\(avg.r) G:\(avg.g) B:\(avg.b)")
             } else {
                 LoggingService.info("ColorExtractor: Forehead too dark")
             }
@@ -840,14 +840,14 @@ extension ColorExtractor {
 
         // Need at least 2 valid regions for consistency check
         guard validRegions.count >= 2 else {
-            LoggingService.info("ColorExtractor: Only \(validRegions.count) valid regions - combining all available data")
+            //LoggingService.info("ColorExtractor: Only \(validRegions.count) valid regions - combining all available data")
             // If we have any valid data, use it (relaxed approach)
             return validRegions.flatMap { $0 }
         }
 
         // Check consistency between valid regions only
         if areRegionalColorsConsistent(regionAverages) {
-            LoggingService.info("ColorExtractor: Regional colors consistent - combining \(validRegions.count) regions")
+            //LoggingService.info("ColorExtractor: Regional colors consistent - combining \(validRegions.count) regions")
             return validRegions.flatMap { $0 }
         } else {
             LoggingService.info("ColorExtractor: Regional colors inconsistent but using largest region")
@@ -894,7 +894,7 @@ extension ColorExtractor {
         let consistencyThreshold: Float = 50.0 // Increased from 35.0 to 50.0
         let isConsistent = maxDistance <= consistencyThreshold
 
-        LoggingService.info("ColorExtractor: Max regional distance: \(maxDistance), threshold: \(consistencyThreshold), consistent: \(isConsistent)")
+        //LoggingService.info("ColorExtractor: Max regional distance: \(maxDistance), threshold: \(consistencyThreshold), consistent: \(isConsistent)")
 
         return isConsistent
     }

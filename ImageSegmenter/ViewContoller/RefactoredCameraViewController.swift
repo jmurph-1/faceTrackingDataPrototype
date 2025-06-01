@@ -65,9 +65,10 @@ class RefactoredCameraViewController: UIViewController {
   private var calibrationSkipButton: UIButton?
 
   // MARK: - Properties
-  private let viewModel = CameraViewModel()
+  let viewModel = CameraViewModel()
   private let analysisViewModel = AnalysisResultViewModel()
   private var toastService: ToastService!
+  var notificationManager: NotificationManager?
   var shouldAutoStartAnalysis = false  // Default is false
   private var isAnalyzeButtonPressed = false
 
@@ -79,25 +80,43 @@ class RefactoredCameraViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    // Setup notification manager first
+    setupNotificationManager()
+
     // Setup UI
     setupColorLabels()
     setupFrameQualityUI()
     setupDebugOverlay()
     setupGestures()
     setupCalibrationUI()
+    setupNavigationHandlers()
 
     // Initialize toast service
     toastService = ToastService(containerView: view)
 
     // Configure view model
     viewModel.delegate = self
-    // print("RVC: viewDidLoad - self.shouldAutoStartAnalysis is: \(self.shouldAutoStartAnalysis)")
 
-    // Register for app lifecycle notifications
-    registerForAppLifecycleNotifications()
+    // Setup app lifecycle and custom notifications
+    setupAppLifecycleNotifications()
+    setupCustomNotifications()
 
-    // Start in calibration mode
-    viewModel.startCalibrationMode()
+    // Don't start calibration mode immediately - wait until view is actually shown
+    // This prevents camera initialization during app startup when the view is hidden
+    
+    // Print configuration status in debug builds only when explicitly requested
+    // Uncomment the line below to see configuration status during development:
+    // AppConfiguration.shared.printConfigurationStatus()
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    
+    // Only start calibration mode when the view actually appears
+    // This prevents unnecessary camera initialization when the view is hidden
+    if !view.isHidden {
+      viewModel.startCalibrationMode()
+    }
   }
 
   func prepareAndStartCameraIfNeeded() {
@@ -118,11 +137,18 @@ class RefactoredCameraViewController: UIViewController {
 
     // Stop camera when view disappears
     viewModel.stopCamera()
+    
+    // Cleanup notifications
+    cleanupNotificationManager()
+    removeAppLifecycleNotifications()
+    removeCustomNotifications()
   }
 
   deinit {
-    // Remove all notification observers
-    NotificationCenter.default.removeObserver(self)
+    // Clean up all notification observers
+    cleanupNotificationManager()
+    removeAppLifecycleNotifications()
+    removeCustomNotifications()
   }
 
   // MARK: - Actions
@@ -224,6 +250,16 @@ class RefactoredCameraViewController: UIViewController {
       // Present the analysis result view
       presentAnalysisResultView(result: result)
     }
+  }
+
+  @objc private func handlePersonalizationReady(_ notification: Notification) {
+    // Handle personalization success
+    presentPersonalizationResultView(result: .success)
+  }
+
+  @objc private func handlePersonalizationFailed(_ notification: Notification) {
+    // Handle personalization failure
+    presentPersonalizationResultView(result: .failure)
   }
 
   // MARK: - Alert Methods
@@ -341,6 +377,21 @@ class RefactoredCameraViewController: UIViewController {
       self,
       selector: #selector(handleAnalysisResultReady(_:)),
       name: Notification.Name("AnalysisResultReady"),
+      object: nil
+    )
+    
+    // Register for personalization notifications
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handlePersonalizationReady(_:)),
+      name: Notification.Name("PersonalizationReady"),
+      object: nil
+    )
+    
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handlePersonalizationFailed(_:)),
+      name: Notification.Name("PersonalizationFailed"),
       object: nil
     )
   }
@@ -485,6 +536,40 @@ class RefactoredCameraViewController: UIViewController {
   }
 
   // MARK: - Result Presentation
+
+  enum PersonalizationResultType {
+    case success
+    case failure
+  }
+
+  private func presentPersonalizationResultView(result: PersonalizationResultType) {
+    // Handle personalization result
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self else { return }
+      
+      switch result {
+      case .success:
+        // Show success message or navigate to personalized view
+        let alert = UIAlertController(
+          title: "Personalization Complete",
+          message: "Your personalized color analysis is ready!",
+          preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true)
+        
+      case .failure:
+        // Show failure message with fallback option
+        let alert = UIAlertController(
+          title: "Personalization Failed",
+          message: "We couldn't personalize your results, but your basic analysis is still available.",
+          preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true)
+      }
+    }
+  }
 
   private func presentAnalysisResultView(result: AnalysisResult) {
     // Stop all camera processing before showing results

@@ -140,7 +140,7 @@ class ColorExtractor {
         guard latestTextureFrameIndex >= 0, latestMaskFrameIndex >= 0 else { return }
 
         if latestTextureFrameIndex == latestMaskFrameIndex {
-            LoggingService.info("ColorExtractor: Frame sync OK (\(context)) – idx \(latestTextureFrameIndex)")
+            //LoggingService.info("ColorExtractor: Frame sync OK (\(context)) – idx \(latestTextureFrameIndex)")
         } else {
             LoggingService.warning("ColorExtractor: FRAME DESYNC (\(context)) – texture \(latestTextureFrameIndex) vs mask \(latestMaskFrameIndex)")
         }
@@ -188,7 +188,7 @@ class ColorExtractor {
         LoggingService.info("COLOR_FLOW: Setting white balance calibration - R:\(calibration.redFactor) G:\(calibration.greenFactor) B:\(calibration.blueFactor)")
         self.whiteBalance = calibration
         self.isCalibrated = true
-        LoggingService.info("COLOR_FLOW: White balance calibration set and color extractor marked as calibrated")
+        //LoggingService.info("COLOR_FLOW: White balance calibration set and color extractor marked as calibrated")
     }
 
     private func applyWhiteBalance(to color: (r: Float, g: Float, b: Float)) -> (r: Float, g: Float, b: Float) {
