@@ -18,6 +18,17 @@ class AppConfiguration {
     private init() {
         // Load user preferences but don't load API key until needed
         loadUserPreferences()
+        
+        // Initialize ColorDatabaseManager and validate database
+        DispatchQueue.global(qos: .utility).async {
+            let validation = ColorDatabaseManager.shared.validateDatabase()
+            #if DEBUG
+            DispatchQueue.main.async {
+                print("🔧 AppConfiguration: ColorDatabaseManager Validation")
+                print(validation.summary)
+            }
+            #endif
+        }
     }
     
     // MARK: - Properties
@@ -25,6 +36,7 @@ class AppConfiguration {
     private var openAIAPIKey: String?
     private var isAPIKeyLoaded: Bool = false
     private var isPersonalizationEnabled: Bool = false
+    private var isDNAPersonalizationEnabled: Bool = false
     
     // MARK: - Public Interface
     
@@ -32,6 +44,11 @@ class AppConfiguration {
     var hasPersonalizationSupport: Bool {
         loadAPIKeyIfNeeded()
         return openAIAPIKey != nil && !openAIAPIKey!.isEmpty
+    }
+    
+    /// Whether DNA personalization is enabled
+    var isDNAPersonalizationActive: Bool {
+        return isDNAPersonalizationEnabled && hasPersonalizationSupport
     }
     
     /// Get the OpenAI API key for internal app use
@@ -46,6 +63,12 @@ class AppConfiguration {
         UserDefaults.standard.set(isPersonalizationEnabled, forKey: "personalization_enabled")
     }
     
+    /// Enable/disable DNA personalization feature
+    func setDNAPersonalizationEnabled(_ enabled: Bool) {
+        isDNAPersonalizationEnabled = enabled && hasPersonalizationSupport
+        UserDefaults.standard.set(isDNAPersonalizationEnabled, forKey: "dna_personalization_enabled")
+    }
+    
     /// Whether personalization is currently enabled
     var isPersonalizationActive: Bool {
         return isPersonalizationEnabled && hasPersonalizationSupport
@@ -56,6 +79,9 @@ class AppConfiguration {
     private func loadUserPreferences() {
         // Load user preference for personalization (doesn't require API key check)
         isPersonalizationEnabled = UserDefaults.standard.bool(forKey: "personalization_enabled")
+        
+        // Load user preference for DNA personalization
+        isDNAPersonalizationEnabled = UserDefaults.standard.bool(forKey: "dna_personalization_enabled")
     }
     
     private func loadAPIKeyIfNeeded() {
@@ -68,6 +94,11 @@ class AppConfiguration {
         // Default to enabled if personalization is available and no preference set
         if UserDefaults.standard.object(forKey: "personalization_enabled") == nil && hasPersonalizationSupport {
             setPersonalizationEnabled(true)
+        }
+        
+        // Default to enabled for DNA personalization if personalization is available and no preference set
+        if UserDefaults.standard.object(forKey: "dna_personalization_enabled") == nil && hasPersonalizationSupport {
+            setDNAPersonalizationEnabled(true)
         }
     }
     
@@ -229,6 +260,7 @@ extension AppConfiguration {
         print("\n🔧 App Configuration Status:")
         print("Personalization Support: \(hasPersonalizationSupport)")
         print("Personalization Active: \(isPersonalizationActive)")
+        print("DNA Personalization Active: \(isDNAPersonalizationActive)")
         
         if let apiKey = openAIAPIKey {
             let maskedKey = String(apiKey.prefix(7)) + "..." + String(apiKey.suffix(4))
@@ -236,6 +268,10 @@ extension AppConfiguration {
         } else {
             print("API Key: Not configured")
         }
+        
+        // Print database validation status
+        let validation = ColorDatabaseManager.shared.validateDatabase()
+        print("Color Database: \(validation.isValid ? "✅ Valid" : "❌ Invalid") (\(validation.totalColors) colors)")
         
         // Print file-based config status
         APIKeyFileManager.printConfigStatus()

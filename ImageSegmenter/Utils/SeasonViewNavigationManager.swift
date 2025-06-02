@@ -121,47 +121,47 @@ class SeasonViewNavigationManager {
         switch basicSeasonName.lowercased() {
         case "spring":
             return SeasonColors(
-                primary: Color(hex: "#E8B17A") ?? .orange,
-                paletteWhite: Color(hex: "#F5F5DC") ?? .white,
-                accent: Color(hex: "#90EE90") ?? .green,
-                accent2: Color(hex: "#FFA07A") ?? .pink,
-                background: Color(hex: "#FFFACD") ?? .yellow.opacity(0.1),
-                secondaryBackground: Color(hex: "#F0E68C") ?? .yellow.opacity(0.2),
-                text: Color(hex: "#2F4F2F") ?? .black,
-                module: Color(hex: "#DDA0DD") ?? .purple.opacity(0.3)
+                primary: Color(hex: "#E8B17A"),
+                paletteWhite: Color(hex: "#F5F5DC"),
+                accent: Color(hex: "#90EE90"),
+                accent2: Color(hex: "#FFA07A"),
+                background: Color(hex: "#FFFACD"),
+                secondaryBackground: Color(hex: "#F0E68C"),
+                text: Color(hex: "#2F4F2F"),
+                module: Color(hex: "#DDA0DD")
             )
         case "summer":
             return SeasonColors(
-                primary: Color(hex: "#87CEEB") ?? .blue,
-                paletteWhite: Color(hex: "#F0F8FF") ?? .white,
-                accent: Color(hex: "#DDA0DD") ?? .purple,
-                accent2: Color(hex: "#FFB6C1") ?? .pink,
-                background: Color(hex: "#E6E6FA") ?? .blue.opacity(0.1),
-                secondaryBackground: Color(hex: "#B0C4DE") ?? .blue.opacity(0.2),
-                text: Color(hex: "#2F4F4F") ?? .black,
-                module: Color(hex: "#AFEEEE") ?? .blue.opacity(0.3)
+                primary: Color(hex: "#87CEEB"),
+                paletteWhite: Color(hex: "#F0F8FF"),
+                accent: Color(hex: "#DDA0DD"),
+                accent2: Color(hex: "#FFB6C1"),
+                background: Color(hex: "#E6E6FA"),
+                secondaryBackground: Color(hex: "#B0C4DE"),
+                text: Color(hex: "#2F4F4F"),
+                module: Color(hex: "#AFEEEE")
             )
         case "autumn":
             return SeasonColors(
-                primary: Color(hex: "#CD853F") ?? .brown,
-                paletteWhite: Color(hex: "#FFF8DC") ?? .white,
-                accent: Color(hex: "#D2691E") ?? .orange,
-                accent2: Color(hex: "#B22222") ?? .red,
-                background: Color(hex: "#FFEFD5") ?? .orange.opacity(0.1),
-                secondaryBackground: Color(hex: "#DEB887") ?? .brown.opacity(0.2),
-                text: Color(hex: "#8B4513") ?? .black,
-                module: Color(hex: "#F4A460") ?? .orange.opacity(0.3)
+                primary: Color(hex: "#CD853F"),
+                paletteWhite: Color(hex: "#FFF8DC"),
+                accent: Color(hex: "#D2691E"),
+                accent2: Color(hex: "#B22222"),
+                background: Color(hex: "#FFEFD5"),
+                secondaryBackground: Color(hex: "#DEB887"),
+                text: Color(hex: "#8B4513"),
+                module: Color(hex: "#F4A460")
             )
         case "winter":
             return SeasonColors(
-                primary: Color(hex: "#4682B4") ?? .blue,
-                paletteWhite: Color(hex: "#F8F8FF") ?? .white,
-                accent: Color(hex: "#DC143C") ?? .red,
-                accent2: Color(hex: "#9932CC") ?? .purple,
-                background: Color(hex: "#F0F8FF") ?? .blue.opacity(0.1),
-                secondaryBackground: Color(hex: "#B0C4DE") ?? .blue.opacity(0.2),
-                text: Color(hex: "#191970") ?? .black,
-                module: Color(hex: "#6495ED") ?? .blue.opacity(0.3)
+                primary: Color(hex: "#4682B4"),
+                paletteWhite: Color(hex: "#F8F8FF"),
+                accent: Color(hex: "#DC143C"),
+                accent2: Color(hex: "#9932CC"),
+                background: Color(hex: "#F0F8FF"),
+                secondaryBackground: Color(hex: "#B0C4DE"),
+                text: Color(hex: "#191970"),
+                module: Color(hex: "#6495ED")
             )
         default:
             // Default neutral colors

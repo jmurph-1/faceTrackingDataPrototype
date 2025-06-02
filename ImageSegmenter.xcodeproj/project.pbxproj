@@ -74,7 +74,6 @@
 		523112AE2DD6D36A00FCFC91 /* ColorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112AB2DD6D36A00FCFC91 /* ColorViewModel.swift */; };
 		523112B32DD6D39100FCFC91 /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112B02DD6D39100FCFC91 /* Season.swift */; };
 		523112B42DD6D39100FCFC91 /* SeasonTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112B12DD6D39100FCFC91 /* SeasonTheme.swift */; };
-		523112EB2DD6F76B00FCFC91 /* ColorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EA2DD6F76B00FCFC91 /* ColorData.swift */; };
 		523112ED2DD6F7C000FCFC91 /* SeasonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */; };
 		5231132F2DD728CF00FCFC91 /* Light Summer.json in Resources */ = {isa = PBXBuildFile; fileRef = 5231132E2DD728CF00FCFC91 /* Light Summer.json */; };
 		523113312DDEA6E800FCFC91 /* ColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113302DDEA6C900FCFC91 /* ColorExtractor.swift */; };
@@ -98,6 +97,11 @@
 		5231135C2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113592DE7FF5D00FCFC91 /* RefactoredCameraViewController+Navigation.swift */; };
 		5231135D2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231135A2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Notifications.swift */; };
 		523113602DEA7EBC00FCFC91 /* ApiKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5231135F2DEA7EBC00FCFC91 /* ApiKeys.plist */; };
+		523113622DECCC3600FCFC91 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113612DECCC3600FCFC91 /* Color+Extensions.swift */; };
+		523113652DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */; };
+		523113662DECCC6A00FCFC91 /* ColorDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */; };
+		523113692DED03C800FCFC91 /* SeasonDNARingChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */; };
+		5231136A2DED03C800FCFC91 /* EnhancedColorGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
@@ -229,6 +233,11 @@
 		523113592DE7FF5D00FCFC91 /* RefactoredCameraViewController+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RefactoredCameraViewController+Navigation.swift"; sourceTree = "<group>"; };
 		5231135A2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RefactoredCameraViewController+Notifications.swift"; sourceTree = "<group>"; };
 		5231135F2DEA7EBC00FCFC91 /* ApiKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ApiKeys.plist; sourceTree = "<group>"; };
+		523113612DECCC3600FCFC91 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorDatabaseManager.swift; sourceTree = "<group>"; };
+		523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonalizationService+DNAHelpers.swift"; sourceTree = "<group>"; };
+		523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedColorGrid.swift; sourceTree = "<group>"; };
+		523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDNARingChart.swift; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -389,6 +398,7 @@
 		5231134D2DE7FED100FCFC91 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				523113612DECCC3600FCFC91 /* Color+Extensions.swift */,
 				5231134C2DE7FED100FCFC91 /* CoreData+PersonalizationData.swift */,
 			);
 			path = Extensions;
@@ -473,6 +483,8 @@
 		BF6EBB7E2B1EB75B00CD13FB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */,
+				523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */,
 				523113462DE7F3C100FCFC91 /* PersonalizedSeasonView.swift */,
 				523112A92DD6D1D500FCFC91 /* DefaultSeasonView.swift */,
 				523112A72DD5CAA400FCFC91 /* LandingPageView.swift */,
@@ -488,6 +500,8 @@
 		BF6EBB812B1EB75B00CD13FB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */,
+				523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */,
 				523113402DE7F38A00FCFC91 /* PersonalizationService.swift */,
 				523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */,
 				523113302DDEA6C900FCFC91 /* ColorExtractor.swift */,
@@ -725,10 +739,11 @@
 		BF6EBB472B1EB5BE00CD13FB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
-				523112EB2DD6F76B00FCFC91 /* ColorData.swift in Sources */,
 				523112AE2DD6D36A00FCFC91 /* ColorViewModel.swift in Sources */,
 				523113432DE7F39F00FCFC91 /* PersonalizedSeasonData.swift in Sources */,
 				523113412DE7F38D00FCFC91 /* PersonalizationService.swift in Sources */,
+				523113652DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift in Sources */,
+				523113662DECCC6A00FCFC91 /* ColorDatabaseManager.swift in Sources */,
 				BF6EBB982B1EB75B00CD13FB /* RootViewController.swift in Sources */,
 				5222FDDD2DD40F8400EF3C65 /* SeasonClassifier.swift in Sources */,
 				5222FDDE2DD40F8400EF3C65 /* FrameQualityService.swift in Sources */,
@@ -750,6 +765,7 @@
 				523112ED2DD6F7C000FCFC91 /* SeasonViewModel.swift in Sources */,
 				5231129B2DD48A8900FCFC91 /* RendererProtocol.swift in Sources */,
 				5222FE232DD46BED00EF3C65 /* TexturePoolManager.swift in Sources */,
+				523113622DECCC3600FCFC91 /* Color+Extensions.swift in Sources */,
 				5222FE252DD46C1E00EF3C65 /* BufferPoolManager.swift in Sources */,
 				523112A82DD5CAA400FCFC91 /* LandingPageView.swift in Sources */,
 				52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */,
@@ -785,6 +801,8 @@
 				523113572DE7FF3000FCFC91 /* AppConfiguration.swift in Sources */,
 				523113582DE7FF3000FCFC91 /* NotificationManager.swift in Sources */,
 				BF6EBB932B1EB75B00CD13FB /* MergeColorShaders.metal in Sources */,
+				523113692DED03C800FCFC91 /* SeasonDNARingChart.swift in Sources */,
+				5231136A2DED03C800FCFC91 /* EnhancedColorGrid.swift in Sources */,
 				5231129E2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift in Sources */,
 				5222FDF22DD40FEF00EF3C65 /* FrameQualityIndicatorView.swift in Sources */,
 				5222FDF32DD40FEF00EF3C65 /* DebugOverlayView.swift in Sources */,

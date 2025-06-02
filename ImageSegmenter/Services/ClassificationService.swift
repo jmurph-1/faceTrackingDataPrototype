@@ -138,12 +138,11 @@ class ClassificationService {
         }
         
         #if DEBUG
-        print("🟢 ClassificationService: Season data loaded successfully, calling PersonalizationService")
+        print("🟢 ClassificationService: Season data loaded successfully, calling DNA PersonalizationService")
         #endif
         
-        // Always attempt personalization for debug logging purposes
-        // The PersonalizationService will handle the API key check and show what would be sent
-        personalizationService.generatePersonalization(
+        // Use DNA-enhanced personalization for better results
+        personalizationService.generateDNAPersonalization(
             for: analysisResult,
             seasonData: seasonData,
             detailedSeasonName: detailedSeason

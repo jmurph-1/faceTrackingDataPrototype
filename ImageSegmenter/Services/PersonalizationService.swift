@@ -24,8 +24,13 @@ class PersonalizationService {
     weak var delegate: PersonalizationServiceDelegate?
     private let openAIBaseURL = "https://api.openai.com/v1/chat/completions"
     private let model = "gpt-4o-mini" // Using cost-effective model for color analysis
-    private let maxTokens = 2000
+    private let maxTokens = 2500 // Increased to prevent JSON truncation
     private let temperature = 0.7 // Balanced creativity and consistency
+    
+    // MARK: - Timeout and Retry Configuration
+    private let requestTimeout: TimeInterval = 45.0 // Increased from 30 to 45 seconds
+    private let maxRetryAttempts = 2
+    private let retryDelay: TimeInterval = 2.0
     
     // MARK: - Public Methods
     
@@ -126,6 +131,83 @@ class PersonalizationService {
         }
     }
     
+    /// Generate DNA-enhanced personalized recommendations (new enhanced method)
+    /// - Parameters:
+    ///   - analysisResult: The user's color analysis results
+    ///   - seasonData: The default season data for reference
+    ///   - detailedSeasonName: The specific 12-season name
+    ///   - completion: Completion handler with enhanced PersonalizedSeasonData or error
+    func generateDNAPersonalization(
+        for analysisResult: AnalysisResult,
+        seasonData: Season,
+        detailedSeasonName: String,
+        completion: @escaping (Result<PersonalizedSeasonData, Error>) -> Void
+    ) {
+        #if DEBUG
+        print("🔵 PersonalizationService: Starting DNA-enhanced personalization generation")
+        print("🔵 PersonalizationService: detailedSeasonName = \(detailedSeasonName)")
+        #endif
+        
+        // Generate DNA-enhanced prompt
+        let prompt = createDNAPersonalizationPrompt(analysisResult: analysisResult, seasonData: seasonData, detailedSeasonName: detailedSeasonName)
+        
+        #if DEBUG
+        print("🟡 PersonalizationService: Generated DNA-Enhanced OpenAI Prompt:")
+        print(String(repeating: "=", count: 60))
+        print(prompt)
+        print(String(repeating: "=", count: 60))
+        #endif
+        
+        guard AppConfiguration.shared.isPersonalizationActive,
+              let apiKey = AppConfiguration.shared.getOpenAIKey() else {
+            #if DEBUG
+            print("🔴 PersonalizationService: API key not configured - creating enhanced fallback")
+            #endif
+            // Create enhanced fallback with DNA and database lookup
+            let enhancedFallback = createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
+            completion(.success(enhancedFallback))
+            return
+        }
+        
+        guard isNetworkAvailable() else {
+            #if DEBUG
+            print("🔴 PersonalizationService: Network not available - creating enhanced fallback")
+            #endif
+            let enhancedFallback = createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
+            completion(.success(enhancedFallback))
+            return
+        }
+        
+        #if DEBUG
+        print("🟢 PersonalizationService: Making DNA-enhanced API request")
+        #endif
+        
+        // Make API request with DNA-enhanced prompt
+        makeOpenAIRequest(apiKey: apiKey, prompt: prompt) { [weak self] result in
+            switch result {
+            case .success(let response):
+                self?.parseDNAPersonalizationResponse(response, analysisResult: analysisResult, detailedSeasonName: detailedSeasonName) { parseResult in
+                    DispatchQueue.main.async {
+                        completion(parseResult)
+                    }
+                }
+            case .failure(let error):
+                #if DEBUG
+                print("🔴 PersonalizationService: API request failed, creating enhanced fallback")
+                #endif
+                // Even on API failure, provide enhanced fallback
+                let enhancedFallback = self?.createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
+                DispatchQueue.main.async {
+                    if let fallback = enhancedFallback {
+                        completion(.success(fallback))
+                    } else {
+                        completion(.failure(error))
+                    }
+                }
+            }
+        }
+    }
+    
     // MARK: - Private Methods
     
     private func createPersonalizationPrompt(analysisResult: AnalysisResult, seasonData: Season) -> String {
@@ -147,6 +229,112 @@ class PersonalizationService {
         \(instructions)
         """
     }
+    
+    private func createDNAPersonalizationPrompt(analysisResult: AnalysisResult, seasonData: Season, detailedSeasonName: String) -> String {
+        let userColorsSection = createUserColorsSection(analysisResult)
+        let seasonInfoSection = createSeasonInfoSection(seasonData)
+        let dnaTaskDescription = createDNATaskDescription()
+        let dnaJsonStructure = createDNAJSONStructure()
+        let dnaInstructions = createDNAInstructions()
+        
+        return """
+        \(dnaTaskDescription)
+
+        \(userColorsSection)
+
+        \(seasonInfoSection)
+
+        DETAILED SEASON: \(detailedSeasonName)
+
+        \(dnaJsonStructure)
+
+        \(dnaInstructions)
+        """
+    }
+    
+    private func createEnhancedFallback(analysisResult: AnalysisResult, detailedSeasonName: String) -> PersonalizedSeasonData {
+        #if DEBUG
+        print("🟡 PersonalizationService: Creating enhanced fallback with DNA and database lookup")
+        #endif
+        
+        // Create Season DNA from analysis result
+        let seasonDNA = createFallbackSeasonDNA(from: analysisResult, detailedSeasonName: detailedSeasonName)
+        
+        // Create enhanced color recommendations using database
+        let enhancedColorData = createFallbackEnhancedColors(seasonDNA: seasonDNA)
+        
+        // Create basic PersonalizedSeasonData structure
+        let basicData = createBasicFallbackData(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
+        
+        // Return enhanced version
+        return PersonalizedSeasonData(
+            id: basicData.id,
+            createdDate: basicData.createdDate,
+            baseSeason: basicData.baseSeason,
+            personalizedTagline: basicData.personalizedTagline,
+            userCharacteristics: basicData.userCharacteristics,
+            personalizedOverview: basicData.personalizedOverview,
+            colorRecommendations: basicData.colorRecommendations,
+            stylingAdvice: basicData.stylingAdvice,
+            emphasizedColors: basicData.emphasizedColors,
+            colorsToAvoid: basicData.colorsToAvoid,
+            confidence: basicData.confidence,
+            analysisResultId: basicData.analysisResultId,
+            seasonDNAData: seasonDNA,
+            enhancedColorData: enhancedColorData
+        )
+    }
+    
+    private func parseDNAPersonalizationResponse(
+        _ response: String,
+        analysisResult: AnalysisResult,
+        detailedSeasonName: String,
+        completion: @escaping (Result<PersonalizedSeasonData, Error>) -> Void
+    ) {
+        #if DEBUG
+        print("🔵 PersonalizationService: Parsing DNA-enhanced response")
+        print("🔵 PersonalizationService: Raw API response:")
+        print(String(repeating: "=", count: 60))
+        print(response)
+        print(String(repeating: "=", count: 60))
+        #endif
+        
+        guard let data = response.data(using: .utf8) else {
+            let fallback = createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
+            completion(.success(fallback))
+            return
+        }
+        
+        do {
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+            guard let json = json else {
+                #if DEBUG
+                print("🔴 PersonalizationService: JSON parsing returned nil - likely truncated response")
+                #endif
+                let fallback = createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
+                completion(.success(fallback))
+                return
+            }
+            
+            // Parse DNA-enhanced response
+            let personalizedData = try parseDNAJSONToPersonalizedData(json, analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
+            completion(.success(personalizedData))
+            
+        } catch {
+            #if DEBUG
+            if let nsError = error as NSError?, nsError.domain == "NSCocoaErrorDomain" && nsError.code == 3840 {
+                print("🔴 PersonalizationService: JSON truncated - increasing token limit recommended")
+                print("🔴 PersonalizationService: Error: \(nsError.localizedDescription)")
+            } else {
+                print("🔴 PersonalizationService: DNA parsing failed: \(error)")
+            }
+            #endif
+            let fallback = createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
+            completion(.success(fallback))
+        }
+    }
+    
+    // MARK: - Basic Helper Methods
     
     private func createUserColorsSection(_ analysisResult: AnalysisResult) -> String {
         let skinLabString = analysisResult.skinColorLab.map { 
@@ -273,9 +461,96 @@ class PersonalizationService {
         """
     }
     
+    private func createBasicFallbackData(analysisResult: AnalysisResult, detailedSeasonName: String) -> PersonalizedSeasonData {
+        let basicColorRecommendations = PersonalizedColorRecommendations(
+            bestNeutrals: ColorRecommendation(
+                description: "Neutral colors that complement your \(detailedSeasonName) coloring",
+                colors: ["#8B7355", "#A0956C", "#6B5D47", "#D4C4A8"],
+                priority: "high",
+                usageInstructions: "Use as foundation colors for your wardrobe"
+            ),
+            bestAccents: ColorRecommendation(
+                description: "Accent colors that enhance your natural beauty",
+                colors: ["#B8860B", "#CD853F", "#DEB887", "#F4A460"],
+                priority: "high",
+                usageInstructions: "Perfect for adding personality to your outfits"
+            ),
+            bestBaseColors: ColorRecommendation(
+                description: "Base colors for major wardrobe pieces",
+                colors: ["#2F4F4F", "#556B2F", "#8B4513", "#A0522D"],
+                priority: "medium",
+                usageInstructions: "Ideal for jackets, pants, and dresses"
+            ),
+            lipColors: ColorRecommendation(
+                description: "Lip colors that enhance your features",
+                colors: ["#CD5C5C", "#D2691E", "#BC8F8F", "#F08080"],
+                priority: "medium",
+                usageInstructions: "Choose intensity based on occasion"
+            ),
+            eyeColors: ColorRecommendation(
+                description: "Eye makeup colors that make your eyes pop",
+                colors: ["#8B7D6B", "#A0522D", "#CD853F", "#DEB887"],
+                priority: "medium",
+                usageInstructions: "Use to enhance your natural eye color"
+            ),
+            hairColorSuggestions: nil
+        )
+        
+        let basicStylingAdvice = PersonalizedStylingAdvice(
+            clothingAdvice: StylingRecommendation(
+                recommendation: "Focus on rich, earthy tones that complement your \(detailedSeasonName) coloring",
+                tips: ["Layer different tones of your season", "Choose quality fabrics in your colors"],
+                avoid: ["Colors that wash you out"],
+                examples: ["Earth-toned sweater with cream pants"]
+            ),
+            accessoryAdvice: StylingRecommendation(
+                recommendation: "Choose accessories in your season's palette",
+                tips: ["Metal tones that complement your coloring", "Scarves in your accent colors"],
+                avoid: ["Metals that clash with your undertones"],
+                examples: ["Gold jewelry", "Warm-toned handbags"]
+            ),
+            patternAdvice: StylingRecommendation(
+                recommendation: "Patterns that work with your contrast level",
+                tips: ["Choose patterns appropriate for your contrast", "Mix patterns carefully"],
+                avoid: ["Patterns that overwhelm your features"],
+                examples: ["Subtle plaids", "Organic patterns"]
+            ),
+            metalAdvice: StylingRecommendation(
+                recommendation: "Metals that enhance your coloring",
+                tips: ["Choose metals based on your undertones"],
+                avoid: ["Metals that create harsh contrast"],
+                examples: ["Warm gold tones", "Antique brass"]
+            ),
+            specialConsiderations: "Your \(detailedSeasonName) coloring benefits from warm, rich tones and avoiding overly cool colors."
+        )
+        
+        return PersonalizedSeasonData(
+            baseSeason: detailedSeasonName,
+            personalizedTagline: "Beautifully \(detailedSeasonName)",
+            userCharacteristics: "Your coloring shows the classic characteristics of a \(detailedSeasonName) type.",
+            personalizedOverview: "Your \(detailedSeasonName) coloring is enhanced by warm, rich colors that complement your natural beauty.",
+            colorRecommendations: basicColorRecommendations,
+            stylingAdvice: basicStylingAdvice,
+            emphasizedColors: ["#8B7355", "#B8860B", "#2F4F4F", "#CD5C5C", "#8B7D6B"],
+            colorsToAvoid: ["#FF69B4", "#00FFFF", "#FF00FF"],
+            confidence: analysisResult.confidence
+        )
+    }
+
+    // MARK: - Network and API Methods
+    
     private func makeOpenAIRequest(
         apiKey: String, 
         prompt: String, 
+        completion: @escaping (Result<String, Error>) -> Void
+    ) {
+        makeOpenAIRequestWithRetry(apiKey: apiKey, prompt: prompt, attempt: 1, completion: completion)
+    }
+    
+    private func makeOpenAIRequestWithRetry(
+        apiKey: String,
+        prompt: String,
+        attempt: Int,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
         guard let url = URL(string: openAIBaseURL) else {
@@ -287,7 +562,7 @@ class PersonalizationService {
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 30.0
+        request.timeoutInterval = requestTimeout
         
         let requestBody: [String: Any] = [
             "model": model,
@@ -302,21 +577,6 @@ class PersonalizationService {
             "response_format": ["type": "json_object"]
         ]
         
-        // Log the JSON being sent to OpenAI API
-        #if DEBUG
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: requestBody, options: .prettyPrinted)
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                print("🔵 OpenAI API Request JSON:")
-                print(String(repeating: "=", count: 50))
-                print(jsonString)
-                print(String(repeating: "=", count: 50))
-            }
-        } catch {
-            print("🔴 Failed to serialize request JSON for logging: \(error)")
-        }
-        #endif
-        
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
         } catch {
@@ -324,99 +584,78 @@ class PersonalizationService {
             return
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            #if DEBUG
-            print("🔵 PersonalizationService: URLSession dataTask completed")
-            #endif
-            
+        #if DEBUG
+        print("🔵 PersonalizationService: Attempt \(attempt)/\(maxRetryAttempts) - Making API request...")
+        #endif
+        
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             if let error = error {
-                #if DEBUG
-                print("🔴 PersonalizationService: Network error: \(error)")
-                #endif
+                let nsError = error as NSError
+                
+                // Check if it's a timeout error
+                if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorTimedOut {
+                    #if DEBUG
+                    print("🔴 PersonalizationService: Request timed out on attempt \(attempt)")
+                    #endif
+                    
+                    // Retry if we haven't exceeded max attempts
+                    if attempt < self?.maxRetryAttempts ?? 1 {
+                        #if DEBUG
+                        print("🟡 PersonalizationService: Retrying in \(self?.retryDelay ?? 2.0) seconds...")
+                        #endif
+                        
+                        DispatchQueue.global().asyncAfter(deadline: .now() + (self?.retryDelay ?? 2.0)) {
+                            self?.makeOpenAIRequestWithRetry(
+                                apiKey: apiKey,
+                                prompt: prompt,
+                                attempt: attempt + 1,
+                                completion: completion
+                            )
+                        }
+                        return
+                    }
+                }
+                
                 completion(.failure(error))
                 return
             }
             
-            #if DEBUG
-            print("🔵 PersonalizationService: Got response from server")
-            #endif
-            
             guard let httpResponse = response as? HTTPURLResponse else {
-                #if DEBUG
-                print("🔴 PersonalizationService: Invalid HTTP response")
-                #endif
                 completion(.failure(PersonalizationError.invalidResponse))
                 return
             }
             
-            #if DEBUG
-            print("🔵 PersonalizationService: HTTP Status Code: \(httpResponse.statusCode)")
-            #endif
-            
             guard httpResponse.statusCode == 200 else {
                 #if DEBUG
-                print("🔴 PersonalizationService: API error with status code: \(httpResponse.statusCode)")
-                if let data = data, let errorBody = String(data: data, encoding: .utf8) {
-                    print("🔴 PersonalizationService: Error response body: \(errorBody)")
-                }
+                print("🔴 PersonalizationService: HTTP error \(httpResponse.statusCode) on attempt \(attempt)")
                 #endif
                 completion(.failure(PersonalizationError.apiError(httpResponse.statusCode)))
                 return
             }
             
             guard let data = data else {
-                #if DEBUG
-                print("🔴 PersonalizationService: No data received")
-                #endif
                 completion(.failure(PersonalizationError.noData))
                 return
             }
             
-            #if DEBUG
-            print("🔵 PersonalizationService: Received data, size: \(data.count) bytes")
-            #endif
-            
             do {
                 let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-                
-                #if DEBUG
-                print("🔵 PersonalizationService: Successfully parsed JSON response")
-                if let jsonData = try? JSONSerialization.data(withJSONObject: json ?? [:], options: .prettyPrinted),
-                   let jsonString = String(data: jsonData, encoding: .utf8) {
-                    print("🔵 PersonalizationService: OpenAI Response:")
-                    print(String(repeating: "=", count: 50))
-                    print(jsonString)
-                    print(String(repeating: "=", count: 50))
-                }
-                #endif
-                
                 let choices = json?["choices"] as? [[String: Any]]
                 let message = choices?.first?["message"] as? [String: Any]
                 let content = message?["content"] as? String
                 
                 guard let responseContent = content else {
-                    #if DEBUG
-                    print("🔴 PersonalizationService: Could not extract content from response")
-                    print("🔴 PersonalizationService: choices: \(choices ?? [])")
-                    #endif
                     completion(.failure(PersonalizationError.invalidResponseFormat))
                     return
                 }
                 
                 #if DEBUG
-                print("🟢 PersonalizationService: Successfully extracted content from response")
-                print("🔵 PersonalizationService: Content length: \(responseContent.count) characters")
+                print("🟢 PersonalizationService: Request succeeded on attempt \(attempt)")
                 #endif
                 
                 completion(.success(responseContent))
                 
             } catch {
-                #if DEBUG
-                print("🔴 PersonalizationService: JSON parsing failed: \(error)")
-                if let rawResponse = String(data: data, encoding: .utf8) {
-                    print("🔴 PersonalizationService: Raw response: \(rawResponse)")
-                }
-                #endif
                 completion(.failure(PersonalizationError.jsonParsingFailed))
             }
         }.resume()
@@ -428,15 +667,7 @@ class PersonalizationService {
         detailedSeasonName: String,
         completion: @escaping (Result<PersonalizedSeasonData, Error>) -> Void
     ) {
-        #if DEBUG
-        print("🔵 PersonalizationService: Starting to parse personalization response")
-        print("🔵 PersonalizationService: Response length: \(response.count) characters")
-        #endif
-        
         guard let data = response.data(using: .utf8) else {
-            #if DEBUG
-            print("🔴 PersonalizationService: Failed to convert response string to Data")
-            #endif
             completion(.failure(PersonalizationError.invalidResponseFormat))
             return
         }
@@ -444,32 +675,15 @@ class PersonalizationService {
         do {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             guard let json = json else {
-                #if DEBUG
-                print("🔴 PersonalizationService: Failed to parse JSON from response data")
-                #endif
                 completion(.failure(PersonalizationError.invalidResponseFormat))
                 return
             }
             
-            #if DEBUG
-            print("🔵 PersonalizationService: Successfully parsed response JSON")
-            print("🔵 PersonalizationService: JSON keys: \(Array(json.keys))")
-            #endif
-            
             // Parse the response into PersonalizedSeasonData
             let personalizedData = try parseJSONToPersonalizedData(json, analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
-            
-            #if DEBUG
-            print("🟢 PersonalizationService: Successfully created PersonalizedSeasonData")
-            #endif
-            
             completion(.success(personalizedData))
             
         } catch {
-            #if DEBUG
-            print("🔴 PersonalizationService: Error parsing response: \(error)")
-            print("🔴 PersonalizationService: Raw response: \(response)")
-            #endif
             completion(.failure(PersonalizationError.responseParsingFailed))
         }
     }
@@ -503,7 +717,7 @@ class PersonalizationService {
         )
     }
     
-    private func parseColorRecommendations(_ json: [String: Any]) throws -> PersonalizedColorRecommendations {
+    func parseColorRecommendations(_ json: [String: Any]) throws -> PersonalizedColorRecommendations {
         guard let bestNeutralsJSON = json["bestNeutrals"] as? [String: Any],
               let bestAccentsJSON = json["bestAccents"] as? [String: Any],
               let bestBaseColorsJSON = json["bestBaseColors"] as? [String: Any],
@@ -538,7 +752,7 @@ class PersonalizationService {
         )
     }
     
-    private func parseStylingAdvice(_ json: [String: Any]) throws -> PersonalizedStylingAdvice {
+    func parseStylingAdvice(_ json: [String: Any]) throws -> PersonalizedStylingAdvice {
         guard let clothingAdviceJSON = json["clothingAdvice"] as? [String: Any],
               let accessoryAdviceJSON = json["accessoryAdvice"] as? [String: Any],
               let patternAdviceJSON = json["patternAdvice"] as? [String: Any],

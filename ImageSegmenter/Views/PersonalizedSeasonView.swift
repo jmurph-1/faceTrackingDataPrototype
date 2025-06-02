@@ -56,7 +56,7 @@ struct PersonalizedSeasonView: View {
                         headerViewContent()
 
                         if selectedModule == nil {
-                            personalizedColorPalette
+                            enhancedColorPalette
                                 .padding(.horizontal)
 
                             modulesGridView
@@ -113,35 +113,53 @@ struct PersonalizedSeasonView: View {
                 }
             }
             .padding(.horizontal)
-
-            VStack(spacing: 8) {
-                Text("Your Personalized")
-                    .font(.system(size: 16, weight: .light, design: .serif))
-                    .foregroundColor(paletteWhite)
-
-                Text(viewModel.seasonName)
-                    .font(.system(size: textSizeHeader, weight: .bold, design: .serif))
-                    .foregroundColor(primaryColor)
-
-                Text(viewModel.personalizedTagline)
-                    .font(.system(size: textSizeSubheader, weight: .light, design: .serif))
-                    .foregroundColor(paletteWhite)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-
-                HStack(spacing: 8) {
-                    Image(systemName: "sparkles")
-                        .font(.caption)
-                        .foregroundColor(accentColor)
+            
+            // Your Color DNA Section
+            if viewModel.isDNABlended || viewModel.personalizedData.seasonDNAData != nil {
+                VStack(spacing: 16) {
+                    HStack {
+                        Text("Your Color DNA")
+                            .font(.system(size: 18, weight: .bold, design: .serif))
+                            .foregroundColor(primaryColor)
+                        
+                        Spacer()
+                        
+                        // Confidence indicator with colored dot
+                        HStack(spacing: 4) {
+                            Circle()
+                                .fill(viewModel.dnaConfidenceColor)
+                                .frame(width: 8, height: 8)
+                            
+                            Text(viewModel.dnaConfidenceLevel)
+                                .font(.caption)
+                                .foregroundColor(paletteWhite.opacity(0.8))
+                        }
+                    }
                     
-                    Text("Confidence: \(viewModel.confidence)")
-                        .font(.caption)
-                        .foregroundColor(paletteWhite.opacity(0.8))
+                    // Integrate SeasonDNARingChart
+                    SeasonDNARingChart(
+                        seasonDNA: viewModel.seasonDNA,
+                        primaryColor: primaryColor,
+                        secondaryColor: getDNASecondaryColor(),
+                        tertiaryColor: getDNATertiaryColor(),
+                        size: 160
+                    )
                     
-                    Text("• \(viewModel.formattedDate)")
-                        .font(.caption)
-                        .foregroundColor(paletteWhite.opacity(0.6))
+                    // DNA explanation text
+                    Text(viewModel.seasonDNA.explanation)
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(paletteWhite.opacity(0.9))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 16)
+                        .lineLimit(3)
                 }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(moduleColor.opacity(0.3))
+                        .shadow(color: primaryColor.opacity(0.1), radius: 8, x: 0, y: 4)
+                )
+                .padding(.horizontal)
             }
 
             Divider()
@@ -157,47 +175,62 @@ struct PersonalizedSeasonView: View {
         )
     }
 
-    private var personalizedColorPalette: some View {
-        VStack(spacing: 16) {
-            Text("Your Best Colors")
-                .font(.headline)
-                .foregroundColor(textColor)
-
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 5), spacing: 12) {
-                ForEach(Array(viewModel.emphasizedColors.enumerated()), id: \.offset) { index, color in
-                    Circle()
-                        .fill(color)
-                        .aspectRatio(1, contentMode: .fit)
-                        .shadow(color: color.opacity(0.3), radius: 8, x: 0, y: 4)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white, lineWidth: 2)
+    private var enhancedColorPalette: some View {
+        VStack(spacing: 20) {
+            // Main EnhancedColorGrid for best colors
+            if viewModel.personalizedData.hasEnhancedColorData,
+               let enhancedData = viewModel.personalizedData.enhancedColorData {
+                // Use enhanced color data if available
+                VStack(spacing: 16) {
+                    EnhancedColorGrid(
+                        title: "Your Best Colors",
+                        description: enhancedData.bestNeutrals.description,
+                        colorItems: enhancedData.bestNeutrals.colors,
+                        columns: 4
+                    )
+                    
+                    // Optional collapsible category sections
+                    DisclosureGroup("Accent Colors") {
+                        EnhancedColorGrid(
+                            title: "Best Accents",
+                            description: enhancedData.bestAccents.description,
+                            colorItems: enhancedData.bestAccents.colors,
+                            columns: 4
                         )
-                }
-            }
-
-            if !viewModel.colorsToAvoid.isEmpty {
-                Text("Colors to Avoid")
-                    .font(.subheadline)
-                    .foregroundColor(textColor)
-                    .padding(.top)
-
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
-                    ForEach(Array(viewModel.colorsToAvoid.enumerated()), id: \.offset) { index, color in
-                        Circle()
-                            .fill(color)
-                            .frame(width: 40, height: 40)
-                            .overlay(
-                                Image(systemName: "xmark")
-                                    .font(.caption)
-                                    .foregroundColor(.white)
-                            )
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.red.opacity(0.7), lineWidth: 2)
-                            )
+                        .padding(.top)
                     }
+                    .accentColor(primaryColor)
+                    
+                    DisclosureGroup("Base Colors") {
+                        EnhancedColorGrid(
+                            title: "Best Base Colors",
+                            description: enhancedData.bestBaseColors.description,
+                            colorItems: enhancedData.bestBaseColors.colors,
+                            columns: 4
+                        )
+                        .padding(.top)
+                    }
+                    .accentColor(primaryColor)
                 }
+            } else {
+                // Fallback to basic color display
+                EnhancedColorGrid(
+                    title: "Your Best Colors",
+                    description: "Colors that complement your \(viewModel.seasonName) coloring",
+                    colorItems: createBasicColorItems(from: viewModel.personalizedData.emphasizedColors),
+                    columns: 4
+                )
+            }
+            
+            // Secondary EnhancedColorGrid for colors to avoid (if any)
+            if !viewModel.personalizedData.colorsToAvoid.isEmpty {
+                EnhancedColorGrid(
+                    title: "Colors to Avoid",
+                    description: "These colors may not complement your natural coloring",
+                    colorItems: createBasicColorItems(from: viewModel.personalizedData.colorsToAvoid, isAvoidance: true),
+                    isAvoidanceMode: true,
+                    columns: 3
+                )
             }
         }
     }
@@ -478,6 +511,162 @@ extension PersonalizedSeasonView {
                 .scaleEffect(configuration.isPressed ? 0.95 : 1)
                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
         }
+    }
+    
+    // MARK: - Helper Methods
+    
+    /// Map secondary season to accent color
+    private func getDNASecondaryColor() -> Color {
+        guard let secondarySeason = viewModel.seasonDNA.secondary?.season else {
+            return accentColor
+        }
+        return getSeasonAccentColor(for: secondarySeason)
+    }
+    
+    /// Map tertiary season to accent color
+    private func getDNATertiaryColor() -> Color {
+        guard let tertiarySeason = viewModel.seasonDNA.tertiary?.season else {
+            return accentColor2
+        }
+        return getSeasonAccentColor(for: tertiarySeason)
+    }
+    
+    /// Season-to-color mapping
+    private func getSeasonAccentColor(for seasonName: String) -> Color {
+        let season = seasonName.lowercased()
+        
+        // Spring seasons - warm, bright colors
+        if season.contains("spring") {
+            if season.contains("light") {
+                return Color(red: 1.0, green: 0.8, blue: 0.4) // Light warm yellow
+            } else if season.contains("clear") || season.contains("bright") {
+                return Color(red: 1.0, green: 0.6, blue: 0.0) // Bright orange
+            } else if season.contains("warm") {
+                return Color(red: 0.9, green: 0.5, blue: 0.1) // Warm amber
+            } else {
+                return Color(red: 1.0, green: 0.7, blue: 0.2) // True spring yellow-orange
+            }
+        }
+        
+        // Summer seasons - cool, soft colors
+        else if season.contains("summer") {
+            if season.contains("light") {
+                return Color(red: 0.7, green: 0.8, blue: 1.0) // Light cool blue
+            } else if season.contains("soft") {
+                return Color(red: 0.8, green: 0.7, blue: 0.9) // Soft lavender
+            } else if season.contains("cool") {
+                return Color(red: 0.5, green: 0.7, blue: 0.9) // Cool blue
+            } else {
+                return Color(red: 0.6, green: 0.8, blue: 0.9) // True summer blue
+            }
+        }
+        
+        // Autumn seasons - warm, rich colors
+        else if season.contains("autumn") {
+            if season.contains("soft") {
+                return Color(red: 0.8, green: 0.6, blue: 0.4) // Soft warm brown
+            } else if season.contains("warm") {
+                return Color(red: 0.9, green: 0.4, blue: 0.1) // Warm rust
+            } else if season.contains("deep") || season.contains("dark") {
+                return Color(red: 0.6, green: 0.3, blue: 0.1) // Deep burnt orange
+            } else {
+                return Color(red: 0.8, green: 0.5, blue: 0.2) // True autumn orange
+            }
+        }
+        
+        // Winter seasons - cool, clear colors
+        else if season.contains("winter") {
+            if season.contains("clear") || season.contains("bright") {
+                return Color(red: 0.2, green: 0.4, blue: 1.0) // Clear royal blue
+            } else if season.contains("cool") {
+                return Color(red: 0.4, green: 0.2, blue: 0.8) // Cool purple
+            } else if season.contains("deep") || season.contains("dark") {
+                return Color(red: 0.1, green: 0.1, blue: 0.5) // Deep navy
+            } else {
+                return Color(red: 0.2, green: 0.2, blue: 0.8) // True winter blue
+            }
+        }
+        
+        // Default fallback
+        else {
+            return accentColor
+        }
+    }
+    
+    /// Create basic ColorItems from hex strings
+    private func createBasicColorItems(from hexColors: [String], isAvoidance: Bool = false) -> [ColorItem] {
+        return hexColors.enumerated().map { index, hex in
+            let colorName = getColorName(from: hex, isAvoidance: isAvoidance)
+            let usageContext = isAvoidance ? "Avoid this color" : "Great for your season"
+            let harmonyReason = isAvoidance ? 
+                "May clash with your natural coloring" : 
+                "Complements your \(viewModel.seasonName) characteristics"
+            
+            return ColorItem(
+                name: colorName,
+                hexValue: hex,
+                usageContext: usageContext,
+                harmonyReason: harmonyReason
+            )
+        }
+    }
+    
+    /// Generate basic color names from hex values
+    private func getColorName(from hex: String, isAvoidance: Bool = false) -> String {
+        // Convert hex to Color for analysis
+        let color = Color(hex: hex)
+        let uiColor = UIColor(color)
+        
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: nil)
+        
+        // Generate name based on hue, saturation, and brightness
+        let hueAngle = hue * 360
+        
+        var colorName = ""
+        
+        // Determine base color from hue
+        switch hueAngle {
+        case 0..<30, 330..<360:
+            colorName = "Red"
+        case 30..<60:
+            colorName = "Orange"
+        case 60..<90:
+            colorName = "Yellow"
+        case 90..<150:
+            colorName = "Green"
+        case 150..<210:
+            colorName = "Cyan"
+        case 210..<270:
+            colorName = "Blue"
+        case 270..<330:
+            colorName = "Purple"
+        default:
+            colorName = "Gray"
+        }
+        
+        // Add modifiers based on saturation and brightness
+        if saturation < 0.2 {
+            if brightness > 0.8 {
+                colorName = "Light Gray"
+            } else if brightness < 0.3 {
+                colorName = "Dark Gray"
+            } else {
+                colorName = "Gray"
+            }
+        } else {
+            if brightness > 0.8 {
+                colorName = "Light \(colorName)"
+            } else if brightness < 0.3 {
+                colorName = "Dark \(colorName)"
+            } else if saturation < 0.5 {
+                colorName = "Soft \(colorName)"
+            }
+        }
+        
+        return colorName
     }
 }
 
