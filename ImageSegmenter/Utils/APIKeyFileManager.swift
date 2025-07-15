@@ -32,20 +32,35 @@ class APIKeyFileManager {
     
     /// Load API key from app bundle (for development)
     private static func loadFromBundle() -> String? {
-        guard let bundlePath = Bundle.main.path(forResource: configFileName, ofType: configFileExtension),
-              let configData = NSDictionary(contentsOfFile: bundlePath),
-              let apiKey = configData[openAIKeyKey] as? String,
-              !apiKey.isEmpty else {
+        guard let bundlePath = Bundle.main.path(forResource: configFileName, ofType: configFileExtension) else {
+            return nil
+        }
+        
+        guard let configData = NSDictionary(contentsOfFile: bundlePath) else {
+            #if DEBUG
+            print("🔴 APIKeyFileManager: Could not parse plist file")
+            #endif
+            return nil
+        }
+        
+        guard let apiKey = configData[openAIKeyKey] as? String, !apiKey.isEmpty else {
+            #if DEBUG
+            print("🔴 APIKeyFileManager: No '\(openAIKeyKey)' key found in plist or key is empty")
+            #endif
             return nil
         }
         
         // Validate key format
         guard apiKey.hasPrefix("sk-") else {
+            #if DEBUG
             print("❌ Invalid OpenAI API key format in bundle config file")
+            #endif
             return nil
         }
         
+        #if DEBUG
         print("✅ API key loaded from app bundle")
+        #endif
         return apiKey
     }
     

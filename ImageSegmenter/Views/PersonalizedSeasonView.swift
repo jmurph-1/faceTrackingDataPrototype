@@ -182,12 +182,16 @@ struct PersonalizedSeasonView: View {
                let enhancedData = viewModel.personalizedData.enhancedColorData {
                 // Use enhanced color data if available
                 VStack(spacing: 16) {
-                    EnhancedColorGrid(
-                        title: "Your Best Colors",
-                        description: enhancedData.bestNeutrals.description,
-                        colorItems: enhancedData.bestNeutrals.colors,
-                        columns: 4
-                    )
+
+                    DisclosureGroup("Neutral Colors") {
+                        EnhancedColorGrid(
+                            title: "Your Best Neutral Colors",
+                            description: enhancedData.bestNeutrals.description,
+                            colorItems: enhancedData.bestNeutrals.colors,
+                            columns: 4
+                        )
+                    }
+                    .accentColor(primaryColor)
                     
                     // Optional collapsible category sections
                     DisclosureGroup("Accent Colors") {
@@ -567,7 +571,7 @@ extension PersonalizedSeasonView {
                 return Color(red: 0.8, green: 0.6, blue: 0.4) // Soft warm brown
             } else if season.contains("warm") {
                 return Color(red: 0.9, green: 0.4, blue: 0.1) // Warm rust
-            } else if season.contains("deep") || season.contains("dark") {
+            } else if season.contains("dark") {
                 return Color(red: 0.6, green: 0.3, blue: 0.1) // Deep burnt orange
             } else {
                 return Color(red: 0.8, green: 0.5, blue: 0.2) // True autumn orange
@@ -580,7 +584,7 @@ extension PersonalizedSeasonView {
                 return Color(red: 0.2, green: 0.4, blue: 1.0) // Clear royal blue
             } else if season.contains("cool") {
                 return Color(red: 0.4, green: 0.2, blue: 0.8) // Cool purple
-            } else if season.contains("deep") || season.contains("dark") {
+            } else if season.contains("dark") {
                 return Color(red: 0.1, green: 0.1, blue: 0.5) // Deep navy
             } else {
                 return Color(red: 0.2, green: 0.2, blue: 0.8) // True winter blue

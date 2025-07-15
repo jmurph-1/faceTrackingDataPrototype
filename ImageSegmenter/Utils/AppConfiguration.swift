@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Security
 import UIKit
 
 /// Manages app-wide configuration including securely bundled API keys
@@ -105,109 +104,42 @@ class AppConfiguration {
     /// Force reload configuration (for development)
     func reloadConfiguration() {
         isAPIKeyLoaded = false
+        openAIAPIKey = nil
         loadUserPreferences()
         loadAPIKeyIfNeeded()
     }
     
     private func loadSecureAPIKey() -> String? {
-        // Method 1: Try to load from local file (for development/testing)
+        // Use APIKeyManager as the single source of truth for API keys
+        // This provides validation, error handling, and consistent keychain access
+        if let apiKey = APIKeyManager.getOpenAIKey() {
+            return apiKey
+        }
+        
+        #if DEBUG
+        print("🟡 AppConfiguration: No API key in APIKeyManager keychain, checking file...")
+        #endif
+        
+        // Fallback: Try to load from local file (for development/testing)
+        // If found, store it in APIKeyManager for future use
         if let fileKey = APIKeyFileManager.loadOpenAIKeyFromFile() {
+            #if DEBUG
+            print("🟢 AppConfiguration: API key found in file, storing in APIKeyManager")
+            #endif
+            APIKeyManager.setOpenAIKey(fileKey) // Store in canonical location
             return fileKey
-        }
-        
-        // Method 2: Try to load from secure keychain (for development/testing)
-        if let keychainKey = loadFromKeychain() {
-            return keychainKey
-        }
-        
-        // Method 3: Load from encrypted configuration file
-        if let encryptedKey = loadFromEncryptedConfig() {
-            return encryptedKey
-        }
-        
-        // Method 4: Load from obfuscated build configuration
-        if let buildKey = loadFromBuildConfig() {
-            return buildKey
         }
         
         // No API key found - print helpful message for developers
         #if DEBUG
+        print("🔴 AppConfiguration: No API key found")
         print(APIKeyFileManager.getSetupInstructions())
         #endif
         
         return nil
     }
     
-    private func loadFromKeychain() -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "com.season13.app.config",
-            kSecAttrAccount as String: "openai_production_key",
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        
-        var dataTypeRef: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
-        
-        guard status == errSecSuccess,
-              let data = dataTypeRef as? Data,
-              let key = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-        
-        return key
-    }
-    
-    private func loadFromEncryptedConfig() -> String? {
-        guard let configPath = Bundle.main.path(forResource: "AppConfig", ofType: "plist"),
-              let configData = NSDictionary(contentsOfFile: configPath),
-              let encryptedKey = configData["encrypted_openai_key"] as? String else {
-            return nil
-        }
-        
-        // Decrypt using app-specific method
-        return decryptAPIKey(encryptedKey)
-    }
-    
-    private func loadFromBuildConfig() -> String? {
-        // Check for build-time configuration
-        guard let infoPlist = Bundle.main.infoDictionary,
-              let obfuscatedKey = infoPlist["OPENAI_API_KEY_OBFUSCATED"] as? String else {
-            return nil
-        }
-        
-        // Deobfuscate the key
-        return deobfuscateAPIKey(obfuscatedKey)
-    }
-    
-    private func decryptAPIKey(_ encryptedKey: String) -> String? {
-        // Implement AES decryption using app-specific key
-        // This is a placeholder - implement proper decryption
-        guard let data = Data(base64Encoded: encryptedKey) else { return nil }
-        
-        // Use app bundle identifier + device identifier as decryption key
-        let appKey = Bundle.main.bundleIdentifier ?? "default_key"
-        let deviceKey = UIDevice.current.identifierForVendor?.uuidString ?? "device_key"
-        let combinedKey = "\(appKey)_\(deviceKey)"
-        
-        // Simplified decryption (implement proper AES-256 in production)
-        return String(data: data, encoding: .utf8)
-    }
-    
-    private func deobfuscateAPIKey(_ obfuscatedKey: String) -> String? {
-        // Simple XOR deobfuscation (implement stronger obfuscation in production)
-        let key = Bundle.main.bundleIdentifier?.data(using: .utf8) ?? Data()
-        let obfuscatedData = Data(base64Encoded: obfuscatedKey) ?? Data()
-        
-        var deobfuscated = Data()
-        for (index, byte) in obfuscatedData.enumerated() {
-            let keyByte = key[index % key.count]
-            deobfuscated.append(byte ^ keyByte)
-        }
-        
-        return String(data: deobfuscated, encoding: .utf8)
-    }
+
 }
 
 // MARK: - Development Helper
@@ -216,30 +148,9 @@ class AppConfiguration {
 extension AppConfiguration {
     /// Set API key for development/testing (debug builds only)
     func setDevelopmentAPIKey(_ key: String) {
-        guard key.hasPrefix("sk-") else { return }
-        
-        // Store in keychain for development
-        let data = key.data(using: .utf8)!
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "com.season13.app.config",
-            kSecAttrAccount as String: "openai_production_key",
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-        ]
-        
-        // Delete existing
-        let deleteQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "com.season13.app.config",
-            kSecAttrAccount as String: "openai_production_key"
-        ]
-        SecItemDelete(deleteQuery as CFDictionary)
-        
-        // Add new
-        SecItemAdd(query as CFDictionary, nil)
-        
-        // Reload configuration
+        // Delegate to APIKeyManager for consistent API key management
+        APIKeyManager.setOpenAIKey(key)
+        // Reload configuration to pick up the new key
         reloadConfiguration()
     }
     
@@ -262,7 +173,8 @@ extension AppConfiguration {
         print("Personalization Active: \(isPersonalizationActive)")
         print("DNA Personalization Active: \(isDNAPersonalizationActive)")
         
-        if let apiKey = openAIAPIKey {
+        // Use APIKeyManager as the single source of truth for API key status
+        if let apiKey = APIKeyManager.getOpenAIKey() {
             let maskedKey = String(apiKey.prefix(7)) + "..." + String(apiKey.suffix(4))
             print("API Key: \(maskedKey)")
         } else {
@@ -275,6 +187,14 @@ extension AppConfiguration {
         
         // Print file-based config status
         APIKeyFileManager.printConfigStatus()
+    }
+    
+    /// Force reload configuration and print status (for debugging)
+    func debugReloadAndPrintStatus() {
+        print("\n🔧 === DEBUG: Force Reloading Configuration ===")
+        reloadConfiguration()
+        printConfigurationStatus()
+        print("=== END DEBUG ===\n")
     }
 }
 #endif 

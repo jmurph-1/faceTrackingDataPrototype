@@ -6,6 +6,11 @@ import MetalPerformanceShaders
 import SwiftUI
 import UIKit
 
+#if DEBUG
+// Import debug utilities for testing PersonalizedSeasonView
+// (Extensions are automatically available in the same module)
+#endif
+
 /// The refactored camera view controller is responsible for displaying the camera feed and UI,
 /// delegating business logic to the CameraViewModel.
 class RefactoredCameraViewController: UIViewController {
@@ -93,6 +98,11 @@ class RefactoredCameraViewController: UIViewController {
     // Print configuration status in debug builds only when explicitly requested
     // Uncomment the line below to see configuration status during development:
     // AppConfiguration.shared.printConfigurationStatus()
+    
+    #if DEBUG
+    // Add debug button for easy testing
+    addDebugPersonalizedSeasonButton()
+    #endif
   }
 
   override func viewDidAppear(_ animated: Bool) {
@@ -1076,3 +1086,36 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
     }
   }
 }
+
+// MARK: - Debug Extension
+#if DEBUG
+extension RefactoredCameraViewController {
+    
+    /// Add debug button for testing PersonalizedSeasonView
+    /// Call this in viewDidLoad() when in debug mode
+    func addDebugPersonalizedSeasonButton() {
+        let debugButton = UIButton(type: .system)
+        debugButton.setTitle("🧪 Mock Personalized", for: .normal)
+        debugButton.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.8)
+        debugButton.setTitleColor(.white, for: .normal)
+        debugButton.layer.cornerRadius = 8
+        debugButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        debugButton.addTarget(self, action: #selector(debugPersonalizedSeasonTapped), for: .touchUpInside)
+        
+        // Position in bottom-left corner
+        debugButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(debugButton)
+        
+        NSLayoutConstraint.activate([
+            debugButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            debugButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
+            debugButton.widthAnchor.constraint(equalToConstant: 140),
+            debugButton.heightAnchor.constraint(equalToConstant: 36)
+        ])
+    }
+    
+    @objc private func debugPersonalizedSeasonTapped() {
+        DebugPersonalizedSeasonHelper.presentDebugMenu(from: self)
+    }
+}
+#endif

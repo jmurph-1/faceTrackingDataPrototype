@@ -36,8 +36,8 @@ class SeasonClassifier {
         case softSummer = "Soft Summer"
         case softAutumn = "Soft Autumn"
         case trueAutumn = "True Autumn"
-        case deepAutumn = "Deep Autumn"
-        case deepWinter = "Deep Winter"
+        case darkAutumn = "Dark Autumn"
+        case darkWinter = "Dark Winter"
         case trueWinter = "True Winter"
         case brightWinter = "Bright Winter"
         case unknown = "Unknown"
@@ -49,9 +49,9 @@ class SeasonClassifier {
                 return .spring
             case .lightSummer, .trueSummer, .softSummer:
                 return .summer
-            case .softAutumn, .trueAutumn, .deepAutumn:
+            case .softAutumn, .trueAutumn, .darkAutumn:
                 return .autumn
-            case .deepWinter, .trueWinter, .brightWinter:
+            case .darkWinter, .trueWinter, .brightWinter:
                 return .winter
             case .unknown:
                 return .spring // Default fallback
@@ -77,9 +77,9 @@ class SeasonClassifier {
                 return "Soft, warm, and muted with gentle earthiness"
             case .trueAutumn:
                 return "Rich, warm, and earthy with medium depth"
-            case .deepAutumn:
+            case .darkAutumn:
                 return "Deep, warm, and rich with strong earthiness"
-            case .deepWinter:
+            case .darkWinter:
                 return "Deep, cool, and dramatic with high contrast"
             case .trueWinter:
                 return "Clear, cool, and vivid with strong intensity"
@@ -101,8 +101,8 @@ class SeasonClassifier {
             case "Soft Summer": self = .softSummer
             case "Soft Autumn": self = .softAutumn
             case "True Autumn": self = .trueAutumn
-            case "Deep Autumn": self = .deepAutumn
-            case "Deep Winter": self = .deepWinter
+            case "Dark Autumn": self = .darkAutumn
+            case "Dark Winter": self = .darkWinter
             case "True Winter": self = .trueWinter
             case "Bright Winter": self = .brightWinter
             case "Unknown": self = .unknown
@@ -431,10 +431,10 @@ class SeasonClassifier {
                    lRange: 45...60, cRange: 0...30, hueRange: 60...110),
         SeasonRule(name: "True Autumn",
                    lRange: 40...55, cRange: 35...50, hueRange: 60...100),
-        SeasonRule(name: "Deep Autumn",
+        SeasonRule(name: "Dark Autumn",
                    lRange: 30...50, cRange: 30...45, hueRange: 60...100),
 
-        SeasonRule(name: "Deep Winter",
+        SeasonRule(name: "Dark Winter",
                    lRange: 25...50, cRange: 40...60, hueRange: 200...260),
         SeasonRule(name: "True Winter",
                    lRange: 35...60, cRange: 50...65, hueRange: 220...280),

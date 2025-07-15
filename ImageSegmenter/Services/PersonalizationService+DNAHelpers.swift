@@ -120,7 +120,7 @@ extension PersonalizationService {
         case "summer": return "Soft Autumn"
         case "autumn": return "Soft Summer"
         case "spring": return "Light Spring"
-        case "winter": return "Deep Winter"
+        case "winter": return "Dark Winter"
         default: return "True \(baseSeason)"
         }
     }
@@ -130,7 +130,7 @@ extension PersonalizationService {
         case "spring": return "Clear Winter"
         case "winter": return "Clear Spring"
         case "summer": return "Light Summer"
-        case "autumn": return "Deep Autumn"
+        case "autumn": return "Dark Autumn"
         default: return "True \(baseSeason)"
         }
     }
