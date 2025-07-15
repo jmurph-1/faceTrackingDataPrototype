@@ -106,14 +106,16 @@ class CameraService: NSObject {
   /**
    This method starts an AVCaptureSession based on whether the camera configuration was successful.
    */
-  func startLiveCameraSession(_ completion: @escaping (_ cameraConfiguration: CameraConfigurationStatus) -> Void) {
+  func startLiveCameraSession(completion: @escaping (CameraConfigurationStatus) -> Void) {
+    LoggingService.info("CAMERA_FLOW: Starting live camera session")
     sessionQueue.async {
       switch self.cameraConfigurationStatus {
       case .success:
         self.addObservers()
         self.startSession()
+        LoggingService.info("CAMERA_FLOW: Camera session started successfully")
       default:
-        break
+        LoggingService.warning("CAMERA_FLOW: Failed to start camera session - status: \(self.cameraConfigurationStatus)")
       }
       completion(self.cameraConfigurationStatus)
     }

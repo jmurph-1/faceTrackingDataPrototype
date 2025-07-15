@@ -10,27 +10,32 @@ class SeasonClassifierTests: XCTestCase {
         classifier = SeasonClassifier()
     }
 
-    // Test classification of known season colors based on the new logic
+    // Test classification of known season colors based on the new 12-season logic
     func testKnownSeasonClassification() {
         // Spring: Warm (b* >= 12) + Light (L >= 65)
         let springColor = ColorConverters.LabColor(L: 75.0, a: 10.0, b: 25.0)
         let springResult = classifier.classify(skinColor: springColor)
-        XCTAssertEqual(springResult.season, .spring, "Should classify as Spring")
+        XCTAssertEqual(springResult.macroSeason, .spring, "Should classify macro season as Spring")
+        // The detailed season should be one of the Spring variants
+        XCTAssertTrue(springResult.detailedSeason.macroSeason == .spring, "Detailed season should map to Spring macro season")
 
         // Summer: Cool (b* < 12) + Light (L >= 65)
         let summerColor = ColorConverters.LabColor(L: 70.0, a: -3.0, b: 10.0)
         let summerResult = classifier.classify(skinColor: summerColor)
-        XCTAssertEqual(summerResult.season, .summer, "Should classify as Summer")
+        XCTAssertEqual(summerResult.macroSeason, .summer, "Should classify macro season as Summer")
+        XCTAssertTrue(summerResult.detailedSeason.macroSeason == .summer, "Detailed season should map to Summer macro season")
 
         // Autumn: Warm (b* >= 12) + Dark (L < 65)
         let autumnColor = ColorConverters.LabColor(L: 60.0, a: 8.0, b: 22.0)
         let autumnResult = classifier.classify(skinColor: autumnColor)
-        XCTAssertEqual(autumnResult.season, .autumn, "Should classify as Autumn")
+        XCTAssertEqual(autumnResult.macroSeason, .autumn, "Should classify macro season as Autumn")
+        XCTAssertTrue(autumnResult.detailedSeason.macroSeason == .autumn, "Detailed season should map to Autumn macro season")
 
         // Winter: Cool (b* < 12) + Dark (L < 65)
         let winterColor = ColorConverters.LabColor(L: 55.0, a: -5.0, b: 5.0)
         let winterResult = classifier.classify(skinColor: winterColor)
-        XCTAssertEqual(winterResult.season, .winter, "Should classify as Winter")
+        XCTAssertEqual(winterResult.macroSeason, .winter, "Should classify macro season as Winter")
+        XCTAssertTrue(winterResult.detailedSeason.macroSeason == .winter, "Detailed season should map to Winter macro season")
     }
 
     // Test borderline cases for the warmCoolThreshold (b* = 12)
@@ -38,12 +43,12 @@ class SeasonClassifierTests: XCTestCase {
         // Just below warm threshold (b* = 11.9) and light - should be Summer
         let coolLight = ColorConverters.LabColor(L: 70.0, a: 0.0, b: 11.9)
         let coolLightResult = classifier.classify(skinColor: coolLight)
-        XCTAssertEqual(coolLightResult.season, .summer, "Cool and light should be Summer")
+        XCTAssertEqual(coolLightResult.macroSeason, .summer, "Cool and light should be Summer macro season")
 
         // Just at warm threshold (b* = 12.0) and light - should be Spring
         let warmLight = ColorConverters.LabColor(L: 70.0, a: 0.0, b: 12.0)
         let warmLightResult = classifier.classify(skinColor: warmLight)
-        XCTAssertEqual(warmLightResult.season, .spring, "Warm and light should be Spring")
+        XCTAssertEqual(warmLightResult.macroSeason, .spring, "Warm and light should be Spring macro season")
     }
 
     // Test borderline cases for the lightDarkThreshold (L = 65)
@@ -51,12 +56,12 @@ class SeasonClassifierTests: XCTestCase {
         // Just below light threshold (L = 64.9) and warm - should be Autumn
         let warmDark = ColorConverters.LabColor(L: 64.9, a: 10.0, b: 20.0)
         let warmDarkResult = classifier.classify(skinColor: warmDark)
-        XCTAssertEqual(warmDarkResult.season, .autumn, "Warm and dark should be Autumn")
+        XCTAssertEqual(warmDarkResult.macroSeason, .autumn, "Warm and dark should be Autumn macro season")
 
         // Just at light threshold (L = 65.0) and warm - should be Spring
         let warmLight = ColorConverters.LabColor(L: 65.0, a: 5.0, b: 15.0)
         let warmLightResult = classifier.classify(skinColor: warmLight)
-        XCTAssertEqual(warmLightResult.season, .spring, "Warm and light should be Spring")
+        XCTAssertEqual(warmLightResult.macroSeason, .spring, "Warm and light should be Spring macro season")
     }
 
     // Test basic classification without hair color influence
@@ -66,7 +71,24 @@ class SeasonClassifierTests: XCTestCase {
 
         // Should be classified as Summer
         let result = classifier.classify(skinColor: borderlineSkin)
-        XCTAssertEqual(result.season, .summer, "Borderline cool light skin should be Summer")
+        XCTAssertEqual(result.macroSeason, .summer, "Borderline cool light skin should be Summer macro season")
+    }
+
+    // Test that detailed seasons are correctly assigned
+    func testDetailedSeasonAssignment() {
+        // Test a specific case that should result in a known detailed season
+        let lightSpringColor = ColorConverters.LabColor(L: 75.0, a: 5.0, b: 20.0) // Light, moderate chroma, warm hue
+        let result = classifier.classify(skinColor: lightSpringColor)
+        
+        // Should be classified as some Spring variant
+        XCTAssertEqual(result.macroSeason, .spring, "Should be Spring macro season")
+        
+        // The detailed season should not be unknown
+        XCTAssertNotEqual(result.detailedSeason, .unknown, "Should not classify as unknown detailed season")
+        
+        // Should have a reasonable confidence
+        XCTAssertGreaterThan(result.confidence, 0.0, "Should have confidence greater than 0")
+        XCTAssertLessThanOrEqual(result.confidence, 1.0, "Confidence should not exceed 1.0")
     }
 
     // Test deltaE calculations to nearest seasons

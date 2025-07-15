@@ -52,6 +52,11 @@ class CoreDataManager {
         managedObject.setValue(result.date, forKey: "date")
         managedObject.setValue(result.notes, forKey: "notes")
 
+        // Set contrast values
+        managedObject.setValue(result.contrastValue, forKey: "contrastValue")
+        managedObject.setValue(result.contrastLevel, forKey: "contrastLevel")
+        managedObject.setValue(result.contrastDescription, forKey: "contrastDescription")
+
         // Convert colors to data
         if let skinColorData = try? NSKeyedArchiver.archivedData(withRootObject: result.skinColor, requiringSecureCoding: true) {
             managedObject.setValue(skinColorData, forKey: "skinColorData")

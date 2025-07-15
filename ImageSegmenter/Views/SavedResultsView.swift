@@ -220,6 +220,7 @@ struct SavedResultsView_Previews: PreviewProvider {
         for (index, season) in seasons.enumerated() {
             let result = AnalysisResult(
                 season: season,
+                detailedSeasonName: "True \(season.rawValue)",
                 confidence: Float(0.7 + Double(index) * 0.05),
                 deltaEToNextClosest: Float(1.0 + Double(index) * 0.2),
                 nextClosestSeason: index < seasons.count - 1 ? seasons[index + 1] : seasons[0],
@@ -237,6 +238,9 @@ struct SavedResultsView_Previews: PreviewProvider {
                     alpha: 1.0
                 ),
                 hairColorLab: (L: 30.0, a: 5.0, b: 10.0),
+                contrastValue: 0.5 + Double(index) * 0.1,
+                contrastLevel: ["low", "medium", "medium-high", "high"][index],
+                contrastDescription: "Sample contrast description for \(season.rawValue)",
                 thumbnail: nil,
                 date: Date().addingTimeInterval(-Double(index) * 86400) // Subtract days
             )

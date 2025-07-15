@@ -8,22 +8,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     setenv("OS_ACTIVITY_MODE", "disable", 1)
     setenv("OS_ACTIVITY_DT_MODE", "YES", 1)
     setenv("CFLOG_LEVEL", "DEBUG", 1)
-    
+
     // Force stderr to be unbuffered
     setvbuf(stderr, nil, _IONBF, 0)
-    
+
     // Critical log messages to try to break through any filtering
     fputs("DIRECT CONSOLE OUTPUT: App starting via fputs\n", stderr)
     NSLog("=========== APP STARTING - NSLOG ===========")
     print("=========== APP STARTING - PRINT ===========")
-    
+
     // Log app launch via our logger
     DebugLogger.info("Application launched with options: \(String(describing: launchOptions))")
-    
+
     // Add a sync point that ensures logs are flushed
     fflush(stdout)
     fflush(stderr)
-    
+
     // Override point for customization after application launch.
     return true
   }
@@ -43,5 +43,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
 }
-
-

@@ -74,13 +74,37 @@
 		523112AE2DD6D36A00FCFC91 /* ColorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112AB2DD6D36A00FCFC91 /* ColorViewModel.swift */; };
 		523112B32DD6D39100FCFC91 /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112B02DD6D39100FCFC91 /* Season.swift */; };
 		523112B42DD6D39100FCFC91 /* SeasonTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112B12DD6D39100FCFC91 /* SeasonTheme.swift */; };
-		523112EB2DD6F76B00FCFC91 /* ColorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EA2DD6F76B00FCFC91 /* ColorData.swift */; };
 		523112ED2DD6F7C000FCFC91 /* SeasonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */; };
 		5231132F2DD728CF00FCFC91 /* Light Summer.json in Resources */ = {isa = PBXBuildFile; fileRef = 5231132E2DD728CF00FCFC91 /* Light Summer.json */; };
 		523113312DDEA6E800FCFC91 /* ColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113302DDEA6C900FCFC91 /* ColorExtractor.swift */; };
 		523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */; };
 		523113352DDFD64300FCFC91 /* UIImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113342DDFD63100FCFC91 /* UIImageOrientation.swift */; };
 		523113372DDFD8D000FCFC91 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 523113362DDFD8D000FCFC91 /* Shaders.metal */; };
+		5231133B2DE0284D00FCFC91 /* ColorExtractor+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231133A2DE0283C00FCFC91 /* ColorExtractor+Utils.swift */; };
+		5231133F2DE6B65400FCFC91 /* ContrastCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231133E2DE6B64C00FCFC91 /* ContrastCalculator.swift */; };
+		523113412DE7F38D00FCFC91 /* PersonalizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113402DE7F38A00FCFC91 /* PersonalizationService.swift */; };
+		523113432DE7F39F00FCFC91 /* PersonalizedSeasonData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113422DE7F39500FCFC91 /* PersonalizedSeasonData.swift */; };
+		523113452DE7F3B000FCFC91 /* AnalysisResult+Personalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113442DE7F3AE00FCFC91 /* AnalysisResult+Personalization.swift */; };
+		523113472DE7F3C300FCFC91 /* PersonalizedSeasonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113462DE7F3C100FCFC91 /* PersonalizedSeasonView.swift */; };
+		523113492DE7F3D500FCFC91 /* PersonalizedSeasonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113482DE7F3D300FCFC91 /* PersonalizedSeasonViewModel.swift */; };
+		5231134B2DE7F3E000FCFC91 /* APIKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231134A2DE7F3DE00FCFC91 /* APIKeyManager.swift */; };
+		5231134E2DE7FED100FCFC91 /* CoreData+PersonalizationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231134C2DE7FED100FCFC91 /* CoreData+PersonalizationData.swift */; };
+		523113542DE7FF3000FCFC91 /* ColorExtractor+Constrants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113512DE7FF3000FCFC91 /* ColorExtractor+Constrants.swift */; };
+		523113552DE7FF3000FCFC91 /* SeasonViewNavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113532DE7FF3000FCFC91 /* SeasonViewNavigationManager.swift */; };
+		523113562DE7FF3000FCFC91 /* APIKeyFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231134F2DE7FF3000FCFC91 /* APIKeyFileManager.swift */; };
+		523113572DE7FF3000FCFC91 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113502DE7FF3000FCFC91 /* AppConfiguration.swift */; };
+		523113582DE7FF3000FCFC91 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113522DE7FF3000FCFC91 /* NotificationManager.swift */; };
+		5231135C2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113592DE7FF5D00FCFC91 /* RefactoredCameraViewController+Navigation.swift */; };
+		5231135D2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231135A2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Notifications.swift */; };
+		523113602DEA7EBC00FCFC91 /* ApiKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5231135F2DEA7EBC00FCFC91 /* ApiKeys.plist */; };
+		523113622DECCC3600FCFC91 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113612DECCC3600FCFC91 /* Color+Extensions.swift */; };
+		523113652DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */; };
+		523113662DECCC6A00FCFC91 /* ColorDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */; };
+		523113692DED03C800FCFC91 /* SeasonDNARingChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */; };
+		5231136A2DED03C800FCFC91 /* EnhancedColorGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */; };
+		52774D712E14BFFB00309149 /* MockPersonalizedSeasonGuide.md in Resources */ = {isa = PBXBuildFile; fileRef = 52774D702E14BFFA00309149 /* MockPersonalizedSeasonGuide.md */; };
+		52774D742E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */; };
+		52774D752E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
@@ -195,6 +219,31 @@
 		523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = accurate_color_extraction.swift; sourceTree = "<group>"; };
 		523113342DDFD63100FCFC91 /* UIImageOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageOrientation.swift; sourceTree = "<group>"; };
 		523113362DDFD8D000FCFC91 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		5231133A2DE0283C00FCFC91 /* ColorExtractor+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorExtractor+Utils.swift"; sourceTree = "<group>"; };
+		5231133E2DE6B64C00FCFC91 /* ContrastCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContrastCalculator.swift; sourceTree = "<group>"; };
+		523113402DE7F38A00FCFC91 /* PersonalizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizationService.swift; sourceTree = "<group>"; };
+		523113422DE7F39500FCFC91 /* PersonalizedSeasonData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedSeasonData.swift; sourceTree = "<group>"; };
+		523113442DE7F3AE00FCFC91 /* AnalysisResult+Personalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalysisResult+Personalization.swift"; sourceTree = "<group>"; };
+		523113462DE7F3C100FCFC91 /* PersonalizedSeasonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedSeasonView.swift; sourceTree = "<group>"; };
+		523113482DE7F3D300FCFC91 /* PersonalizedSeasonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedSeasonViewModel.swift; sourceTree = "<group>"; };
+		5231134A2DE7F3DE00FCFC91 /* APIKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyManager.swift; sourceTree = "<group>"; };
+		5231134C2DE7FED100FCFC91 /* CoreData+PersonalizationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreData+PersonalizationData.swift"; sourceTree = "<group>"; };
+		5231134F2DE7FF3000FCFC91 /* APIKeyFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyFileManager.swift; sourceTree = "<group>"; };
+		523113502DE7FF3000FCFC91 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
+		523113512DE7FF3000FCFC91 /* ColorExtractor+Constrants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorExtractor+Constrants.swift"; sourceTree = "<group>"; };
+		523113522DE7FF3000FCFC91 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		523113532DE7FF3000FCFC91 /* SeasonViewNavigationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonViewNavigationManager.swift; sourceTree = "<group>"; };
+		523113592DE7FF5D00FCFC91 /* RefactoredCameraViewController+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RefactoredCameraViewController+Navigation.swift"; sourceTree = "<group>"; };
+		5231135A2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RefactoredCameraViewController+Notifications.swift"; sourceTree = "<group>"; };
+		5231135F2DEA7EBC00FCFC91 /* ApiKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ApiKeys.plist; sourceTree = "<group>"; };
+		523113612DECCC3600FCFC91 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorDatabaseManager.swift; sourceTree = "<group>"; };
+		523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonalizationService+DNAHelpers.swift"; sourceTree = "<group>"; };
+		523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedColorGrid.swift; sourceTree = "<group>"; };
+		523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDNARingChart.swift; sourceTree = "<group>"; };
+		52774D702E14BFFA00309149 /* MockPersonalizedSeasonGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MockPersonalizedSeasonGuide.md; sourceTree = "<group>"; };
+		52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPersonalizedSeasonHelper.swift; sourceTree = "<group>"; };
+		52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersonalizedSeasonDataFactory.swift; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -282,6 +331,8 @@
 		5222FDD22DD40F4200EF3C65 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				523113442DE7F3AE00FCFC91 /* AnalysisResult+Personalization.swift */,
+				523113422DE7F39500FCFC91 /* PersonalizedSeasonData.swift */,
 				523112EA2DD6F76B00FCFC91 /* ColorData.swift */,
 				523112B02DD6D39100FCFC91 /* Season.swift */,
 				523112B12DD6D39100FCFC91 /* SeasonTheme.swift */,
@@ -295,6 +346,17 @@
 		5222FDE92DD40FBE00EF3C65 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */,
+				52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */,
+				5231134F2DE7FF3000FCFC91 /* APIKeyFileManager.swift */,
+				523113502DE7FF3000FCFC91 /* AppConfiguration.swift */,
+				523113512DE7FF3000FCFC91 /* ColorExtractor+Constrants.swift */,
+				523113522DE7FF3000FCFC91 /* NotificationManager.swift */,
+				523113532DE7FF3000FCFC91 /* SeasonViewNavigationManager.swift */,
+				5231134A2DE7F3DE00FCFC91 /* APIKeyManager.swift */,
+				5231133E2DE6B64C00FCFC91 /* ContrastCalculator.swift */,
+				5231133A2DE0283C00FCFC91 /* ColorExtractor+Utils.swift */,
+				5222FDE72DD40FBE00EF3C65 /* ColorConverters.swift */,
 				523113342DDFD63100FCFC91 /* UIImageOrientation.swift */,
 				523112A12DD5043900FCFC91 /* LoggingService.swift */,
 				5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */,
@@ -302,7 +364,6 @@
 				5222FE262DD46C3C00EF3C65 /* PixelBufferPoolManager.swift */,
 				5222FE242DD46C1200EF3C65 /* BufferPoolManager.swift */,
 				5222FE222DD46BE000EF3C65 /* TexturePoolManager.swift */,
-				5222FDE72DD40FBE00EF3C65 /* ColorConverters.swift */,
 				5222FDE82DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift */,
 			);
 			path = Utils;
@@ -333,6 +394,7 @@
 		523112942DD4790300FCFC91 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				523113482DE7F3D300FCFC91 /* PersonalizedSeasonViewModel.swift */,
 				523112EC2DD6F7C000FCFC91 /* SeasonViewModel.swift */,
 				523112AB2DD6D36A00FCFC91 /* ColorViewModel.swift */,
 				523112922DD4790300FCFC91 /* AnalysisViewModel.swift */,
@@ -341,9 +403,28 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
+		5231134D2DE7FED100FCFC91 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				523113612DECCC3600FCFC91 /* Color+Extensions.swift */,
+				5231134C2DE7FED100FCFC91 /* CoreData+PersonalizationData.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5231135B2DE7FF5D00FCFC91 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				523113592DE7FF5D00FCFC91 /* RefactoredCameraViewController+Navigation.swift */,
+				5231135A2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Notifications.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		52BEF1812DD310ED00957595 /* Knowledge */ = {
 			isa = PBXGroup;
 			children = (
+				52774D702E14BFFA00309149 /* MockPersonalizedSeasonGuide.md */,
 				523112A32DD524D500FCFC91 /* projectDirectory.md */,
 				5222FDC02DD3F8AD00EF3C65 /* backend.md */,
 				5222FDC12DD3F8AD00EF3C65 /* flow.md */,
@@ -362,6 +443,7 @@
 		BF6EBB422B1EB5BE00CD13FB = {
 			isa = PBXGroup;
 			children = (
+				5231135F2DEA7EBC00FCFC91 /* ApiKeys.plist */,
 				BF6EBB4D2B1EB5BE00CD13FB /* ImageSegmenter */,
 				5222FE152DD41C5100EF3C65 /* ImageSegmenterTests */,
 				BF6EBB4C2B1EB5BE00CD13FB /* Products */,
@@ -389,6 +471,7 @@
 				5222FDB22DD3D67500EF3C65 /* Resources */,
 				BF6EBB872B1EB75B00CD13FB /* Configurations */,
 				BF6EBB812B1EB75B00CD13FB /* Services */,
+				5231134D2DE7FED100FCFC91 /* Extensions */,
 				5222FDE92DD40FBE00EF3C65 /* Utils */,
 				BF6EBB852B1EB75B00CD13FB /* Units */,
 				BF6EBB8A2B1EB75B00CD13FB /* ViewContoller */,
@@ -409,6 +492,9 @@
 		BF6EBB7E2B1EB75B00CD13FB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */,
+				523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */,
+				523113462DE7F3C100FCFC91 /* PersonalizedSeasonView.swift */,
 				523112A92DD6D1D500FCFC91 /* DefaultSeasonView.swift */,
 				523112A72DD5CAA400FCFC91 /* LandingPageView.swift */,
 				5222FDEE2DD40FEF00EF3C65 /* AnalysisResultView.swift */,
@@ -423,6 +509,9 @@
 		BF6EBB812B1EB75B00CD13FB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */,
+				523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */,
+				523113402DE7F38A00FCFC91 /* PersonalizationService.swift */,
 				523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */,
 				523113302DDEA6C900FCFC91 /* ColorExtractor.swift */,
 				5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */,
@@ -469,6 +558,7 @@
 				523112972DD4799F00FCFC91 /* RefactoredCameraViewController.swift */,
 				5222FDEC2DD40FDA00EF3C65 /* AnalysisResultViewModel.swift */,
 				BF6EBB8C2B1EB75B00CD13FB /* RootViewController.swift */,
+				5231135B2DE7FF5D00FCFC91 /* Extensions */,
 			);
 			path = ViewContoller;
 			sourceTree = "<group>";
@@ -600,6 +690,7 @@
 				5222FDB72DD3D67500EF3C65 /* Bright Spring.json in Resources */,
 				5222FDB82DD3D67500EF3C65 /* True Summer.json in Resources */,
 				5222FDB92DD3D67500EF3C65 /* True Autumn.json in Resources */,
+				52774D712E14BFFB00309149 /* MockPersonalizedSeasonGuide.md in Resources */,
 				5222FDBA2DD3D67500EF3C65 /* Soft Summer.json in Resources */,
 				5222FDBB2DD3D67500EF3C65 /* True Spring.json in Resources */,
 				5222FDBC2DD3D67500EF3C65 /* Light Spring.json in Resources */,
@@ -613,6 +704,7 @@
 				5222FDCD2DD3F8AD00EF3C65 /* flow.md in Resources */,
 				5222FDBD2DD3D67500EF3C65 /* colors.json in Resources */,
 				5222FDD72DD40F5D00EF3C65 /* thresholds.json in Resources */,
+				523113602DEA7EBC00FCFC91 /* ApiKeys.plist in Resources */,
 				5222FDBF2DD3D67500EF3C65 /* Dark Autumn.json in Resources */,
 				5231132F2DD728CF00FCFC91 /* Light Summer.json in Resources */,
 				BF6EBB562B1EB5BE00CD13FB /* Main.storyboard in Resources */,
@@ -648,6 +740,8 @@
 				"",
 				"",
 				"",
+				"",
+				"",
 			);
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -656,28 +750,39 @@
 		BF6EBB472B1EB5BE00CD13FB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
-				523112EB2DD6F76B00FCFC91 /* ColorData.swift in Sources */,
 				523112AE2DD6D36A00FCFC91 /* ColorViewModel.swift in Sources */,
+				523113432DE7F39F00FCFC91 /* PersonalizedSeasonData.swift in Sources */,
+				523113412DE7F38D00FCFC91 /* PersonalizationService.swift in Sources */,
+				523113652DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift in Sources */,
+				523113662DECCC6A00FCFC91 /* ColorDatabaseManager.swift in Sources */,
 				BF6EBB982B1EB75B00CD13FB /* RootViewController.swift in Sources */,
 				5222FDDD2DD40F8400EF3C65 /* SeasonClassifier.swift in Sources */,
 				5222FDDE2DD40F8400EF3C65 /* FrameQualityService.swift in Sources */,
 				5222FE212DD46A7900EF3C65 /* SegmentationService.swift in Sources */,
 				523113352DDFD64300FCFC91 /* UIImageOrientation.swift in Sources */,
 				5222FDED2DD40FDA00EF3C65 /* AnalysisResultViewModel.swift in Sources */,
+				52774D742E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift in Sources */,
+				52774D752E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift in Sources */,
 				5222FDDF2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift in Sources */,
 				523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */,
 				523112982DD4799F00FCFC91 /* RefactoredCameraViewController.swift in Sources */,
 				5222FDE12DD40F8400EF3C65 /* CoreDataManager.swift in Sources */,
 				523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */,
+				5231134E2DE7FED100FCFC91 /* CoreData+PersonalizationData.swift in Sources */,
+				523113492DE7F3D500FCFC91 /* PersonalizedSeasonViewModel.swift in Sources */,
 				BF6EBBA62B2070F000CD13FB /* RenderToMtlViewShaders.metal in Sources */,
+				5231134B2DE7F3E000FCFC91 /* APIKeyManager.swift in Sources */,
+				5231133F2DE6B65400FCFC91 /* ContrastCalculator.swift in Sources */,
 				523112952DD4790300FCFC91 /* AnalysisViewModel.swift in Sources */,
 				523112962DD4790300FCFC91 /* CameraViewModel.swift in Sources */,
 				523112ED2DD6F7C000FCFC91 /* SeasonViewModel.swift in Sources */,
 				5231129B2DD48A8900FCFC91 /* RendererProtocol.swift in Sources */,
 				5222FE232DD46BED00EF3C65 /* TexturePoolManager.swift in Sources */,
+				523113622DECCC3600FCFC91 /* Color+Extensions.swift in Sources */,
 				5222FE252DD46C1E00EF3C65 /* BufferPoolManager.swift in Sources */,
 				523112A82DD5CAA400FCFC91 /* LandingPageView.swift in Sources */,
 				52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */,
+				5231133B2DE0284D00FCFC91 /* ColorExtractor+Utils.swift in Sources */,
 				5222FDEA2DD40FBE00EF3C65 /* ColorConverters.swift in Sources */,
 				5222FDEB2DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift in Sources */,
 				BF6EBB912B1EB75B00CD13FB /* ImageSegmenterService.swift in Sources */,
@@ -688,11 +793,14 @@
 				523112AA2DD6D1DD00FCFC91 /* DefaultSeasonView.swift in Sources */,
 				BF6EBB952B1EB75B00CD13FB /* InferenceConfigurationManager.swift in Sources */,
 				BF6EBB962B1EB75B00CD13FB /* DefaultConstants.swift in Sources */,
+				523113472DE7F3C300FCFC91 /* PersonalizedSeasonView.swift in Sources */,
 				5222FE1F2DD4690200EF3C65 /* CameraService.swift in Sources */,
 				523113312DDEA6E800FCFC91 /* ColorExtractor.swift in Sources */,
 				BF6EBB9C2B200D9400CD13FB /* PreviewMetalView.swift in Sources */,
 				5222FD9E2DD3AF6100EF3C65 /* FaceLandmarkerService.swift in Sources */,
 				5222FD9F2DD3AF6100EF3C65 /* FaceLandmarkRenderer.swift in Sources */,
+				5231135C2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Navigation.swift in Sources */,
+				5231135D2DE7FF5D00FCFC91 /* RefactoredCameraViewController+Notifications.swift in Sources */,
 				5222FDD42DD40F4200EF3C65 /* SeasonAnalysis.xcdatamodeld in Sources */,
 				5222FE2A2DD4729F00EF3C65 /* ToastService.swift in Sources */,
 				5222FE2B2DD4729F00EF3C65 /* ClassificationService.swift in Sources */,
@@ -700,13 +808,21 @@
 				523112B42DD6D39100FCFC91 /* SeasonTheme.swift in Sources */,
 				5222FDD52DD40F4200EF3C65 /* AnalysisResult.swift in Sources */,
 				BF6EBB512B1EB5BE00CD13FB /* SceneDelegate.swift in Sources */,
+				523113542DE7FF3000FCFC91 /* ColorExtractor+Constrants.swift in Sources */,
+				523113552DE7FF3000FCFC91 /* SeasonViewNavigationManager.swift in Sources */,
+				523113562DE7FF3000FCFC91 /* APIKeyFileManager.swift in Sources */,
+				523113572DE7FF3000FCFC91 /* AppConfiguration.swift in Sources */,
+				523113582DE7FF3000FCFC91 /* NotificationManager.swift in Sources */,
 				BF6EBB932B1EB75B00CD13FB /* MergeColorShaders.metal in Sources */,
+				523113692DED03C800FCFC91 /* SeasonDNARingChart.swift in Sources */,
+				5231136A2DED03C800FCFC91 /* EnhancedColorGrid.swift in Sources */,
 				5231129E2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift in Sources */,
 				5222FDF22DD40FEF00EF3C65 /* FrameQualityIndicatorView.swift in Sources */,
 				5222FDF32DD40FEF00EF3C65 /* DebugOverlayView.swift in Sources */,
 				5222FE272DD46C4C00EF3C65 /* PixelBufferPoolManager.swift in Sources */,
 				5222FDF42DD40FEF00EF3C65 /* AnalysisResultView.swift in Sources */,
 				5222FDF52DD40FEF00EF3C65 /* SavedResultsView.swift in Sources */,
+				523113452DE7F3B000FCFC91 /* AnalysisResult+Personalization.swift in Sources */,
 				523113372DDFD8D000FCFC91 /* Shaders.metal in Sources */,
 				5222FDA12DD3B52400EF3C65 /* FaceLandmarkShaders.metal in Sources */,
 			);

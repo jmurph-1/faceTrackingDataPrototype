@@ -1,8 +1,8 @@
-# colorAnalysisApp Technical Documentation PRD
+# season13 Technical Documentation PRD
 
 ## 1. Document Header
 
-*   **Document Title:** colorAnalysisApp Technical Documentation PRD
+*   **Document Title:** season13 Technical Documentation PRD
 *   **Version:** 1.0
 *   **Date:** May 13, 2025
 *   **Author:** [John]
@@ -10,17 +10,17 @@
 
 ## 2. Executive Summary
 
-colorAnalysisApp is an iOS mobile application designed to be the definitive hub for users seeking guidance on personal styling and fashion choices based on seasonal color theory. The app empowers users by providing detailed information on the 12 standard seasonal color palettes and, uniquely, performing an advanced, technology-driven personal color analysis using real-time video input. Leveraging the MediaPipe framework for facial feature detection and image segmentation, the app analyzes a user's unique characteristics (skin tone, hair color, eye color, etc.) to accurately assign them to one of the 12 color seasons. The result is a personalized season page, building upon the comprehensive default season information, tailored to the user's specific profile. This application aims to make seasonal color analysis accessible, accurate, and actionable, transforming how users understand and utilize color in their daily lives and style decisions.
+season13 is an iOS mobile application designed to be the definitive hub for users seeking guidance on personal styling and fashion choices based on seasonal color theory. The app empowers users by performing an accurate seasonal analysis through a video feed and assigning one of the 12 seasonal color pallets, but personalized to their specific characteristics, to create the 13th season. Along with a the tailored recommendations and details, they will have access to an personalized AI styalist who can answer questions on outfit choices or recommend other fashion related questions. This application aims to make seasonal color analysis accessible, accurate, and actionable, transforming how users understand and utilize color in their daily lives and style decisions, making it a hub for information, brainstorming, and being their shopping partner. 
 
 ## 3. Product Vision
 
-The vision for colorAnalysisApp is to become the leading digital platform for personalized color analysis and seasonal color theory education. We aim to empower users by providing them with the tools and knowledge to understand their optimal color palette, boosting their confidence and simplifying fashion and beauty choices.
+The vision for season13 is to become the leading digital platform for personalized color analysis and seasonal color theory education. We aim to empower users by providing them with the tools and knowledge to understand their optimal color palette, boosting their confidence and simplifying fashion and beauty choices.
 
 *   **Purpose:** To offer an accurate, accessible, and engaging method for users to discover their seasonal color palette and utilize that knowledge for personal styling.
 *   **Target Users:** Individuals interested in fashion, beauty, self-improvement, and personal styling who want personalized guidance based on established color theory principles. This includes users new to seasonal color analysis as well as those seeking a definitive digital tool for confirmation and detailed recommendations.
 *   **Business Goals:**
     *   Achieve significant user adoption and retention through high-quality analysis results and valuable content.
-    *   Establish colorAnalysisApp as the most trusted and technologically advanced mobile solution for seasonal color analysis.
+    *   Establish season13 as the most trusted and technologically advanced mobile solution for seasonal color analysis.
     *   (Future) Explore potential monetization strategies such as premium content, personalized product recommendations, or advanced analysis features.
 *   **Impact:** To help users make informed decisions about their clothing, makeup, and accessories, leading to increased self-confidence and a stronger sense of personal style rooted in the power of color. To provide a rich, exploratory experience that teaches users about the profound impact color has on perception.
 

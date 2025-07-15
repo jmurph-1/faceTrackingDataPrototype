@@ -137,8 +137,9 @@
         "contrast": {
           "description": "Since your natural colouring is highly contrasted, opt for patterns with higher contrast between the elements rather than ones which blend too much.\n\nIn the example below, both patterns contain only Bright Spring colours and are wearable. However, the second pattern displays a higher contrast between the elements and is consequently more flattering.",
           "combinations": {
-            "good": ["low-contrast", "medium-contrast"],
-            "great": ["high-contrast"]
+            "bad": "low-contract",
+            "good": "medium-contrast",
+            "great": "high-contrast"
           },
           "image": "https://cdn.prod.website-files.com/5eca30fd2b50b671e2107b06/60b898410bcd7e4964e0d034_Bright%20Spring%20Patterns%20%26%20Prints%20Contrast.webp"
         },

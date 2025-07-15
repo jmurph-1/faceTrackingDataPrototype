@@ -9,12 +9,12 @@ struct SeasonTheme {
     let secondaryBackgroundColor: Color
     let textColor: Color
     let moduleColor: Color
-    
+
     static func getTheme(for season: String, variation: Int = 0) -> SeasonTheme {
         let themes = allThemes[season] ?? softSummerThemes // Fallback to Soft Summer if season not found
         return themes[min(variation, themes.count - 1)]
     }
-    
+
     // All themes organized by season
     static let allThemes: [String: [SeasonTheme]] = [
         "Soft Summer": softSummerThemes,
@@ -30,7 +30,7 @@ struct SeasonTheme {
         "True Winter": trueWinterThemes,
         "Dark Winter": darkWinterThemes
     ]
-    
+
     // Soft Summer Themes - Muted, Cool
     static let softSummerThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -64,7 +64,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#7c797c") // Concord - Medium Grey
         )
     ]
-    
+
     // True Summer Themes - Cool, Muted to Clear
     static let trueSummerThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -98,7 +98,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#00a1b1") // Bondi Blue - Brighter Teal
         )
     ]
-    
+
     // Light Summer Themes - Light, Cool, Delicate
     static let lightSummerThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -132,7 +132,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#f3c3cf") // Pink (repeated for module)
         )
     ]
-    
+
     // Soft Autumn Themes - Muted, Warm
     static let softAutumnThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -166,7 +166,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#578e90") // Smalt Blue - Muted Blue Green
         )
     ]
-    
+
     // True Autumn Themes - Warm, Muted to Rich
     static let trueAutumnThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -200,7 +200,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#4b531e") // Saratoga - Deep Olive
         )
     ]
-    
+
     // Dark Autumn Themes - Deep, Warm, Rich
     static let darkAutumnThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -234,7 +234,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#5a214e") // Bossanova - Deep Plum (as a dark accent)
         )
     ]
-    
+
     // Light Spring Themes - Light, Warm, Bright
     static let lightSpringThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -268,7 +268,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#ea6677") // Brink Pink - Coral Pink
         )
     ]
-    
+
     // True Spring Themes - Warm, Clear, Bright
     static let trueSpringThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -302,7 +302,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#01a93c") // Forest Green - Bright Green
         )
     ]
-    
+
     // Bright Spring Themes - Bright, Warm-Neutral, Clear
     static let brightSpringThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -336,7 +336,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#f94d01") // Vermilion - Bright Orange Red
         )
     ]
-    
+
     // Bright Winter Themes - Bright, Cool-Neutral, Clear
     static let brightWinterThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -370,7 +370,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#dd143f") // Crimson - Bright Crimson Red
         )
     ]
-    
+
     // True Winter Themes - Cool, Clear, Deep/Bright
     static let trueWinterThemes: [SeasonTheme] = [
         SeasonTheme(
@@ -404,7 +404,7 @@ struct SeasonTheme {
             moduleColor: Color(hex: "#9e1d32") // Merlot - Deep Clear Red
         )
     ]
-    
+
     // Dark Winter Themes - Deep, Cool, Rich/Clear
     static let darkWinterThemes: [SeasonTheme] = [
         SeasonTheme(
