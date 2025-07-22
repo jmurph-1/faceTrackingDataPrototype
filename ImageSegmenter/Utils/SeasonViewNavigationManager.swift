@@ -10,9 +10,9 @@ import SwiftUI
 
 /// Manages navigation between different season views based on personalization availability
 class SeasonViewNavigationManager {
-    
+
     // MARK: - Static Methods
-    
+
     /// Present the appropriate season view based on available data
     /// - Parameters:
     ///   - from: The presenting view controller
@@ -40,7 +40,7 @@ class SeasonViewNavigationManager {
             )
         }
     }
-    
+
     /// Present the personalized season view
     /// - Parameters:
     ///   - from: The presenting view controller
@@ -53,7 +53,7 @@ class SeasonViewNavigationManager {
     ) {
         // Get season colors for theming
         let seasonColors = getSeasonColors(for: personalizedData.baseSeason)
-        
+
         // Create personalized view
         let personalizedView = PersonalizedSeasonView(
             personalizedData: personalizedData,
@@ -66,15 +66,15 @@ class SeasonViewNavigationManager {
             textColor: seasonColors.text,
             moduleColor: seasonColors.module
         )
-        
+
         // Wrap in hosting controller
         let hostingController = UIHostingController(rootView: personalizedView)
         hostingController.modalPresentationStyle = .fullScreen
-        
+
         // Present
         presentingViewController.present(hostingController, animated: animated)
     }
-    
+
     /// Present the default season view
     /// - Parameters:
     ///   - from: The presenting view controller
@@ -87,7 +87,7 @@ class SeasonViewNavigationManager {
     ) {
         // Get season colors for theming
         let seasonColors = getSeasonColors(for: analysisResult.season.rawValue)
-        
+
         // Create default view
         let defaultView = DefaultSeasonView(
             seasonName: analysisResult.detailedSeasonName,
@@ -100,24 +100,24 @@ class SeasonViewNavigationManager {
             textColor: seasonColors.text,
             moduleColor: seasonColors.module
         )
-        
+
         // Wrap in hosting controller
         let hostingController = UIHostingController(rootView: defaultView)
         hostingController.modalPresentationStyle = .fullScreen
-        
+
         // Present
         presentingViewController.present(hostingController, animated: animated)
     }
-    
+
     // MARK: - Private Helpers
-    
+
     private static func getSeasonColors(for seasonName: String) -> SeasonColors {
         // This should match the existing color scheme logic from your app
         // For now, using a basic color scheme - you can enhance this based on your existing season color logic
-        
+
         // Map detailed season names to basic season names for color selection
         let basicSeasonName = mapToBasicSeason(seasonName)
-        
+
         switch basicSeasonName.lowercased() {
         case "spring":
             return SeasonColors(
@@ -177,11 +177,11 @@ class SeasonViewNavigationManager {
             )
         }
     }
-    
+
     /// Maps detailed season names to basic season names for color theming
     private static func mapToBasicSeason(_ seasonName: String) -> String {
         let lowercased = seasonName.lowercased()
-        
+
         if lowercased.contains("spring") {
             return "spring"
         } else if lowercased.contains("summer") {
@@ -191,7 +191,7 @@ class SeasonViewNavigationManager {
         } else if lowercased.contains("winter") {
             return "winter"
         }
-        
+
         // Fallback to the original name if no mapping found
         return seasonName
     }
@@ -208,4 +208,4 @@ struct SeasonColors {
     let secondaryBackground: Color
     let text: Color
     let module: Color
-} 
+}

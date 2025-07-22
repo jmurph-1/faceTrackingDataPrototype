@@ -79,13 +79,13 @@ class SeasonClassifierTests: XCTestCase {
         // Test a specific case that should result in a known detailed season
         let lightSpringColor = ColorConverters.LabColor(L: 75.0, a: 5.0, b: 20.0) // Light, moderate chroma, warm hue
         let result = classifier.classify(skinColor: lightSpringColor)
-        
+
         // Should be classified as some Spring variant
         XCTAssertEqual(result.macroSeason, .spring, "Should be Spring macro season")
-        
+
         // The detailed season should not be unknown
         XCTAssertNotEqual(result.detailedSeason, .unknown, "Should not classify as unknown detailed season")
-        
+
         // Should have a reasonable confidence
         XCTAssertGreaterThan(result.confidence, 0.0, "Should have confidence greater than 0")
         XCTAssertLessThanOrEqual(result.confidence, 1.0, "Confidence should not exceed 1.0")

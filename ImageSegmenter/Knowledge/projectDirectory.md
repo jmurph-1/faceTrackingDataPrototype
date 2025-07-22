@@ -241,7 +241,32 @@ The application is built using Xcode 16.3 and CocoaPods for dependency managemen
 
 ## Recent Updates
 
-### PersonalizedSeasonView DNA Enhancement Implementation (Latest)
+### Metals Feature Implementation (Latest)
+- **New Metal Components**:
+  - `MetalRecommendation.swift`: Core data structure with priority, finishes, and season sources
+  - `MetallicColorDisplay.swift`: SwiftUI view for realistic metal rendering with gradients and textures
+  - `PersonalizedMetalsGrid.swift`: Grid layout organizing metals by priority with expandable details
+  - `MockMetalRecommendations.swift`: Season-specific mock data for testing
+- **Visual Enhancements**:
+  - Realistic metallic gradients with shimmer effects
+  - Support for brushed, antique, and polished finishes
+  - Dynamic texture overlays based on finish type
+  - Smooth animations and transitions
+- **Integration**:
+  - Added metals section to PersonalizedSeasonView
+  - Enhanced PersonalizedSeasonData with metals support
+  - Updated PersonalizedSeasonViewModel for metal processing
+  - Added comprehensive debug logging in DebugPersonalizedSeasonHelper
+- **Season-Specific Data**:
+  - Curated metal recommendations for each season
+  - Priority-based organization (Best/Good)
+  - Multiple finish options with season-appropriate defaults
+- **Error Handling**:
+  - Graceful fallbacks for unhandled seasons
+  - Comprehensive error logging
+  - Debug menu for testing different scenarios
+
+### PersonalizedSeasonView DNA Enhancement Implementation (Previous)
 - **Comprehensive PersonalizationService Extensions**: Split PersonalizationService into modular components:
   - **PersonalizationService+DNAHelpers.swift**: DNA-specific helper methods, season detection utilities, and fallback color generation
   - **PersonalizationService+Parsing.swift**: Enhanced parsing methods for DNA personalization responses and complex data structures
@@ -299,3 +324,103 @@ The application architecture includes potential for a backend component using Py
 - Analytics and usage insights for DNA analysis accuracy
 - Centralized API key management and rate limiting
 - Enhanced color database management and updates
+
+# Project Directory Structure
+
+## Models/
+- `MetalRecommendation.swift` - Core data structure for metal recommendations
+  - Defines `MetalRecommendation` struct with `priority`, `finishes`, and `seasonSources`
+  - Contains nested types `MetalPriority`, `FinishOption`, and `TemperatureCategory`
+  - Includes computed properties for display, gradients, and temperature categorization
+  - Implements `Codable`, `Identifiable`, and `Equatable` protocols
+  - Provides utility methods for metal display and categorization
+
+## Views/
+- `MetallicColorDisplay.swift` - SwiftUI view for rendering metallic finishes
+  - Renders metallic circles with gradients and textures
+  - Supports different finishes (brushed, antique, etc.)
+  - Includes shimmer and highlight effects
+  - Contains nested views `BrushedMetalTexture` and `AntiqueMetalTexture`
+
+- `PersonalizedMetalsGrid.swift` - Grid layout for metal recommendations
+  - Organizes metals by priority ("Best Choices" and "Good Options")
+  - Handles metal selection and detail card display
+  - Contains nested components:
+    - `MetalCard` - Individual metal display card
+    - `MetalsGridWithDetailCard` - Grid section with expandable details
+    - `MetalDetailCard` - Expanded view showing metal details and finishes
+
+- `PersonalizedSeasonView.swift` (Updated)
+  - Added metals section to `enhancedColorPalette`
+  - Integrates `PersonalizedMetalsGrid` component
+  - Handles metal recommendations display logic
+
+## Utils/
+- `MockMetalRecommendations.swift` - Mock data for metal recommendations
+  - Provides season-specific metal recommendations
+  - Contains mock data for:
+    - Bright Spring metals
+    - Soft Autumn metals
+    - Dark Winter metals
+    - True Autumn metals
+    - Default fallback metals
+
+- `MockPersonalizedSeasonDataFactory.swift` (Updated)
+  - Added metal recommendations to mock data creation
+  - Integrates with `MockMetalRecommendations`
+  - Supports metals in debug data generation
+
+- `DebugPersonalizedSeasonHelper.swift` (Updated)
+  - Added metal recommendations logging
+  - Enhanced debug view presentation with metals support
+
+## Models/
+- `PersonalizedSeasonData.swift` (Updated)
+  - Added `metals` property for metal recommendations
+  - Added `hasMetalRecommendations` computed property
+  - Updated `Codable` implementation for metals support
+
+## ViewModels/
+- `PersonalizedSeasonViewModel.swift` (Updated)
+  - Added `personalizedMetals` computed property
+  - Added `hasMetalRecommendations` property
+  - Handles metal data processing and organization
+  - Manages metal priority sorting and filtering
+
+## Key Features:
+1. **Metal Display**
+   - Realistic metallic gradients and textures
+   - Support for multiple finishes (brushed, antique, polished)
+   - Visual effects (shimmer, highlights)
+
+2. **Organization**
+   - Metals grouped by priority
+   - Best and good options clearly separated
+   - Consistent layout with other personalized features
+
+3. **Interaction**
+   - Expandable detail cards
+   - Smooth animations and transitions
+   - Haptic feedback on selection
+
+4. **Season-Specific Data**
+   - Curated metal recommendations per season
+   - Appropriate finishes for each season
+   - Priority-based organization
+
+5. **Debug Support**
+   - Comprehensive mock data
+   - Debug logging for metals
+   - Easy testing through debug menu
+
+## File Dependencies:
+- `MetalRecommendation.swift` ← Used by `PersonalizedSeasonData`, `MetallicColorDisplay`, `PersonalizedMetalsGrid`
+- `MetallicColorDisplay.swift` ← Used by `MetalCard`
+- `PersonalizedMetalsGrid.swift` ← Used by `PersonalizedSeasonView`
+- `MockMetalRecommendations.swift` ← Used by `MockPersonalizedSeasonDataFactory`
+
+## Data Flow:
+1. `MockPersonalizedSeasonDataFactory` creates mock data with metals
+2. `PersonalizedSeasonViewModel` processes and organizes metals
+3. `PersonalizedSeasonView` displays metals through `PersonalizedMetalsGrid`
+4. `MetallicColorDisplay` renders individual metal appearances

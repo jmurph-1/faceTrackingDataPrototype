@@ -343,12 +343,12 @@ class CameraViewModel: NSObject {
         currentMode = .analysis
         shouldProcessFrames = true
     }
-    
+
     func stopFrameProcessing() {
         LoggingService.info("CVM: Stopping frame processing")
         shouldProcessFrames = false
     }
-    
+
     func resumeFrameProcessing() {
         LoggingService.info("CVM: Resuming frame processing")
         shouldProcessFrames = true
@@ -559,10 +559,10 @@ extension CameraViewModel: SegmentationServiceDelegate {
 extension CameraViewModel: ClassificationServiceDelegate {
   func classificationService(_ service: ClassificationService, didCompleteAnalysis analysisResult: AnalysisResult) {
     LoggingService.info("CVM: Classification complete - stopping frame processing during personalization.")
-    
+
     // Stop frame processing immediately to save resources during personalization
     stopFrameProcessing()
-    
+
     DispatchQueue.main.async { [weak self] in
       guard let strongSelf = self else { return }
       NotificationManager.postAnalysisResult(analysisResult, from: strongSelf)
@@ -576,7 +576,7 @@ extension CameraViewModel: ClassificationServiceDelegate {
         strongSelf.delegate?.viewModel(strongSelf, didEncounterError: error)
     }
   }
-  
+
   func classificationService(_ service: ClassificationService, didCompletePersonalization personalizedData: PersonalizedSeasonData) {
     LoggingService.info("CVM: Personalization complete - frame processing remains stopped until user returns.")
     DispatchQueue.main.async { [weak self] in
@@ -584,7 +584,7 @@ extension CameraViewModel: ClassificationServiceDelegate {
       NotificationManager.postPersonalizationReady(personalizedData, from: strongSelf)
     }
   }
-  
+
   func classificationService(_ service: ClassificationService, didFailPersonalization error: Error, fallbackResult: AnalysisResult) {
     LoggingService.info("CVM: Personalization failed - frame processing remains stopped until user returns. Error: \(error.localizedDescription)")
     DispatchQueue.main.async { [weak self] in

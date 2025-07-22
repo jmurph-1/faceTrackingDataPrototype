@@ -113,21 +113,21 @@ class ClassificationService {
 
         // First notify delegate with basic analysis result
         delegate?.classificationService(self, didCompleteAnalysis: result)
-        
+
         // Then attempt personalization if API is available
         // Use the detailed season name for personalization to get the specific 12-season data
         attemptPersonalization(for: result, detailedSeason: classificationResult.detailedSeason.rawValue)
     }
 
     // MARK: - Private Methods
-    
+
     private func attemptPersonalization(for analysisResult: AnalysisResult, detailedSeason: String) {
         #if DEBUG
         print("🔵 ClassificationService: attemptPersonalization called")
         print("🔵 ClassificationService: analysisResult.season = \(analysisResult.season)")
         print("🔵 ClassificationService: detailedSeason = \(detailedSeason)")
         #endif
-        
+
         // Load season data for personalization using the detailed season name
         guard let seasonData = loadSeasonData(for: detailedSeason) else {
             #if DEBUG
@@ -136,11 +136,11 @@ class ClassificationService {
             // Couldn't load season data - fall back to default
             return
         }
-        
+
         #if DEBUG
         print("🟢 ClassificationService: Season data loaded successfully, calling DNA PersonalizationService")
         #endif
-        
+
         // Use DNA-enhanced personalization for better results
         personalizationService.generateDNAPersonalization(
             for: analysisResult,
@@ -148,7 +148,7 @@ class ClassificationService {
             detailedSeasonName: detailedSeason
         ) { [weak self] result in
             guard let self = self else { return }
-            
+
             switch result {
             case .success(let personalizedData):
                 self.delegate?.classificationService(self, didCompletePersonalization: personalizedData)
@@ -157,33 +157,33 @@ class ClassificationService {
             }
         }
     }
-    
+
     private func loadSeasonData(for seasonName: String) -> Season? {
         #if DEBUG
         print("🔵 ClassificationService: loadSeasonData called with seasonName: '\(seasonName)'")
         #endif
-        
+
         // No need to map since we're already receiving the detailed season name
         let mappedSeasonName = seasonName
-        
+
         #if DEBUG
         print("🔵 ClassificationService: Using season name: '\(mappedSeasonName)'")
         #endif
-        
+
         // Try bundle root first (where they seem to be working)
         if let url = Bundle.main.url(forResource: mappedSeasonName, withExtension: "json") {
             #if DEBUG
             print("🟢 ClassificationService: Found season file in bundle root at \(url)")
             #endif
-            
+
             do {
                 let data = try Data(contentsOf: url)
                 let seasonData = try JSONDecoder().decode([String: Season].self, from: data)
-                
+
                 #if DEBUG
                 print("🟢 ClassificationService: Successfully loaded and parsed season data for \(mappedSeasonName)")
                 #endif
-                
+
                 return seasonData[mappedSeasonName]
             } catch {
                 #if DEBUG
@@ -191,25 +191,25 @@ class ClassificationService {
                 #endif
             }
         }
-        
+
         // Fallback: Try Resources/Seasons subdirectory
         #if DEBUG
         print("🔵 ClassificationService: Trying Resources/Seasons subdirectory")
         #endif
-        
+
         if let url = Bundle.main.url(forResource: mappedSeasonName, withExtension: "json", subdirectory: "Resources/Seasons") {
             #if DEBUG
             print("🟢 ClassificationService: Found season file in Resources/Seasons at \(url)")
             #endif
-            
+
             do {
                 let data = try Data(contentsOf: url)
                 let seasonData = try JSONDecoder().decode([String: Season].self, from: data)
-                
+
                 #if DEBUG
                 print("🟢 ClassificationService: Successfully loaded and parsed season data for \(mappedSeasonName)")
                 #endif
-                
+
                 return seasonData[mappedSeasonName]
             } catch {
                 #if DEBUG
@@ -217,25 +217,25 @@ class ClassificationService {
                 #endif
             }
         }
-        
+
         // Fallback: Try just "Seasons" subdirectory
         #if DEBUG
         print("🔵 ClassificationService: Trying Seasons subdirectory")
         #endif
-        
+
         if let url = Bundle.main.url(forResource: mappedSeasonName, withExtension: "json", subdirectory: "Seasons") {
             #if DEBUG
             print("🟢 ClassificationService: Found season file in Seasons at \(url)")
             #endif
-            
+
             do {
                 let data = try Data(contentsOf: url)
                 let seasonData = try JSONDecoder().decode([String: Season].self, from: data)
-                
+
                 #if DEBUG
                 print("🟢 ClassificationService: Successfully loaded and parsed season data for \(mappedSeasonName)")
                 #endif
-                
+
                 return seasonData[mappedSeasonName]
             } catch {
                 #if DEBUG
@@ -243,45 +243,45 @@ class ClassificationService {
                 #endif
             }
         }
-        
+
         // If all attempts fail
         #if DEBUG
         print("🔴 ClassificationService: Could not find season file in any location")
         print("🟡 ClassificationService: Creating mock season data to allow PersonalizationService to run for debugging")
         #endif
         print("Could not find \(mappedSeasonName).json in app bundle")
-        
+
         // Create a mock Season object so PersonalizationService can still run for debugging
         let mockSeason = createMockSeason(for: mappedSeasonName)
         return mockSeason
     }
-    
+
     /// Create a mock Season object for debugging PersonalizationService when JSON parsing fails
     private func createMockSeason(for seasonName: String) -> Season {
         #if DEBUG
         print("🟡 ClassificationService: createMockSeason called for: '\(seasonName)'")
         #endif
-        
+
         // First, try to load "True Autumn" as a fallback if we're not already trying that
         if seasonName != "True Autumn" {
             if let fallbackSeason = loadTrueAutumnFallback() {
                 return fallbackSeason
             }
         }
-        
+
         #if DEBUG
         print("🔴 ClassificationService: All fallback attempts failed, creating completely mock season")
         #endif
-        
+
         return createCompleteMockSeason(for: seasonName)
     }
-    
+
     /// Try to load True Autumn as a fallback season
     private func loadTrueAutumnFallback() -> Season? {
         #if DEBUG
         print("🟡 ClassificationService: Attempting to load 'True Autumn' as fallback")
         #endif
-        
+
         // Try bundle root first
         if let url = Bundle.main.url(forResource: "True Autumn", withExtension: "json") {
             do {
@@ -299,7 +299,7 @@ class ClassificationService {
                 #endif
             }
         }
-        
+
         // Try subdirectories
         if let url = Bundle.main.url(forResource: "True Autumn", withExtension: "json", subdirectory: "Resources/Seasons") {
             do {
@@ -317,7 +317,7 @@ class ClassificationService {
                 #endif
             }
         }
-        
+
         if let url = Bundle.main.url(forResource: "True Autumn", withExtension: "json", subdirectory: "Seasons") {
             do {
                 let data = try Data(contentsOf: url)
@@ -334,10 +334,10 @@ class ClassificationService {
                 #endif
             }
         }
-        
+
         return nil
     }
-    
+
     /// Create a completely mock season for debugging when no real data is available
     private func createCompleteMockSeason(for seasonName: String) -> Season {
         // Create mock characteristics
@@ -346,49 +346,49 @@ class ClassificationService {
             eyeColors: ["brown", "green"],
             image: nil
         )
-        
+
         let mockSkin = Season.Characteristics.Features.SkinFeatureDescription(
             description: "Mock skin description for debugging",
             skinTones: ["1": ["warm"], "2": ["warm"]],
             image: nil
         )
-        
+
         let mockHair = Season.Characteristics.Features.HairFeatureDescription(
             description: "Mock hair description for debugging",
             hairColors: ["brown": ["medium"]],
             image: nil
         )
-        
+
         let mockContrast = Season.Characteristics.Features.Contrast(
             value: "medium",
             description: "Mock contrast for debugging"
         )
-        
+
         let mockFeatures = Season.Characteristics.Features(
             eyes: mockEyes,
             skin: mockSkin,
             hair: mockHair,
             contrast: mockContrast
         )
-        
+
         let mockCharacteristics = Season.Characteristics(
             note: "Mock note for debugging",
             overview: "Mock overview for debugging PersonalizationService",
             features: mockFeatures
         )
-        
+
         // Create mock palette
         let mockColorAspect = Season.Palette.ColorAspect(
             value: "warm",
             explanation: "Mock explanation for debugging"
         )
-        
+
         let mockSisterPalettes = Season.Palette.SisterPalettes(
             description: "Mock sister palettes for debugging",
             sisters: ["Mock Season 1", "Mock Season 2"],
             image: nil
         )
-        
+
         let mockPalette = Season.Palette(
             description: "Mock palette description for debugging",
             hue: mockColorAspect,
@@ -397,19 +397,19 @@ class ClassificationService {
             sisterPalettes: mockSisterPalettes,
             paletteImgUrl: nil
         )
-        
+
         // Create mock styling
         let mockStyleDescription = Season.Styling.StyleDescription(
             description: "Mock neutrals description",
             image: nil
         )
-        
+
         let mockColorsToAvoid = Season.Styling.ColorsToAvoid(
             description: "Mock colors to avoid",
             colors: ["Mock color 1", "Mock color 2"],
             image: nil
         )
-        
+
         let mockStyling = Season.Styling(
             neutrals: mockStyleDescription,
             colorsToAvoid: mockColorsToAvoid,
@@ -417,7 +417,7 @@ class ClassificationService {
             patternsAndPrints: nil,
             metalsAndAccessories: nil
         )
-        
+
         return Season(
             name: seasonName,
             tagline: "Mock tagline for debugging",
@@ -427,7 +427,7 @@ class ClassificationService {
             styling: mockStyling
         )
     }
-    
+
     /// Create a thumbnail from a pixel buffer
     /// - Parameter pixelBuffer: CVPixelBuffer to convert
     /// - Returns: UIImage thumbnail
@@ -447,7 +447,7 @@ extension ClassificationService: PersonalizationServiceDelegate {
     func personalizationService(_ service: PersonalizationService, didGeneratePersonalization personalizedData: PersonalizedSeasonData) {
         delegate?.classificationService(self, didCompletePersonalization: personalizedData)
     }
-    
+
     func personalizationService(_ service: PersonalizationService, didFailWithError error: Error) {
         // This will be handled in the completion block of generatePersonalization
     }

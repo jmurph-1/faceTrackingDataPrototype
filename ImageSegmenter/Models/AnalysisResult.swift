@@ -267,7 +267,7 @@ class AnalysisResult: NSObject, NSSecureCoding {
             return nil
         }
         self.season = season
-        
+
         // Decode detailed season name
         self.detailedSeasonName = coder.decodeObject(of: NSString.self, forKey: CodingKeys.detailedSeasonName.rawValue) as String? ?? season.rawValue
 
@@ -428,7 +428,7 @@ extension AnalysisResult {
 
         let confidence = managedObject.value(forKey: "confidence") as? Float ?? 0
         let deltaE = managedObject.value(forKey: "deltaE") as? Float ?? 0
-        
+
         // Get detailed season name from Core Data, fall back to basic season name
         let detailedSeasonName = managedObject.value(forKey: "detailedSeasonName") as? String ?? season.rawValue
 

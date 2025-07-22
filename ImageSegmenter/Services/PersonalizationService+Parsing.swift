@@ -10,9 +10,9 @@ import Foundation
 // MARK: - PersonalizationService Parsing Extensions
 
 extension PersonalizationService {
-    
+
     // MARK: - Standard Parsing Methods
-    
+
     func parseJSONToPersonalizedData(_ json: [String: Any], analysisResult: AnalysisResult, detailedSeasonName: String) throws -> PersonalizedSeasonData {
         guard let personalizedTagline = json["personalizedTagline"] as? String,
               let userCharacteristics = json["userCharacteristics"] as? String,
@@ -24,10 +24,10 @@ extension PersonalizationService {
               let confidence = json["confidence"] as? Double else {
             throw PersonalizationError.responseParsingFailed
         }
-        
+
         let colorRecommendations = try parseColorRecommendations(colorRecommendationsJSON)
         let stylingAdvice = try parseStylingAdvice(stylingAdviceJSON)
-        
+
         return PersonalizedSeasonData(
             baseSeason: detailedSeasonName,
             personalizedTagline: personalizedTagline,
@@ -41,7 +41,7 @@ extension PersonalizationService {
             analysisResultId: UUID()
         )
     }
-    
+
     func parseColorRecommendations(_ json: [String: Any]) throws -> PersonalizedColorRecommendations {
         guard let bestNeutralsJSON = json["bestNeutrals"] as? [String: Any],
               let bestAccentsJSON = json["bestAccents"] as? [String: Any],
@@ -50,7 +50,7 @@ extension PersonalizationService {
               let eyeColorsJSON = json["eyeColors"] as? [String: Any] else {
             throw PersonalizationError.responseParsingFailed
         }
-        
+
         return PersonalizedColorRecommendations(
             bestNeutrals: try parseColorRecommendation(bestNeutralsJSON),
             bestAccents: try parseColorRecommendation(bestAccentsJSON),
@@ -60,7 +60,7 @@ extension PersonalizationService {
             hairColorSuggestions: nil // Optional field
         )
     }
-    
+
     func parseColorRecommendation(_ json: [String: Any]) throws -> ColorRecommendation {
         guard let description = json["description"] as? String,
               let colors = json["colors"] as? [String],
@@ -68,7 +68,7 @@ extension PersonalizationService {
               let usageInstructions = json["usageInstructions"] as? String else {
             throw PersonalizationError.responseParsingFailed
         }
-        
+
         return ColorRecommendation(
             description: description,
             colors: colors,
@@ -76,7 +76,7 @@ extension PersonalizationService {
             usageInstructions: usageInstructions
         )
     }
-    
+
     func parseStylingAdvice(_ json: [String: Any]) throws -> PersonalizedStylingAdvice {
         guard let clothingAdviceJSON = json["clothingAdvice"] as? [String: Any],
               let accessoryAdviceJSON = json["accessoryAdvice"] as? [String: Any],
@@ -85,7 +85,7 @@ extension PersonalizationService {
               let specialConsiderations = json["specialConsiderations"] as? String else {
             throw PersonalizationError.responseParsingFailed
         }
-        
+
         return PersonalizedStylingAdvice(
             clothingAdvice: try parseStylingRecommendation(clothingAdviceJSON),
             accessoryAdvice: try parseStylingRecommendation(accessoryAdviceJSON),
@@ -94,7 +94,7 @@ extension PersonalizationService {
             specialConsiderations: specialConsiderations
         )
     }
-    
+
     func parseStylingRecommendation(_ json: [String: Any]) throws -> StylingRecommendation {
         guard let recommendation = json["recommendation"] as? String,
               let tips = json["tips"] as? [String],
@@ -102,7 +102,7 @@ extension PersonalizationService {
               let examples = json["examples"] as? [String] else {
             throw PersonalizationError.responseParsingFailed
         }
-        
+
         return StylingRecommendation(
             recommendation: recommendation,
             tips: tips,
@@ -110,4 +110,4 @@ extension PersonalizationService {
             examples: examples
         )
     }
-} 
+}

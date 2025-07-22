@@ -91,18 +91,18 @@ struct AnalysisResultView: View {
                     Text("Contrast Level:")
                         .font(.subheadline)
                         .foregroundColor(.gray)
-                    
+
                     Text(result.contrastLevel.replacingOccurrences(of: "-", with: " ").capitalized)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
-                    
+
                     Spacer()
-                    
+
                     // Visual contrast indicator
                     ContrastIndicator(value: result.contrastValue)
                 }
-                
+
                 Text(result.contrastDescription)
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -331,7 +331,7 @@ struct AnalysisResultView: View {
 
 struct ContrastIndicator: View {
     let value: Double
-    
+
     var body: some View {
         HStack(spacing: 2) {
             ForEach(0..<5) { index in
@@ -342,7 +342,7 @@ struct ContrastIndicator: View {
             }
         }
     }
-    
+
     private func fillColor(for index: Int) -> Color {
         let threshold = Double(index) * 0.2
         if value > threshold {

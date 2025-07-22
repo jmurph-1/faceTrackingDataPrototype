@@ -75,7 +75,7 @@ struct Season: Identifiable, Decodable {
         let colorCombinations: ColorCombinationsDetail?
         let patternsAndPrints: PatternsAndPrintsDetail?
         let metalsAndAccessories: MetalsAndAccessoriesDetail?
-        
+
         // Custom coding keys to handle JSON property name differences
         enum CodingKeys: String, CodingKey {
             case neutrals
@@ -100,7 +100,7 @@ struct Season: Identifiable, Decodable {
             let description: String?
             let combinations: [[String]]?
             let image: String?
-            
+
             // Custom coding keys to handle JSON property name differences
             enum CodingKeys: String, CodingKey {
                 case description

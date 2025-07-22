@@ -10,9 +10,9 @@ import SwiftUI
 
 /// Factory for creating mock PersonalizedSeasonData for testing and debugging
 struct MockPersonalizedSeasonDataFactory {
-    
+
     // MARK: - Quick Mock Methods
-    
+
     /// Create a mock Bright Spring with DNA blend
     static func brightSpringWithBlend() -> PersonalizedSeasonData {
         return createMockData(
@@ -29,7 +29,7 @@ struct MockPersonalizedSeasonDataFactory {
             colorsToAvoid: ["#8B4513", "#556B2F", "#2F4F4F"]
         )
     }
-    
+
     /// Create a mock Soft Autumn (pure season)
     static func softAutumn() -> PersonalizedSeasonData {
         return createMockData(
@@ -43,7 +43,7 @@ struct MockPersonalizedSeasonDataFactory {
             colorsToAvoid: ["#FF69B4", "#00FFFF", "#FF0000"]
         )
     }
-    
+
     /// Create a mock Deep Winter with tertiary blend
     static func deepWinterComplex() -> PersonalizedSeasonData {
         return createMockData(
@@ -60,18 +60,19 @@ struct MockPersonalizedSeasonDataFactory {
             colorsToAvoid: ["#FFB347", "#98FB98", "#F0E68C"]
         )
     }
-    
+
     // MARK: - Helper Method
-    
+
     private static func createMockData(
         season: String,
         seasonDNA: SeasonDNA,
         emphasizedColors: [String],
         colorsToAvoid: [String]
     ) -> PersonalizedSeasonData {
-        
+
         let enhancedColors = createEnhancedColorData(for: season, emphasizedColors: emphasizedColors)
-        
+        let metals = createMetalRecommendations(for: season)
+
         return PersonalizedSeasonData(
             baseSeason: season,
             personalizedTagline: "Your unique \(season) palette brings out your natural radiance",
@@ -83,10 +84,11 @@ struct MockPersonalizedSeasonDataFactory {
             colorsToAvoid: colorsToAvoid,
             confidence: seasonDNA.classificationConfidence,
             seasonDNAData: seasonDNA,
-            enhancedColorData: enhancedColors
+            enhancedColorData: enhancedColors,
+            metals: metals
         )
     }
-    
+
     private static func getCharacteristics(for season: String) -> String {
         let characteristics: [String: String] = [
             "Bright Spring": "clear, bright eyes with warm undertones and high contrast features",
@@ -95,7 +97,7 @@ struct MockPersonalizedSeasonDataFactory {
         ]
         return characteristics[season] ?? "natural beauty that complements this season's palette"
     }
-    
+
     private static func getOverview(for season: String) -> String {
         let overviews: [String: String] = [
             "Bright Spring": "Your coloring thrives on clear, bright colors that match your natural vibrancy. You can wear both warm and cool tones as long as they're clear and saturated.",
@@ -104,7 +106,7 @@ struct MockPersonalizedSeasonDataFactory {
         ]
         return overviews[season] ?? "Your unique coloring is enhanced by colors that complement your natural beauty."
     }
-    
+
     private static func createColorRecommendations(for season: String) -> PersonalizedColorRecommendations {
         let recommendations: [String: PersonalizedColorRecommendations] = [
             "Bright Spring": PersonalizedColorRecommendations(
@@ -146,10 +148,10 @@ struct MockPersonalizedSeasonDataFactory {
                 )
             )
         ]
-        
+
         return recommendations[season] ?? createDefaultRecommendations()
     }
-    
+
     private static func createDefaultRecommendations() -> PersonalizedColorRecommendations {
         return PersonalizedColorRecommendations(
             bestNeutrals: ColorRecommendation(
@@ -190,7 +192,7 @@ struct MockPersonalizedSeasonDataFactory {
             )
         )
     }
-    
+
     private static func createStylingAdvice(for season: String) -> PersonalizedStylingAdvice {
         return PersonalizedStylingAdvice(
             clothingAdvice: StylingRecommendation(
@@ -220,7 +222,7 @@ struct MockPersonalizedSeasonDataFactory {
             specialConsiderations: "Your unique coloring allows for both warm and cool tones when they're clear and bright."
         )
     }
-    
+
     private static func createEnhancedColorData(for season: String, emphasizedColors: [String]) -> EnhancedColorRecommendations {
         let colorItems = emphasizedColors.enumerated().map { index, hex in
             ColorItem(
@@ -230,7 +232,7 @@ struct MockPersonalizedSeasonDataFactory {
                 harmonyReason: "Complements your natural undertones"
             )
         }
-        
+
         let bestNeutrals = DetailedColorRecommendation(
             description: "Your best neutral colors",
             colors: Array(colorItems.prefix(3)),
@@ -238,7 +240,7 @@ struct MockPersonalizedSeasonDataFactory {
             usageInstructions: "Use as wardrobe foundation",
             categoryExplanation: "These neutrals work perfectly with your coloring"
         )
-        
+
         return EnhancedColorRecommendations(
             bestNeutrals: bestNeutrals,
             bestAccents: bestNeutrals,
@@ -260,9 +262,143 @@ extension MockPersonalizedSeasonDataFactory {
             deepWinterComplex()
         ]
     }
-    
+
     /// Get random mock data
     static func random() -> PersonalizedSeasonData {
         return allMockOptions.randomElement() ?? brightSpringWithBlend()
     }
-} 
+}
+
+// MARK: - Metal Recommendations Extension
+
+extension MockPersonalizedSeasonDataFactory {
+    private static func createBrightSpringMetals() -> [MetalRecommendation] {
+        return [
+            MetalRecommendation(
+                name: "Gold",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Bright", priority: .great, seasonSource: "Bright Spring"),
+                    MetalRecommendation.FinishOption(name: "Rose", priority: .great, seasonSource: "Bright Spring"),
+                    MetalRecommendation.FinishOption(name: "Brushed", priority: .good, seasonSource: "Bright Spring")
+                ],
+                priority: .great,
+                seasonSources: ["Bright Spring"]
+            ),
+            MetalRecommendation(
+                name: "Silver",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Bright", priority: .good, seasonSource: "Bright Spring"),
+                    MetalRecommendation.FinishOption(name: "Polished", priority: .good, seasonSource: "Bright Spring")
+                ],
+                priority: .good,
+                seasonSources: ["Bright Spring"]
+            )
+        ]
+    }
+
+    private static func createSoftAutumnMetals() -> [MetalRecommendation] {
+        return [
+            MetalRecommendation(
+                name: "Gold",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Antique", priority: .great, seasonSource: "Soft Autumn"),
+                    MetalRecommendation.FinishOption(name: "Brushed", priority: .great, seasonSource: "Soft Autumn")
+                ],
+                priority: .great,
+                seasonSources: ["Soft Autumn"]
+            ),
+            MetalRecommendation(
+                name: "Copper",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Antique", priority: .great, seasonSource: "Soft Autumn"),
+                    MetalRecommendation.FinishOption(name: "Rose", priority: .good, seasonSource: "Soft Autumn")
+                ],
+                priority: .great,
+                seasonSources: ["Soft Autumn"]
+            ),
+            MetalRecommendation(
+                name: "Bronze",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Antique", priority: .good, seasonSource: "Soft Autumn")
+                ],
+                priority: .good,
+                seasonSources: ["Soft Autumn"]
+            )
+        ]
+    }
+
+    private static func createDarkWinterMetals() -> [MetalRecommendation] {
+        return [
+            MetalRecommendation(
+                name: "Silver",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Bright", priority: .great, seasonSource: "Dark Winter"),
+                    MetalRecommendation.FinishOption(name: "Oxidized", priority: .great, seasonSource: "Dark Winter")
+                ],
+                priority: .great,
+                seasonSources: ["Dark Winter"]
+            ),
+            MetalRecommendation(
+                name: "Platinum",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Polished", priority: .great, seasonSource: "Dark Winter")
+                ],
+                priority: .great,
+                seasonSources: ["Dark Winter"]
+            ),
+            MetalRecommendation(
+                name: "White Gold",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Bright", priority: .good, seasonSource: "Dark Winter"),
+                    MetalRecommendation.FinishOption(name: "Brushed", priority: .good, seasonSource: "Dark Winter")
+                ],
+                priority: .good,
+                seasonSources: ["Dark Winter"]
+            )
+        ]
+    }
+
+    private static func createTrueAutumnMetals() -> [MetalRecommendation] {
+        return [
+            MetalRecommendation(
+                name: "Gold",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Antique", priority: .great, seasonSource: "True Autumn"),
+                    MetalRecommendation.FinishOption(name: "Brushed", priority: .great, seasonSource: "True Autumn")
+                ],
+                priority: .great,
+                seasonSources: ["True Autumn"]
+            ),
+            MetalRecommendation(
+                name: "Bronze",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Antique", priority: .great, seasonSource: "True Autumn")
+                ],
+                priority: .great,
+                seasonSources: ["True Autumn"]
+            ),
+            MetalRecommendation(
+                name: "Copper",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Antique", priority: .good, seasonSource: "True Autumn"),
+                    MetalRecommendation.FinishOption(name: "Brushed", priority: .good, seasonSource: "True Autumn")
+                ],
+                priority: .good,
+                seasonSources: ["True Autumn"]
+            )
+        ]
+    }
+
+    private static func createDefaultMetals(for season: String) -> [MetalRecommendation] {
+        return [
+            MetalRecommendation(
+                name: "Gold",
+                availableFinishes: [
+                    MetalRecommendation.FinishOption(name: "Polished", priority: .good, seasonSource: season)
+                ],
+                priority: .good,
+                seasonSources: [season]
+            )
+        ]
+    }
+}
