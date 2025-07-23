@@ -255,38 +255,75 @@ class PersonalizedSeasonViewModel: ObservableObject {
     var personalizedMetals: [MetalRecommendation] {
         var metalFinishCombinations: [String: [MetalRecommendation.FinishOption]] = [:]
         var metalSeasonSources: [String: Set<String>] = [:]
+        var primarySeasonMetals: Set<String> = [] // Track metals from primary season
+        var metals: [MetalRecommendation] = [] // Declare metals array at the start
 
-        // Collect all metal-finish combinations from all seasons
-        let seasonsToCheck = [personalizedData.baseSeason] + (isDNABlended ? [seasonDNA.secondary?.season, seasonDNA.tertiary?.season].compactMap { $0 } : [])
+        // First, process primary season to get list of allowed metals
+        guard let primarySeasonData = loadSeasonData(for: personalizedData.baseSeason) else {
+            return []
+        }
+        
+        // Get list of metals that are explicitly marked as "bad" in primary season
+        let badMetals: [String] = {
+            if let metalTypes = primarySeasonData.styling.metalsAndAccessories?.metals?.type {
+                return metalTypes.filter { $0.value == "bad" }
+                    .map { $0.key.lowercased() }
+            }
+            return []
+        }()
+        
+        let primaryFinishOptions = extractFinishOptionsFromSeason(primarySeasonData, 
+                                                                seasonSource: personalizedData.baseSeason, 
+                                                                isPrimarySeason: true)
+        
+        // Store primary season metals for reference
+        primarySeasonMetals = Set(primaryFinishOptions.keys)
+        
+        // Add primary season metals to our collections
+        for (metalType, finishes) in primaryFinishOptions {
+            metalFinishCombinations[metalType] = finishes
+            metalSeasonSources[metalType] = [personalizedData.baseSeason]
+        }
 
-        for seasonName in seasonsToCheck {
-            guard let seasonData = loadSeasonData(for: seasonName) else { continue }
-
-            let finishOptions = extractFinishOptionsFromSeason(seasonData, seasonSource: seasonName)
-
-            for (metalType, finishes) in finishOptions {
+        // Then process secondary season only (skip tertiary) if DNA blended
+        if isDNABlended, let secondarySeason = seasonDNA.secondary?.season {
+            guard let seasonData = loadSeasonData(for: secondarySeason) else { return [] }
+            
+            // Get only "great" metals from secondary season, but mark them as "good"
+            let secondaryFinishOptions = extractFinishOptionsFromSeason(seasonData, 
+                                                                      seasonSource: secondarySeason, 
+                                                                      isPrimarySeason: false)
+            
+            for (metalType, finishes) in secondaryFinishOptions {
+                // Skip if this metal is marked as "bad" in primary season
+                if badMetals.contains(metalType.lowercased()) {
+                    continue
+                }
+                
                 if metalFinishCombinations[metalType] == nil {
                     metalFinishCombinations[metalType] = []
-                    metalSeasonSources[metalType] = Set()
+                    metalSeasonSources[metalType] = []
                 }
                 metalFinishCombinations[metalType]!.append(contentsOf: finishes)
-                metalSeasonSources[metalType]!.insert(seasonName)
+                metalSeasonSources[metalType]!.insert(secondarySeason)
             }
         }
 
         // Convert to MetalRecommendation objects
-        var metals: [MetalRecommendation] = []
-
         for (metalType, finishes) in metalFinishCombinations {
             let seasonSources = Array(metalSeasonSources[metalType] ?? [])
-
-            // Determine overall priority based on best finish
+            
+            // Determine overall priority:
+            // - If it's from primary season, use its original priority
+            // - If it's from secondary season only, mark as "good"
+            let isPrimarySeasonMetal = primarySeasonMetals.contains(metalType)
             let bestFinishPriority = finishes.max { $0.priority.rawValue < $1.priority.rawValue }?.priority ?? .good
+            let priority: MetalRecommendation.MetalPriority = isPrimarySeasonMetal ? bestFinishPriority : .good
 
             let metalRecommendation = MetalRecommendation(
                 name: metalType,
                 availableFinishes: finishes,
-                priority: bestFinishPriority,
+                priority: priority,
                 seasonSources: seasonSources
             )
 
@@ -296,12 +333,10 @@ class PersonalizedSeasonViewModel: ObservableObject {
         // Sort metals: "great" first, then "good", then alphabetically within each group
         return metals.sorted { lhs, rhs in
             if lhs.priority != rhs.priority {
-                // "great" priority comes before "good" priority
                 return lhs.priority == .great
             }
-            // Within the same priority, sort alphabetically by name
             return lhs.name < rhs.name
-        }
+        }.deduplicated
     }
 
     /// Check if there are metal recommendations available
@@ -476,7 +511,7 @@ extension PersonalizedSeasonViewModel {
     }
 
     /// Extract finish options from season data grouped by metal type
-    private func extractFinishOptionsFromSeason(_ season: Season, seasonSource: String) -> [String: [MetalRecommendation.FinishOption]] {
+    private func extractFinishOptionsFromSeason(_ season: Season, seasonSource: String, isPrimarySeason: Bool) -> [String: [MetalRecommendation.FinishOption]] {
         var metalFinishOptions: [String: [MetalRecommendation.FinishOption]] = [:]
 
         guard let metalsAndAccessories = season.styling.metalsAndAccessories,
@@ -487,18 +522,41 @@ extension PersonalizedSeasonViewModel {
 
         // Create finish options for each metal type
         for (metalType, typeRating) in metalTypes {
-            guard typeRating == "great" || typeRating == "good" else { continue }
+            // For primary season, skip any metals rated as "bad"
+            if isPrimarySeason && typeRating == "bad" {
+                continue
+            }
+            
+            // For primary season, include both "great" and "good" metals
+            // For secondary season, only include "great" metals
+            if !isPrimarySeason && typeRating != "great" {
+                continue
+            }
 
             var finishOptions: [MetalRecommendation.FinishOption] = []
 
             for (finishType, finishRating) in metalFinishes {
-                guard finishRating == "great" || finishRating == "good" else { continue }
-
-                // Determine overall priority (both must be good, at least one must be great for "great" priority)
+                // Skip bad finishes
+                if finishRating == "bad" {
+                    continue
+                }
+                
+                // For secondary seasons, only include "great" finishes and mark them as "good"
+                if !isPrimarySeason {
+                    if finishRating != "great" { continue }
+                    
+                    let finishOption = MetalRecommendation.FinishOption(
+                        name: finishType,
+                        priority: .good, // Downgrade to good for secondary seasons
+                        seasonSource: seasonSource
+                    )
+                    finishOptions.append(finishOption)
+                    continue
+                }
+                
+                // For primary season, keep original priorities
                 let priority: MetalRecommendation.MetalPriority
                 if typeRating == "great" && finishRating == "great" {
-                    priority = .great
-                } else if typeRating == "great" || finishRating == "great" {
                     priority = .great
                 } else {
                     priority = .good
@@ -509,16 +567,13 @@ extension PersonalizedSeasonViewModel {
                     priority: priority,
                     seasonSource: seasonSource
                 )
-
                 finishOptions.append(finishOption)
             }
 
-            metalFinishOptions[metalType] = finishOptions
+            if !finishOptions.isEmpty {
+                metalFinishOptions[metalType] = finishOptions
+            }
         }
-
-        #if DEBUG
-        print("🔵 Metal Finish Options: \(metalFinishOptions)")
-        #endif
 
         return metalFinishOptions
     }

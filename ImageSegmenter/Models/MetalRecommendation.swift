@@ -89,54 +89,127 @@ struct MetalRecommendation: Identifiable, Equatable, Codable {
 
     // Get the metallic gradient colors based on metal type and best finish
     var metallicGradient: [Color] {
-        let finishName = bestFinish?.name.lowercased() ?? "bright"
-        switch (name.lowercased(), finishName) {
+        switch name.lowercased() {
         // Gold variations
-        case ("gold", "bright"):
-            return [Color(hex: "#FFD700"), Color(hex: "#FFC125"), Color(hex: "#FFB90F")]
-        case ("gold", "antique"):
-            return [Color(hex: "#D4A76A"), Color(hex: "#B8860B"), Color(hex: "#996515")]
-        case ("gold", "rose"):
-            return [Color(hex: "#E0BFB8"), Color(hex: "#D4A5A5"), Color(hex: "#C9A0A0")]
-        case ("gold", "white"):
-            return [Color(hex: "#F5F5DC"), Color(hex: "#E8E4C9"), Color(hex: "#D4D4AA")]
-        case ("gold", "brushed"):
-            return [Color(hex: "#D4AF37"), Color(hex: "#B8970B"), Color(hex: "#AA8800")]
+        case "gold", "yellow gold":
+            return [
+                Color(hex: "#FFD700"),   // Pure gold
+                Color(hex: "#FFBF00"),   // Richer gold
+                Color(hex: "#DAA520"),   // Golden rod
+                Color(hex: "#FFBF00"),   // Richer gold
+                Color(hex: "#FFD700")    // Pure gold
+            ]
+        case "rose gold":
+            return [
+                Color(hex: "#FFB199"),   // Light rose
+                Color(hex: "#FF9966"),   // Medium rose
+                Color(hex: "#FF8080"),   // Deep rose
+                Color(hex: "#FF9966"),   // Medium rose
+                Color(hex: "#FFB199")    // Light rose
+            ]
+        case "white gold":
+            return [
+                Color(hex: "#E8E8E8"),   // Light
+                Color(hex: "#D4D4D4"),   // Medium
+                Color(hex: "#C0C0C0"),   // Deep
+                Color(hex: "#D4D4D4"),   // Medium
+                Color(hex: "#E8E8E8")    // Light
+            ]
+
+        // Mixed metal (gold and silver)
+        case "mixed":
+            return [
+                Color(hex: "#FFD700"),   // Pure gold
+                Color(hex: "#FFD700"),   // Pure gold (repeated to extend gold section)
+                Color(hex: "#E8E8E8"),   // Transition
+                Color(hex: "#C0C0C0"),   // Silver
+                Color(hex: "#C0C0C0")    // Silver (repeated to balance)
+            ]
 
         // Silver variations
-        case ("silver", "bright"):
-            return [Color(hex: "#C0C0C0"), Color(hex: "#D3D3D3"), Color(hex: "#E5E5E5")]
-        case ("silver", "antique"):
-            return [Color(hex: "#8B8B83"), Color(hex: "#A8A8A8"), Color(hex: "#848484")]
-        case ("silver", "brushed"):
-            return [Color(hex: "#B8B8B8"), Color(hex: "#A9A9A9"), Color(hex: "#969696")]
-        case ("silver", "oxidized"):
-            return [Color(hex: "#696969"), Color(hex: "#808080"), Color(hex: "#778899")]
+        case "silver", "cool silver":
+            return [
+                Color(hex: "#E8E8E8"),   // Light
+                Color(hex: "#D4D4D4"),   // Medium light
+                Color(hex: "#C0C0C0"),   // Medium
+                Color(hex: "#D4D4D4"),   // Medium light
+                Color(hex: "#E8E8E8")    // Light
+            ]
+        case "warm silver":
+            return [
+                Color(hex: "#E0D5C7"),   // Warm light
+                Color(hex: "#C0B5A8"),   // Warm medium
+                Color(hex: "#A89B8C"),   // Warm deep
+                Color(hex: "#C0B5A8"),   // Warm medium
+                Color(hex: "#E0D5C7")    // Warm light
+            ]
 
         // Platinum
-        case ("platinum", _):
-            return [Color(hex: "#E5E4E2"), Color(hex: "#D8D8D6"), Color(hex: "#C9C9C7")]
+        case "platinum":
+            return [
+                Color(hex: "#E5E4E2"),   // Light
+                Color(hex: "#D8D8D6"),   // Medium
+                Color(hex: "#C9C9C7"),   // Deep
+                Color(hex: "#D8D8D6"),   // Medium
+                Color(hex: "#E5E4E2")    // Light
+            ]
 
-        // Copper variations
-        case ("copper", "bright"):
-            return [Color(hex: "#DA8A67"), Color(hex: "#C97551"), Color(hex: "#B87333")]
-        case ("copper", "antique"):
-            return [Color(hex: "#9C6935"), Color(hex: "#8B5A2B"), Color(hex: "#7F462C")]
-        case ("copper", "rose"):
-            return [Color(hex: "#CE8E8B"), Color(hex: "#C27B79"), Color(hex: "#B76E68")]
+        // Copper
+        case "copper":
+            return [
+                Color(hex: "#FFA07A"),   // Light
+                Color(hex: "#E08D3C"),   // Medium
+                Color(hex: "#B87333"),   // Deep
+                Color(hex: "#E08D3C"),   // Medium
+                Color(hex: "#FFA07A")    // Light
+            ]
 
-        // Bronze variations
-        case ("bronze", _):
-            return [Color(hex: "#CD7F32"), Color(hex: "#B8734B"), Color(hex: "#A0612F")]
+        // Bronze
+        case "bronze":
+            return [
+                Color(hex: "#CD853F"),   // Light
+                Color(hex: "#B8734B"),   // Medium
+                Color(hex: "#8B4513"),   // Deep
+                Color(hex: "#B8734B"),   // Medium
+                Color(hex: "#CD853F")    // Light
+            ]
+
+        // Brass
+        case "brass":
+            return [
+                Color(hex: "#DAA520"),   // Light
+                Color(hex: "#B8860B"),   // Medium
+                Color(hex: "#996515"),   // Deep
+                Color(hex: "#B8860B"),   // Medium
+                Color(hex: "#DAA520")    // Light
+            ]
 
         // Pewter
-        case ("pewter", _):
-            return [Color(hex: "#8F8F8C"), Color(hex: "#7D7D7A"), Color(hex: "#6B6B68")]
+        case "pewter":
+            return [
+                Color(hex: "#A9A9A9"),   // Light
+                Color(hex: "#808080"),   // Medium
+                Color(hex: "#696969"),   // Deep
+                Color(hex: "#808080"),   // Medium
+                Color(hex: "#A9A9A9")    // Light
+            ]
 
         // Default metallic
         default:
-            return [Color.gray, Color.gray.opacity(0.8), Color.gray.opacity(0.6)]
+            print("⚠️ Warning: Unrecognized metal type: \(name)")  // Add debug logging
+            return [
+                Color(hex: "#D4D4D4"),   // Light
+                Color(hex: "#C0C0C0"),   // Medium
+                Color(hex: "#A8A8A8"),   // Deep
+                Color(hex: "#C0C0C0"),   // Medium
+                Color(hex: "#D4D4D4")    // Light
+            ]
         }
+    }
+
+    // Whether this metal is a mixed type
+    var isMixed: Bool {
+        return name.lowercased() == "mixed"
     }
 
     // Get whether this is a warm or cool metal (for categorization)

@@ -117,7 +117,7 @@
         "elements": {
           "description": "Great patterns for Dark Autumn are bold, highly stylised forms of natural autumn elements – such as oval shapes, leaves, and wood structures. Geometric shapes are less common in Autumn patterns – with the exception of retro patterns. Natural floral patterns are not YOUR best choice. If you want to wear floral patterns, the flowers should be highly stylised – as in paisley and oriental patterns. Elements should be big and loosely arranged. Avoid stiff geometric patterns and small, dense patterns – like in the first example.",
           "combinations": {
-            "bad": ["small", "dense", "stiff", "natural floral"],
+            "bad": ["small", "dense", "stiff", "natural floral", "geometric"],
             "good": ["medium", "loose", "retro geometric", "highly stylised floral"],
             "great": ["big","bold" , "oval shapes", "leaves", "wood structures","paisley", "oriental", "stylised"]
           },

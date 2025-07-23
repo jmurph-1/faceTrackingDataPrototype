@@ -30,49 +30,47 @@ extension MockPersonalizedSeasonDataFactory {
     private static func createBrightSpringMetals() -> [MetalRecommendation] {
         return [
             MetalRecommendation(
-                name: "Gold",
+                name: "yellow gold",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Bright", priority: .great, seasonSource: "Bright Spring"),
-                    MetalRecommendation.FinishOption(name: "Rose", priority: .great, seasonSource: "Bright Spring"),
-                    MetalRecommendation.FinishOption(name: "Brushed", priority: .good, seasonSource: "Bright Spring")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .great, seasonSource: "Bright Spring")
                 ],
                 priority: .great,
                 seasonSources: ["Bright Spring"]
             ),
             MetalRecommendation(
-                name: "Silver",
+                name: "rose gold",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Bright", priority: .good, seasonSource: "Bright Spring"),
-                    MetalRecommendation.FinishOption(name: "Polished", priority: .good, seasonSource: "Bright Spring")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .great, seasonSource: "Bright Spring")
                 ],
-                priority: .good,
+                priority: .great,
                 seasonSources: ["Bright Spring"]
             )
+            // Note: Silver is intentionally excluded as it would be marked "bad" for Bright Spring
         ]
     }
 
     private static func createSoftAutumnMetals() -> [MetalRecommendation] {
         return [
             MetalRecommendation(
-                name: "Gold",
+                name: "yellow gold",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Antique", priority: .great, seasonSource: "Soft Autumn")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .great, seasonSource: "Soft Autumn")
                 ],
                 priority: .great,
                 seasonSources: ["Soft Autumn"]
             ),
             MetalRecommendation(
-                name: "Bronze",
+                name: "copper",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Antique", priority: .great, seasonSource: "Soft Autumn")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .great, seasonSource: "Soft Autumn")
                 ],
                 priority: .great,
                 seasonSources: ["Soft Autumn"]
             ),
             MetalRecommendation(
-                name: "Copper",
+                name: "bronze",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Brushed", priority: .good, seasonSource: "Soft Autumn")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .good, seasonSource: "Soft Autumn")
                 ],
                 priority: .good,
                 seasonSources: ["Soft Autumn"]
@@ -83,27 +81,25 @@ extension MockPersonalizedSeasonDataFactory {
     private static func createDarkWinterMetals() -> [MetalRecommendation] {
         return [
             MetalRecommendation(
-                name: "Silver",
+                name: "cool silver",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Bright", priority: .great, seasonSource: "Dark Winter"),
-                    MetalRecommendation.FinishOption(name: "Oxidized", priority: .great, seasonSource: "Dark Winter")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .great, seasonSource: "Dark Winter")
                 ],
                 priority: .great,
                 seasonSources: ["Dark Winter"]
             ),
             MetalRecommendation(
-                name: "Platinum",
+                name: "platinum",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Polished", priority: .great, seasonSource: "Dark Winter")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .great, seasonSource: "Dark Winter")
                 ],
                 priority: .great,
                 seasonSources: ["Dark Winter"]
             ),
             MetalRecommendation(
-                name: "White Gold",
+                name: "white gold",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Bright", priority: .good, seasonSource: "Dark Winter"),
-                    MetalRecommendation.FinishOption(name: "Brushed", priority: .good, seasonSource: "Dark Winter")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .good, seasonSource: "Dark Winter")
                 ],
                 priority: .good,
                 seasonSources: ["Dark Winter"]
@@ -114,27 +110,25 @@ extension MockPersonalizedSeasonDataFactory {
     private static func createTrueAutumnMetals() -> [MetalRecommendation] {
         return [
             MetalRecommendation(
-                name: "Gold",
+                name: "yellow gold",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Antique", priority: .great, seasonSource: "True Autumn"),
-                    MetalRecommendation.FinishOption(name: "Brushed", priority: .great, seasonSource: "True Autumn")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .great, seasonSource: "True Autumn")
                 ],
                 priority: .great,
                 seasonSources: ["True Autumn"]
             ),
             MetalRecommendation(
-                name: "Bronze",
+                name: "bronze",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Antique", priority: .great, seasonSource: "True Autumn")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .great, seasonSource: "True Autumn")
                 ],
                 priority: .great,
                 seasonSources: ["True Autumn"]
             ),
             MetalRecommendation(
-                name: "Copper",
+                name: "copper",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Antique", priority: .good, seasonSource: "True Autumn"),
-                    MetalRecommendation.FinishOption(name: "Brushed", priority: .good, seasonSource: "True Autumn")
+                    MetalRecommendation.FinishOption(name: "polished", priority: .good, seasonSource: "True Autumn")
                 ],
                 priority: .good,
                 seasonSources: ["True Autumn"]
@@ -145,9 +139,9 @@ extension MockPersonalizedSeasonDataFactory {
     private static func createDefaultMetals(for season: String) -> [MetalRecommendation] {
         return [
             MetalRecommendation(
-                name: "Gold",
+                name: "yellow gold",
                 availableFinishes: [
-                    MetalRecommendation.FinishOption(name: "Polished", priority: .good, seasonSource: season)
+                    MetalRecommendation.FinishOption(name: "polished", priority: .good, seasonSource: season)
                 ],
                 priority: .good,
                 seasonSources: [season]
