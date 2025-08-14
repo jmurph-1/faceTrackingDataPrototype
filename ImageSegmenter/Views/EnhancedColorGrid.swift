@@ -206,6 +206,7 @@ struct ColorDetailCard: View {
     let colorItem: ColorItem
     let isAvoidanceMode: Bool
     let onDismiss: () -> Void
+    var onSaveFavorite: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -393,8 +394,7 @@ struct ColorDetailCard: View {
     }
 
     private func saveToFavorites() {
-        // Implement favorites functionality
-        print("Saving \(colorItem.name) to favorites")
+        onSaveFavorite?()
     }
 
     private func openOutfitIdeas() {
