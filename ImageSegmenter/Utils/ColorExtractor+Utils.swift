@@ -60,6 +60,10 @@ extension ColorExtractor {
 
     // MARK: Statistics --------------------------------------------------
     static func weightedAverage(_ pixels: [Pixel]) -> Pixel {
+        guard !pixels.isEmpty else {
+            // Default to black when no pixels are provided to avoid division by zero
+            return (0, 0, 0)
+        }
         let cnt = Float(pixels.count)
         let sums = pixels.reduce((0, 0, 0)) { res, px in
             (res.0 + px.r, res.1 + px.g, res.2 + px.b)
