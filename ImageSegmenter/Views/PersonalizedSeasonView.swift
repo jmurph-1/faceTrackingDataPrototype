@@ -206,7 +206,9 @@ struct PersonalizedSeasonView: View {
                         columns: 4
                     )
                     .padding(.top)
-                        
+
+                    SeasonPaletteExplorerView(colorItems: viewModel.getFullPaletteColors())
+                        .padding(.top)
                 }
             } else {
                 // Fallback to basic color display
@@ -216,6 +218,9 @@ struct PersonalizedSeasonView: View {
                     colorItems: createBasicColorItems(from: viewModel.personalizedData.emphasizedColors),
                     columns: 4
                 )
+
+                SeasonPaletteExplorerView(colorItems: viewModel.getFullPaletteColors())
+                    .padding(.top)
             }
 
             // Secondary EnhancedColorGrid for colors to avoid (if any)

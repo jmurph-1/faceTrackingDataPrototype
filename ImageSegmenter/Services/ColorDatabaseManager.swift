@@ -263,7 +263,7 @@ struct ColorData: Codable, Identifiable {
     }
 
     /// Convert to ColorItem for use in PersonalizedSeasonData
-    func toColorItem(usageContext: String = "", harmonyReason: String = "") -> ColorItem {
+    func toColorItem(usageContext: String = "", harmonyReason: String = "", isRecommended: Bool = false) -> ColorItem {
         let context = usageContext.isEmpty ? "Perfect for \(category.lowercased()) in \(season)" : usageContext
         let reason = harmonyReason.isEmpty ? "Harmonizes beautifully with \(season) characteristics" : harmonyReason
 
@@ -271,7 +271,8 @@ struct ColorData: Codable, Identifiable {
             name: name,
             hexValue: normalizedHex,
             usageContext: context,
-            harmonyReason: reason
+            harmonyReason: reason,
+            isRecommended: isRecommended
         )
     }
 }
