@@ -79,20 +79,12 @@ class FrameQualityAnalyzer {
         /// Maximum face size as percentage of image dimensions
         let maxFaceSize: CGFloat
 
-        /// Minimum lighting level (brightness)
-        let minLightingLevel: Float
-
-        /// Maximum lighting level (brightness)
-        let maxLightingLevel: Float
-
         /// Default configuration
         static let `default` = Configuration(
             minAcceptableScore: 0.6,
             maxFaceOffset: 0.15,
             minFaceSize: 0.25,
-            maxFaceSize: 0.7,
-            minLightingLevel: 0.2,
-            maxLightingLevel: 0.9
+            maxFaceSize: 0.7
         )
     }
 
@@ -128,8 +120,8 @@ class FrameQualityAnalyzer {
         var blurScore: Float = 0.5 // Default middle value
 
         if let image = image {
-            lightingQuality = analyzeLighting(image: image)
-            blurScore = detectBlur(image: image)
+            lightingQuality = FrameQualityEvaluator.brightnessScore(image: image)
+            blurScore = FrameQualityEvaluator.blurScore(image: image)
         }
 
         // Calculate overall score
@@ -241,132 +233,5 @@ class FrameQualityAnalyzer {
         return (faceAreaRatio, positionQuality)
     }
 
-    /// Analyze lighting quality in the image
-    private func analyzeLighting(image: UIImage) -> Float {
-        guard let cgImage = image.cgImage else { return 0.5 }
-
-        // Create a thumbnail for faster analysis
-        let thumbnailSize = CGSize(width: 64, height: 64)
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
-
-        guard let context = CGContext(
-            data: nil,
-            width: Int(thumbnailSize.width),
-            height: Int(thumbnailSize.height),
-            bitsPerComponent: 8,
-            bytesPerRow: 0,
-            space: colorSpace,
-            bitmapInfo: bitmapInfo.rawValue
-        ) else { return 0.5 }
-
-        // Draw the image in the context
-        context.draw(cgImage, in: CGRect(origin: .zero, size: thumbnailSize))
-
-        guard let pixelData = context.data else { return 0.5 }
-
-        let data = pixelData.bindMemory(
-            to: UInt8.self,
-            capacity: Int(thumbnailSize.width * thumbnailSize.height * 4)
-        )
-
-        var totalBrightness: Float = 0
-        let pixelCount = Int(thumbnailSize.width * thumbnailSize.height)
-
-        // Calculate average brightness
-        for i in stride(from: 0, to: pixelCount * 4, by: 4) {
-            let r = Float(data[i])
-            let g = Float(data[i + 1])
-            let b = Float(data[i + 2])
-
-            // Convert RGB to relative luminance
-            let luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255.0
-            totalBrightness += luminance
-        }
-
-        let averageBrightness = totalBrightness / Float(pixelCount)
-
-        // Map brightness to quality score
-        let minBrightness = configuration.minLightingLevel
-        let maxBrightness = configuration.maxLightingLevel
-        let idealBrightness = (minBrightness + maxBrightness) / 2
-
-        if averageBrightness < minBrightness {
-            // Too dark
-            return averageBrightness / minBrightness
-        } else if averageBrightness > maxBrightness {
-            // Too bright
-            return 1.0 - ((averageBrightness - maxBrightness) / (1.0 - maxBrightness))
-        } else if averageBrightness < idealBrightness {
-            // Between minimum and ideal (map 0.5-1.0)
-            return 0.5 + 0.5 * (averageBrightness - minBrightness) / (idealBrightness - minBrightness)
-        } else {
-            // Between ideal and maximum (map 0.5-1.0)
-            return 1.0 - 0.5 * (averageBrightness - idealBrightness) / (maxBrightness - idealBrightness)
-        }
-    }
-
-    /// Detect blur in an image (returns score from 0-1, higher = more blurry)
-    private func detectBlur(image: UIImage) -> Float {
-        guard let cgImage = image.cgImage else { return 0.5 }
-
-        // Create a grayscale version for blur detection
-        let thumbnailSize = CGSize(width: 128, height: 128)
-        let colorSpace = CGColorSpaceCreateDeviceGray()
-
-        guard let context = CGContext(
-            data: nil,
-            width: Int(thumbnailSize.width),
-            height: Int(thumbnailSize.height),
-            bitsPerComponent: 8,
-            bytesPerRow: 0,
-            space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.none.rawValue
-        ) else { return 0.5 }
-
-        context.draw(cgImage, in: CGRect(origin: .zero, size: thumbnailSize))
-
-        guard let grayscaleImage = context.makeImage(),
-              let pixelData = context.data else { return 0.5 }
-
-        // Simple Laplacian filter for edge detection
-        let laplacianKernel: [Float] = [
-            0, 1, 0,
-            1, -4, 1,
-            0, 1, 0
-        ]
-
-        let width = Int(thumbnailSize.width)
-        let height = Int(thumbnailSize.height)
-        let bytesPerRow = context.bytesPerRow
-        let data = pixelData.bindMemory(to: UInt8.self, capacity: height * bytesPerRow)
-
-        var sumLaplacian: Float = 0
-
-        // Apply Laplacian filter to detect edges
-        for y in 1..<(height-1) {
-            for x in 1..<(width-1) {
-                var pixelValue: Float = 0
-
-                // Apply 3x3 kernel
-                for ky in 0..<3 {
-                    for kx in 0..<3 {
-                        let pixel = Float(data[(y + ky - 1) * bytesPerRow + (x + kx - 1)])
-                        pixelValue += pixel * laplacianKernel[ky * 3 + kx]
-                    }
-                }
-
-                sumLaplacian += abs(pixelValue)
-            }
-        }
-
-        // Calculate average edge response
-        let averageLaplacian = sumLaplacian / Float((width - 2) * (height - 2))
-
-        // Convert to blur score (higher edge response = less blur)
-        // Normalize to 0-1 range where 1 = very blurry
-        let normalizedBlurScore = max(0.0, min(1.0, 1.0 - (averageLaplacian / Float(20.0))))
-
-        return normalizedBlurScore
-    }
+    // Lighting and blur calculations moved to FrameQualityEvaluator
 }

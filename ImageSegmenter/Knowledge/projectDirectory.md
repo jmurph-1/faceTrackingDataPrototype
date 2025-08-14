@@ -98,7 +98,7 @@ The colorAnalysisApp is an iOS mobile application built with Swift that provides
 - **ImageSegmenter/Utils/ColorConverters.swift** - Utilities for color space conversion (RGB, Lab, HSV)
 - **ImageSegmenter/Utils/ContrastCalculator.swift** - Calculates contrast levels between facial features using Delta-E color difference
 - **ImageSegmenter/Utils/ConnectedComponentAnalysis.swift** - Processes connected components in segmentation
-- **ImageSegmenter/Utils/FaceLandmarkQualityCalculator.swift** - Evaluates quality of detected facial landmarks
+- **ImageSegmenter/Services/FrameQualityEvaluator.swift** - Shared calculations for face size, position, brightness, and sharpness
 - **ImageSegmenter/Utils/BufferPoolManager.swift** - Manages pools of reusable buffers
 - **ImageSegmenter/Utils/TexturePoolManager.swift** - Manages pools of reusable Metal textures
 - **ImageSegmenter/Utils/PixelBufferPoolManager.swift** - Manages pools of reusable pixel buffers
@@ -142,7 +142,7 @@ The colorAnalysisApp is an iOS mobile application built with Swift that provides
 1. **CameraFeedService** captures video frames
 2. **FaceLandmarkerService** detects facial landmarks in frames
 3. **ImageSegmenterService** segments facial features (skin, hair, eyes)
-4. **FrameQualityService** evaluates frame quality using **FaceLandmarkQualityCalculator**
+4. **FrameQualityService** evaluates frame quality using **FrameQualityEvaluator**
 5. **ContrastCalculator** analyzes contrast between facial features using Lab color space and Delta-E calculations
 6. **SeasonClassifier** analyzes segmented regions to determine detailed seasonal color category (12-season system)
 7. **ClassificationService** orchestrates analysis and triggers personalization workflow

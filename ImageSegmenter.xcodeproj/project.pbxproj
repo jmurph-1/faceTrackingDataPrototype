@@ -65,7 +65,7 @@
 		523112962DD4790300FCFC91 /* CameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112932DD4790300FCFC91 /* CameraViewModel.swift */; };
 		523112982DD4799F00FCFC91 /* RefactoredCameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112972DD4799F00FCFC91 /* RefactoredCameraViewController.swift */; };
 		5231129B2DD48A8900FCFC91 /* RendererProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */; };
-		5231129E2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */; };
+                5231129E2DD4E5E900FCFC91 /* FrameQualityEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129D2DD4E5E900FCFC91 /* FrameQualityEvaluator.swift */; };
 		523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */; };
 		523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523112A12DD5043900FCFC91 /* LoggingService.swift */; };
 		523112A42DD524D500FCFC91 /* projectDirectory.md in Resources */ = {isa = PBXBuildFile; fileRef = 523112A32DD524D500FCFC91 /* projectDirectory.md */; };
@@ -207,7 +207,7 @@
 		523112932DD4790300FCFC91 /* CameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewModel.swift; sourceTree = "<group>"; };
 		523112972DD4799F00FCFC91 /* RefactoredCameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefactoredCameraViewController.swift; sourceTree = "<group>"; };
 		5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RendererProtocol.swift; sourceTree = "<group>"; };
-		5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceLandmarkQualityCalculator.swift; sourceTree = "<group>"; };
+            5231129D2DD4E5E900FCFC91 /* FrameQualityEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameQualityEvaluator.swift; sourceTree = "<group>"; };
 		5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogger.swift; sourceTree = "<group>"; };
 		523112A12DD5043900FCFC91 /* LoggingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingService.swift; sourceTree = "<group>"; };
 		523112A32DD524D500FCFC91 /* projectDirectory.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = projectDirectory.md; sourceTree = "<group>"; };
@@ -370,7 +370,6 @@
 				523113342DDFD63100FCFC91 /* UIImageOrientation.swift */,
 				523112A12DD5043900FCFC91 /* LoggingService.swift */,
 				5231129F2DD4F67D00FCFC91 /* DebugLogger.swift */,
-				5231129D2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift */,
 				5222FE262DD46C3C00EF3C65 /* PixelBufferPoolManager.swift */,
 				5222FE242DD46C1200EF3C65 /* BufferPoolManager.swift */,
 				5222FE222DD46BE000EF3C65 /* TexturePoolManager.swift */,
@@ -532,9 +531,10 @@
 				5222FE202DD46A7900EF3C65 /* SegmentationService.swift */,
 				5222FE1E2DD4690200EF3C65 /* CameraService.swift */,
 				5222FDD92DD40F8400EF3C65 /* CoreDataManager.swift */,
-				5222FDDA2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift */,
-				5222FDDB2DD40F8400EF3C65 /* FrameQualityService.swift */,
-				5222FDDC2DD40F8400EF3C65 /* SeasonClassifier.swift */,
+                                5222FDDA2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift */,
+                                5222FDDB2DD40F8400EF3C65 /* FrameQualityService.swift */,
+                                5231129D2DD4E5E900FCFC91 /* FrameQualityEvaluator.swift */,
+                                5222FDDC2DD40F8400EF3C65 /* SeasonClassifier.swift */,
 				BF6EBB822B1EB75B00CD13FB /* ImageSegmenterService.swift */,
 				BF6EBB832B1EB75B00CD13FB /* CameraFeedService.swift */,
 				52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */,
@@ -833,7 +833,7 @@
 				BF6EBB932B1EB75B00CD13FB /* MergeColorShaders.metal in Sources */,
 				523113692DED03C800FCFC91 /* SeasonDNARingChart.swift in Sources */,
 				5231136A2DED03C800FCFC91 /* EnhancedColorGrid.swift in Sources */,
-				5231129E2DD4E5E900FCFC91 /* FaceLandmarkQualityCalculator.swift in Sources */,
+                            5231129E2DD4E5E900FCFC91 /* FrameQualityEvaluator.swift in Sources */,
 				5222FDF22DD40FEF00EF3C65 /* FrameQualityIndicatorView.swift in Sources */,
 				5222FDF32DD40FEF00EF3C65 /* DebugOverlayView.swift in Sources */,
 				5222FE272DD46C4C00EF3C65 /* PixelBufferPoolManager.swift in Sources */,
