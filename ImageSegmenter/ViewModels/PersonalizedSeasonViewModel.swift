@@ -407,6 +407,52 @@ class PersonalizedSeasonViewModel: ObservableObject {
         }
     }
 
+    /// Get full palette colors for all seasons in the user's DNA
+    /// - Returns: Array of ColorItem representing the complete palette
+    func getFullPaletteColors() -> [ColorItem] {
+        let colorDB = ColorDatabaseManager.shared
+        var combinedColors: [ColorData] = []
+
+        // Always include primary season colors
+        combinedColors.append(contentsOf: colorDB.getColors(for: seasonDNA.primary.season))
+
+        // Include secondary and tertiary if available
+        if let secondary = seasonDNA.secondary?.season {
+            combinedColors.append(contentsOf: colorDB.getColors(for: secondary))
+        }
+
+        if let tertiary = seasonDNA.tertiary?.season {
+            combinedColors.append(contentsOf: colorDB.getColors(for: tertiary))
+        }
+
+        // Build set of recommended color hex values for highlighting
+        var recommendedHexes: Set<String> = []
+        if personalizedData.hasEnhancedColorData,
+           let enhanced = personalizedData.enhancedColorData {
+            let recommendedItems = enhanced.bestNeutrals.colors +
+                                  enhanced.bestAccents.colors +
+                                  enhanced.bestBaseColors.colors
+            recommendedHexes = Set(recommendedItems.map { $0.normalizedHex })
+        } else {
+            let hexes = bestNeutrals.colors + bestAccents.colors + bestBaseColors.colors
+            recommendedHexes = Set(hexes.map { normalizeHex($0) })
+        }
+
+        // Convert to ColorItems, marking those that are recommended
+        var seenHexes: Set<String> = []
+        var colorItems: [ColorItem] = []
+
+        for colorData in combinedColors {
+            let normalized = colorData.normalizedHex
+            if seenHexes.contains(normalized) { continue }
+            seenHexes.insert(normalized)
+            let isRecommended = recommendedHexes.contains(normalized)
+            colorItems.append(colorData.toColorItem(isRecommended: isRecommended))
+        }
+
+        return colorItems
+    }
+
     // MARK: - Private Helper Methods
 
     private func createColorItemFromHex(_ hexValue: String, isAvoidColor: Bool = false) -> ColorItem? {
@@ -485,6 +531,12 @@ class PersonalizedSeasonViewModel: ObservableObject {
         } else {
             return "Perfect match for your pure \(seasonDNA.primary.season) coloring"
         }
+    }
+
+    /// Normalize a hex string to include leading '#' and lowercase letters
+    private func normalizeHex(_ hex: String) -> String {
+        let cleaned = hex.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return cleaned.hasPrefix("#") ? cleaned : "#\(cleaned)"
     }
 
 }
