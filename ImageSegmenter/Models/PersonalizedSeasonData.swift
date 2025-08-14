@@ -88,17 +88,20 @@ struct ColorItem: Codable, Identifiable {
     let hexValue: String
     let usageContext: String
     let harmonyReason: String
+    var isRecommended: Bool
 
     init(id: UUID = UUID(),
          name: String,
          hexValue: String,
          usageContext: String,
-         harmonyReason: String) {
+         harmonyReason: String,
+         isRecommended: Bool = false) {
         self.id = id
         self.name = name
         self.hexValue = hexValue
         self.usageContext = usageContext
         self.harmonyReason = harmonyReason
+        self.isRecommended = isRecommended
     }
 
     /// Normalized hex value (lowercase with #)
