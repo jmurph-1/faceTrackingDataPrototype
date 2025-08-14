@@ -183,38 +183,30 @@ struct PersonalizedSeasonView: View {
                 // Use enhanced color data if available
                 VStack(spacing: 16) {
 
-                    DisclosureGroup("Neutral Colors") {
-                        EnhancedColorGrid(
-                            title: "Your Best Neutral Colors",
-                            description: enhancedData.bestNeutrals.description,
-                            colorItems: enhancedData.bestNeutrals.colors,
-                            columns: 4
-                        )
-                    }
-                    .accentColor(primaryColor)
+                    EnhancedColorGrid(
+                        title: "Best Neutrals",
+                        description: enhancedData.bestNeutrals.description,
+                        colorItems: enhancedData.bestNeutrals.colors,
+                        columns: 4
+                    )
 
                     // Optional collapsible category sections
-                    DisclosureGroup("Accent Colors") {
-                        EnhancedColorGrid(
-                            title: "Best Accents",
-                            description: enhancedData.bestAccents.description,
-                            colorItems: enhancedData.bestAccents.colors,
-                            columns: 4
-                        )
-                        .padding(.top)
-                    }
-                    .accentColor(primaryColor)
-
-                    DisclosureGroup("Base Colors") {
-                        EnhancedColorGrid(
-                            title: "Best Base Colors",
-                            description: enhancedData.bestBaseColors.description,
-                            colorItems: enhancedData.bestBaseColors.colors,
-                            columns: 4
-                        )
-                        .padding(.top)
-                    }
-                    .accentColor(primaryColor)
+                    EnhancedColorGrid(
+                        title: "Best Accents",
+                        description: enhancedData.bestAccents.description,
+                        colorItems: enhancedData.bestAccents.colors,
+                        columns: 4
+                    )
+                    .padding(.top)
+              
+                    EnhancedColorGrid(
+                        title: "Best Base Colors",
+                        description: enhancedData.bestBaseColors.description,
+                        colorItems: enhancedData.bestBaseColors.colors,
+                        columns: 4
+                    )
+                    .padding(.top)
+                        
                 }
             } else {
                 // Fallback to basic color display
