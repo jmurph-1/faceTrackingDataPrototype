@@ -340,11 +340,18 @@ extension UIImage.Orientation {
     switch deviceOrientation {
     case .portrait:
       return .up
+    case .portraitUpsideDown:
+      // When the device is upside down we need to rotate the image 180 degrees
+      // otherwise the image will be processed as if it were upright which
+      // results in incorrect landmark and segmentation coordinates.
+      return .down
     case .landscapeLeft:
       return .left
     case .landscapeRight:
       return .right
     default:
+      // Treat all other orientations (face up, face down, unknown) as the
+      // default `.up` orientation.
       return .up
     }
   }
