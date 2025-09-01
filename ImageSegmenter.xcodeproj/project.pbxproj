@@ -523,27 +523,27 @@
 		BF6EBB812B1EB75B00CD13FB /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */,
-				523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */,
-				523113402DE7F38A00FCFC91 /* PersonalizationService.swift */,
 				523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */,
-				523113302DDEA6C900FCFC91 /* ColorExtractor.swift */,
-				5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */,
-				5222FE282DD4729F00EF3C65 /* ClassificationService.swift */,
-				5222FE292DD4729F00EF3C65 /* ToastService.swift */,
-				5222FE202DD46A7900EF3C65 /* SegmentationService.swift */,
-				5222FE1E2DD4690200EF3C65 /* CameraService.swift */,
-				5222FDD92DD40F8400EF3C65 /* CoreDataManager.swift */,
-				5222FDDA2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift */,
-				5222FDDB2DD40F8400EF3C65 /* FrameQualityService.swift */,
-				5231129D2DD4E5E900FCFC91 /* FrameQualityEvaluator.swift */,
-				5222FDDC2DD40F8400EF3C65 /* SeasonClassifier.swift */,
-				BF6EBB822B1EB75B00CD13FB /* ImageSegmenterService.swift */,
 				BF6EBB832B1EB75B00CD13FB /* CameraFeedService.swift */,
-				52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */,
+				5222FE1E2DD4690200EF3C65 /* CameraService.swift */,
+				5222FE282DD4729F00EF3C65 /* ClassificationService.swift */,
+				523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */,
+				523113302DDEA6C900FCFC91 /* ColorExtractor.swift */,
+				5222FDD92DD40F8400EF3C65 /* CoreDataManager.swift */,
 				5222FD9C2DD3AF6100EF3C65 /* FaceLandmarkerService.swift */,
 				5222FD9D2DD3AF6100EF3C65 /* FaceLandmarkRenderer.swift */,
+				5222FDDA2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift */,
+				5231129D2DD4E5E900FCFC91 /* FrameQualityEvaluator.swift */,
+				5222FDDB2DD40F8400EF3C65 /* FrameQualityService.swift */,
+				BF6EBB822B1EB75B00CD13FB /* ImageSegmenterService.swift */,
+				52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */,
+				523113402DE7F38A00FCFC91 /* PersonalizationService.swift */,
+				523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */,
+				5231129A2DD48A8900FCFC91 /* RendererProtocol.swift */,
+				5222FDDC2DD40F8400EF3C65 /* SeasonClassifier.swift */,
+				5222FE202DD46A7900EF3C65 /* SegmentationService.swift */,
 				523113362DDFD8D000FCFC91 /* Shaders.metal */,
+				5222FE292DD4729F00EF3C65 /* ToastService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -747,6 +747,7 @@
 			shellPath = /bin/sh;
 			shellScript = (
 				"\"$SRCROOT/RunScripts/download_models.sh\"",
+				"",
 				"",
 				"",
 				"",

@@ -23,14 +23,39 @@ class PersonalizationService {
 
     weak var delegate: PersonalizationServiceDelegate?
     private let openAIBaseURL = "https://api.openai.com/v1/chat/completions"
-    private let model = "gpt-4o-mini" // Using cost-effective model for color analysis
-    private let maxTokens = 2500 // Increased to prevent JSON truncation
+    private let model = "gpt-4o" // Updated model for better color analysis performance
+    private let maxTokens = 5000 // Increased for system instructions + response
     private let temperature = 0.7 // Balanced creativity and consistency
 
     // MARK: - Timeout and Retry Configuration
     private let requestTimeout: TimeInterval = 45.0 // Increased from 30 to 45 seconds
     private let maxRetryAttempts = 2
     private let retryDelay: TimeInterval = 2.0
+
+    // MARK: - Custom GPT System Instructions
+    
+    private func createSystemInstructions() -> String {
+        return """
+        You are an expert color analyst specializing in Season DNA analysis using the 12-season color system. Your role is to analyze facial coloring data and create comprehensive Season DNA profiles that go beyond traditional seasonal color analysis.
+
+        ## Core Task
+        Analyze facial coloring data and create Season DNA profiles identifying primary/secondary/tertiary season influences with weight percentages and enhanced color recommendations.
+
+        ## Critical Requirements:
+        - **Exactly 3 colors per category**: bestNeutrals, bestAccents, bestBaseColors must each contain exactly 3 colors
+        - **Valid hex format**: All colors must use 6-character hex (#RRGGBB)
+        - **Season weights**: Must total exactly 1.0, primary 60-85%, secondary 15-35%, tertiary 5-15%
+        - **Season accuracy**: Use authentic 12-season system knowledge (True Spring, Light Spring, Bright Spring, True Summer, Light Summer, Soft Summer, True Autumn, Soft Autumn, Dark Autumn, True Winter, Bright Winter, Dark Winter)
+
+        ## Analysis Focus:
+        - Explain genetic/hereditary color aspects
+        - Provide specific reasoning for individual DNA blend vs generic advice
+        - Include detailed usage context and harmony explanations
+        - Confidence scores: 0.70-0.95 range
+
+        **Output**: Valid JSON only, no additional text. Follow the exact structure provided in the user prompt.
+        """
+    }
 
     // MARK: - Public Methods
 
@@ -68,6 +93,10 @@ class PersonalizationService {
         let requestBody: [String: Any] = [
             "model": model,
             "messages": [
+                [
+                    "role": "system",
+                    "content": createSystemInstructions()
+                ],
                 [
                     "role": "user",
                     "content": prompt
@@ -275,7 +304,6 @@ class PersonalizationService {
             userCharacteristics: basicData.userCharacteristics,
             personalizedOverview: basicData.personalizedOverview,
             colorRecommendations: basicData.colorRecommendations,
-            stylingAdvice: basicData.stylingAdvice,
             emphasizedColors: basicData.emphasizedColors,
             colorsToAvoid: basicData.colorsToAvoid,
             confidence: basicData.confidence,
@@ -408,46 +436,7 @@ class PersonalizationService {
                     "colors": ["#hex1", "#hex2", "#hex3"],
                     "priority": "medium",
                     "usageInstructions": "How to incorporate these base colors"
-                },
-                "lipColors": {
-                    "description": "Lip colors that enhance their natural lip tone",
-                    "colors": ["#hex1", "#hex2"],
-                    "priority": "medium",
-                    "usageInstructions": "Makeup application tips"
-                },
-                "eyeColors": {
-                    "description": "Eye makeup that brings out their eye color",
-                    "colors": ["#hex1", "#hex2"],
-                    "priority": "medium",
-                    "usageInstructions": "Eye makeup guidance"
                 }
-            },
-            "stylingAdvice": {
-                "clothingAdvice": {
-                    "recommendation": "Clothing style suggestions based on their contrast level and coloring",
-                    "tips": ["Specific tip 1", "Specific tip 2"],
-                    "avoid": ["What to avoid"],
-                    "examples": ["Example outfit ideas"]
-                },
-                "accessoryAdvice": {
-                    "recommendation": "Accessory guidance for their coloring",
-                    "tips": ["Accessory tips"],
-                    "avoid": ["Accessories to avoid"],
-                    "examples": ["Accessory examples"]
-                },
-                "patternAdvice": {
-                    "recommendation": "Pattern recommendations based on contrast level",
-                    "tips": ["Pattern tips"],
-                    "avoid": ["Patterns to avoid"],
-                    "examples": ["Pattern examples"]
-                },
-                "metalAdvice": {
-                    "recommendation": "Metal recommendations (gold/silver/rose gold)",
-                    "tips": ["Metal tips"],
-                    "avoid": ["Metals to avoid"],
-                    "examples": ["Metal examples"]
-                },
-                "specialConsiderations": "Any special considerations based on their unique color combination"
             },
             "confidence": 0.85
         }
@@ -481,47 +470,7 @@ class PersonalizationService {
                 priority: "medium",
                 usageInstructions: "Ideal for jackets, pants, and dresses"
             ),
-            lipColors: ColorRecommendation(
-                description: "Lip colors that enhance your features",
-                colors: ["#CD5C5C", "#D2691E", "#BC8F8F", "#F08080"],
-                priority: "medium",
-                usageInstructions: "Choose intensity based on occasion"
-            ),
-            eyeColors: ColorRecommendation(
-                description: "Eye makeup colors that make your eyes pop",
-                colors: ["#8B7D6B", "#A0522D", "#CD853F", "#DEB887"],
-                priority: "medium",
-                usageInstructions: "Use to enhance your natural eye color"
-            ),
             hairColorSuggestions: nil
-        )
-
-        let basicStylingAdvice = PersonalizedStylingAdvice(
-            clothingAdvice: StylingRecommendation(
-                recommendation: "Focus on rich, earthy tones that complement your \(detailedSeasonName) coloring",
-                tips: ["Layer different tones of your season", "Choose quality fabrics in your colors"],
-                avoid: ["Colors that wash you out"],
-                examples: ["Earth-toned sweater with cream pants"]
-            ),
-            accessoryAdvice: StylingRecommendation(
-                recommendation: "Choose accessories in your season's palette",
-                tips: ["Metal tones that complement your coloring", "Scarves in your accent colors"],
-                avoid: ["Metals that clash with your undertones"],
-                examples: ["Gold jewelry", "Warm-toned handbags"]
-            ),
-            patternAdvice: StylingRecommendation(
-                recommendation: "Patterns that work with your contrast level",
-                tips: ["Choose patterns appropriate for your contrast", "Mix patterns carefully"],
-                avoid: ["Patterns that overwhelm your features"],
-                examples: ["Subtle plaids", "Organic patterns"]
-            ),
-            metalAdvice: StylingRecommendation(
-                recommendation: "Metals that enhance your coloring",
-                tips: ["Choose metals based on your undertones"],
-                avoid: ["Metals that create harsh contrast"],
-                examples: ["Warm gold tones", "Antique brass"]
-            ),
-            specialConsiderations: "Your \(detailedSeasonName) coloring benefits from warm, rich tones and avoiding overly cool colors."
         )
 
         return PersonalizedSeasonData(
@@ -530,8 +479,7 @@ class PersonalizationService {
             userCharacteristics: "Your coloring shows the classic characteristics of a \(detailedSeasonName) type.",
             personalizedOverview: "Your \(detailedSeasonName) coloring is enhanced by warm, rich colors that complement your natural beauty.",
             colorRecommendations: basicColorRecommendations,
-            stylingAdvice: basicStylingAdvice,
-            emphasizedColors: ["#8B7355", "#B8860B", "#2F4F4F", "#CD5C5C", "#8B7D6B"],
+            emphasizedColors: ["#8B7355", "#B8860B", "#2F4F4F"],
             colorsToAvoid: ["#FF69B4", "#00FFFF", "#FF00FF"],
             confidence: analysisResult.confidence
         )
@@ -567,6 +515,10 @@ class PersonalizationService {
         let requestBody: [String: Any] = [
             "model": model,
             "messages": [
+                [
+                    "role": "system",
+                    "content": createSystemInstructions()
+                ],
                 [
                     "role": "user",
                     "content": prompt
@@ -695,13 +647,11 @@ class PersonalizationService {
               let emphasizedColors = json["emphasizedColors"] as? [String],
               let colorsToAvoid = json["colorsToAvoid"] as? [String],
               let colorRecommendationsJSON = json["colorRecommendations"] as? [String: Any],
-              let stylingAdviceJSON = json["stylingAdvice"] as? [String: Any],
               let confidence = json["confidence"] as? Double else {
             throw PersonalizationError.responseParsingFailed
         }
 
         let colorRecommendations = try parseColorRecommendations(colorRecommendationsJSON)
-        let stylingAdvice = try parseStylingAdvice(stylingAdviceJSON)
 
         return PersonalizedSeasonData(
             baseSeason: detailedSeasonName,
@@ -709,7 +659,6 @@ class PersonalizationService {
             userCharacteristics: userCharacteristics,
             personalizedOverview: personalizedOverview,
             colorRecommendations: colorRecommendations,
-            stylingAdvice: stylingAdvice,
             emphasizedColors: emphasizedColors,
             colorsToAvoid: colorsToAvoid,
             confidence: Float(confidence),
@@ -720,9 +669,7 @@ class PersonalizationService {
     func parseColorRecommendations(_ json: [String: Any]) throws -> PersonalizedColorRecommendations {
         guard let bestNeutralsJSON = json["bestNeutrals"] as? [String: Any],
               let bestAccentsJSON = json["bestAccents"] as? [String: Any],
-              let bestBaseColorsJSON = json["bestBaseColors"] as? [String: Any],
-              let lipColorsJSON = json["lipColors"] as? [String: Any],
-              let eyeColorsJSON = json["eyeColors"] as? [String: Any] else {
+              let bestBaseColorsJSON = json["bestBaseColors"] as? [String: Any] else {
             throw PersonalizationError.responseParsingFailed
         }
 
@@ -730,8 +677,6 @@ class PersonalizationService {
             bestNeutrals: try parseColorRecommendation(bestNeutralsJSON),
             bestAccents: try parseColorRecommendation(bestAccentsJSON),
             bestBaseColors: try parseColorRecommendation(bestBaseColorsJSON),
-            lipColors: try parseColorRecommendation(lipColorsJSON),
-            eyeColors: try parseColorRecommendation(eyeColorsJSON),
             hairColorSuggestions: nil // Optional field
         )
     }
@@ -749,40 +694,6 @@ class PersonalizationService {
             colors: colors,
             priority: priority,
             usageInstructions: usageInstructions
-        )
-    }
-
-    func parseStylingAdvice(_ json: [String: Any]) throws -> PersonalizedStylingAdvice {
-        guard let clothingAdviceJSON = json["clothingAdvice"] as? [String: Any],
-              let accessoryAdviceJSON = json["accessoryAdvice"] as? [String: Any],
-              let patternAdviceJSON = json["patternAdvice"] as? [String: Any],
-              let metalAdviceJSON = json["metalAdvice"] as? [String: Any],
-              let specialConsiderations = json["specialConsiderations"] as? String else {
-            throw PersonalizationError.responseParsingFailed
-        }
-
-        return PersonalizedStylingAdvice(
-            clothingAdvice: try parseStylingRecommendation(clothingAdviceJSON),
-            accessoryAdvice: try parseStylingRecommendation(accessoryAdviceJSON),
-            patternAdvice: try parseStylingRecommendation(patternAdviceJSON),
-            metalAdvice: try parseStylingRecommendation(metalAdviceJSON),
-            specialConsiderations: specialConsiderations
-        )
-    }
-
-    private func parseStylingRecommendation(_ json: [String: Any]) throws -> StylingRecommendation {
-        guard let recommendation = json["recommendation"] as? String,
-              let tips = json["tips"] as? [String],
-              let avoid = json["avoid"] as? [String],
-              let examples = json["examples"] as? [String] else {
-            throw PersonalizationError.responseParsingFailed
-        }
-
-        return StylingRecommendation(
-            recommendation: recommendation,
-            tips: tips,
-            avoid: avoid,
-            examples: examples
         )
     }
 

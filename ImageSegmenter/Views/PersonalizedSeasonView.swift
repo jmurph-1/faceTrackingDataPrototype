@@ -250,8 +250,6 @@ struct PersonalizedSeasonView: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 24) {
             moduleCard("Your Characteristics", icon: "person.crop.rectangle.fill", color: primaryColor)
             moduleCard("Color Recommendations", icon: "paintpalette.fill", color: primaryColor)
-            moduleCard("Styling Guide", icon: "tshirt.fill", color: primaryColor)
-            moduleCard("Makeup & Beauty", icon: "heart.circle.fill", color: primaryColor)
         }
         .padding(.horizontal, 16)
     }
@@ -308,10 +306,6 @@ struct PersonalizedSeasonView: View {
                 characteristicsView
             case "Color Recommendations":
                 colorRecommendationsView
-            case "Styling Guide":
-                stylingGuideView
-            case "Makeup & Beauty":
-                makeupAndBeautyView
             default:
                 EmptyView()
             }
@@ -341,19 +335,6 @@ extension PersonalizedSeasonView {
             Text(viewModel.personalizedOverview)
                 .font(.body)
 
-            Text("Special Considerations")
-                .font(.headline)
-                .foregroundColor(textColor)
-                .padding(.top)
-
-            Text(viewModel.specialConsiderations)
-                .font(.body)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(accentColor.opacity(0.1))
-                        .shadow(color: primaryColor.opacity(0.1), radius: 5, x: 0, y: 2)
-                )
         }
     }
 
@@ -418,90 +399,7 @@ extension PersonalizedSeasonView {
         )
     }
 
-    var stylingGuideView: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            stylingSection("Clothing", recommendation: viewModel.clothingAdvice)
-            stylingSection("Accessories", recommendation: viewModel.accessoryAdvice)
-            stylingSection("Patterns", recommendation: viewModel.patternAdvice)
-            stylingSection("Metals", recommendation: viewModel.metalAdvice)
-        }
-    }
 
-    func stylingSection(_ title: String, recommendation: StylingRecommendation) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(textColor)
-
-            Text(recommendation.recommendation)
-                .font(.body)
-
-            if !recommendation.tips.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Tips:")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(accentColor)
-
-                    ForEach(recommendation.tips, id: \.self) { tip in
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.caption)
-                                .foregroundColor(accentColor)
-                            Text(tip)
-                                .font(.caption)
-                        }
-                    }
-                }
-            }
-
-            if !recommendation.avoid.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Avoid:")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(Color.red.opacity(0.7))
-
-                    ForEach(recommendation.avoid, id: \.self) { item in
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.caption)
-                                .foregroundColor(Color.red.opacity(0.7))
-                            Text(item)
-                                .font(.caption)
-                        }
-                    }
-                }
-            }
-        }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(backgroundColor)
-                .shadow(color: primaryColor.opacity(0.1), radius: 5, x: 0, y: 2)
-        )
-    }
-
-    var makeupAndBeautyView: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            colorRecommendationSection(
-                title: "Lip Colors",
-                recommendation: viewModel.lipColors
-            )
-
-            colorRecommendationSection(
-                title: "Eye Makeup",
-                recommendation: viewModel.eyeColors
-            )
-
-            if let hairRecommendation = viewModel.hairColorSuggestions {
-                colorRecommendationSection(
-                    title: "Hair Color Suggestions",
-                    recommendation: hairRecommendation
-                )
-            }
-        }
-    }
 
     private func getPriorityColor(_ priority: String) -> Color {
         switch priority.lowercased() {

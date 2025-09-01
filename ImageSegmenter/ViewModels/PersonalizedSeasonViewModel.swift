@@ -130,39 +130,11 @@ class PersonalizedSeasonViewModel: ObservableObject {
         return personalizedData.colorRecommendations.bestBaseColors
     }
 
-    var lipColors: ColorRecommendation {
-        return personalizedData.colorRecommendations.lipColors
-    }
-
-    var eyeColors: ColorRecommendation {
-        return personalizedData.colorRecommendations.eyeColors
-    }
 
     var hairColorSuggestions: ColorRecommendation? {
         return personalizedData.colorRecommendations.hairColorSuggestions
     }
 
-    // MARK: - Styling Advice
-
-    var clothingAdvice: StylingRecommendation {
-        return personalizedData.stylingAdvice.clothingAdvice
-    }
-
-    var accessoryAdvice: StylingRecommendation {
-        return personalizedData.stylingAdvice.accessoryAdvice
-    }
-
-    var patternAdvice: StylingRecommendation {
-        return personalizedData.stylingAdvice.patternAdvice
-    }
-
-    var metalAdvice: StylingRecommendation {
-        return personalizedData.stylingAdvice.metalAdvice
-    }
-
-    var specialConsiderations: String {
-        return personalizedData.stylingAdvice.specialConsiderations
-    }
 
     // MARK: - Helper Methods
 
@@ -170,36 +142,49 @@ class PersonalizedSeasonViewModel: ObservableObject {
     /// - Parameter recommendation: The color recommendation
     /// - Returns: Array of SwiftUI Color objects
     func getColorsForRecommendation(_ recommendation: ColorRecommendation) -> [Color] {
-        return recommendation.colors.compactMap { hexString in
+        #if DEBUG
+        print("🎨 Processing colors for recommendation: \(recommendation.description)")
+        print("🎨 Input colors: \(recommendation.colors)")
+        #endif
+        
+        let processedColors = recommendation.colors.compactMap { hexString in
             if let uiColor = UIColor(hex: hexString) {
+                #if DEBUG
+                print("✅ Successfully parsed: \(hexString)")
+                #endif
                 return Color(uiColor)
+            } else {
+                #if DEBUG
+                print("❌ Failed to parse: \(hexString)")
+                #endif
+                return nil
             }
-            return nil
         }
+        
+        #if DEBUG
+        print("🎨 Output: \(processedColors.count) valid colors")
+        #endif
+        
+        return processedColors
     }
 
     /// Get all color recommendations grouped by category
     /// - Returns: Dictionary with category names as keys and recommendations as values
     func getAllColorRecommendations() -> [String: ColorRecommendation] {
+        #if DEBUG
+        print("🔍 getAllColorRecommendations called:")
+        print("   Best Neutrals: \(bestNeutrals.colors.count) colors")
+        print("   Best Accents: \(bestAccents.colors.count) colors")
+        print("   Best Base Colors: \(bestBaseColors.colors.count) colors")
+        #endif
+        
         return [
             "Best Neutrals": bestNeutrals,
             "Best Accents": bestAccents,
-            "Best Base Colors": bestBaseColors,
-            "Lip Colors": lipColors,
-            "Eye Colors": eyeColors
+            "Best Base Colors": bestBaseColors
         ]
     }
 
-    /// Get all styling recommendations grouped by category
-    /// - Returns: Dictionary with category names as keys and recommendations as values
-    func getAllStylingRecommendations() -> [String: StylingRecommendation] {
-        return [
-            "Clothing": clothingAdvice,
-            "Accessories": accessoryAdvice,
-            "Patterns": patternAdvice,
-            "Metals": metalAdvice
-        ]
-    }
 
     /// Check if personalization data is high confidence
     /// - Returns: True if confidence is above 75%
@@ -376,18 +361,14 @@ class PersonalizedSeasonViewModel: ObservableObject {
             return [
                 "Best Neutrals": enhancedData.bestNeutrals.colors,
                 "Best Accents": enhancedData.bestAccents.colors,
-                "Best Base Colors": enhancedData.bestBaseColors.colors,
-                "Lip Colors": enhancedData.lipColors.colors,
-                "Eye Colors": enhancedData.eyeColors.colors
+                "Best Base Colors": enhancedData.bestBaseColors.colors
             ]
         } else {
             // Fallback: Generate ColorItems from basic recommendations
             return [
                 "Best Neutrals": bestNeutrals.colors.compactMap { createColorItemFromHex($0) },
                 "Best Accents": bestAccents.colors.compactMap { createColorItemFromHex($0) },
-                "Best Base Colors": bestBaseColors.colors.compactMap { createColorItemFromHex($0) },
-                "Lip Colors": lipColors.colors.compactMap { createColorItemFromHex($0) },
-                "Eye Colors": eyeColors.colors.compactMap { createColorItemFromHex($0) }
+                "Best Base Colors": bestBaseColors.colors.compactMap { createColorItemFromHex($0) }
             ]
         }
     }
@@ -667,9 +648,6 @@ extension PersonalizedSeasonViewModel {
 
         let colorRecommendations = getAllColorRecommendations()
         summary.append("\(colorRecommendations.count) color recommendation categories")
-
-        let stylingRecommendations = getAllStylingRecommendations()
-        summary.append("\(stylingRecommendations.count) styling advice categories")
 
         return summary
     }

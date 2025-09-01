@@ -129,21 +129,15 @@ struct EnhancedColorRecommendations: Codable {
     let bestNeutrals: DetailedColorRecommendation
     let bestAccents: DetailedColorRecommendation
     let bestBaseColors: DetailedColorRecommendation
-    let lipColors: DetailedColorRecommendation
-    let eyeColors: DetailedColorRecommendation
     let hairColorSuggestions: DetailedColorRecommendation?
 
     init(bestNeutrals: DetailedColorRecommendation,
          bestAccents: DetailedColorRecommendation,
          bestBaseColors: DetailedColorRecommendation,
-         lipColors: DetailedColorRecommendation,
-         eyeColors: DetailedColorRecommendation,
          hairColorSuggestions: DetailedColorRecommendation? = nil) {
         self.bestNeutrals = bestNeutrals
         self.bestAccents = bestAccents
         self.bestBaseColors = bestBaseColors
-        self.lipColors = lipColors
-        self.eyeColors = eyeColors
         self.hairColorSuggestions = hairColorSuggestions
     }
 }
@@ -163,7 +157,6 @@ struct PersonalizedSeasonData: Codable {
         case userCharacteristics
         case personalizedOverview
         case colorRecommendations
-        case stylingAdvice
         case emphasizedColors
         case colorsToAvoid
         case confidence
@@ -195,9 +188,6 @@ struct PersonalizedSeasonData: Codable {
 
     /// Color recommendations specific to the user
     let colorRecommendations: PersonalizedColorRecommendations
-
-    /// Styling advice tailored to the user
-    let stylingAdvice: PersonalizedStylingAdvice
 
     /// Best colors from the palette for this specific user
     let emphasizedColors: [String] // Hex color values
@@ -232,7 +222,6 @@ struct PersonalizedSeasonData: Codable {
         userCharacteristics: String,
         personalizedOverview: String,
         colorRecommendations: PersonalizedColorRecommendations,
-        stylingAdvice: PersonalizedStylingAdvice,
         emphasizedColors: [String],
         colorsToAvoid: [String],
         confidence: Float,
@@ -248,7 +237,6 @@ struct PersonalizedSeasonData: Codable {
         self.userCharacteristics = userCharacteristics
         self.personalizedOverview = personalizedOverview
         self.colorRecommendations = colorRecommendations
-        self.stylingAdvice = stylingAdvice
         self.emphasizedColors = emphasizedColors
         self.colorsToAvoid = colorsToAvoid
         self.confidence = confidence
@@ -272,12 +260,6 @@ struct PersonalizedColorRecommendations: Codable {
     /// Base colors that work particularly well
     let bestBaseColors: ColorRecommendation
 
-    /// Lip color recommendations
-    let lipColors: ColorRecommendation
-
-    /// Eye makeup color recommendations
-    let eyeColors: ColorRecommendation
-
     /// Hair color suggestions (if applicable)
     let hairColorSuggestions: ColorRecommendation?
 }
@@ -299,42 +281,6 @@ struct ColorRecommendation: Codable {
     let usageInstructions: String
 }
 
-// MARK: - PersonalizedStylingAdvice
-
-struct PersonalizedStylingAdvice: Codable {
-
-    /// Clothing style recommendations
-    let clothingAdvice: StylingRecommendation
-
-    /// Accessory recommendations
-    let accessoryAdvice: StylingRecommendation
-
-    /// Pattern and print recommendations
-    let patternAdvice: StylingRecommendation
-
-    /// Metal recommendations (gold, silver, etc.)
-    let metalAdvice: StylingRecommendation
-
-    /// Special considerations for this user
-    let specialConsiderations: String
-}
-
-// MARK: - StylingRecommendation
-
-struct StylingRecommendation: Codable {
-
-    /// Main recommendation text
-    let recommendation: String
-
-    /// Specific tips
-    let tips: [String]
-
-    /// Things to avoid
-    let avoid: [String]
-
-    /// Examples
-    let examples: [String]
-}
 
 // MARK: - Convenience Extensions
 

@@ -79,7 +79,6 @@ struct MockPersonalizedSeasonDataFactory {
             userCharacteristics: "You have \(season.lowercased()) coloring with \(getCharacteristics(for: season))",
             personalizedOverview: getOverview(for: season),
             colorRecommendations: createColorRecommendations(for: season),
-            stylingAdvice: createStylingAdvice(for: season),
             emphasizedColors: emphasizedColors,
             colorsToAvoid: colorsToAvoid,
             confidence: seasonDNA.classificationConfidence,
@@ -128,18 +127,6 @@ struct MockPersonalizedSeasonDataFactory {
                     priority: "medium",
                     usageInstructions: "Great for basics and work attire"
                 ),
-                lipColors: ColorRecommendation(
-                    description: "Bright, clear lip colors",
-                    colors: ["#FF6B6B", "#FF8C94"],
-                    priority: "high",
-                    usageInstructions: "Choose based on occasion and outfit intensity"
-                ),
-                eyeColors: ColorRecommendation(
-                    description: "Clear, bright eye colors",
-                    colors: ["#4ECDC4", "#45B7D1"],
-                    priority: "medium",
-                    usageInstructions: "Use for definition and brightness"
-                ),
                 hairColorSuggestions: ColorRecommendation(
                     description: "Hair colors that complement your brightness",
                     colors: ["#8B4513", "#D2691E"],
@@ -172,18 +159,6 @@ struct MockPersonalizedSeasonDataFactory {
                 priority: "high",
                 usageInstructions: "Everyday essentials"
             ),
-            lipColors: ColorRecommendation(
-                description: "Flattering lip colors",
-                colors: ["#DC143C", "#B22222"],
-                priority: "medium",
-                usageInstructions: "Choose intensity based on occasion"
-            ),
-            eyeColors: ColorRecommendation(
-                description: "Enhancing eye colors",
-                colors: ["#8B4513", "#A0522D"],
-                priority: "medium",
-                usageInstructions: "Bring out your eye color"
-            ),
             hairColorSuggestions: ColorRecommendation(
                 description: "Hair color suggestions",
                 colors: ["#654321", "#8B4513"],
@@ -193,35 +168,6 @@ struct MockPersonalizedSeasonDataFactory {
         )
     }
 
-    private static func createStylingAdvice(for season: String) -> PersonalizedStylingAdvice {
-        return PersonalizedStylingAdvice(
-            clothingAdvice: StylingRecommendation(
-                recommendation: "Choose fabrics and cuts that complement your coloring",
-                tips: ["Opt for structured pieces", "Choose quality over quantity"],
-                avoid: ["Muddy colors", "Overly fussy details"],
-                examples: ["Blazers", "Classic trousers", "Quality knits"]
-            ),
-            accessoryAdvice: StylingRecommendation(
-                recommendation: "Select accessories that enhance your palette",
-                tips: ["Match metals to your undertones", "Choose clear gemstones"],
-                avoid: ["Overly ornate pieces", "Clashing metals"],
-                examples: ["Classic watches", "Simple jewelry", "Quality handbags"]
-            ),
-            patternAdvice: StylingRecommendation(
-                recommendation: "Patterns should complement your natural contrast level",
-                tips: ["Scale patterns to your body size", "Mix patterns carefully"],
-                avoid: ["Overwhelming patterns", "Too many patterns at once"],
-                examples: ["Stripes", "Classic plaids", "Subtle florals"]
-            ),
-            metalAdvice: StylingRecommendation(
-                recommendation: "Choose metals that harmonize with your undertones",
-                tips: ["Stick to one metal family", "Consider rose gold as alternative"],
-                avoid: ["Mixing warm and cool metals", "Overly trendy finishes"],
-                examples: ["Gold jewelry", "Brass hardware", "Warm-toned watches"]
-            ),
-            specialConsiderations: "Your unique coloring allows for both warm and cool tones when they're clear and bright."
-        )
-    }
 
     private static func createEnhancedColorData(for season: String, emphasizedColors: [String]) -> EnhancedColorRecommendations {
         let colorItems = emphasizedColors.enumerated().map { index, hex in
@@ -244,9 +190,7 @@ struct MockPersonalizedSeasonDataFactory {
         return EnhancedColorRecommendations(
             bestNeutrals: bestNeutrals,
             bestAccents: bestNeutrals,
-            bestBaseColors: bestNeutrals,
-            lipColors: bestNeutrals,
-            eyeColors: bestNeutrals
+            bestBaseColors: bestNeutrals
         )
     }
 }

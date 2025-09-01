@@ -89,28 +89,35 @@ struct SeasonPaletteExplorerView: View {
     private func paletteGrid(for items: [ColorItem]) -> some View {
         LazyVGrid(columns: columns, spacing: 8) {
             ForEach(items) { item in
-                VStack(spacing: 4) {
+                VStack(alignment: .center, spacing: 4) {
                     ZStack(alignment: .topTrailing) {
                         Circle()
                             .fill(Color(hex: item.hexValue))
                             .frame(width: 40, height: 40)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            )
                             .onLongPressGesture {
                                 selectedColor = item
                             }
 
                         Button(action: { toggleFavorite(item) }) {
                             Image(systemName: favoriteIds.contains(item.id) ? "star.fill" : "star")
-                                .font(.system(size: 12))
+                                .font(.system(size: 10))
                                 .foregroundColor(.yellow)
-                                .padding(4)
                         }
+                        .buttonStyle(PlainButtonStyle())
+                        .offset(x: -2, y: 2)
                     }
 
                     Text(item.name)
                         .font(.caption2)
                         .multilineTextAlignment(.center)
-                        .frame(width: 44)
+                        .frame(width: 44, height: 24, alignment: .top)
+                        .lineLimit(2)
                 }
+                .frame(height: 68)
             }
         }
         .padding(.vertical, 4)

@@ -121,12 +121,18 @@ extension UIColor {
         let redComponent, greenComponent, blueComponent, alphaComponent: CGFloat
 
         let hex = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let scanner = Scanner(string: hex.hasPrefix("#") ? String(hex.dropFirst()) : hex)
+        let cleanHex = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
+        let scanner = Scanner(string: cleanHex)
         var hexNumber: UInt64 = 0
 
-        guard scanner.scanHexInt64(&hexNumber) else { return nil }
+        guard scanner.scanHexInt64(&hexNumber) else { 
+            #if DEBUG
+            print("⚠️ Failed to parse hex color: '\(hex)'")
+            #endif
+            return nil 
+        }
 
-        switch hex.count {
+        switch cleanHex.count {
         case 3: // RGB (12-bit)
             redComponent = CGFloat((hexNumber & 0xF00) >> 8) / 15.0
             greenComponent = CGFloat((hexNumber & 0x0F0) >> 4) / 15.0

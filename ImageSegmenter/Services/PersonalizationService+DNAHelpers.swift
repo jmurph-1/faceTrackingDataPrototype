@@ -88,28 +88,10 @@ extension PersonalizationService {
             categoryExplanation: "Core colors for building outfits"
         )
 
-        let lipColors = DetailedColorRecommendation(
-            description: "Lip colors that enhance your natural beauty",
-            colors: generateFallbackLipColors(for: seasonDNA),
-            priority: "medium",
-            usageInstructions: "Choose based on occasion and intensity preference",
-            categoryExplanation: "Colors that complement your skin tone"
-        )
-
-        let eyeColors = DetailedColorRecommendation(
-            description: "Eye makeup colors that make your eyes pop",
-            colors: generateFallbackEyeColors(for: seasonDNA),
-            priority: "medium",
-            usageInstructions: "Use to enhance your natural eye color",
-            categoryExplanation: "Shadows and liners that bring out your eyes"
-        )
-
         return EnhancedColorRecommendations(
             bestNeutrals: bestNeutrals,
             bestAccents: bestAccents,
-            bestBaseColors: bestBaseColors,
-            lipColors: lipColors,
-            eyeColors: eyeColors
+            bestBaseColors: bestBaseColors
         )
     }
 
@@ -177,48 +159,6 @@ extension PersonalizationService {
 
     // MARK: - Fallback Color Generation
 
-    func generateFallbackLipColors(for seasonDNA: SeasonDNA) -> [ColorItem] {
-        let seasonName = seasonDNA.primary.season.lowercased()
-        var lipColors: [ColorItem] = []
-
-        if seasonName.contains("spring") {
-            lipColors.append(ColorItem(name: "Coral Pink", hexValue: "#FF7F7F", usageContext: "Perfect everyday lip color", harmonyReason: "Complements Spring warmth"))
-            lipColors.append(ColorItem(name: "Peach", hexValue: "#FFCBA4", usageContext: "Natural, fresh look", harmonyReason: "Enhances your warm undertones"))
-        } else if seasonName.contains("summer") {
-            lipColors.append(ColorItem(name: "Rose Pink", hexValue: "#F8BBD9", usageContext: "Elegant everyday color", harmonyReason: "Matches Summer's cool elegance"))
-            lipColors.append(ColorItem(name: "Berry", hexValue: "#B85450", usageContext: "Perfect for evening", harmonyReason: "Complements cool undertones"))
-        } else if seasonName.contains("autumn") {
-            lipColors.append(ColorItem(name: "Warm Red", hexValue: "#CC5500", usageContext: "Bold autumn statement", harmonyReason: "Matches your rich coloring"))
-            lipColors.append(ColorItem(name: "Burnt Orange", hexValue: "#CC5500", usageContext: "Unique autumn choice", harmonyReason: "Harmonizes with warm undertones"))
-        } else if seasonName.contains("winter") {
-            lipColors.append(ColorItem(name: "True Red", hexValue: "#DC143C", usageContext: "Classic winter glamour", harmonyReason: "Perfect for dramatic Winter coloring"))
-            lipColors.append(ColorItem(name: "Deep Berry", hexValue: "#8B0000", usageContext: "Sophisticated evening look", harmonyReason: "Complements cool undertones"))
-        }
-
-        return lipColors
-    }
-
-    func generateFallbackEyeColors(for seasonDNA: SeasonDNA) -> [ColorItem] {
-        let seasonName = seasonDNA.primary.season.lowercased()
-        var eyeColors: [ColorItem] = []
-
-        if seasonName.contains("spring") {
-            eyeColors.append(ColorItem(name: "Golden Brown", hexValue: "#B8860B", usageContext: "Natural everyday shadow", harmonyReason: "Brings out eye color warmth"))
-            eyeColors.append(ColorItem(name: "Warm Taupe", hexValue: "#C8B99C", usageContext: "Soft definition", harmonyReason: "Complements Spring warmth"))
-        } else if seasonName.contains("summer") {
-            eyeColors.append(ColorItem(name: "Soft Gray", hexValue: "#A9A9A9", usageContext: "Elegant definition", harmonyReason: "Perfect for Summer's softness"))
-            eyeColors.append(ColorItem(name: "Cool Brown", hexValue: "#8B4513", usageContext: "Natural enhancement", harmonyReason: "Complements cool undertones"))
-        } else if seasonName.contains("autumn") {
-            eyeColors.append(ColorItem(name: "Warm Brown", hexValue: "#A0522D", usageContext: "Rich everyday color", harmonyReason: "Matches Autumn richness"))
-            eyeColors.append(ColorItem(name: "Golden Bronze", hexValue: "#CD7F32", usageContext: "Glamorous evening look", harmonyReason: "Enhances warm coloring"))
-        } else if seasonName.contains("winter") {
-            eyeColors.append(ColorItem(name: "Charcoal", hexValue: "#36454F", usageContext: "Dramatic definition", harmonyReason: "Perfect for Winter contrast"))
-            eyeColors.append(ColorItem(name: "Cool Brown", hexValue: "#654321", usageContext: "Sophisticated look", harmonyReason: "Complements cool undertones"))
-        }
-
-        return eyeColors
-    }
-
     // MARK: - DNA-Enhanced Prompt Creation Methods
 
     func createDNATaskDescription() -> String {
@@ -263,7 +203,19 @@ extension PersonalizationService {
                     "description": "DNA-optimized neutral colors",
                     "colors": [
                         {
-                            "name": "Color name",
+                            "name": "Color name 1",
+                            "hexValue": "#RRGGBB",
+                            "usageContext": "How to use this color",
+                            "harmonyReason": "Why it works with their DNA"
+                        },
+                        {
+                            "name": "Color name 2",
+                            "hexValue": "#RRGGBB",
+                            "usageContext": "How to use this color",
+                            "harmonyReason": "Why it works with their DNA"
+                        },
+                        {
+                            "name": "Color name 3",
                             "hexValue": "#RRGGBB",
                             "usageContext": "How to use this color",
                             "harmonyReason": "Why it works with their DNA"
@@ -273,18 +225,63 @@ extension PersonalizationService {
                     "usageInstructions": "Specific DNA-based usage guidance",
                     "categoryExplanation": "Why these neutrals work for their DNA blend"
                 },
-                "bestAccents": { /* similar structure */ },
-                "bestBaseColors": { /* similar structure */ },
-                "lipColors": { /* similar structure */ },
-                "eyeColors": { /* similar structure */ }
+                "bestAccents": {
+                    "description": "DNA-optimized accent colors",
+                    "colors": [
+                        {
+                            "name": "Accent color 1",
+                            "hexValue": "#RRGGBB",
+                            "usageContext": "How to use this accent color",
+                            "harmonyReason": "Why it works with their DNA"
+                        },
+                        {
+                            "name": "Accent color 2",
+                            "hexValue": "#RRGGBB",
+                            "usageContext": "How to use this accent color",
+                            "harmonyReason": "Why it works with their DNA"
+                        },
+                        {
+                            "name": "Accent color 3",
+                            "hexValue": "#RRGGBB",
+                            "usageContext": "How to use this accent color",
+                            "harmonyReason": "Why it works with their DNA"
+                        }
+                    ],
+                    "priority": "high",
+                    "usageInstructions": "Specific DNA-based usage guidance",
+                    "categoryExplanation": "Why these accents work for their DNA blend"
+                },
+                "bestBaseColors": {
+                    "description": "DNA-optimized base colors",
+                    "colors": [
+                        {
+                            "name": "Base color 1",
+                            "hexValue": "#RRGGBB",
+                            "usageContext": "How to use this base color",
+                            "harmonyReason": "Why it works with their DNA"
+                        },
+                        {
+                            "name": "Base color 2",
+                            "hexValue": "#RRGGBB",
+                            "usageContext": "How to use this base color",
+                            "harmonyReason": "Why it works with their DNA"
+                        },
+                        {
+                            "name": "Base color 3",
+                            "hexValue": "#RRGGBB",
+                            "usageContext": "How to use this base color",
+                            "harmonyReason": "Why it works with their DNA"
+                        }
+                    ],
+                    "priority": "medium",
+                    "usageInstructions": "Specific DNA-based usage guidance",
+                    "categoryExplanation": "Why these base colors work for their DNA blend"
+                }
             },
             "emphasizedColors": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5"],
             "colorsToAvoid": ["#hex1", "#hex2", "#hex3"],
             "colorRecommendations": {
                 /* standard structure for backward compatibility */
-            },
-            "stylingAdvice": {
-                /* standard structure */
             },
             "confidence": 0.90
         }
@@ -300,9 +297,12 @@ extension PersonalizationService {
         4. Provides enhanced color recommendations with specific usage context
         5. Explains the genetic/hereditary aspects of their coloring
         6. Uses database-style color information with detailed context
+        7. IMPORTANT: Provide exactly 3 colors for each category (bestNeutrals, bestAccents, bestBaseColors)
 
         Weight percentages should total to 1.0 (100%). Be specific about why certain colors work
         better for their individual DNA blend rather than generic season advice.
+        
+        Each color category must contain exactly 3 colors with complete name, hexValue, usageContext, and harmonyReason.
         """
     }
 
@@ -337,9 +337,8 @@ extension PersonalizationService {
         print("🟢 PersonalizationService: Basic fields parsed successfully")
         #endif
 
-        // Parse legacy colorRecommendations and stylingAdvice with fallbacks
+        // Parse legacy colorRecommendations with fallbacks
         var colorRecommendations: PersonalizedColorRecommendations
-        var stylingAdvice: PersonalizedStylingAdvice
 
         do {
             if let colorRecommendationsJSON = json["colorRecommendations"] as? [String: Any] {
@@ -355,22 +354,6 @@ extension PersonalizationService {
             print("🟡 PersonalizationService: Using fallback for legacy color recommendations")
             #endif
             colorRecommendations = createFallbackColorRecommendations(detailedSeasonName)
-        }
-
-        do {
-            if let stylingAdviceJSON = json["stylingAdvice"] as? [String: Any] {
-                stylingAdvice = try parseStylingAdvice(stylingAdviceJSON)
-                #if DEBUG
-                print("🟢 PersonalizationService: Legacy styling advice parsed")
-                #endif
-            } else {
-                throw PersonalizationError.responseParsingFailed
-            }
-        } catch {
-            #if DEBUG
-            print("🟡 PersonalizationService: Using fallback for legacy styling advice")
-            #endif
-            stylingAdvice = createFallbackStylingAdvice(detailedSeasonName)
         }
 
         // Parse optional DNA data
@@ -429,7 +412,6 @@ extension PersonalizationService {
             userCharacteristics: userCharacteristics,
             personalizedOverview: personalizedOverview,
             colorRecommendations: colorRecommendations,
-            stylingAdvice: stylingAdvice,
             emphasizedColors: emphasizedColors,
             colorsToAvoid: colorsToAvoid,
             confidence: Float(confidence),
@@ -479,16 +461,12 @@ extension PersonalizationService {
     func parseEnhancedColorData(_ json: [String: Any]) throws -> EnhancedColorRecommendations {
         guard let bestNeutralsJSON = json["bestNeutrals"] as? [String: Any],
               let bestAccentsJSON = json["bestAccents"] as? [String: Any],
-              let bestBaseColorsJSON = json["bestBaseColors"] as? [String: Any],
-              let lipColorsJSON = json["lipColors"] as? [String: Any],
-              let eyeColorsJSON = json["eyeColors"] as? [String: Any] else {
+              let bestBaseColorsJSON = json["bestBaseColors"] as? [String: Any] else {
             #if DEBUG
             print("🔴 PersonalizationService: Missing required enhanced color sections")
             print("🔴 PersonalizationService: bestNeutrals: \(json["bestNeutrals"] != nil)")
             print("🔴 PersonalizationService: bestAccents: \(json["bestAccents"] != nil)")
             print("🔴 PersonalizationService: bestBaseColors: \(json["bestBaseColors"] != nil)")
-            print("🔴 PersonalizationService: lipColors: \(json["lipColors"] != nil)")
-            print("🔴 PersonalizationService: eyeColors: \(json["eyeColors"] != nil)")
             #endif
             throw PersonalizationError.responseParsingFailed
         }
@@ -513,22 +491,10 @@ extension PersonalizationService {
             print("🟢 PersonalizationService: bestBaseColors parsed successfully")
             #endif
 
-            let lipColors = try parseDetailedColorRecommendation(lipColorsJSON)
-            #if DEBUG
-            print("🟢 PersonalizationService: lipColors parsed successfully")
-            #endif
-
-            let eyeColors = try parseDetailedColorRecommendation(eyeColorsJSON)
-            #if DEBUG
-            print("🟢 PersonalizationService: eyeColors parsed successfully")
-            #endif
-
             return EnhancedColorRecommendations(
                 bestNeutrals: bestNeutrals,
                 bestAccents: bestAccents,
-                bestBaseColors: bestBaseColors,
-                lipColors: lipColors,
-                eyeColors: eyeColors
+                bestBaseColors: bestBaseColors
             )
         } catch {
             #if DEBUG
@@ -647,49 +613,7 @@ extension PersonalizationService {
                 priority: "medium",
                 usageInstructions: "Ideal for jackets, pants, and dresses"
             ),
-            lipColors: ColorRecommendation(
-                description: "Lip colors that enhance your features",
-                colors: ["#FFB6C1", "#F1A7B4", "#BC8F8F"],
-                priority: "medium",
-                usageInstructions: "Choose intensity based on occasion"
-            ),
-            eyeColors: ColorRecommendation(
-                description: "Eye makeup colors that make your eyes pop",
-                colors: ["#008080", "#A89CA2", "#C4B6A6"],
-                priority: "medium",
-                usageInstructions: "Use to enhance your natural eye color"
-            ),
             hairColorSuggestions: nil
-        )
-    }
-
-    private func createFallbackStylingAdvice(_ seasonName: String) -> PersonalizedStylingAdvice {
-        return PersonalizedStylingAdvice(
-            clothingAdvice: StylingRecommendation(
-                recommendation: "Focus on soft, flowing fabrics that complement your \(seasonName) coloring",
-                tips: ["Layer different tones of your season", "Choose quality fabrics in your colors"],
-                avoid: ["Harsh lines and overly structured silhouettes"],
-                examples: ["Flowing blouses", "Soft cardigans"]
-            ),
-            accessoryAdvice: StylingRecommendation(
-                recommendation: "Choose delicate accessories in your season's palette",
-                tips: ["Silver-toned jewelry", "Soft scarves in your accent colors"],
-                avoid: ["Heavy, chunky jewelry"],
-                examples: ["Delicate silver necklaces", "Soft pastel scarves"]
-            ),
-            patternAdvice: StylingRecommendation(
-                recommendation: "Patterns that work with your gentle aesthetic",
-                tips: ["Subtle florals", "Soft geometrics"],
-                avoid: ["Bold, harsh patterns"],
-                examples: ["Watercolor prints", "Delicate lace patterns"]
-            ),
-            metalAdvice: StylingRecommendation(
-                recommendation: "Metals that enhance your cool coloring",
-                tips: ["Silver and platinum tones work best"],
-                avoid: ["Warm gold tones"],
-                examples: ["Sterling silver", "White gold", "Platinum"]
-            ),
-            specialConsiderations: "Your \(seasonName) coloring benefits from soft, light colors and avoiding harsh contrasts."
         )
     }
 }

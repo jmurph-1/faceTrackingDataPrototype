@@ -147,7 +147,7 @@ struct EnhancedColorCircle: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack(spacing: 8) {
+            VStack(alignment: .center, spacing: 8) {
                 ZStack {
                     // Color circle
                     Circle()
@@ -182,16 +182,18 @@ struct EnhancedColorCircle: View {
                             .frame(width: size + 4, height: size + 4)
                     }
                 }
+                .frame(height: size) // Fixed height for the circle area
 
-                // Color name
+                // Color name with fixed height container
                 Text(colorItem.name)
                     .font(.caption)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
-                    .frame(width: size + 10)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(width: size + 10, height: 32, alignment: .top) // Fixed height for text area
+                    .fixedSize(horizontal: false, vertical: false)
             }
+            .frame(width: size + 10) // Fixed width for entire component
         }
         .buttonStyle(SpringButtonStyle())
         .scaleEffect(isSelected ? 1.05 : 1.0)
