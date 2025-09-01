@@ -94,11 +94,11 @@ class RefactoredCameraViewController: UIViewController {
 
     // Don't start calibration mode immediately - wait until view is actually shown
     // This prevents camera initialization during app startup when the view is hidden
-    
+
     // Print configuration status in debug builds only when explicitly requested
     // Uncomment the line below to see configuration status during development:
     // AppConfiguration.shared.printConfigurationStatus()
-    
+
     #if DEBUG
     // Add debug button for easy testing
     addDebugPersonalizedSeasonButton()
@@ -107,7 +107,7 @@ class RefactoredCameraViewController: UIViewController {
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    
+
     // Only start calibration mode when the view actually appears
     // This prevents unnecessary camera initialization when the view is hidden
     if !view.isHidden {
@@ -133,7 +133,7 @@ class RefactoredCameraViewController: UIViewController {
 
     // Stop camera when view disappears
     viewModel.stopCamera()
-    
+
     // Cleanup notifications
     cleanupNotificationManager()
     removeAppLifecycleNotifications()
@@ -375,7 +375,7 @@ class RefactoredCameraViewController: UIViewController {
       name: Notification.Name("AnalysisResultReady"),
       object: nil
     )
-    
+
     // Register for personalization notifications
     NotificationCenter.default.addObserver(
       self,
@@ -383,7 +383,7 @@ class RefactoredCameraViewController: UIViewController {
       name: Notification.Name("PersonalizationReady"),
       object: nil
     )
-    
+
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(handlePersonalizationFailed(_:)),
@@ -542,7 +542,7 @@ class RefactoredCameraViewController: UIViewController {
     // Handle personalization result
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
-      
+
       switch result {
       case .success:
         // Show success message or navigate to personalized view
@@ -553,7 +553,7 @@ class RefactoredCameraViewController: UIViewController {
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         self.present(alert, animated: true)
-        
+
       case .failure:
         // Show failure message with fallback option
         let alert = UIAlertController(
@@ -1090,7 +1090,7 @@ extension RefactoredCameraViewController: CameraViewModelDelegate {
 // MARK: - Debug Extension
 #if DEBUG
 extension RefactoredCameraViewController {
-    
+
     /// Add debug button for testing PersonalizedSeasonView
     /// Call this in viewDidLoad() when in debug mode
     func addDebugPersonalizedSeasonButton() {
@@ -1101,11 +1101,11 @@ extension RefactoredCameraViewController {
         debugButton.layer.cornerRadius = 8
         debugButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         debugButton.addTarget(self, action: #selector(debugPersonalizedSeasonTapped), for: .touchUpInside)
-        
+
         // Position in bottom-left corner
         debugButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(debugButton)
-        
+
         NSLayoutConstraint.activate([
             debugButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             debugButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
@@ -1113,7 +1113,7 @@ extension RefactoredCameraViewController {
             debugButton.heightAnchor.constraint(equalToConstant: 36)
         ])
     }
-    
+
     @objc private func debugPersonalizedSeasonTapped() {
         DebugPersonalizedSeasonHelper.presentDebugMenu(from: self)
     }

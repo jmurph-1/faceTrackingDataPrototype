@@ -49,84 +49,82 @@ struct ColorConverters {
             let L1 = Double(L)
             let a1 = Double(a)
             let b1 = Double(b)
-            
+
             let L2 = Double(other.L)
             let a2 = Double(other.a)
             let b2 = Double(other.b)
-            
+
             // Weighting factors
             let kL: Double = 1.0
             let kC: Double = 1.0
             let kH: Double = 1.0
-            
+
             // Calculate C and C̄
             let C1 = sqrt(a1 * a1 + b1 * b1)
             let C2 = sqrt(a2 * a2 + b2 * b2)
             let Cab = (C1 + C2) / 2.0
-            
+
             // Calculate G
             let G = 0.5 * (1.0 - sqrt(pow(Cab, 7.0) / (pow(Cab, 7.0) + pow(25.0, 7.0))))
-            
+
             // Calculate a'
             let a1p = (1.0 + G) * a1
             let a2p = (1.0 + G) * a2
-            
+
             // Calculate C' and h'
             let C1p = sqrt(a1p * a1p + b1 * b1)
             let C2p = sqrt(a2p * a2p + b2 * b2)
-            
+
             var h1p = atan2(b1, a1p) * 180.0 / .pi
             if h1p < 0 { h1p += 360.0 }
-            
+
             var h2p = atan2(b2, a2p) * 180.0 / .pi
             if h2p < 0 { h2p += 360.0 }
-            
+
             // Calculate ΔL', ΔC', ΔH'
             let dLp = L2 - L1
             let dCp = C2p - C1p
-            
+
             var dhp: Double
             if C1p * C2p == 0.0 {
                 dhp = 0.0
             } else {
                 dhp = h2p - h1p
-                if dhp > 180.0 { dhp -= 360.0 }
-                else if dhp < -180.0 { dhp += 360.0 }
+                if dhp > 180.0 { dhp -= 360.0 } else if dhp < -180.0 { dhp += 360.0 }
             }
-            
+
             let dHp = 2.0 * sqrt(C1p * C2p) * sin(dhp * .pi / 360.0)
-            
+
             // Calculate L̄', C̄', h̄'
             let Lp = (L1 + L2) / 2.0
             let Cp = (C1p + C2p) / 2.0
-            
+
             var hp: Double
             if C1p * C2p == 0.0 {
                 hp = h1p + h2p
             } else {
                 hp = (h1p + h2p) / 2.0
                 if abs(h1p - h2p) > 180.0 {
-                    if hp < 180.0 { hp += 180.0 }
-                    else { hp -= 180.0 }
+                    if hp < 180.0 { hp += 180.0 } else { hp -= 180.0 }
                 }
             }
-            
+
             // Calculate T
             let T = 1.0 - 0.17 * cos((hp - 30.0) * .pi / 180.0) +
                     0.24 * cos(2.0 * hp * .pi / 180.0) +
                     0.32 * cos((3.0 * hp + 6.0) * .pi / 180.0) -
                     0.20 * cos((4.0 * hp - 63.0) * .pi / 180.0)
-            
+
             // Calculate SL, SC, SH
             let SL = 1.0 + (0.015 * pow(Lp - 50.0, 2.0)) / sqrt(20.0 + pow(Lp - 50.0, 2.0))
             let SC = 1.0 + 0.045 * Cp
             let SH = 1.0 + 0.015 * Cp * T
-            
+
             // Calculate RT
             let dTheta = 30.0 * exp(-pow((hp - 275.0) / 25.0, 2.0))
             let RC = 2.0 * sqrt(pow(Cp, 7.0) / (pow(Cp, 7.0) + pow(25.0, 7.0)))
             let RT = -sin(2.0 * dTheta * .pi / 180.0) * RC
-            
+
             // Calculate ΔE
             let dE = sqrt(
                 pow(dLp / (kL * SL), 2.0) +
@@ -134,7 +132,7 @@ struct ColorConverters {
                 pow(dHp / (kH * SH), 2.0) +
                 RT * (dCp / (kC * SC)) * (dHp / (kH * SH))
             )
-            
+
             return CGFloat(dE)
         }
 

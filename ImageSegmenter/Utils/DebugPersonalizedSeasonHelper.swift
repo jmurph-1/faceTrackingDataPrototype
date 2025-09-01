@@ -10,7 +10,7 @@ import UIKit
 
 /// Debug helper for testing PersonalizedSeasonView with mock data
 struct DebugPersonalizedSeasonHelper {
-    
+
     /// Present PersonalizedSeasonView with mock data
     /// - Parameters:
     ///   - mockData: Optional specific mock data (uses random if nil)
@@ -21,7 +21,21 @@ struct DebugPersonalizedSeasonHelper {
     ) {
         let data = mockData ?? MockPersonalizedSeasonDataFactory.random()
         let colors = getSeasonColors(for: data.baseSeason)
-        
+
+        // Log metal recommendations for debugging
+        if let metals = data.metals {
+            print("🔧 Metal Recommendations for \(data.baseSeason):")
+            for metal in metals {
+                print("  • \(metal.name) (\(metal.priority))")
+                print("    Finishes:")
+                for finish in metal.availableFinishes {
+                    print("      - \(finish.name) (\(finish.priority))")
+                }
+            }
+        } else {
+            print("⚠️ No metal recommendations available for \(data.baseSeason)")
+        }
+
         let personalizedView = PersonalizedSeasonView(
             personalizedData: data,
             primaryColor: colors.primary,
@@ -33,12 +47,12 @@ struct DebugPersonalizedSeasonHelper {
             textColor: colors.text,
             moduleColor: colors.module
         )
-        
+
         let hostingController = UIHostingController(rootView: personalizedView)
         hostingController.modalPresentationStyle = .fullScreen
         viewController.present(hostingController, animated: true)
     }
-    
+
     /// Create a debug menu for testing different mock scenarios
     static func presentDebugMenu(from viewController: UIViewController) {
         let alert = UIAlertController(
@@ -46,7 +60,7 @@ struct DebugPersonalizedSeasonHelper {
             message: "Choose a mock scenario to test",
             preferredStyle: .actionSheet
         )
-        
+
         // Add options for different mock scenarios
         alert.addAction(UIAlertAction(title: "Bright Spring (DNA Blend)", style: .default) { _ in
             presentMockPersonalizedView(
@@ -54,37 +68,37 @@ struct DebugPersonalizedSeasonHelper {
                 from: viewController
             )
         })
-        
+
         alert.addAction(UIAlertAction(title: "Soft Autumn (Pure)", style: .default) { _ in
             presentMockPersonalizedView(
                 mockData: MockPersonalizedSeasonDataFactory.softAutumn(),
                 from: viewController
             )
         })
-        
+
         alert.addAction(UIAlertAction(title: "Dark Winter (Complex)", style: .default) { _ in
             presentMockPersonalizedView(
                 mockData: MockPersonalizedSeasonDataFactory.deepWinterComplex(),
                 from: viewController
             )
         })
-        
+
         alert.addAction(UIAlertAction(title: "Random", style: .default) { _ in
             presentMockPersonalizedView(from: viewController)
         })
-        
+
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
+
         // Handle iPad presentation
         if let popover = alert.popoverPresentationController {
             popover.sourceView = viewController.view
             popover.sourceRect = CGRect(x: viewController.view.bounds.midX, y: viewController.view.bounds.midY, width: 0, height: 0)
             popover.permittedArrowDirections = []
         }
-        
+
         viewController.present(alert, animated: true)
     }
-    
+
     /// Color configuration for PersonalizedSeasonView
     struct SeasonColors {
         let primary: Color
@@ -96,11 +110,11 @@ struct DebugPersonalizedSeasonHelper {
         let text: Color
         let module: Color
     }
-    
+
     /// Get appropriate colors for a season
     static func getSeasonColors(for season: String) -> SeasonColors {
         let seasonLower = season.lowercased()
-        
+
         if seasonLower.contains("spring") {
             return SeasonColors(
                 primary: Color(hex: "#FFB347"),
@@ -156,7 +170,7 @@ struct DebugPersonalizedSeasonView_Previews: PreviewProvider {
     static var previews: some View {
         let mockData = MockPersonalizedSeasonDataFactory.brightSpringWithBlend()
         let colors = DebugPersonalizedSeasonHelper.getSeasonColors(for: mockData.baseSeason)
-        
+
         PersonalizedSeasonView(
             personalizedData: mockData,
             primaryColor: colors.primary,
@@ -170,4 +184,4 @@ struct DebugPersonalizedSeasonView_Previews: PreviewProvider {
         )
     }
 }
-#endif 
+#endif

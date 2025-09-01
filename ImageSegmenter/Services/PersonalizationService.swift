@@ -18,22 +18,47 @@ protocol PersonalizationServiceDelegate: AnyObject {
 // MARK: - PersonalizationService
 
 class PersonalizationService {
-    
+
     // MARK: - Properties
-    
+
     weak var delegate: PersonalizationServiceDelegate?
     private let openAIBaseURL = "https://api.openai.com/v1/chat/completions"
-    private let model = "gpt-4o-mini" // Using cost-effective model for color analysis
-    private let maxTokens = 2500 // Increased to prevent JSON truncation
+    private let model = "gpt-4o" // Updated model for better color analysis performance
+    private let maxTokens = 5000 // Increased for system instructions + response
     private let temperature = 0.7 // Balanced creativity and consistency
-    
+
     // MARK: - Timeout and Retry Configuration
     private let requestTimeout: TimeInterval = 45.0 // Increased from 30 to 45 seconds
     private let maxRetryAttempts = 2
     private let retryDelay: TimeInterval = 2.0
+
+    // MARK: - Custom GPT System Instructions
     
+    private func createSystemInstructions() -> String {
+        return """
+        You are an expert color analyst specializing in Season DNA analysis using the 12-season color system. Your role is to analyze facial coloring data and create comprehensive Season DNA profiles that go beyond traditional seasonal color analysis.
+
+        ## Core Task
+        Analyze facial coloring data and create Season DNA profiles identifying primary/secondary/tertiary season influences with weight percentages and enhanced color recommendations.
+
+        ## Critical Requirements:
+        - **Exactly 3 colors per category**: bestNeutrals, bestAccents, bestBaseColors must each contain exactly 3 colors
+        - **Valid hex format**: All colors must use 6-character hex (#RRGGBB)
+        - **Season weights**: Must total exactly 1.0, primary 60-85%, secondary 15-35%, tertiary 5-15%
+        - **Season accuracy**: Use authentic 12-season system knowledge (True Spring, Light Spring, Bright Spring, True Summer, Light Summer, Soft Summer, True Autumn, Soft Autumn, Dark Autumn, True Winter, Bright Winter, Dark Winter)
+
+        ## Analysis Focus:
+        - Explain genetic/hereditary color aspects
+        - Provide specific reasoning for individual DNA blend vs generic advice
+        - Include detailed usage context and harmony explanations
+        - Confidence scores: 0.70-0.95 range
+
+        **Output**: Valid JSON only, no additional text. Follow the exact structure provided in the user prompt.
+        """
+    }
+
     // MARK: - Public Methods
-    
+
     /// Generate personalized recommendations for a user based on their analysis results
     /// - Parameters:
     ///   - analysisResult: The user's color analysis results
@@ -53,21 +78,25 @@ class PersonalizationService {
         print("🔵 PersonalizationService: API key exists = \(AppConfiguration.shared.getOpenAIKey() != nil)")
         print("🔵 PersonalizationService: detailedSeasonName = \(detailedSeasonName)")
         #endif
-        
+
         // Generate prompt for OpenAI (always generate for debugging purposes)
         let prompt = createPersonalizationPrompt(analysisResult: analysisResult, seasonData: seasonData)
-        
+
         #if DEBUG
         // Always log the prompt and request JSON that would be sent, even without API key
         print("🟡 PersonalizationService: Generated OpenAI Prompt:")
         print(String(repeating: "=", count: 60))
         print(prompt)
         print(String(repeating: "=", count: 60))
-        
+
         // Create and log the full request JSON that would be sent
         let requestBody: [String: Any] = [
             "model": model,
             "messages": [
+                [
+                    "role": "system",
+                    "content": createSystemInstructions()
+                ],
                 [
                     "role": "user",
                     "content": prompt
@@ -77,7 +106,7 @@ class PersonalizationService {
             "temperature": temperature,
             "response_format": ["type": "json_object"]
         ]
-        
+
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: requestBody, options: .prettyPrinted)
             if let jsonString = String(data: jsonData, encoding: .utf8) {
@@ -90,7 +119,7 @@ class PersonalizationService {
             print("🔴 Failed to serialize request JSON for logging: \(error)")
         }
         #endif
-        
+
         guard AppConfiguration.shared.isPersonalizationActive,
               let apiKey = AppConfiguration.shared.getOpenAIKey() else {
             #if DEBUG
@@ -100,7 +129,7 @@ class PersonalizationService {
             completion(.failure(PersonalizationError.noAPIKey))
             return
         }
-        
+
         // Check network connectivity
         guard isNetworkAvailable() else {
             #if DEBUG
@@ -109,11 +138,11 @@ class PersonalizationService {
             completion(.failure(PersonalizationError.networkUnavailable))
             return
         }
-        
+
         #if DEBUG
         print("🟢 PersonalizationService: API key configured and network available - proceeding with API request")
         #endif
-        
+
         // Make API request
         makeOpenAIRequest(apiKey: apiKey, prompt: prompt) { [weak self] result in
             switch result {
@@ -130,7 +159,7 @@ class PersonalizationService {
             }
         }
     }
-    
+
     /// Generate DNA-enhanced personalized recommendations (new enhanced method)
     /// - Parameters:
     ///   - analysisResult: The user's color analysis results
@@ -147,17 +176,17 @@ class PersonalizationService {
         print("🔵 PersonalizationService: Starting DNA-enhanced personalization generation")
         print("🔵 PersonalizationService: detailedSeasonName = \(detailedSeasonName)")
         #endif
-        
+
         // Generate DNA-enhanced prompt
         let prompt = createDNAPersonalizationPrompt(analysisResult: analysisResult, seasonData: seasonData, detailedSeasonName: detailedSeasonName)
-        
+
         #if DEBUG
         print("🟡 PersonalizationService: Generated DNA-Enhanced OpenAI Prompt:")
         print(String(repeating: "=", count: 60))
         print(prompt)
         print(String(repeating: "=", count: 60))
         #endif
-        
+
         guard AppConfiguration.shared.isPersonalizationActive,
               let apiKey = AppConfiguration.shared.getOpenAIKey() else {
             #if DEBUG
@@ -168,7 +197,7 @@ class PersonalizationService {
             completion(.success(enhancedFallback))
             return
         }
-        
+
         guard isNetworkAvailable() else {
             #if DEBUG
             print("🔴 PersonalizationService: Network not available - creating enhanced fallback")
@@ -177,11 +206,11 @@ class PersonalizationService {
             completion(.success(enhancedFallback))
             return
         }
-        
+
         #if DEBUG
         print("🟢 PersonalizationService: Making DNA-enhanced API request")
         #endif
-        
+
         // Make API request with DNA-enhanced prompt
         makeOpenAIRequest(apiKey: apiKey, prompt: prompt) { [weak self] result in
             switch result {
@@ -207,16 +236,16 @@ class PersonalizationService {
             }
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func createPersonalizationPrompt(analysisResult: AnalysisResult, seasonData: Season) -> String {
         let userColorsSection = createUserColorsSection(analysisResult)
         let seasonInfoSection = createSeasonInfoSection(seasonData)
         let taskDescription = createTaskDescription()
         let jsonStructure = createJSONStructure()
         let instructions = createInstructions()
-        
+
         return """
         \(taskDescription)
 
@@ -229,14 +258,14 @@ class PersonalizationService {
         \(instructions)
         """
     }
-    
+
     private func createDNAPersonalizationPrompt(analysisResult: AnalysisResult, seasonData: Season, detailedSeasonName: String) -> String {
         let userColorsSection = createUserColorsSection(analysisResult)
         let seasonInfoSection = createSeasonInfoSection(seasonData)
         let dnaTaskDescription = createDNATaskDescription()
         let dnaJsonStructure = createDNAJSONStructure()
         let dnaInstructions = createDNAInstructions()
-        
+
         return """
         \(dnaTaskDescription)
 
@@ -251,21 +280,21 @@ class PersonalizationService {
         \(dnaInstructions)
         """
     }
-    
+
     private func createEnhancedFallback(analysisResult: AnalysisResult, detailedSeasonName: String) -> PersonalizedSeasonData {
         #if DEBUG
         print("🟡 PersonalizationService: Creating enhanced fallback with DNA and database lookup")
         #endif
-        
+
         // Create Season DNA from analysis result
         let seasonDNA = createFallbackSeasonDNA(from: analysisResult, detailedSeasonName: detailedSeasonName)
-        
+
         // Create enhanced color recommendations using database
         let enhancedColorData = createFallbackEnhancedColors(seasonDNA: seasonDNA)
-        
+
         // Create basic PersonalizedSeasonData structure
         let basicData = createBasicFallbackData(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
-        
+
         // Return enhanced version
         return PersonalizedSeasonData(
             id: basicData.id,
@@ -275,7 +304,6 @@ class PersonalizationService {
             userCharacteristics: basicData.userCharacteristics,
             personalizedOverview: basicData.personalizedOverview,
             colorRecommendations: basicData.colorRecommendations,
-            stylingAdvice: basicData.stylingAdvice,
             emphasizedColors: basicData.emphasizedColors,
             colorsToAvoid: basicData.colorsToAvoid,
             confidence: basicData.confidence,
@@ -284,7 +312,7 @@ class PersonalizationService {
             enhancedColorData: enhancedColorData
         )
     }
-    
+
     private func parseDNAPersonalizationResponse(
         _ response: String,
         analysisResult: AnalysisResult,
@@ -298,13 +326,13 @@ class PersonalizationService {
         print(response)
         print(String(repeating: "=", count: 60))
         #endif
-        
+
         guard let data = response.data(using: .utf8) else {
             let fallback = createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
             completion(.success(fallback))
             return
         }
-        
+
         do {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             guard let json = json else {
@@ -315,11 +343,11 @@ class PersonalizationService {
                 completion(.success(fallback))
                 return
             }
-            
+
             // Parse DNA-enhanced response
             let personalizedData = try parseDNAJSONToPersonalizedData(json, analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
             completion(.success(personalizedData))
-            
+
         } catch {
             #if DEBUG
             if let nsError = error as NSError?, nsError.domain == "NSCocoaErrorDomain" && nsError.code == 3840 {
@@ -333,20 +361,20 @@ class PersonalizationService {
             completion(.success(fallback))
         }
     }
-    
+
     // MARK: - Basic Helper Methods
-    
+
     private func createUserColorsSection(_ analysisResult: AnalysisResult) -> String {
-        let skinLabString = analysisResult.skinColorLab.map { 
-            "L: \($0.L), a: \($0.a), b: \($0.b)" 
+        let skinLabString = analysisResult.skinColorLab.map {
+            "L: \($0.L), a: \($0.a), b: \($0.b)"
         } ?? "Not available"
-        let hairLabString = analysisResult.hairColorLab.map { 
-            "L: \($0.L), a: \($0.a), b: \($0.b)" 
+        let hairLabString = analysisResult.hairColorLab.map {
+            "L: \($0.L), a: \($0.a), b: \($0.b)"
         } ?? "Not available"
-        let eyeLabString = analysisResult.averageEyeColorLab.map { 
-            "L: \($0.L), a: \($0.a), b: \($0.b)" 
+        let eyeLabString = analysisResult.averageEyeColorLab.map {
+            "L: \($0.L), a: \($0.a), b: \($0.b)"
         } ?? "Not available"
-        
+
         return """
         USER'S MEASURED COLORS:
         - Season Classification: \(analysisResult.season.rawValue)
@@ -357,7 +385,7 @@ class PersonalizationService {
         - Contrast Level: \(analysisResult.contrastLevel) (\(analysisResult.contrastDescription))
         """
     }
-    
+
     private func createSeasonInfoSection(_ seasonData: Season) -> String {
         return """
         BASE SEASON INFORMATION:
@@ -367,21 +395,21 @@ class PersonalizationService {
         - Palette Description: \(seasonData.palette.description)
         """
     }
-    
+
     private func createTaskDescription() -> String {
         return """
-        You are an expert color analyst specializing in personal color theory and the 12-season system. 
-        I need you to create highly personalized color recommendations for a specific individual based on 
+        You are an expert color analyst specializing in personal color theory and the 12-season system.
+        I need you to create highly personalized color recommendations for a specific individual based on
         their measured colors and assigned season.
 
-        TASK: Create a personalized "13th season" analysis that combines the base season characteristics 
-        with this individual's specific color measurements. Focus on how their unique skin, hair, and eye 
+        TASK: Create a personalized "13th season" analysis that combines the base season characteristics
+        with this individual's specific color measurements. Focus on how their unique skin, hair, and eye
         colors interact with the season's palette.
 
         Please respond with a JSON object containing:
         """
     }
-    
+
     private func createJSONStructure() -> String {
         return """
         {
@@ -408,59 +436,20 @@ class PersonalizationService {
                     "colors": ["#hex1", "#hex2", "#hex3"],
                     "priority": "medium",
                     "usageInstructions": "How to incorporate these base colors"
-                },
-                "lipColors": {
-                    "description": "Lip colors that enhance their natural lip tone",
-                    "colors": ["#hex1", "#hex2"],
-                    "priority": "medium",
-                    "usageInstructions": "Makeup application tips"
-                },
-                "eyeColors": {
-                    "description": "Eye makeup that brings out their eye color",
-                    "colors": ["#hex1", "#hex2"],
-                    "priority": "medium",
-                    "usageInstructions": "Eye makeup guidance"
                 }
-            },
-            "stylingAdvice": {
-                "clothingAdvice": {
-                    "recommendation": "Clothing style suggestions based on their contrast level and coloring",
-                    "tips": ["Specific tip 1", "Specific tip 2"],
-                    "avoid": ["What to avoid"],
-                    "examples": ["Example outfit ideas"]
-                },
-                "accessoryAdvice": {
-                    "recommendation": "Accessory guidance for their coloring",
-                    "tips": ["Accessory tips"],
-                    "avoid": ["Accessories to avoid"],
-                    "examples": ["Accessory examples"]
-                },
-                "patternAdvice": {
-                    "recommendation": "Pattern recommendations based on contrast level",
-                    "tips": ["Pattern tips"],
-                    "avoid": ["Patterns to avoid"],
-                    "examples": ["Pattern examples"]
-                },
-                "metalAdvice": {
-                    "recommendation": "Metal recommendations (gold/silver/rose gold)",
-                    "tips": ["Metal tips"],
-                    "avoid": ["Metals to avoid"],
-                    "examples": ["Metal examples"]
-                },
-                "specialConsiderations": "Any special considerations based on their unique color combination"
             },
             "confidence": 0.85
         }
         """
     }
-    
+
     private func createInstructions() -> String {
         return """
-        Focus on practical, actionable advice that takes into account their specific measured Lab color values. 
+        Focus on practical, actionable advice that takes into account their specific measured Lab color values.
         Be specific about why certain colors work better for their individual coloring rather than generic season advice.
         """
     }
-    
+
     private func createBasicFallbackData(analysisResult: AnalysisResult, detailedSeasonName: String) -> PersonalizedSeasonData {
         let basicColorRecommendations = PersonalizedColorRecommendations(
             bestNeutrals: ColorRecommendation(
@@ -481,72 +470,31 @@ class PersonalizationService {
                 priority: "medium",
                 usageInstructions: "Ideal for jackets, pants, and dresses"
             ),
-            lipColors: ColorRecommendation(
-                description: "Lip colors that enhance your features",
-                colors: ["#CD5C5C", "#D2691E", "#BC8F8F", "#F08080"],
-                priority: "medium",
-                usageInstructions: "Choose intensity based on occasion"
-            ),
-            eyeColors: ColorRecommendation(
-                description: "Eye makeup colors that make your eyes pop",
-                colors: ["#8B7D6B", "#A0522D", "#CD853F", "#DEB887"],
-                priority: "medium",
-                usageInstructions: "Use to enhance your natural eye color"
-            ),
             hairColorSuggestions: nil
         )
-        
-        let basicStylingAdvice = PersonalizedStylingAdvice(
-            clothingAdvice: StylingRecommendation(
-                recommendation: "Focus on rich, earthy tones that complement your \(detailedSeasonName) coloring",
-                tips: ["Layer different tones of your season", "Choose quality fabrics in your colors"],
-                avoid: ["Colors that wash you out"],
-                examples: ["Earth-toned sweater with cream pants"]
-            ),
-            accessoryAdvice: StylingRecommendation(
-                recommendation: "Choose accessories in your season's palette",
-                tips: ["Metal tones that complement your coloring", "Scarves in your accent colors"],
-                avoid: ["Metals that clash with your undertones"],
-                examples: ["Gold jewelry", "Warm-toned handbags"]
-            ),
-            patternAdvice: StylingRecommendation(
-                recommendation: "Patterns that work with your contrast level",
-                tips: ["Choose patterns appropriate for your contrast", "Mix patterns carefully"],
-                avoid: ["Patterns that overwhelm your features"],
-                examples: ["Subtle plaids", "Organic patterns"]
-            ),
-            metalAdvice: StylingRecommendation(
-                recommendation: "Metals that enhance your coloring",
-                tips: ["Choose metals based on your undertones"],
-                avoid: ["Metals that create harsh contrast"],
-                examples: ["Warm gold tones", "Antique brass"]
-            ),
-            specialConsiderations: "Your \(detailedSeasonName) coloring benefits from warm, rich tones and avoiding overly cool colors."
-        )
-        
+
         return PersonalizedSeasonData(
             baseSeason: detailedSeasonName,
             personalizedTagline: "Beautifully \(detailedSeasonName)",
             userCharacteristics: "Your coloring shows the classic characteristics of a \(detailedSeasonName) type.",
             personalizedOverview: "Your \(detailedSeasonName) coloring is enhanced by warm, rich colors that complement your natural beauty.",
             colorRecommendations: basicColorRecommendations,
-            stylingAdvice: basicStylingAdvice,
-            emphasizedColors: ["#8B7355", "#B8860B", "#2F4F4F", "#CD5C5C", "#8B7D6B"],
+            emphasizedColors: ["#8B7355", "#B8860B", "#2F4F4F"],
             colorsToAvoid: ["#FF69B4", "#00FFFF", "#FF00FF"],
             confidence: analysisResult.confidence
         )
     }
 
     // MARK: - Network and API Methods
-    
+
     private func makeOpenAIRequest(
-        apiKey: String, 
-        prompt: String, 
+        apiKey: String,
+        prompt: String,
         completion: @escaping (Result<String, Error>) -> Void
     ) {
         makeOpenAIRequestWithRetry(apiKey: apiKey, prompt: prompt, attempt: 1, completion: completion)
     }
-    
+
     private func makeOpenAIRequestWithRetry(
         apiKey: String,
         prompt: String,
@@ -557,16 +505,20 @@ class PersonalizationService {
             completion(.failure(PersonalizationError.invalidURL))
             return
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = requestTimeout
-        
+
         let requestBody: [String: Any] = [
             "model": model,
             "messages": [
+                [
+                    "role": "system",
+                    "content": createSystemInstructions()
+                ],
                 [
                     "role": "user",
                     "content": prompt
@@ -576,34 +528,34 @@ class PersonalizationService {
             "temperature": temperature,
             "response_format": ["type": "json_object"]
         ]
-        
+
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
         } catch {
             completion(.failure(PersonalizationError.requestCreationFailed))
             return
         }
-        
+
         #if DEBUG
         print("🔵 PersonalizationService: Attempt \(attempt)/\(maxRetryAttempts) - Making API request...")
         #endif
-        
+
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             if let error = error {
                 let nsError = error as NSError
-                
+
                 // Check if it's a timeout error
                 if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorTimedOut {
                     #if DEBUG
                     print("🔴 PersonalizationService: Request timed out on attempt \(attempt)")
                     #endif
-                    
+
                     // Retry if we haven't exceeded max attempts
                     if attempt < self?.maxRetryAttempts ?? 1 {
                         #if DEBUG
                         print("🟡 PersonalizationService: Retrying in \(self?.retryDelay ?? 2.0) seconds...")
                         #endif
-                        
+
                         DispatchQueue.global().asyncAfter(deadline: .now() + (self?.retryDelay ?? 2.0)) {
                             self?.makeOpenAIRequestWithRetry(
                                 apiKey: apiKey,
@@ -615,16 +567,16 @@ class PersonalizationService {
                         return
                     }
                 }
-                
+
                 completion(.failure(error))
                 return
             }
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 completion(.failure(PersonalizationError.invalidResponse))
                 return
             }
-            
+
             guard httpResponse.statusCode == 200 else {
                 #if DEBUG
                 print("🔴 PersonalizationService: HTTP error \(httpResponse.statusCode) on attempt \(attempt)")
@@ -632,35 +584,35 @@ class PersonalizationService {
                 completion(.failure(PersonalizationError.apiError(httpResponse.statusCode)))
                 return
             }
-            
+
             guard let data = data else {
                 completion(.failure(PersonalizationError.noData))
                 return
             }
-            
+
             do {
                 let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
                 let choices = json?["choices"] as? [[String: Any]]
                 let message = choices?.first?["message"] as? [String: Any]
                 let content = message?["content"] as? String
-                
+
                 guard let responseContent = content else {
                     completion(.failure(PersonalizationError.invalidResponseFormat))
                     return
                 }
-                
+
                 #if DEBUG
                 print("🟢 PersonalizationService: Request succeeded on attempt \(attempt)")
                 #endif
-                
+
                 completion(.success(responseContent))
-                
+
             } catch {
                 completion(.failure(PersonalizationError.jsonParsingFailed))
             }
         }.resume()
     }
-    
+
     private func parsePersonalizationResponse(
         _ response: String,
         analysisResult: AnalysisResult,
@@ -671,23 +623,23 @@ class PersonalizationService {
             completion(.failure(PersonalizationError.invalidResponseFormat))
             return
         }
-        
+
         do {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             guard let json = json else {
                 completion(.failure(PersonalizationError.invalidResponseFormat))
                 return
             }
-            
+
             // Parse the response into PersonalizedSeasonData
             let personalizedData = try parseJSONToPersonalizedData(json, analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
             completion(.success(personalizedData))
-            
+
         } catch {
             completion(.failure(PersonalizationError.responseParsingFailed))
         }
     }
-    
+
     private func parseJSONToPersonalizedData(_ json: [String: Any], analysisResult: AnalysisResult, detailedSeasonName: String) throws -> PersonalizedSeasonData {
         guard let personalizedTagline = json["personalizedTagline"] as? String,
               let userCharacteristics = json["userCharacteristics"] as? String,
@@ -695,47 +647,40 @@ class PersonalizationService {
               let emphasizedColors = json["emphasizedColors"] as? [String],
               let colorsToAvoid = json["colorsToAvoid"] as? [String],
               let colorRecommendationsJSON = json["colorRecommendations"] as? [String: Any],
-              let stylingAdviceJSON = json["stylingAdvice"] as? [String: Any],
               let confidence = json["confidence"] as? Double else {
             throw PersonalizationError.responseParsingFailed
         }
-        
+
         let colorRecommendations = try parseColorRecommendations(colorRecommendationsJSON)
-        let stylingAdvice = try parseStylingAdvice(stylingAdviceJSON)
-        
+
         return PersonalizedSeasonData(
             baseSeason: detailedSeasonName,
             personalizedTagline: personalizedTagline,
             userCharacteristics: userCharacteristics,
             personalizedOverview: personalizedOverview,
             colorRecommendations: colorRecommendations,
-            stylingAdvice: stylingAdvice,
             emphasizedColors: emphasizedColors,
             colorsToAvoid: colorsToAvoid,
             confidence: Float(confidence),
             analysisResultId: UUID()
         )
     }
-    
+
     func parseColorRecommendations(_ json: [String: Any]) throws -> PersonalizedColorRecommendations {
         guard let bestNeutralsJSON = json["bestNeutrals"] as? [String: Any],
               let bestAccentsJSON = json["bestAccents"] as? [String: Any],
-              let bestBaseColorsJSON = json["bestBaseColors"] as? [String: Any],
-              let lipColorsJSON = json["lipColors"] as? [String: Any],
-              let eyeColorsJSON = json["eyeColors"] as? [String: Any] else {
+              let bestBaseColorsJSON = json["bestBaseColors"] as? [String: Any] else {
             throw PersonalizationError.responseParsingFailed
         }
-        
+
         return PersonalizedColorRecommendations(
             bestNeutrals: try parseColorRecommendation(bestNeutralsJSON),
             bestAccents: try parseColorRecommendation(bestAccentsJSON),
             bestBaseColors: try parseColorRecommendation(bestBaseColorsJSON),
-            lipColors: try parseColorRecommendation(lipColorsJSON),
-            eyeColors: try parseColorRecommendation(eyeColorsJSON),
             hairColorSuggestions: nil // Optional field
         )
     }
-    
+
     private func parseColorRecommendation(_ json: [String: Any]) throws -> ColorRecommendation {
         guard let description = json["description"] as? String,
               let colors = json["colors"] as? [String],
@@ -743,7 +688,7 @@ class PersonalizationService {
               let usageInstructions = json["usageInstructions"] as? String else {
             throw PersonalizationError.responseParsingFailed
         }
-        
+
         return ColorRecommendation(
             description: description,
             colors: colors,
@@ -751,41 +696,7 @@ class PersonalizationService {
             usageInstructions: usageInstructions
         )
     }
-    
-    func parseStylingAdvice(_ json: [String: Any]) throws -> PersonalizedStylingAdvice {
-        guard let clothingAdviceJSON = json["clothingAdvice"] as? [String: Any],
-              let accessoryAdviceJSON = json["accessoryAdvice"] as? [String: Any],
-              let patternAdviceJSON = json["patternAdvice"] as? [String: Any],
-              let metalAdviceJSON = json["metalAdvice"] as? [String: Any],
-              let specialConsiderations = json["specialConsiderations"] as? String else {
-            throw PersonalizationError.responseParsingFailed
-        }
-        
-        return PersonalizedStylingAdvice(
-            clothingAdvice: try parseStylingRecommendation(clothingAdviceJSON),
-            accessoryAdvice: try parseStylingRecommendation(accessoryAdviceJSON),
-            patternAdvice: try parseStylingRecommendation(patternAdviceJSON),
-            metalAdvice: try parseStylingRecommendation(metalAdviceJSON),
-            specialConsiderations: specialConsiderations
-        )
-    }
-    
-    private func parseStylingRecommendation(_ json: [String: Any]) throws -> StylingRecommendation {
-        guard let recommendation = json["recommendation"] as? String,
-              let tips = json["tips"] as? [String],
-              let avoid = json["avoid"] as? [String],
-              let examples = json["examples"] as? [String] else {
-            throw PersonalizationError.responseParsingFailed
-        }
-        
-        return StylingRecommendation(
-            recommendation: recommendation,
-            tips: tips,
-            avoid: avoid,
-            examples: examples
-        )
-    }
-    
+
     private func isNetworkAvailable() -> Bool {
         // Simple network check - in production you might want to use a more robust solution
         var addresses: UnsafeMutablePointer<ifaddrs>?
@@ -810,7 +721,7 @@ enum PersonalizationError: Error, LocalizedError {
     case invalidResponseFormat
     case jsonParsingFailed
     case responseParsingFailed
-    
+
     var errorDescription: String? {
         switch self {
         case .noAPIKey:
@@ -836,4 +747,3 @@ enum PersonalizationError: Error, LocalizedError {
         }
     }
 }
-

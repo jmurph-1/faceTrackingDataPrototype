@@ -108,3 +108,5 @@ secrets.plist
 **/DevConfig.*
 **/*-secrets.*
 README-API-Setup.md
+CLAUDE.md
+.claude/settings.local.json

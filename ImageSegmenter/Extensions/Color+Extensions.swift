@@ -11,7 +11,7 @@ import UIKit
 // MARK: - SwiftUI Color Extensions
 
 extension Color {
-    
+
     /// Initialize Color from hex string
     /// - Parameter hex: Hex color string (with or without #)
     init(hex: String) {
@@ -29,31 +29,31 @@ extension Color {
         default:
             (alpha, red, green, blue) = (255, 0, 0, 0)
         }
-        
+
         self.init(
             .sRGB,
             red: Double(red) / 255,
             green: Double(green) / 255,
-            blue:  Double(blue) / 255,
+            blue: Double(blue) / 255,
             opacity: Double(alpha) / 255
         )
     }
-    
+
     /// Get hex string representation of Color
     var hexString: String {
         // Convert to UIColor to get components
         let uiColor = UIColor(self)
         return uiColor.hexString
     }
-    
+
     // MARK: - Season Accent Colors
-    
+
     /// Get accent color for a specific season
     /// - Parameter season: Season name
     /// - Returns: Accent color for the season
     static func seasonAccent(for season: String) -> Color {
         let seasonLower = season.lowercased()
-        
+
         if seasonLower.contains("spring") {
             return Color(hex: "#FFB347") // Warm peach
         } else if seasonLower.contains("summer") {
@@ -66,13 +66,13 @@ extension Color {
             return Color.primary // Default
         }
     }
-    
+
     /// Get palette colors for a season
     /// - Parameter season: Season name
     /// - Returns: Array of colors representing the season's palette
     static func seasonPalette(for season: String) -> [Color] {
         let seasonLower = season.lowercased()
-        
+
         if seasonLower.contains("spring") {
             return [
                 Color(hex: "#FFB347"), // Peach
@@ -114,19 +114,25 @@ extension Color {
 // MARK: - UIColor Extensions
 
 extension UIColor {
-    
+
     /// Initialize UIColor from hex string
     /// - Parameter hex: Hex color string (with or without #)
     convenience init?(hex: String) {
         let redComponent, greenComponent, blueComponent, alphaComponent: CGFloat
-        
+
         let hex = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let scanner = Scanner(string: hex.hasPrefix("#") ? String(hex.dropFirst()) : hex)
+        let cleanHex = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
+        let scanner = Scanner(string: cleanHex)
         var hexNumber: UInt64 = 0
-        
-        guard scanner.scanHexInt64(&hexNumber) else { return nil }
-        
-        switch hex.count {
+
+        guard scanner.scanHexInt64(&hexNumber) else { 
+            #if DEBUG
+            print("⚠️ Failed to parse hex color: '\(hex)'")
+            #endif
+            return nil 
+        }
+
+        switch cleanHex.count {
         case 3: // RGB (12-bit)
             redComponent = CGFloat((hexNumber & 0xF00) >> 8) / 15.0
             greenComponent = CGFloat((hexNumber & 0x0F0) >> 4) / 15.0
@@ -150,26 +156,26 @@ extension UIColor {
         default:
             return nil
         }
-        
+
         self.init(red: redComponent, green: greenComponent, blue: blueComponent, alpha: alphaComponent)
     }
-    
+
     /// Get hex string representation of UIColor
     var hexString: String {
         guard let components = self.cgColor.components else {
             return "#000000"
         }
-        
+
         let redFloat = Float(components[0])
         let greenFloat = Float(components.count > 1 ? components[1] : 0)
         let blueFloat = Float(components.count > 2 ? components[2] : 0)
-        
+
         return String(format: "#%02lX%02lX%02lX",
                      lroundf(redFloat * 255),
                      lroundf(greenFloat * 255),
                      lroundf(blueFloat * 255))
     }
-    
+
     /// Get season accent UIColor
     /// - Parameter season: Season name
     /// - Returns: UIColor for the season accent
@@ -181,7 +187,7 @@ extension UIColor {
 // MARK: - Color Utilities
 
 extension Color {
-    
+
     /// Calculate luminance of color for contrast calculations
     var luminance: Double {
         let uiColor = UIColor(self)
@@ -189,31 +195,31 @@ extension Color {
         var green: CGFloat = 0
         var blue: CGFloat = 0
         var alpha: CGFloat = 0
-        
+
         uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        
+
         // Convert to linear RGB
         let linearRed = red <= 0.03928 ? red / 12.92 : pow((red + 0.055) / 1.055, 2.4)
         let linearGreen = green <= 0.03928 ? green / 12.92 : pow((green + 0.055) / 1.055, 2.4)
         let linearBlue = blue <= 0.03928 ? blue / 12.92 : pow((blue + 0.055) / 1.055, 2.4)
-        
+
         // Calculate luminance
         return 0.2126 * Double(linearRed) + 0.7152 * Double(linearGreen) + 0.0722 * Double(linearBlue)
     }
-    
+
     /// Calculate contrast ratio between two colors
     /// - Parameter other: Color to compare against
     /// - Returns: Contrast ratio (1:1 to 21:1)
     func contrastRatio(with other: Color) -> Double {
         let luminance1 = self.luminance
         let luminance2 = other.luminance
-        
+
         let lighter = max(luminance1, luminance2)
         let darker = min(luminance1, luminance2)
-        
+
         return (lighter + 0.05) / (darker + 0.05)
     }
-    
+
     /// Check if color meets WCAG accessibility standards
     /// - Parameters:
     ///   - background: Background color
@@ -221,7 +227,7 @@ extension Color {
     /// - Returns: True if accessible
     func isAccessible(on background: Color, level: AccessibilityLevel = .aa) -> Bool {
         let contrast = self.contrastRatio(with: background)
-        
+
         switch level {
         case .aa:
             return contrast >= 4.5
@@ -229,7 +235,7 @@ extension Color {
             return contrast >= 7.0
         }
     }
-    
+
     /// Check if color is dark based on luminance
     /// - Returns: True if color is considered dark
     func isDark() -> Bool {
@@ -246,13 +252,13 @@ enum AccessibilityLevel {
 
 // Additional color utilities for Season DNA
 extension Color {
-    
+
     /// Get season-specific accent color based on season name
     /// - Parameter seasonName: Name of the season
     /// - Returns: Accent color for the season
     static func seasonAccentColor(for seasonName: String) -> Color {
         let lowerName = seasonName.lowercased()
-        
+
         if lowerName.contains("spring") {
             return Color(red: 1.0, green: 0.8, blue: 0.2) // Warm yellow
         } else if lowerName.contains("summer") {
@@ -265,7 +271,7 @@ extension Color {
             return Color.gray // Fallback
         }
     }
-    
+
     /// Get contrasting text color for better readability
     var contrastingTextColor: Color {
         return isDark() ? .white : .black
@@ -277,4 +283,4 @@ private extension Character {
     var isHexDigit: Bool {
         return isNumber || ("a"..."f").contains(lowercased()) || ("A"..."F").contains(self)
     }
-} 
+}
