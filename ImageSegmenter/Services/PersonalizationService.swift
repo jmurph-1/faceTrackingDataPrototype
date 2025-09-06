@@ -28,12 +28,12 @@ class PersonalizationService {
     private let temperature = 0.7 // Balanced creativity and consistency
 
     // MARK: - Timeout and Retry Configuration
-    private let requestTimeout: TimeInterval = 45.0 // Increased from 30 to 45 seconds
+    internal let requestTimeout: TimeInterval = 45.0 // Increased from 30 to 45 seconds
     private let maxRetryAttempts = 2
     private let retryDelay: TimeInterval = 2.0
 
     // MARK: - Custom GPT System Instructions
-    
+
     private func createSystemInstructions() -> String {
         return """
         You are an expert color analyst specializing in Season DNA analysis using the 12-season color system. Your role is to analyze facial coloring data and create comprehensive Season DNA profiles that go beyond traditional seasonal color analysis.
@@ -46,12 +46,23 @@ class PersonalizationService {
         - **Valid hex format**: All colors must use 6-character hex (#RRGGBB)
         - **Season weights**: Must total exactly 1.0, primary 60-85%, secondary 15-35%, tertiary 5-15%
         - **Season accuracy**: Use authentic 12-season system knowledge (True Spring, Light Spring, Bright Spring, True Summer, Light Summer, Soft Summer, True Autumn, Soft Autumn, Dark Autumn, True Winter, Bright Winter, Dark Winter)
+        - **Evidence-based recommendations**: Ground color suggestions in established color theory and seasonal analysis principles
 
-        ## Analysis Focus:
-        - Explain genetic/hereditary color aspects
-        - Provide specific reasoning for individual DNA blend vs generic advice
+        ## Enhanced Analysis Focus:
+        - Apply knowledge of seasonal color characteristics from the 12-season system
+        - Consider undertones, contrast levels, and color temperature relationships
+        - Explain genetic/hereditary color aspects with specific reasoning
+        - Provide individual DNA blend analysis vs generic seasonal advice
         - Include detailed usage context and harmony explanations
-        - Confidence scores: 0.70-0.95 range
+        - Use perceptually accurate color relationships
+        - Confidence scores: 0.70-0.95 range based on evidence strength
+
+        ## Color Selection Guidelines:
+        - Select colors that harmonize with measured Lab values
+        - Consider skin undertone compatibility
+        - Balance warm/cool relationships appropriately
+        - Ensure sufficient contrast for the individual's natural coloring
+        - Reference established seasonal color palettes when appropriate
 
         **Output**: Valid JSON only, no additional text. Follow the exact structure provided in the user prompt.
         """
@@ -143,24 +154,16 @@ class PersonalizationService {
         print("🟢 PersonalizationService: API key configured and network available - proceeding with API request")
         #endif
 
-        // Make API request
-        makeOpenAIRequest(apiKey: apiKey, prompt: prompt) { [weak self] result in
-            switch result {
-            case .success(let response):
-                self?.parsePersonalizationResponse(response, analysisResult: analysisResult, detailedSeasonName: detailedSeasonName) { parseResult in
-                    DispatchQueue.main.async {
-                        completion(parseResult)
-                    }
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-            }
-        }
+        // Use Responses API with file search capabilities
+        generateResponsesAPIPersonalization(
+            for: analysisResult,
+            seasonData: seasonData,
+            detailedSeasonName: detailedSeasonName,
+            completion: completion
+        )
     }
 
-    /// Generate DNA-enhanced personalized recommendations (new enhanced method)
+    /// Generate DNA-enhanced personalized recommendations using Responses API
     /// - Parameters:
     ///   - analysisResult: The user's color analysis results
     ///   - seasonData: The default season data for reference
@@ -192,7 +195,6 @@ class PersonalizationService {
             #if DEBUG
             print("🔴 PersonalizationService: API key not configured - creating enhanced fallback")
             #endif
-            // Create enhanced fallback with DNA and database lookup
             let enhancedFallback = createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
             completion(.success(enhancedFallback))
             return
@@ -211,30 +213,13 @@ class PersonalizationService {
         print("🟢 PersonalizationService: Making DNA-enhanced API request")
         #endif
 
-        // Make API request with DNA-enhanced prompt
-        makeOpenAIRequest(apiKey: apiKey, prompt: prompt) { [weak self] result in
-            switch result {
-            case .success(let response):
-                self?.parseDNAPersonalizationResponse(response, analysisResult: analysisResult, detailedSeasonName: detailedSeasonName) { parseResult in
-                    DispatchQueue.main.async {
-                        completion(parseResult)
-                    }
-                }
-            case .failure(let error):
-                #if DEBUG
-                print("🔴 PersonalizationService: API request failed, creating enhanced fallback")
-                #endif
-                // Even on API failure, provide enhanced fallback
-                let enhancedFallback = self?.createEnhancedFallback(analysisResult: analysisResult, detailedSeasonName: detailedSeasonName)
-                DispatchQueue.main.async {
-                    if let fallback = enhancedFallback {
-                        completion(.success(fallback))
-                    } else {
-                        completion(.failure(error))
-                    }
-                }
-            }
-        }
+        // Use Responses API with file search capabilities
+        generateResponsesAPIPersonalization(
+            for: analysisResult,
+            seasonData: seasonData,
+            detailedSeasonName: detailedSeasonName,
+            completion: completion
+        )
     }
 
     // MARK: - Private Methods
@@ -281,7 +266,7 @@ class PersonalizationService {
         """
     }
 
-    private func createEnhancedFallback(analysisResult: AnalysisResult, detailedSeasonName: String) -> PersonalizedSeasonData {
+    internal func createEnhancedFallback(analysisResult: AnalysisResult, detailedSeasonName: String) -> PersonalizedSeasonData {
         #if DEBUG
         print("🟡 PersonalizationService: Creating enhanced fallback with DNA and database lookup")
         #endif
@@ -364,7 +349,7 @@ class PersonalizationService {
 
     // MARK: - Basic Helper Methods
 
-    private func createUserColorsSection(_ analysisResult: AnalysisResult) -> String {
+    internal func createUserColorsSection(_ analysisResult: AnalysisResult) -> String {
         let skinLabString = analysisResult.skinColorLab.map {
             "L: \($0.L), a: \($0.a), b: \($0.b)"
         } ?? "Not available"
@@ -386,7 +371,7 @@ class PersonalizationService {
         """
     }
 
-    private func createSeasonInfoSection(_ seasonData: Season) -> String {
+    internal func createSeasonInfoSection(_ seasonData: Season) -> String {
         return """
         BASE SEASON INFORMATION:
         - Season: \(seasonData.name)
@@ -697,7 +682,7 @@ class PersonalizationService {
         )
     }
 
-    private func isNetworkAvailable() -> Bool {
+    internal func isNetworkAvailable() -> Bool {
         // Simple network check - in production you might want to use a more robust solution
         var addresses: UnsafeMutablePointer<ifaddrs>?
         if getifaddrs(&addresses) == 0 {

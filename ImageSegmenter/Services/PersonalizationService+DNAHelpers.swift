@@ -301,7 +301,7 @@ extension PersonalizationService {
 
         Weight percentages should total to 1.0 (100%). Be specific about why certain colors work
         better for their individual DNA blend rather than generic season advice.
-        
+
         Each color category must contain exactly 3 colors with complete name, hexValue, usageContext, and harmonyReason.
         """
     }

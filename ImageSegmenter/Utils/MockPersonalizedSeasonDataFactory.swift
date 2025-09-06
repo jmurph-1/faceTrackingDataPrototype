@@ -168,7 +168,6 @@ struct MockPersonalizedSeasonDataFactory {
         )
     }
 
-
     private static func createEnhancedColorData(for season: String, emphasizedColors: [String]) -> EnhancedColorRecommendations {
         let colorItems = emphasizedColors.enumerated().map { index, hex in
             ColorItem(

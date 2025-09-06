@@ -198,7 +198,7 @@ struct PersonalizedSeasonView: View {
                         columns: 4
                     )
                     .padding(.top)
-              
+
                     EnhancedColorGrid(
                         title: "Best Base Colors",
                         description: enhancedData.bestBaseColors.description,
@@ -398,8 +398,6 @@ extension PersonalizedSeasonView {
                 .shadow(color: primaryColor.opacity(0.1), radius: 5, x: 0, y: 2)
         )
     }
-
-
 
     private func getPriorityColor(_ priority: String) -> Color {
         switch priority.lowercased() {

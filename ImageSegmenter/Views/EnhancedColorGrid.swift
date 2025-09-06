@@ -208,7 +208,7 @@ struct ColorDetailCard: View {
     let colorItem: ColorItem
     let isAvoidanceMode: Bool
     let onDismiss: () -> Void
-    var onSaveFavorite: (() -> Void)? = nil
+    var onSaveFavorite: (() -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {

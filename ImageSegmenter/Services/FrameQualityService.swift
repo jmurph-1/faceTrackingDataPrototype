@@ -142,7 +142,6 @@ class FrameQualityService {
         )
     }
 
-
     /// Evaluate the quality of a frame using face landmarks instead of bounding box
     /// - Parameters:
     ///   - pixelBuffer: The frame pixel buffer

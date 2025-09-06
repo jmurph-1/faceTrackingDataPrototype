@@ -213,13 +213,17 @@ extension SeasonClassifier.Season {
     var seasonDescription: String {
         switch self {
         case .spring:
-            return "Springs have warm, clear coloring with golden undertones. They typically have golden blonde, auburn, or warm brown hair, and bright, clear eyes."
+            return "Springs have warm, clear coloring with golden undertones. " +
+                   "They typically have golden blonde, auburn, or warm brown hair, and bright, clear eyes."
         case .summer:
-            return "Summers have cool, soft coloring with blue undertones. They typically have ash blonde, cool brown, or silver hair, and soft blue, gray, or cool green eyes."
+            return "Summers have cool, soft coloring with blue undertones. " +
+                   "They typically have ash blonde, cool brown, or silver hair, and soft blue, gray, or cool green eyes."
         case .autumn:
-            return "Autumns have warm, muted coloring with golden-orange undertones. They typically have auburn, copper, or warm brown hair, and amber, hazel, or warm green eyes."
+            return "Autumns have warm, muted coloring with golden-orange undertones. " +
+                   "They typically have auburn, copper, or warm brown hair, and amber, hazel, or warm green eyes."
         case .winter:
-            return "Winters have cool, clear coloring with blue undertones. They typically have dark brown, black, or platinum hair, and clear blue, deep brown, or dark green eyes."
+            return "Winters have cool, clear coloring with blue undertones. " +
+                   "They typically have dark brown, black, or platinum hair, and clear blue, deep brown, or dark green eyes."
         }
     }
 

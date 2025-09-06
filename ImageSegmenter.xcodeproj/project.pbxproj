@@ -110,6 +110,11 @@
 		52774D7B2E28823E00309149 /* PersonalizedMetalsGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D792E28823E00309149 /* PersonalizedMetalsGrid.swift */; };
 		52774D7D2E2F0D7A00309149 /* MockMetalRecommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D7C2E2F0D7A00309149 /* MockMetalRecommendations.swift */; };
 		52774D812E4D847200309149 /* SeasonPaletteExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D802E4D847200309149 /* SeasonPaletteExplorerView.swift */; };
+		52774D862E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D842E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift */; };
+		52774D872E668AAD00309149 /* VectorStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D852E668AAD00309149 /* VectorStoreService.swift */; };
+		52774D892E668AE600309149 /* ResponsesAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D882E668AE600309149 /* ResponsesAPIModels.swift */; };
+		52774D8B2E668AF800309149 /* VectorStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D8A2E668AF800309149 /* VectorStoreManager.swift */; };
+		52774D8D2E6692C500309149 /* ResponsesAPIWorkflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D8C2E6692C500309149 /* ResponsesAPIWorkflowTests.swift */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
@@ -254,6 +259,11 @@
 		52774D792E28823E00309149 /* PersonalizedMetalsGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedMetalsGrid.swift; sourceTree = "<group>"; };
 		52774D7C2E2F0D7A00309149 /* MockMetalRecommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMetalRecommendations.swift; sourceTree = "<group>"; };
 		52774D802E4D847200309149 /* SeasonPaletteExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonPaletteExplorerView.swift; sourceTree = "<group>"; };
+		52774D842E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonalizationService+ResponsesAPI.swift"; sourceTree = "<group>"; };
+		52774D852E668AAD00309149 /* VectorStoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorStoreService.swift; sourceTree = "<group>"; };
+		52774D882E668AE600309149 /* ResponsesAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponsesAPIModels.swift; sourceTree = "<group>"; };
+		52774D8A2E668AF800309149 /* VectorStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorStoreManager.swift; sourceTree = "<group>"; };
+		52774D8C2E6692C500309149 /* ResponsesAPIWorkflowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponsesAPIWorkflowTests.swift; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -341,6 +351,7 @@
 		5222FDD22DD40F4200EF3C65 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				52774D882E668AE600309149 /* ResponsesAPIModels.swift */,
 				52774D762E28822100309149 /* MetalRecommendation.swift */,
 				523113442DE7F3AE00FCFC91 /* AnalysisResult+Personalization.swift */,
 				523113422DE7F39500FCFC91 /* PersonalizedSeasonData.swift */,
@@ -357,6 +368,7 @@
 		5222FDE92DD40FBE00EF3C65 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				52774D8A2E668AF800309149 /* VectorStoreManager.swift */,
 				52774D7C2E2F0D7A00309149 /* MockMetalRecommendations.swift */,
 				52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */,
 				52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */,
@@ -393,6 +405,7 @@
 		5222FE152DD41C5100EF3C65 /* ImageSegmenterTests */ = {
 			isa = PBXGroup;
 			children = (
+				52774D8C2E6692C500309149 /* ResponsesAPIWorkflowTests.swift */,
 				5222FE102DD41C5100EF3C65 /* build.xcconfig */,
 				5222FE112DD41C5100EF3C65 /* ColorConvertersTests.swift */,
 				5222FE122DD41C5100EF3C65 /* ImageSegmenterTests.swift */,
@@ -523,6 +536,8 @@
 		BF6EBB812B1EB75B00CD13FB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				52774D842E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift */,
+				52774D852E668AAD00309149 /* VectorStoreService.swift */,
 				523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */,
 				BF6EBB832B1EB75B00CD13FB /* CameraFeedService.swift */,
 				5222FE1E2DD4690200EF3C65 /* CameraService.swift */,
@@ -778,6 +793,7 @@
 				5222FDDD2DD40F8400EF3C65 /* SeasonClassifier.swift in Sources */,
 				5222FDDE2DD40F8400EF3C65 /* FrameQualityService.swift in Sources */,
 				5222FE212DD46A7900EF3C65 /* SegmentationService.swift in Sources */,
+				52774D8B2E668AF800309149 /* VectorStoreManager.swift in Sources */,
 				523113352DDFD64300FCFC91 /* UIImageOrientation.swift in Sources */,
 				5222FDED2DD40FDA00EF3C65 /* AnalysisResultViewModel.swift in Sources */,
 				52774D742E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift in Sources */,
@@ -786,6 +802,7 @@
 				5222FDDF2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift in Sources */,
 				523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */,
 				523112982DD4799F00FCFC91 /* RefactoredCameraViewController.swift in Sources */,
+				52774D892E668AE600309149 /* ResponsesAPIModels.swift in Sources */,
 				5222FDE12DD40F8400EF3C65 /* CoreDataManager.swift in Sources */,
 				523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */,
 				5231134E2DE7FED100FCFC91 /* CoreData+PersonalizationData.swift in Sources */,
@@ -811,6 +828,8 @@
 				5222FE072DD4143200EF3C65 /* SeasonAnalysis.xcdatamodeld in Sources */,
 				523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */,
 				BF6EBB4F2B1EB5BE00CD13FB /* AppDelegate.swift in Sources */,
+				52774D862E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift in Sources */,
+				52774D872E668AAD00309149 /* VectorStoreService.swift in Sources */,
 				BF6EBB922B1EB75B00CD13FB /* CameraFeedService.swift in Sources */,
 				523112AA2DD6D1DD00FCFC91 /* DefaultSeasonView.swift in Sources */,
 				BF6EBB952B1EB75B00CD13FB /* InferenceConfigurationManager.swift in Sources */,
@@ -854,6 +873,7 @@
 			isa = PBXSourcesBuildPhase;
 			files = (
 				5222FE172DD41C5100EF3C65 /* ColorConvertersTests.swift in Sources */,
+				52774D8D2E6692C500309149 /* ResponsesAPIWorkflowTests.swift in Sources */,
 				5222FE182DD41C5100EF3C65 /* ImageSegmenterTests.swift in Sources */,
 				5222FE192DD41C5100EF3C65 /* SeasonClassifierTests.swift in Sources */,
 				5222FE1A2DD41C5100EF3C65 /* TestImports.swift in Sources */,
