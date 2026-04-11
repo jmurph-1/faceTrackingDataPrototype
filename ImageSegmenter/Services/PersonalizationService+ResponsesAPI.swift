@@ -22,7 +22,7 @@ extension PersonalizationService {
     }
 
     private var responsesAPIMaxOutputTokens: Int {
-        return 4000
+        return 8000  // Increased from 4000 to accommodate seasonDNA and enhancedColorData
     }
 
     private var responsesAPITemperature: Double {
@@ -163,6 +163,18 @@ extension PersonalizationService {
             vectorStoreIds: [vectorStoreId]
         )
 
+        let textFormat = ResponsesAPISchemaFactory.createPersonalizationTextFormat()
+        
+        #if DEBUG
+        let requiredFields = textFormat.format.schema.required
+        print("🔍 PersonalizationService: Schema being sent to API:")
+        print("   • Max Output Tokens: \(responsesAPIMaxOutputTokens)")
+        print("   • Schema Name: \(textFormat.format.name)")
+        print("   • Required Fields: \(requiredFields.sorted())")
+        print("   • Has seasonDNA: \(requiredFields.contains("seasonDNA"))")
+        print("   • Has enhancedColorData: \(requiredFields.contains("enhancedColorData"))")
+        #endif
+        
         return ResponsesAPIRequest(
             model: responsesAPIModel,
             input: [systemMessage, userMessage],
@@ -170,7 +182,7 @@ extension PersonalizationService {
             toolChoice: "auto",
             temperature: responsesAPITemperature,
             maxOutputTokens: responsesAPIMaxOutputTokens,
-            text: ResponsesAPISchemaFactory.createPersonalizationTextFormat()
+            text: textFormat
         )
     }
 
@@ -189,7 +201,17 @@ extension PersonalizationService {
         Analyze facial coloring data and create Season DNA profiles with enhanced color recommendations grounded in the uploaded knowledge base.
 
         ## Critical Requirements:
-        - **Exactly 3 colors per category**: bestNeutrals, bestAccents, bestBaseColors must each contain exactly 3 colors
+        - **Complete Response**: MUST include both seasonDNA and enhancedColorData sections with ALL required fields
+        - **Season DNA**: MUST provide ALL fields:
+          • primary: Always required (season name and weight)
+          • secondary: Required field (provide season and weight, or null if no secondary influence)
+          • tertiary: Required field (provide season and weight, or null if no tertiary influence)  
+          • explanation: Required detailed explanation of the season DNA blend
+          • classificationConfidence: Required confidence score (0.0-1.0)
+          • blendJustification: Required justification for why this blend occurs
+        - **Enhanced Colors**: Include detailed color recommendations with ColorItem objects containing name, hexValue, usageContext, and harmonyReason
+        - **Hair Color Suggestions**: Required field (provide suggestions or null if not applicable)
+        - **Exactly 3-4 colors per category**: bestNeutrals, bestAccents, bestBaseColors must each contain 3-4 colors
         - **Valid hex format**: All colors must use 6-character hex (#RRGGBB)
         - **Season accuracy**: Use authentic 12-season system knowledge from uploaded documents
         - **Color database grounding**: Select colors from the uploaded colors.json when possible

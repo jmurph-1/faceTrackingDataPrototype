@@ -82,10 +82,33 @@ struct ResponsesAPISchemaProperties: Codable {
     let colorsToAvoid: ResponsesAPIArrayProperty
     let colorRecommendations: ResponsesAPIColorRecommendationsProperty
     let confidence: ResponsesAPINumberProperty
+    let seasonDNA: ResponsesAPISeasonDNAProperty
+    let enhancedColorData: ResponsesAPIEnhancedColorDataProperty
 
     enum CodingKeys: String, CodingKey {
         case personalizedTagline, userCharacteristics, personalizedOverview
         case emphasizedColors, colorsToAvoid, colorRecommendations, confidence
+        case seasonDNA, enhancedColorData
+    }
+    
+    init(personalizedTagline: ResponsesAPIStringProperty,
+         userCharacteristics: ResponsesAPIStringProperty,
+         personalizedOverview: ResponsesAPIStringProperty,
+         emphasizedColors: ResponsesAPIArrayProperty,
+         colorsToAvoid: ResponsesAPIArrayProperty,
+         colorRecommendations: ResponsesAPIColorRecommendationsProperty,
+         confidence: ResponsesAPINumberProperty,
+         seasonDNA: ResponsesAPISeasonDNAProperty,
+         enhancedColorData: ResponsesAPIEnhancedColorDataProperty) {
+        self.personalizedTagline = personalizedTagline
+        self.userCharacteristics = userCharacteristics
+        self.personalizedOverview = personalizedOverview
+        self.emphasizedColors = emphasizedColors
+        self.colorsToAvoid = colorsToAvoid
+        self.colorRecommendations = colorRecommendations
+        self.confidence = confidence
+        self.seasonDNA = seasonDNA
+        self.enhancedColorData = enhancedColorData
     }
 }
 
@@ -275,6 +298,236 @@ struct ResponsesAPIUsage: Codable {
     }
 }
 
+// MARK: - Season DNA Schema Properties
+
+struct ResponsesAPISeasonDNAProperty: Codable {
+    let type: String
+    let additionalProperties: Bool
+    let properties: ResponsesAPISeasonDNASubProperties
+    let required: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case additionalProperties = "additionalProperties"
+        case properties, required
+    }
+
+    init() {
+        self.type = "object"
+        self.additionalProperties = false
+        self.properties = ResponsesAPISeasonDNASubProperties()
+        self.required = ["primary", "secondary", "tertiary", "explanation", "classificationConfidence", "blendJustification"]
+    }
+}
+
+struct ResponsesAPISeasonDNASubProperties: Codable {
+    let primary: ResponsesAPISeasonWeightProperty
+    let secondary: ResponsesAPINullableSeasonWeightProperty
+    let tertiary: ResponsesAPINullableSeasonWeightProperty
+    let explanation: ResponsesAPIStringProperty
+    let classificationConfidence: ResponsesAPINumberProperty
+    let blendJustification: ResponsesAPIStringProperty
+
+    init() {
+        self.primary = ResponsesAPISeasonWeightProperty()
+        self.secondary = ResponsesAPINullableSeasonWeightProperty()
+        self.tertiary = ResponsesAPINullableSeasonWeightProperty()
+        self.explanation = ResponsesAPIStringProperty()
+        self.classificationConfidence = ResponsesAPINumberProperty(minimum: 0.0, maximum: 1.0)
+        self.blendJustification = ResponsesAPIStringProperty()
+    }
+}
+
+struct ResponsesAPISeasonWeightProperty: Codable {
+    let type: String
+    let additionalProperties: Bool
+    let properties: ResponsesAPISeasonWeightSubProperties
+    let required: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case additionalProperties = "additionalProperties"
+        case properties, required
+    }
+
+    init() {
+        self.type = "object"
+        self.additionalProperties = false
+        self.properties = ResponsesAPISeasonWeightSubProperties()
+        self.required = ["season", "weight"]
+    }
+}
+
+struct ResponsesAPISeasonWeightSubProperties: Codable {
+    let season: ResponsesAPIStringProperty
+    let weight: ResponsesAPINumberProperty
+
+    init() {
+        self.season = ResponsesAPIStringProperty()
+        self.weight = ResponsesAPINumberProperty(minimum: 0.0, maximum: 1.0)
+    }
+}
+
+struct ResponsesAPINullableSeasonWeightProperty: Codable {
+    let type: [String]
+    let additionalProperties: Bool
+    let properties: ResponsesAPISeasonWeightSubProperties?
+    let required: [String]?
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case additionalProperties = "additionalProperties"
+        case properties, required
+    }
+
+    init() {
+        self.type = ["object", "null"]
+        self.additionalProperties = false
+        self.properties = ResponsesAPISeasonWeightSubProperties()
+        self.required = ["season", "weight"]
+    }
+}
+
+// MARK: - Enhanced Color Data Schema Properties
+
+struct ResponsesAPIEnhancedColorDataProperty: Codable {
+    let type: String
+    let additionalProperties: Bool
+    let properties: ResponsesAPIEnhancedColorDataSubProperties
+    let required: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case additionalProperties = "additionalProperties"
+        case properties, required
+    }
+
+    init() {
+        self.type = "object"
+        self.additionalProperties = false
+        self.properties = ResponsesAPIEnhancedColorDataSubProperties()
+        self.required = ["bestNeutrals", "bestAccents", "bestBaseColors", "hairColorSuggestions"]
+    }
+}
+
+struct ResponsesAPIEnhancedColorDataSubProperties: Codable {
+    let bestNeutrals: ResponsesAPIDetailedColorRecommendationProperty
+    let bestAccents: ResponsesAPIDetailedColorRecommendationProperty
+    let bestBaseColors: ResponsesAPIDetailedColorRecommendationProperty
+    let hairColorSuggestions: ResponsesAPINullableDetailedColorRecommendationProperty
+
+    init() {
+        self.bestNeutrals = ResponsesAPIDetailedColorRecommendationProperty()
+        self.bestAccents = ResponsesAPIDetailedColorRecommendationProperty()
+        self.bestBaseColors = ResponsesAPIDetailedColorRecommendationProperty()
+        self.hairColorSuggestions = ResponsesAPINullableDetailedColorRecommendationProperty()
+    }
+}
+
+struct ResponsesAPIDetailedColorRecommendationProperty: Codable {
+    let type: String
+    let additionalProperties: Bool
+    let properties: ResponsesAPIDetailedColorRecommendationSubProperties
+    let required: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case additionalProperties = "additionalProperties"
+        case properties, required
+    }
+
+    init() {
+        self.type = "object"
+        self.additionalProperties = false
+        self.properties = ResponsesAPIDetailedColorRecommendationSubProperties()
+        self.required = ["description", "colors", "priority", "usageInstructions", "categoryExplanation"]
+    }
+}
+
+struct ResponsesAPIDetailedColorRecommendationSubProperties: Codable {
+    let description: ResponsesAPIStringProperty
+    let colors: ResponsesAPIColorItemArrayProperty
+    let priority: ResponsesAPIPriorityProperty
+    let usageInstructions: ResponsesAPIStringProperty
+    let categoryExplanation: ResponsesAPIStringProperty
+
+    init() {
+        self.description = ResponsesAPIStringProperty()
+        self.colors = ResponsesAPIColorItemArrayProperty()
+        self.priority = ResponsesAPIPriorityProperty()
+        self.usageInstructions = ResponsesAPIStringProperty()
+        self.categoryExplanation = ResponsesAPIStringProperty()
+    }
+}
+
+struct ResponsesAPIColorItemArrayProperty: Codable {
+    let type: String
+    let minItems: Int
+    let maxItems: Int
+    let items: ResponsesAPIColorItemProperty
+
+    init() {
+        self.type = "array"
+        self.minItems = 3
+        self.maxItems = 4
+        self.items = ResponsesAPIColorItemProperty()
+    }
+}
+
+struct ResponsesAPIColorItemProperty: Codable {
+    let type: String
+    let additionalProperties: Bool
+    let properties: ResponsesAPIColorItemSubProperties
+    let required: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case additionalProperties = "additionalProperties"
+        case properties, required
+    }
+
+    init() {
+        self.type = "object"
+        self.additionalProperties = false
+        self.properties = ResponsesAPIColorItemSubProperties()
+        self.required = ["name", "hexValue", "usageContext", "harmonyReason"]
+    }
+}
+
+struct ResponsesAPIColorItemSubProperties: Codable {
+    let name: ResponsesAPIStringProperty
+    let hexValue: ResponsesAPIHexColorProperty
+    let usageContext: ResponsesAPIStringProperty
+    let harmonyReason: ResponsesAPIStringProperty
+
+    init() {
+        self.name = ResponsesAPIStringProperty()
+        self.hexValue = ResponsesAPIHexColorProperty()
+        self.usageContext = ResponsesAPIStringProperty()
+        self.harmonyReason = ResponsesAPIStringProperty()
+    }
+}
+
+struct ResponsesAPINullableDetailedColorRecommendationProperty: Codable {
+    let type: [String]
+    let additionalProperties: Bool?
+    let properties: ResponsesAPIDetailedColorRecommendationSubProperties?
+    let required: [String]?
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case additionalProperties = "additionalProperties"
+        case properties, required
+    }
+
+    init() {
+        self.type = ["object", "null"]
+        self.additionalProperties = false
+        self.properties = ResponsesAPIDetailedColorRecommendationSubProperties()
+        self.required = ["description", "colors", "priority", "usageInstructions", "categoryExplanation"]
+    }
+}
+
 // MARK: - Schema Factory
 
 struct ResponsesAPISchemaFactory {
@@ -290,7 +543,9 @@ struct ResponsesAPISchemaFactory {
                 emphasizedColors: ResponsesAPIArrayProperty(minItems: 3),
                 colorsToAvoid: ResponsesAPIArrayProperty(minItems: 3),
                 colorRecommendations: ResponsesAPIColorRecommendationsProperty(),
-                confidence: ResponsesAPINumberProperty(minimum: 0.70, maximum: 0.95)
+                confidence: ResponsesAPINumberProperty(minimum: 0.70, maximum: 0.95),
+                seasonDNA: ResponsesAPISeasonDNAProperty(),
+                enhancedColorData: ResponsesAPIEnhancedColorDataProperty()
             ),
             required: [
                 "personalizedTagline",
@@ -299,7 +554,9 @@ struct ResponsesAPISchemaFactory {
                 "colorRecommendations",
                 "emphasizedColors",
                 "colorsToAvoid",
-                "confidence"
+                "confidence",
+                "seasonDNA",
+                "enhancedColorData"
             ]
         )
 

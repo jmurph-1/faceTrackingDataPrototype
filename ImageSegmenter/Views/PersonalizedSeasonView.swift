@@ -114,8 +114,8 @@ struct PersonalizedSeasonView: View {
             }
             .padding(.horizontal)
 
-            // Your Color DNA Section
-            if viewModel.isDNABlended || viewModel.personalizedData.seasonDNAData != nil {
+            // Your Color DNA Section - always show since we have fallback logic
+            if true { // Always show DNA section with fallback support
                 VStack(spacing: 16) {
                     HStack {
                         Text("Your Color DNA")
@@ -178,46 +178,112 @@ struct PersonalizedSeasonView: View {
     private var enhancedColorPalette: some View {
         VStack(spacing: 20) {
             // Main EnhancedColorGrid for best colors
-            if viewModel.personalizedData.hasEnhancedColorData,
-               let enhancedData = viewModel.personalizedData.enhancedColorData {
+            if let enhancedData = viewModel.personalizedData.enhancedColorData {
                 // Use enhanced color data if available
                 VStack(spacing: 16) {
+                    // Debug print
+                    #if DEBUG
+                    let _ = print("🎨 PersonalizedSeasonView: Enhanced color data available")
+                    let _ = print("   • Best Neutrals: \(enhancedData.bestNeutrals.colors.count) colors")
+                    let _ = print("   • Best Accents: \(enhancedData.bestAccents.colors.count) colors") 
+                    let _ = print("   • Best Base Colors: \(enhancedData.bestBaseColors.colors.count) colors")
+                    #endif
+                    
+                    if !enhancedData.bestNeutrals.colors.isEmpty {
+                        EnhancedColorGrid(
+                            title: "Best Neutrals",
+                            description: enhancedData.bestNeutrals.description,
+                            colorItems: enhancedData.bestNeutrals.colors,
+                            columns: 4
+                        )
+                    }
 
-                    EnhancedColorGrid(
-                        title: "Best Neutrals",
-                        description: enhancedData.bestNeutrals.description,
-                        colorItems: enhancedData.bestNeutrals.colors,
-                        columns: 4
-                    )
+                    if !enhancedData.bestAccents.colors.isEmpty {
+                        EnhancedColorGrid(
+                            title: "Best Accents", 
+                            description: enhancedData.bestAccents.description,
+                            colorItems: enhancedData.bestAccents.colors,
+                            columns: 4
+                        )
+                        .padding(.top)
+                    }
 
-                    // Optional collapsible category sections
-                    EnhancedColorGrid(
-                        title: "Best Accents",
-                        description: enhancedData.bestAccents.description,
-                        colorItems: enhancedData.bestAccents.colors,
-                        columns: 4
-                    )
-                    .padding(.top)
+                    if !enhancedData.bestBaseColors.colors.isEmpty {
+                        EnhancedColorGrid(
+                            title: "Best Base Colors",
+                            description: enhancedData.bestBaseColors.description,
+                            colorItems: enhancedData.bestBaseColors.colors,
+                            columns: 4
+                        )
+                        .padding(.top)
+                    }
 
-                    EnhancedColorGrid(
-                        title: "Best Base Colors",
-                        description: enhancedData.bestBaseColors.description,
-                        colorItems: enhancedData.bestBaseColors.colors,
-                        columns: 4
-                    )
-                    .padding(.top)
+                    // Add fallback if all enhanced sections are empty
+                    let hasAnyEnhancedColors = !enhancedData.bestNeutrals.colors.isEmpty ||
+                                             !enhancedData.bestAccents.colors.isEmpty ||
+                                             !enhancedData.bestBaseColors.colors.isEmpty
+                    
+                    if !hasAnyEnhancedColors {
+                        #if DEBUG
+                        let _ = print("🎨 PersonalizedSeasonView: Enhanced data exists but all color arrays are empty, showing fallback")
+                        #endif
+                        EnhancedColorGrid(
+                            title: "Your Best Colors",
+                            description: "Colors that complement your \(viewModel.seasonName) coloring",
+                            colorItems: createBasicColorItems(from: viewModel.personalizedData.emphasizedColors),
+                            columns: 4
+                        )
+                    }
 
                     SeasonPaletteExplorerView(colorItems: viewModel.getFullPaletteColors())
                         .padding(.top)
                 }
             } else {
-                // Fallback to basic color display
-                EnhancedColorGrid(
-                    title: "Your Best Colors",
-                    description: "Colors that complement your \(viewModel.seasonName) coloring",
-                    colorItems: createBasicColorItems(from: viewModel.personalizedData.emphasizedColors),
-                    columns: 4
-                )
+                // Fallback - use legacy colorRecommendations if available
+                #if DEBUG
+                let _ = print("🎨 PersonalizedSeasonView: Using fallback color display")
+                let _ = print("   • Enhanced data available: \(viewModel.personalizedData.enhancedColorData != nil)")
+                let _ = print("   • hasEnhancedColorData: \(viewModel.personalizedData.hasEnhancedColorData)")
+                let _ = print("   • Legacy colorRecommendations available")
+                let _ = print("     - Best Neutrals: \(viewModel.personalizedData.colorRecommendations.bestNeutrals.colors.count) colors")
+                let _ = print("     - Best Accents: \(viewModel.personalizedData.colorRecommendations.bestAccents.colors.count) colors") 
+                let _ = print("     - Best Base Colors: \(viewModel.personalizedData.colorRecommendations.bestBaseColors.colors.count) colors")
+                #endif
+                
+                // Use legacy colorRecommendations structure
+                VStack(spacing: 16) {
+                    // Best Neutrals from legacy data
+                    if !viewModel.personalizedData.colorRecommendations.bestNeutrals.colors.isEmpty {
+                        EnhancedColorGrid(
+                            title: "Best Neutrals",
+                            description: viewModel.personalizedData.colorRecommendations.bestNeutrals.description,
+                            colorItems: createBasicColorItems(from: viewModel.personalizedData.colorRecommendations.bestNeutrals.colors, category: "Neutral"),
+                            columns: 4
+                        )
+                    }
+                    
+                    // Best Accents from legacy data  
+                    if !viewModel.personalizedData.colorRecommendations.bestAccents.colors.isEmpty {
+                        EnhancedColorGrid(
+                            title: "Best Accents",
+                            description: viewModel.personalizedData.colorRecommendations.bestAccents.description,
+                            colorItems: createBasicColorItems(from: viewModel.personalizedData.colorRecommendations.bestAccents.colors, category: "Accent"),
+                            columns: 4
+                        )
+                        .padding(.top)
+                    }
+                    
+                    // Best Base Colors from legacy data
+                    if !viewModel.personalizedData.colorRecommendations.bestBaseColors.colors.isEmpty {
+                        EnhancedColorGrid(
+                            title: "Best Base Colors", 
+                            description: viewModel.personalizedData.colorRecommendations.bestBaseColors.description,
+                            colorItems: createBasicColorItems(from: viewModel.personalizedData.colorRecommendations.bestBaseColors.colors, category: "Base"),
+                            columns: 4
+                        )
+                        .padding(.top)
+                    }
+                }
 
                 SeasonPaletteExplorerView(colorItems: viewModel.getFullPaletteColors())
                     .padding(.top)
@@ -501,13 +567,15 @@ extension PersonalizedSeasonView {
     }
 
     /// Create basic ColorItems from hex strings
-    private func createBasicColorItems(from hexColors: [String], isAvoidance: Bool = false) -> [ColorItem] {
+    private func createBasicColorItems(from hexColors: [String], isAvoidance: Bool = false, category: String = "") -> [ColorItem] {
         return hexColors.enumerated().map { _, hex in
             let colorName = getColorName(from: hex, isAvoidance: isAvoidance)
-            let usageContext = isAvoidance ? "Avoid this color" : "Great for your season"
+            let usageContext = isAvoidance ? "Avoid this color" : 
+                              category.isEmpty ? "Great for your season" : "Perfect \(category.lowercased()) for your season"
             let harmonyReason = isAvoidance ?
                 "May clash with your natural coloring" :
-                "Complements your \(viewModel.seasonName) characteristics"
+                category.isEmpty ? "Complements your \(viewModel.seasonName) characteristics" :
+                "Ideal \(category.lowercased()) that enhances your \(viewModel.seasonName) coloring"
 
             return ColorItem(
                 name: colorName,

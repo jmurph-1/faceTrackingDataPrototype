@@ -214,11 +214,11 @@ class ResponsesAPIWorkflowTests: XCTestCase {
         let schema = textFormat.format
 
         XCTAssertEqual(schema.type, "json_schema", "Should be json_schema type")
-        XCTAssertEqual(schema.jsonSchema.name, "Season13Personalization", "Should have correct schema name")
-        XCTAssertTrue(schema.jsonSchema.strict, "Should use strict validation")
+        XCTAssertEqual(schema.name, "Season13Personalization", "Should have correct schema name")
+        XCTAssertTrue(schema.strict, "Should use strict validation")
 
         // Validate required fields
-        let requiredFields = schema.jsonSchema.schema.required
+        let requiredFields = schema.schema.required
         let expectedFields = [
             "personalizedTagline",
             "userCharacteristics",
