@@ -17,7 +17,7 @@ let package = Package(
             path: ".",
             exclude: [
                 "Base.lproj",
-                "Assets.xcassets", 
+                "Assets.xcassets",
                 "Info.plist",
                 "AppDelegate.swift",
                 "SceneDelegate.swift",

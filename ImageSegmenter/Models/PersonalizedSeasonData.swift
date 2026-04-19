@@ -281,7 +281,6 @@ struct ColorRecommendation: Codable {
     let usageInstructions: String
 }
 
-
 // MARK: - Convenience Extensions
 
 extension PersonalizedSeasonData {

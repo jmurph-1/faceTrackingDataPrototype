@@ -10,8 +10,8 @@ import Foundation
 // MARK: - PersonalizationService Parsing Extensions
 
 extension PersonalizationService {
-    
+
     // MARK: - Extension for additional parsing utilities
     // Main parsing methods are now in the main PersonalizationService file
-    
+
 }

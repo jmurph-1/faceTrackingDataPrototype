@@ -25,6 +25,9 @@ class AppConfiguration {
             DispatchQueue.main.async {
                 print("🔧 AppConfiguration: ColorDatabaseManager Validation")
                 print(validation.summary)
+
+                // Auto-setup vector store if API key becomes available (development only)
+                VectorStoreManager.shared.debugAutoSetupIfPossible() // TODO: Re-enable when VectorStoreManager is added to project
             }
             #endif
         }
@@ -36,6 +39,7 @@ class AppConfiguration {
     private var isAPIKeyLoaded: Bool = false
     private var isPersonalizationEnabled: Bool = false
     private var isDNAPersonalizationEnabled: Bool = false
+    private var vectorStoreId: String?
 
     // MARK: - Public Interface
 
@@ -73,6 +77,22 @@ class AppConfiguration {
         return isPersonalizationEnabled && hasPersonalizationSupport
     }
 
+    /// Get the vector store ID for OpenAI file search
+    func getVectorStoreId() -> String? {
+        return vectorStoreId
+    }
+
+    /// Set the vector store ID (after successful setup)
+    func setVectorStoreId(_ id: String) {
+        vectorStoreId = id
+        UserDefaults.standard.set(id, forKey: "vector_store_id")
+    }
+
+    /// Whether vector store is configured for enhanced personalization
+    var hasVectorStore: Bool {
+        return vectorStoreId != nil && !vectorStoreId!.isEmpty
+    }
+
     // MARK: - Private Methods
 
     private func loadUserPreferences() {
@@ -81,6 +101,9 @@ class AppConfiguration {
 
         // Load user preference for DNA personalization
         isDNAPersonalizationEnabled = UserDefaults.standard.bool(forKey: "dna_personalization_enabled")
+
+        // Load vector store ID
+        vectorStoreId = UserDefaults.standard.string(forKey: "vector_store_id")
     }
 
     private func loadAPIKeyIfNeeded() {
@@ -105,6 +128,7 @@ class AppConfiguration {
     func reloadConfiguration() {
         isAPIKeyLoaded = false
         openAIAPIKey = nil
+        vectorStoreId = nil
         loadUserPreferences()
         loadAPIKeyIfNeeded()
     }
@@ -171,6 +195,11 @@ extension AppConfiguration {
         print("Personalization Support: \(hasPersonalizationSupport)")
         print("Personalization Active: \(isPersonalizationActive)")
         print("DNA Personalization Active: \(isDNAPersonalizationActive)")
+        print("Vector Store: \(hasVectorStore ? "✅ Configured" : "❌ Not configured")")
+        if let storeId = vectorStoreId {
+            let maskedStoreId = String(storeId.prefix(7)) + "..." + String(storeId.suffix(4))
+            print("Vector Store ID: \(maskedStoreId)")
+        }
 
         // Use APIKeyManager as the single source of truth for API key status
         if let apiKey = APIKeyManager.getOpenAIKey() {
@@ -186,6 +215,9 @@ extension AppConfiguration {
 
         // Print file-based config status
         APIKeyFileManager.printConfigStatus()
+
+        // Print vector store status
+        VectorStoreManager.shared.printSetupStatus() // TODO: Re-enable when VectorStoreManager is added to project
     }
 
     /// Force reload configuration and print status (for debugging)

@@ -25,7 +25,7 @@
 		5222FDBD2DD3D67500EF3C65 /* colors.json in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDB12DD3D67500EF3C65 /* colors.json */; };
 		5222FDBF2DD3D67500EF3C65 /* Dark Autumn.json in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDA62DD3D67500EF3C65 /* Dark Autumn.json */; };
 		5222FDC72DD3F8AD00EF3C65 /* frontend.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC22DD3F8AD00EF3C65 /* frontend.md */; };
-		5222FDC82DD3F8AD00EF3C65 /* status.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC52DD3F8AD00EF3C65 /* status.md */; };
+		5222FDC82DD3F8AD00EF3C65 /* breakdown.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC52DD3F8AD00EF3C65 /* breakdown.md */; };
 		5222FDC92DD3F8AD00EF3C65 /* techstack.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC62DD3F8AD00EF3C65 /* techstack.md */; };
 		5222FDCA2DD3F8AD00EF3C65 /* prd.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC32DD3F8AD00EF3C65 /* prd.md */; };
 		5222FDCB2DD3F8AD00EF3C65 /* requirements.md in Resources */ = {isa = PBXBuildFile; fileRef = 5222FDC42DD3F8AD00EF3C65 /* requirements.md */; };
@@ -102,6 +102,7 @@
 		523113662DECCC6A00FCFC91 /* ColorDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113632DECCC6A00FCFC91 /* ColorDatabaseManager.swift */; };
 		523113692DED03C800FCFC91 /* SeasonDNARingChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */; };
 		5231136A2DED03C800FCFC91 /* EnhancedColorGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */; };
+		526DF6482F94676A00CB56B9 /* MockAnalysisResultFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DF6472F94676A00CB56B9 /* MockAnalysisResultFactory.swift */; };
 		52774D712E14BFFB00309149 /* MockPersonalizedSeasonGuide.md in Resources */ = {isa = PBXBuildFile; fileRef = 52774D702E14BFFA00309149 /* MockPersonalizedSeasonGuide.md */; };
 		52774D742E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */; };
 		52774D752E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */; };
@@ -110,6 +111,13 @@
 		52774D7B2E28823E00309149 /* PersonalizedMetalsGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D792E28823E00309149 /* PersonalizedMetalsGrid.swift */; };
 		52774D7D2E2F0D7A00309149 /* MockMetalRecommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D7C2E2F0D7A00309149 /* MockMetalRecommendations.swift */; };
 		52774D812E4D847200309149 /* SeasonPaletteExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D802E4D847200309149 /* SeasonPaletteExplorerView.swift */; };
+		52774D862E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D842E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift */; };
+		52774D872E668AAD00309149 /* VectorStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D852E668AAD00309149 /* VectorStoreService.swift */; };
+		52774D892E668AE600309149 /* ResponsesAPIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D882E668AE600309149 /* ResponsesAPIModels.swift */; };
+		52774D8B2E668AF800309149 /* VectorStoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D8A2E668AF800309149 /* VectorStoreManager.swift */; };
+		52774D8D2E6692C500309149 /* ResponsesAPIWorkflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D8C2E6692C500309149 /* ResponsesAPIWorkflowTests.swift */; };
+		52774D972E6CBD3000309149 /* ResponsesAPIValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D962E6CBD3000309149 /* ResponsesAPIValidationTests.swift */; };
+		52774D992E6CBD9000309149 /* SchemaDebugTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D982E6CBD9000309149 /* SchemaDebugTest.swift */; };
 		52BEF13E2DD2CF7500957595 /* selfie_multiclass_256x256.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */; };
 		52BEF17F2DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */; };
 		52BEF1802DD30C6E00957595 /* debuggingTips.md in Resources */ = {isa = PBXBuildFile; fileRef = 52BEF17F2DD30C6E00957595 /* debuggingTips.md */; };
@@ -171,7 +179,7 @@
 		5222FDC22DD3F8AD00EF3C65 /* frontend.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = frontend.md; sourceTree = "<group>"; };
 		5222FDC32DD3F8AD00EF3C65 /* prd.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = prd.md; sourceTree = "<group>"; };
 		5222FDC42DD3F8AD00EF3C65 /* requirements.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = requirements.md; sourceTree = "<group>"; };
-		5222FDC52DD3F8AD00EF3C65 /* status.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = status.md; sourceTree = "<group>"; };
+		5222FDC52DD3F8AD00EF3C65 /* breakdown.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = breakdown.md; sourceTree = "<group>"; };
 		5222FDC62DD3F8AD00EF3C65 /* techstack.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = techstack.md; sourceTree = "<group>"; };
 		5222FDD02DD40F4200EF3C65 /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResult.swift; sourceTree = "<group>"; };
 		5222FDD32DD40F4200EF3C65 /* SeasonAnalysis.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SeasonAnalysis.xcdatamodel; sourceTree = "<group>"; };
@@ -246,6 +254,7 @@
 		523113642DECCC6A00FCFC91 /* PersonalizationService+DNAHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonalizationService+DNAHelpers.swift"; sourceTree = "<group>"; };
 		523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedColorGrid.swift; sourceTree = "<group>"; };
 		523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDNARingChart.swift; sourceTree = "<group>"; };
+		526DF6472F94676A00CB56B9 /* MockAnalysisResultFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAnalysisResultFactory.swift; sourceTree = "<group>"; };
 		52774D702E14BFFA00309149 /* MockPersonalizedSeasonGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MockPersonalizedSeasonGuide.md; sourceTree = "<group>"; };
 		52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPersonalizedSeasonHelper.swift; sourceTree = "<group>"; };
 		52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersonalizedSeasonDataFactory.swift; sourceTree = "<group>"; };
@@ -254,6 +263,13 @@
 		52774D792E28823E00309149 /* PersonalizedMetalsGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedMetalsGrid.swift; sourceTree = "<group>"; };
 		52774D7C2E2F0D7A00309149 /* MockMetalRecommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockMetalRecommendations.swift; sourceTree = "<group>"; };
 		52774D802E4D847200309149 /* SeasonPaletteExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonPaletteExplorerView.swift; sourceTree = "<group>"; };
+		52774D842E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersonalizationService+ResponsesAPI.swift"; sourceTree = "<group>"; };
+		52774D852E668AAD00309149 /* VectorStoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorStoreService.swift; sourceTree = "<group>"; };
+		52774D882E668AE600309149 /* ResponsesAPIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponsesAPIModels.swift; sourceTree = "<group>"; };
+		52774D8A2E668AF800309149 /* VectorStoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorStoreManager.swift; sourceTree = "<group>"; };
+		52774D8C2E6692C500309149 /* ResponsesAPIWorkflowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponsesAPIWorkflowTests.swift; sourceTree = "<group>"; };
+		52774D962E6CBD3000309149 /* ResponsesAPIValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponsesAPIValidationTests.swift; sourceTree = "<group>"; };
+		52774D982E6CBD9000309149 /* SchemaDebugTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaDebugTest.swift; sourceTree = "<group>"; };
 		52BEF13D2DD2CF7500957595 /* selfie_multiclass_256x256.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = selfie_multiclass_256x256.tflite; sourceTree = "<group>"; };
 		52BEF17F2DD30C6E00957595 /* debuggingTips.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = debuggingTips.md; sourceTree = "<group>"; };
 		52BEF1802DD2F91F00957595 /* MultiClassSegmentedImageRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiClassSegmentedImageRenderer.swift; sourceTree = "<group>"; };
@@ -341,6 +357,7 @@
 		5222FDD22DD40F4200EF3C65 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				52774D882E668AE600309149 /* ResponsesAPIModels.swift */,
 				52774D762E28822100309149 /* MetalRecommendation.swift */,
 				523113442DE7F3AE00FCFC91 /* AnalysisResult+Personalization.swift */,
 				523113422DE7F39500FCFC91 /* PersonalizedSeasonData.swift */,
@@ -357,6 +374,8 @@
 		5222FDE92DD40FBE00EF3C65 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				526DF6472F94676A00CB56B9 /* MockAnalysisResultFactory.swift */,
+				52774D8A2E668AF800309149 /* VectorStoreManager.swift */,
 				52774D7C2E2F0D7A00309149 /* MockMetalRecommendations.swift */,
 				52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */,
 				52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */,
@@ -393,6 +412,9 @@
 		5222FE152DD41C5100EF3C65 /* ImageSegmenterTests */ = {
 			isa = PBXGroup;
 			children = (
+				52774D982E6CBD9000309149 /* SchemaDebugTest.swift */,
+				52774D962E6CBD3000309149 /* ResponsesAPIValidationTests.swift */,
+				52774D8C2E6692C500309149 /* ResponsesAPIWorkflowTests.swift */,
 				5222FE102DD41C5100EF3C65 /* build.xcconfig */,
 				5222FE112DD41C5100EF3C65 /* ColorConvertersTests.swift */,
 				5222FE122DD41C5100EF3C65 /* ImageSegmenterTests.swift */,
@@ -442,7 +464,7 @@
 				5222FDC22DD3F8AD00EF3C65 /* frontend.md */,
 				5222FDC32DD3F8AD00EF3C65 /* prd.md */,
 				5222FDC42DD3F8AD00EF3C65 /* requirements.md */,
-				5222FDC52DD3F8AD00EF3C65 /* status.md */,
+				5222FDC52DD3F8AD00EF3C65 /* breakdown.md */,
 				5222FDC62DD3F8AD00EF3C65 /* techstack.md */,
 				52BEF1842DD312D900957595 /* rules.md */,
 				52BEF17F2DD30C6E00957595 /* debuggingTips.md */,
@@ -523,6 +545,8 @@
 		BF6EBB812B1EB75B00CD13FB /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				52774D842E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift */,
+				52774D852E668AAD00309149 /* VectorStoreService.swift */,
 				523113322DDECCF500FCFC91 /* accurate_color_extraction.swift */,
 				BF6EBB832B1EB75B00CD13FB /* CameraFeedService.swift */,
 				5222FE1E2DD4690200EF3C65 /* CameraService.swift */,
@@ -711,7 +735,7 @@
 				5222FDBC2DD3D67500EF3C65 /* Light Spring.json in Resources */,
 				5222FDC72DD3F8AD00EF3C65 /* frontend.md in Resources */,
 				523112A42DD524D500FCFC91 /* projectDirectory.md in Resources */,
-				5222FDC82DD3F8AD00EF3C65 /* status.md in Resources */,
+				5222FDC82DD3F8AD00EF3C65 /* breakdown.md in Resources */,
 				5222FDC92DD3F8AD00EF3C65 /* techstack.md in Resources */,
 				5222FDCA2DD3F8AD00EF3C65 /* prd.md in Resources */,
 				5222FDCB2DD3F8AD00EF3C65 /* requirements.md in Resources */,
@@ -760,6 +784,9 @@
 				"",
 				"",
 				"",
+				"",
+				"",
+				"",
 			);
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -777,7 +804,9 @@
 				BF6EBB982B1EB75B00CD13FB /* RootViewController.swift in Sources */,
 				5222FDDD2DD40F8400EF3C65 /* SeasonClassifier.swift in Sources */,
 				5222FDDE2DD40F8400EF3C65 /* FrameQualityService.swift in Sources */,
+				526DF6482F94676A00CB56B9 /* MockAnalysisResultFactory.swift in Sources */,
 				5222FE212DD46A7900EF3C65 /* SegmentationService.swift in Sources */,
+				52774D8B2E668AF800309149 /* VectorStoreManager.swift in Sources */,
 				523113352DDFD64300FCFC91 /* UIImageOrientation.swift in Sources */,
 				5222FDED2DD40FDA00EF3C65 /* AnalysisResultViewModel.swift in Sources */,
 				52774D742E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift in Sources */,
@@ -786,6 +815,7 @@
 				5222FDDF2DD40F8400EF3C65 /* FrameQualityAnalyzer.swift in Sources */,
 				523113332DDECCF500FCFC91 /* accurate_color_extraction.swift in Sources */,
 				523112982DD4799F00FCFC91 /* RefactoredCameraViewController.swift in Sources */,
+				52774D892E668AE600309149 /* ResponsesAPIModels.swift in Sources */,
 				5222FDE12DD40F8400EF3C65 /* CoreDataManager.swift in Sources */,
 				523112A02DD4F67D00FCFC91 /* DebugLogger.swift in Sources */,
 				5231134E2DE7FED100FCFC91 /* CoreData+PersonalizationData.swift in Sources */,
@@ -811,6 +841,8 @@
 				5222FE072DD4143200EF3C65 /* SeasonAnalysis.xcdatamodeld in Sources */,
 				523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */,
 				BF6EBB4F2B1EB5BE00CD13FB /* AppDelegate.swift in Sources */,
+				52774D862E668AAD00309149 /* PersonalizationService+ResponsesAPI.swift in Sources */,
+				52774D872E668AAD00309149 /* VectorStoreService.swift in Sources */,
 				BF6EBB922B1EB75B00CD13FB /* CameraFeedService.swift in Sources */,
 				523112AA2DD6D1DD00FCFC91 /* DefaultSeasonView.swift in Sources */,
 				BF6EBB952B1EB75B00CD13FB /* InferenceConfigurationManager.swift in Sources */,
@@ -853,7 +885,10 @@
 		BF6EBB5D2B1EB5BF00CD13FB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
+				52774D972E6CBD3000309149 /* ResponsesAPIValidationTests.swift in Sources */,
 				5222FE172DD41C5100EF3C65 /* ColorConvertersTests.swift in Sources */,
+				52774D992E6CBD9000309149 /* SchemaDebugTest.swift in Sources */,
+				52774D8D2E6692C500309149 /* ResponsesAPIWorkflowTests.swift in Sources */,
 				5222FE182DD41C5100EF3C65 /* ImageSegmenterTests.swift in Sources */,
 				5222FE192DD41C5100EF3C65 /* SeasonClassifierTests.swift in Sources */,
 				5222FE1A2DD41C5100EF3C65 /* TestImports.swift in Sources */,

@@ -17,25 +17,29 @@ class SeasonClassifierTests: XCTestCase {
         let springResult = classifier.classify(skinColor: springColor)
         XCTAssertEqual(springResult.macroSeason, .spring, "Should classify macro season as Spring")
         // The detailed season should be one of the Spring variants
-        XCTAssertTrue(springResult.detailedSeason.macroSeason == .spring, "Detailed season should map to Spring macro season")
+        XCTAssertTrue(springResult.detailedSeason.macroSeason == .spring,
+                     "Detailed season should map to Spring macro season")
 
         // Summer: Cool (b* < 12) + Light (L >= 65)
         let summerColor = ColorConverters.LabColor(L: 70.0, a: -3.0, b: 10.0)
         let summerResult = classifier.classify(skinColor: summerColor)
         XCTAssertEqual(summerResult.macroSeason, .summer, "Should classify macro season as Summer")
-        XCTAssertTrue(summerResult.detailedSeason.macroSeason == .summer, "Detailed season should map to Summer macro season")
+        XCTAssertTrue(summerResult.detailedSeason.macroSeason == .summer,
+                     "Detailed season should map to Summer macro season")
 
         // Autumn: Warm (b* >= 12) + Dark (L < 65)
         let autumnColor = ColorConverters.LabColor(L: 60.0, a: 8.0, b: 22.0)
         let autumnResult = classifier.classify(skinColor: autumnColor)
         XCTAssertEqual(autumnResult.macroSeason, .autumn, "Should classify macro season as Autumn")
-        XCTAssertTrue(autumnResult.detailedSeason.macroSeason == .autumn, "Detailed season should map to Autumn macro season")
+        XCTAssertTrue(autumnResult.detailedSeason.macroSeason == .autumn,
+                     "Detailed season should map to Autumn macro season")
 
         // Winter: Cool (b* < 12) + Dark (L < 65)
         let winterColor = ColorConverters.LabColor(L: 55.0, a: -5.0, b: 5.0)
         let winterResult = classifier.classify(skinColor: winterColor)
         XCTAssertEqual(winterResult.macroSeason, .winter, "Should classify macro season as Winter")
-        XCTAssertTrue(winterResult.detailedSeason.macroSeason == .winter, "Detailed season should map to Winter macro season")
+        XCTAssertTrue(winterResult.detailedSeason.macroSeason == .winter,
+                     "Detailed season should map to Winter macro season")
     }
 
     // Test borderline cases for the warmCoolThreshold (b* = 12)

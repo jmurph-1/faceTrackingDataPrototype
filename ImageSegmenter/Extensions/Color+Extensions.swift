@@ -125,11 +125,11 @@ extension UIColor {
         let scanner = Scanner(string: cleanHex)
         var hexNumber: UInt64 = 0
 
-        guard scanner.scanHexInt64(&hexNumber) else { 
+        guard scanner.scanHexInt64(&hexNumber) else {
             #if DEBUG
             print("⚠️ Failed to parse hex color: '\(hex)'")
             #endif
-            return nil 
+            return nil
         }
 
         switch cleanHex.count {
