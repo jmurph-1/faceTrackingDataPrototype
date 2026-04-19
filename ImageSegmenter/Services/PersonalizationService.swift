@@ -372,12 +372,47 @@ class PersonalizationService {
     }
 
     internal func createSeasonInfoSection(_ seasonData: Season) -> String {
+        let features = seasonData.characteristics.features
+        let palette = seasonData.palette
+        let styling = seasonData.styling
+
+        let eyeColors = features.eyes.eyeColors?.joined(separator: ", ") ?? "varies"
+        let avoidColorNames = styling.colorsToAvoid.colors?.joined(separator: ", ") ?? "muted and opposing-temperature colors"
+
+        let metalGood = styling.metalsAndAccessories?.metals?.type?
+            .filter { $0.value == "great" || $0.value == "good" }
+            .map { $0.key }
+            .joined(separator: ", ") ?? "not specified"
+        let metalBad = styling.metalsAndAccessories?.metals?.type?
+            .filter { $0.value == "bad" }
+            .map { $0.key }
+            .joined(separator: ", ") ?? "not specified"
+
         return """
         BASE SEASON INFORMATION:
         - Season: \(seasonData.name)
         - Tagline: \(seasonData.tagline)
         - Overview: \(seasonData.characteristics.overview)
-        - Palette Description: \(seasonData.palette.description)
+
+        PALETTE PROPERTIES (use these to select accurate hex values):
+        - Hue: \(palette.hue.value) — \(palette.hue.explanation)
+        - Value (lightness): \(palette.value.value) — \(palette.value.explanation)
+        - Chroma (saturation): \(palette.chroma.value) — \(palette.chroma.explanation)
+        - Palette Description: \(palette.description)
+        - Sister Palettes: \(palette.sisterPalettes.sisters.joined(separator: ", "))
+
+        PHYSICAL FEATURES OF THIS SEASON:
+        - Eyes: \(features.eyes.description) Typical eye colors: \(eyeColors)
+        - Skin: \(features.skin.description)
+        - Hair: \(features.hair.description)
+        - Contrast Level: \(features.contrast.value) — \(features.contrast.description)
+
+        STYLING GUIDANCE:
+        - Neutrals (what works): \(styling.neutrals.description)
+        - Named Colors to Avoid: \(avoidColorNames)
+        - Why avoid them: \(styling.colorsToAvoid.description)
+        - Metals (good): \(metalGood)
+        - Metals (avoid): \(metalBad)
         """
     }
 

@@ -1094,28 +1094,49 @@ extension RefactoredCameraViewController {
     /// Add debug button for testing PersonalizedSeasonView
     /// Call this in viewDidLoad() when in debug mode
     func addDebugPersonalizedSeasonButton() {
-        let debugButton = UIButton(type: .system)
-        debugButton.setTitle("🧪 Mock Personalized", for: .normal)
-        debugButton.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.8)
-        debugButton.setTitleColor(.white, for: .normal)
-        debugButton.layer.cornerRadius = 8
-        debugButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        debugButton.addTarget(self, action: #selector(debugPersonalizedSeasonTapped), for: .touchUpInside)
+        // Existing mock-data button (skips LLM)
+        let mockButton = UIButton(type: .system)
+        mockButton.setTitle("🧪 Mock Personalized", for: .normal)
+        mockButton.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.8)
+        mockButton.setTitleColor(.white, for: .normal)
+        mockButton.layer.cornerRadius = 8
+        mockButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        mockButton.addTarget(self, action: #selector(debugPersonalizedSeasonTapped), for: .touchUpInside)
+        mockButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(mockButton)
 
-        // Position in bottom-left corner
-        debugButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(debugButton)
+        // New LLM test button (runs full pipeline with pre-built analysis)
+        let llmButton = UIButton(type: .system)
+        llmButton.setTitle("🔬 LLM Test", for: .normal)
+        llmButton.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.8)
+        llmButton.setTitleColor(.white, for: .normal)
+        llmButton.layer.cornerRadius = 8
+        llmButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        llmButton.addTarget(self, action: #selector(llmTestTapped), for: .touchUpInside)
+        llmButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(llmButton)
 
         NSLayoutConstraint.activate([
-            debugButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            debugButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
-            debugButton.widthAnchor.constraint(equalToConstant: 140),
-            debugButton.heightAnchor.constraint(equalToConstant: 36)
+            // Mock button — bottom-left
+            mockButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            mockButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
+            mockButton.widthAnchor.constraint(equalToConstant: 140),
+            mockButton.heightAnchor.constraint(equalToConstant: 36),
+
+            // LLM Test button — stacked above mock button
+            llmButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            llmButton.bottomAnchor.constraint(equalTo: mockButton.topAnchor, constant: -8),
+            llmButton.widthAnchor.constraint(equalToConstant: 140),
+            llmButton.heightAnchor.constraint(equalToConstant: 36)
         ])
     }
 
     @objc private func debugPersonalizedSeasonTapped() {
         DebugPersonalizedSeasonHelper.presentDebugMenu(from: self)
+    }
+
+    @objc private func llmTestTapped() {
+        DebugPersonalizedSeasonHelper.presentLLMTestMenu(viewModel: viewModel, from: self)
     }
 }
 #endif

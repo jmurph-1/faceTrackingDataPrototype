@@ -195,33 +195,54 @@ extension PersonalizationService {
         - Reference specific seasonal characteristics from the uploaded documents
         - Use colors from the colors.json database when recommending specific hex codes
         - If no relevant information is found in the documents, say so explicitly
-        - Cite document sources for descriptive claims about seasons
 
         ## Core Task
-        Analyze facial coloring data and create Season DNA profiles with enhanced color recommendations grounded in the uploaded knowledge base.
+        Analyze facial coloring data and create Season DNA profiles with enhanced color recommendations grounded in the season data provided.
 
         ## Critical Requirements:
         - **Complete Response**: MUST include both seasonDNA and enhancedColorData sections with ALL required fields
         - **Season DNA**: MUST provide ALL fields:
           • primary: Always required (season name and weight)
           • secondary: Required field (provide season and weight, or null if no secondary influence)
-          • tertiary: Required field (provide season and weight, or null if no tertiary influence)  
+          • tertiary: Required field (provide season and weight, or null if no tertiary influence)
           • explanation: Required detailed explanation of the season DNA blend
           • classificationConfidence: Required confidence score (0.0-1.0)
           • blendJustification: Required justification for why this blend occurs
-        - **Enhanced Colors**: Include detailed color recommendations with ColorItem objects containing name, hexValue, usageContext, and harmonyReason
-        - **Hair Color Suggestions**: Required field (provide suggestions or null if not applicable)
         - **Exactly 3-4 colors per category**: bestNeutrals, bestAccents, bestBaseColors must each contain 3-4 colors
         - **Valid hex format**: All colors must use 6-character hex (#RRGGBB)
-        - **Season accuracy**: Use authentic 12-season system knowledge from uploaded documents
-        - **Color database grounding**: Select colors from the uploaded colors.json when possible
         - **Confidence scores**: 0.70-0.95 range based on evidence quality
 
-        ## Analysis Focus:
-        - Explain genetic/hereditary color aspects using document evidence
-        - Provide specific reasoning for individual DNA blend vs generic advice
-        - Include detailed usage context and harmony explanations
-        - Ground recommendations in uploaded seasonal documentation
+        ## COLOR SELECTION RULES — READ CAREFULLY:
+
+        ### Use the provided database — never invent hex codes:
+        The user prompt contains a CURATED COLOR DATABASE pre-categorized for the detected season.
+        - NEUTRALS → only valid source for bestNeutrals
+        - BASE COLORS → only valid source for bestBaseColors
+        - ACCENT COLORS → only valid source for bestAccents
+        - emphasizedColors → draw from any of the three lists above
+        Using hex values outside these lists is not permitted for those four fields.
+
+        ### Category meanings — these serve different styling roles:
+        - NEUTRALS: Foundation wearables — soft taupes, beiges, warm/cool greys, soft browns. Worn as outfit base.
+        - BASE COLORS: All-day main garment colors — more interesting than neutrals but not loud. Mid-intensity blues, greens, muted wines, etc.
+        - ACCENT COLORS: The season's most vibrant hues — for accessories, statement pieces, highlights. Noticeably more saturated than base colors.
+        bestAccents must look clearly different from bestBaseColors — if they could be swapped without anyone noticing, your selection is wrong.
+
+        ### Spread rule — apply to every category independently:
+        Each list in the database is tagged [light], [medium], [dark]. When selecting 3-4 colors from a list:
+        - You MUST include at least one [light], one [medium], and one [dark] entry
+        - You MUST NOT pick colors that are all the same lightness band (e.g. four [medium] entries)
+        - You MUST pick colors from at least 2 different hue families within the list (e.g. not four shades of blue)
+        The goal is that when someone looks at the 3-4 swatches side by side, they look visually distinct and cover a useful range.
+
+        ### colorsToAvoid — variety across hue families:
+        - Convert each named avoid color to an accurate hex
+        - The set must include avoid examples from at least 3 different hue families
+        - Must not be all neutrals/greys — show wrong warm tones, wrong cool tones, and wrong muted/dusty tones
+
+        ### Descriptions must be specific:
+        - Reference the season name and its palette traits in every description
+        - harmonyReason must explain why this color fits its category role (neutral vs base vs accent) for this season
 
         **Output**: Return only valid JSON that conforms exactly to the provided schema. No additional text or explanations outside the JSON structure.
         """
@@ -234,9 +255,14 @@ extension PersonalizationService {
     ) -> String {
         let userColorsSection = createUserColorsSection(analysisResult)
         let seasonInfoSection = createSeasonInfoSection(seasonData)
+        let colorDatabaseSection = createColorDatabaseSection(for: detailedSeasonName)
+        let avoidColorNames = seasonData.styling.colorsToAvoid.colors?.joined(separator: ", ") ?? ""
+        let paletteHue = seasonData.palette.hue.value
+        let paletteChroma = seasonData.palette.chroma.value
+        let paletteValue = seasonData.palette.value.value
 
         return """
-        Create a comprehensive Season DNA analysis for this individual based on their measured colors and the detailed season classification.
+        Create a comprehensive Season DNA analysis for this individual.
 
         \(userColorsSection)
 
@@ -244,14 +270,85 @@ extension PersonalizationService {
 
         DETAILED SEASON: \(detailedSeasonName)
 
-        **INSTRUCTIONS:**
-        1. Use file_search to find relevant information about \(detailedSeasonName) characteristics
-        2. Use file_search to find appropriate colors from the color database
-        3. Create personalized recommendations that combine base season traits with this individual's unique coloring
-        4. Ensure all color recommendations are grounded in the uploaded color database
-        5. Provide confidence score based on the quality of evidence found in the documents
+        \(colorDatabaseSection)
+
+        **INSTRUCTIONS — follow in order:**
+
+        1. bestNeutrals: Select 3-4 colors from the NEUTRALS list above.
+           - Pick a dark anchor, a mid-tone, and a light — spanning different hue families (e.g. warm brown, greyed beige, soft ivory — not three shades of grey)
+           - Use the exact name and hex from the database
+
+        2. bestBaseColors: Select 3-4 colors from the BASE COLORS list above.
+           - These are the versatile day-wear colors for main garment pieces
+           - Pick across different hue families — not all blues, not all greens
+           - Use the exact name and hex from the database
+
+        3. bestAccents: Select 3-4 colors from the ACCENT COLORS list above.
+           - These are vibrant statement colors for accessories and highlights
+           - Pick across different hue families — not all corals, not all pinks
+           - Use the exact name and hex from the database
+
+        4. emphasizedColors: Select 4-6 of the absolute best colors for \(detailedSeasonName), drawn from any of the three lists above, spanning the full palette breadth.
+
+        5. colorsToAvoid: The season data names these colors to avoid: [\(avoidColorNames)]
+           - Convert each named color to its accurate hex representation
+           - Add extras if needed to reach 4-6 total, showing the full range of what clashes with a \(paletteHue)-hue, \(paletteChroma)-chroma, \(paletteValue)-value palette
+           - Span multiple hue families (at least one warm clash, one cool clash, one muted clash)
+
+        6. Write specific harmonyReason and usageContext for each color explaining its role as a neutral/base/accent for \(detailedSeasonName).
 
         Return a JSON response that matches the required schema exactly.
+        """
+    }
+
+    private func createColorDatabaseSection(for seasonName: String) -> String {
+        let db = ColorDatabaseManager.shared
+
+        let neutrals   = db.getColors(for: seasonName, category: "Neutrals")
+        let baseColors = db.getColors(for: seasonName, category: "Base Colors")
+        let accents    = db.getColors(for: seasonName, category: "Accent Colors")
+
+        func lightnessLabel(_ hex: String) -> String {
+            guard hex.count >= 7 else { return "medium" }
+            let start = hex.hasPrefix("#") ? hex.index(hex.startIndex, offsetBy: 1) : hex.startIndex
+            guard let r = UInt8(hex[start...hex.index(start, offsetBy: 1)], radix: 16),
+                  let g = UInt8(hex[hex.index(start, offsetBy: 2)...hex.index(start, offsetBy: 3)], radix: 16),
+                  let b = UInt8(hex[hex.index(start, offsetBy: 4)...hex.index(start, offsetBy: 5)], radix: 16) else {
+                return "medium"
+            }
+            let luminance = (0.299 * Double(r) + 0.587 * Double(g) + 0.114 * Double(b)) / 255.0
+            if luminance > 0.65 { return "light" }
+            if luminance < 0.35 { return "dark" }
+            return "medium"
+        }
+
+        func format(_ colors: [ColorData]) -> String {
+            guard !colors.isEmpty else { return "  (none on record)" }
+            let sorted = colors.sorted {
+                let l1 = (0.299 * Double(UInt8($0.hexValue.dropFirst().prefix(2), radix: 16) ?? 128)
+                        + 0.587 * Double(UInt8($0.hexValue.dropFirst().dropFirst(2).prefix(2), radix: 16) ?? 128)
+                        + 0.114 * Double(UInt8($0.hexValue.dropFirst().dropFirst(4).prefix(2), radix: 16) ?? 128)) / 255.0
+                let l2 = (0.299 * Double(UInt8($1.hexValue.dropFirst().prefix(2), radix: 16) ?? 128)
+                        + 0.587 * Double(UInt8($1.hexValue.dropFirst().dropFirst(2).prefix(2), radix: 16) ?? 128)
+                        + 0.114 * Double(UInt8($1.hexValue.dropFirst().dropFirst(4).prefix(2), radix: 16) ?? 128)) / 255.0
+                return l1 > l2
+            }
+            return sorted.map { "  [\(lightnessLabel($0.hexValue))] \($0.name) \($0.hexValue)" }.joined(separator: "\n")
+        }
+
+        return """
+        CURATED \(seasonName.uppercased()) COLOR DATABASE:
+        Colors are sorted light → dark within each category and tagged [light], [medium], or [dark].
+        You MUST use the exact hex values from these lists — do not invent or modify hex codes.
+
+        NEUTRALS (\(neutrals.count) colors) — select 3-4 for bestNeutrals:
+        \(format(neutrals))
+
+        BASE COLORS (\(baseColors.count) colors) — select 3-4 for bestBaseColors:
+        \(format(baseColors))
+
+        ACCENT COLORS (\(accents.count) colors) — select 3-4 for bestAccents:
+        \(format(accents))
         """
     }
 

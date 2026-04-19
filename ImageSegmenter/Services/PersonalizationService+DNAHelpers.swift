@@ -74,7 +74,7 @@ extension PersonalizationService {
 
         let bestAccents = DetailedColorRecommendation(
             description: "Accent colors that enhance your unique characteristics",
-            colors: colorDB.getRecommendedColors(for: seasonDNA, category: "Palette", limit: 4).map { $0.toColorItem(usageContext: "Accent color", harmonyReason: "Enhances your season DNA") },
+            colors: colorDB.getEnhancedColorItems(for: seasonDNA.primary.season, category: "Accent Colors", limit: 4),
             priority: "high",
             usageInstructions: "Perfect for adding personality and vibrancy",
             categoryExplanation: "These colors bring out your best features"

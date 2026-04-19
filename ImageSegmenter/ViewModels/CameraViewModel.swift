@@ -632,6 +632,21 @@ extension CameraViewModel: FaceLandmarkerServiceLiveStreamDelegate {
     }
 }
 
+// MARK: - Debug LLM Testing
+
+#if DEBUG
+extension CameraViewModel {
+    /// Passes a pre-built AnalysisResult through the real LLM personalization
+    /// pipeline without needing a live camera analysis.
+    func testPersonalization(
+        with mockResult: AnalysisResult,
+        completion: @escaping (Result<PersonalizedSeasonData, Error>) -> Void
+    ) {
+        classificationService.testPersonalization(with: mockResult, completion: completion)
+    }
+}
+#endif
+
 // MARK: - Errors
 enum CameraError: Error {
     case configurationFailed

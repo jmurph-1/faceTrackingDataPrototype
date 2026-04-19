@@ -458,3 +458,37 @@ enum ClassificationError: Error {
     case insufficientColorData
     case analysisFailure
 }
+
+// MARK: - Debug LLM Testing
+
+#if DEBUG
+extension ClassificationService {
+
+    /// Feed a pre-built AnalysisResult through the real LLM personalization pipeline.
+    /// Loads the season JSON, calls generateDNAPersonalization, and returns the result.
+    /// Use this to test LLM responses without performing a live camera analysis.
+    func testPersonalization(
+        with mockResult: AnalysisResult,
+        completion: @escaping (Result<PersonalizedSeasonData, Error>) -> Void
+    ) {
+        let detailedSeason = mockResult.detailedSeasonName
+
+        print("🧪 ClassificationService [LLM Test]: starting with season '\(detailedSeason)'")
+
+        guard let seasonData = loadSeasonData(for: detailedSeason) else {
+            print("🔴 ClassificationService [LLM Test]: could not load season data for '\(detailedSeason)'")
+            completion(.failure(ClassificationError.analysisFailure))
+            return
+        }
+
+        print("🟢 ClassificationService [LLM Test]: season data loaded, calling PersonalizationService")
+
+        personalizationService.generateDNAPersonalization(
+            for: mockResult,
+            seasonData: seasonData,
+            detailedSeasonName: detailedSeason,
+            completion: completion
+        )
+    }
+}
+#endif
