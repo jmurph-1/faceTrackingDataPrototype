@@ -131,13 +131,18 @@ class FaceLandmarkerService: NSObject {
 // MARK: - FaceLandmarkerLiveStreamDelegate Methods
 extension FaceLandmarkerService: FaceLandmarkerLiveStreamDelegate {
   func faceLandmarker(_ faceLandmarker: FaceLandmarker, didFinishDetection result: FaceLandmarkerResult?, timestampInMilliseconds: Int, error: Error?) {
-    let resultBundle = FaceLandmarkerResultBundle(
-      inferenceTime: Date().timeIntervalSince1970 * 1000 - Double(timestampInMilliseconds),
-      faceLandmarkerResults: [result])
-    liveStreamDelegate?.faceLandmarkerService(
-      self,
-      didFinishLandmarkDetection: resultBundle,
-      error: error)
+    // Same autoreleasepool fix as ImageSegmenterService — MediaPipe's C++ thread pool
+    // has no autorelease pool, causing MPPCommonUtils NSError/NSDictionary objects
+    // created per frame to accumulate without being drained.
+    autoreleasepool {
+      let resultBundle = FaceLandmarkerResultBundle(
+        inferenceTime: Date().timeIntervalSince1970 * 1000 - Double(timestampInMilliseconds),
+        faceLandmarkerResults: [result])
+      liveStreamDelegate?.faceLandmarkerService(
+        self,
+        didFinishLandmarkDetection: resultBundle,
+        error: error)
+    }
   }
 }
 

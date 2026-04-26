@@ -140,6 +140,9 @@ class SegmentationService {
     imageSegmenterServiceQueue.sync(flags: .barrier) {
         self._imageSegmenterService = nil
     }
+    // Release the retained pixel buffer so the CVPixelBuffer and its
+    // backing IOSurface are freed as soon as MediaPipe drains its pipeline.
+    videoPixelBuffer = nil
   }
 
   // MARK: - Helper Methods

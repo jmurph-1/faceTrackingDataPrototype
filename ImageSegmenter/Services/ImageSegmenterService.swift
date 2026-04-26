@@ -171,13 +171,19 @@ class ImageSegmenterService: NSObject {
 // MARK: - ImageSegmenterLiveStreamDelegate Methods
 extension ImageSegmenterService: ImageSegmenterLiveStreamDelegate {
   func imageSegmenter(_ imageSegmenter: ImageSegmenter, didFinishSegmentation result: ImageSegmenterResult?, timestampInMilliseconds: Int, error: Error?) {
-    let resultBundle = ResultBundle(
-      inferenceTime: Date().timeIntervalSince1970 * 1000 - Double(timestampInMilliseconds),
-      imageSegmenterResults: [result])
-    liveStreamDelegate?.imageSegmenterService(
-      self,
-      didFinishSegmention: resultBundle,
-      error: error)
+    // MediaPipe fires this callback from its internal C++ thread pool, which has no
+    // autorelease pool. MPPCommonUtils creates NSError + NSDictionary objects as part
+    // of result packaging on every frame — without an autoreleasepool they accumulate
+    // indefinitely and appear as leaks in Instruments.
+    autoreleasepool {
+      let resultBundle = ResultBundle(
+        inferenceTime: Date().timeIntervalSince1970 * 1000 - Double(timestampInMilliseconds),
+        imageSegmenterResults: [result])
+      liveStreamDelegate?.imageSegmenterService(
+        self,
+        didFinishSegmention: resultBundle,
+        error: error)
+    }
   }
 }
 

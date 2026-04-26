@@ -8,6 +8,12 @@
 import SwiftUI
 import UIKit
 
+// MARK: - Notification Names
+
+extension Notification.Name {
+    static let dismissResultsToLandingPage = Notification.Name("dismissResultsToLandingPage")
+}
+
 // MARK: - SwiftUI Color Extensions
 
 extension Color {

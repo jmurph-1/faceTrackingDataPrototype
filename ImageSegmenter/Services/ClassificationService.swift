@@ -30,6 +30,10 @@ class ClassificationService {
     weak var delegate: ClassificationServiceDelegate?
     private let personalizationService = PersonalizationService()
 
+    // Cache decoded season JSON — reading + decoding from disk on every analysis
+    // causes unnecessary I/O and memory churn.
+    private var seasonDataCache: [String: Season] = [:]
+
     // MARK: - Initialization
     init() {
         personalizationService.delegate = self
@@ -159,89 +163,69 @@ class ClassificationService {
     }
 
     private func loadSeasonData(for seasonName: String) -> Season? {
+        // Return cached value — avoids re-reading and re-decoding JSON on every analysis
+        if let cached = seasonDataCache[seasonName] {
+            return cached
+        }
+
+        let result = loadSeasonDataFromDisk(for: seasonName)
+        // Cache whatever we found (including mock fallbacks) so subsequent analyses are free
+        if let result {
+            seasonDataCache[seasonName] = result
+        }
+        return result
+    }
+
+    private func loadSeasonDataFromDisk(for mappedSeasonName: String) -> Season? {
         #if DEBUG
-        print("🔵 ClassificationService: loadSeasonData called with seasonName: '\(seasonName)'")
+        print("🔵 ClassificationService: loadSeasonData called with seasonName: '\(mappedSeasonName)'")
         #endif
 
-        // No need to map since we're already receiving the detailed season name
-        let mappedSeasonName = seasonName
-
-        #if DEBUG
-        print("🔵 ClassificationService: Using season name: '\(mappedSeasonName)'")
-        #endif
+        // Helper: attempt to decode season from a bundle URL
+        func decode(from url: URL) -> Season? {
+            do {
+                let data = try Data(contentsOf: url)
+                let seasonData = try JSONDecoder().decode([String: Season].self, from: data)
+                #if DEBUG
+                print("🟢 ClassificationService: Successfully loaded and parsed season data for \(mappedSeasonName)")
+                #endif
+                return seasonData[mappedSeasonName]
+            } catch {
+                #if DEBUG
+                print("🔴 ClassificationService: Error parsing season data for \(mappedSeasonName): \(error)")
+                #endif
+                return nil
+            }
+        }
 
         // Try bundle root first (where they seem to be working)
         if let url = Bundle.main.url(forResource: mappedSeasonName, withExtension: "json") {
             #if DEBUG
             print("🟢 ClassificationService: Found season file in bundle root at \(url)")
             #endif
-
-            do {
-                let data = try Data(contentsOf: url)
-                let seasonData = try JSONDecoder().decode([String: Season].self, from: data)
-
-                #if DEBUG
-                print("🟢 ClassificationService: Successfully loaded and parsed season data for \(mappedSeasonName)")
-                #endif
-
-                return seasonData[mappedSeasonName]
-            } catch {
-                #if DEBUG
-                print("🔴 ClassificationService: Error parsing season data for \(mappedSeasonName): \(error)")
-                #endif
-            }
+            if let season = decode(from: url) { return season }
         }
 
         // Fallback: Try Resources/Seasons subdirectory
         #if DEBUG
         print("🔵 ClassificationService: Trying Resources/Seasons subdirectory")
         #endif
-
         if let url = Bundle.main.url(forResource: mappedSeasonName, withExtension: "json", subdirectory: "Resources/Seasons") {
             #if DEBUG
             print("🟢 ClassificationService: Found season file in Resources/Seasons at \(url)")
             #endif
-
-            do {
-                let data = try Data(contentsOf: url)
-                let seasonData = try JSONDecoder().decode([String: Season].self, from: data)
-
-                #if DEBUG
-                print("🟢 ClassificationService: Successfully loaded and parsed season data for \(mappedSeasonName)")
-                #endif
-
-                return seasonData[mappedSeasonName]
-            } catch {
-                #if DEBUG
-                print("🔴 ClassificationService: Error parsing season data for \(mappedSeasonName): \(error)")
-                #endif
-            }
+            if let season = decode(from: url) { return season }
         }
 
         // Fallback: Try just "Seasons" subdirectory
         #if DEBUG
         print("🔵 ClassificationService: Trying Seasons subdirectory")
         #endif
-
         if let url = Bundle.main.url(forResource: mappedSeasonName, withExtension: "json", subdirectory: "Seasons") {
             #if DEBUG
             print("🟢 ClassificationService: Found season file in Seasons at \(url)")
             #endif
-
-            do {
-                let data = try Data(contentsOf: url)
-                let seasonData = try JSONDecoder().decode([String: Season].self, from: data)
-
-                #if DEBUG
-                print("🟢 ClassificationService: Successfully loaded and parsed season data for \(mappedSeasonName)")
-                #endif
-
-                return seasonData[mappedSeasonName]
-            } catch {
-                #if DEBUG
-                print("🔴 ClassificationService: Error parsing season data for \(mappedSeasonName): \(error)")
-                #endif
-            }
+            if let season = decode(from: url) { return season }
         }
 
         // If all attempts fail
@@ -252,8 +236,7 @@ class ClassificationService {
         print("Could not find \(mappedSeasonName).json in app bundle")
 
         // Create a mock Season object so PersonalizationService can still run for debugging
-        let mockSeason = createMockSeason(for: mappedSeasonName)
-        return mockSeason
+        return createMockSeason(for: mappedSeasonName)
     }
 
     /// Create a mock Season object for debugging PersonalizationService when JSON parsing fails
@@ -431,13 +414,28 @@ class ClassificationService {
     /// Create a thumbnail from a pixel buffer
     /// - Parameter pixelBuffer: CVPixelBuffer to convert
     /// - Returns: UIImage thumbnail
+    // Shared CIContext — creating one per analysis call allocates GPU memory every time.
+    // CIContext is thread-safe and designed to be reused across calls.
+    private static let sharedCIContext = CIContext(options: [.useSoftwareRenderer: false])
+
+    // Target thumbnail size — full-resolution frames (~8 MB each) are too large to store.
+    private static let thumbnailSize = CGSize(width: 300, height: 300)
+
     private func createThumbnailFromPixelBuffer(_ pixelBuffer: CVPixelBuffer) -> UIImage? {
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
-            return nil
+        return autoreleasepool {
+            let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+
+            // Scale down to thumbnail size before rasterising to CGImage
+            let scaleX = Self.thumbnailSize.width / ciImage.extent.width
+            let scaleY = Self.thumbnailSize.height / ciImage.extent.height
+            let scale = min(scaleX, scaleY)
+            let scaledImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+
+            guard let cgImage = Self.sharedCIContext.createCGImage(scaledImage, from: scaledImage.extent) else {
+                return nil
+            }
+            return UIImage(cgImage: cgImage)
         }
-        return UIImage(cgImage: cgImage)
     }
 }
 

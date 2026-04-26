@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct PersonalizedSeasonView: View {
-    @Environment(\.presentationMode) var presentationMode
     @StateObject private var viewModel: PersonalizedSeasonViewModel
     @State private var selectedModule: String?
     @State private var showingDefaultView = false
@@ -102,7 +101,7 @@ struct PersonalizedSeasonView: View {
                 Spacer()
 
                 Button(action: {
-                    presentationMode.wrappedValue.dismiss()
+                    NotificationCenter.default.post(name: .dismissResultsToLandingPage, object: nil)
                 }) {
                     Image(systemName: "xmark")
                         .font(.system(size: 20, weight: .light))

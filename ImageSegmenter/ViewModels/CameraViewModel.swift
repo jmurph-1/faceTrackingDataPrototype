@@ -17,6 +17,7 @@ import UIKit
 import AVFoundation
 import CoreVideo
 import MediaPipeTasksVision
+import Darwin
 
 // MARK: - CameraViewModel Delegate Protocol
 protocol CameraViewModelDelegate: AnyObject {
@@ -149,6 +150,15 @@ class CameraViewModel: NSObject {
             delegate?.viewModel(self, didEncounterError: AnalysisError.insufficientQuality) // 'self' is fine
             return
         }
+
+        // Stop frame processing BEFORE analysis begins, not after it completes.
+        // Without this, the camera keeps feeding new frames into both MediaPipe pipelines
+        // while classification is running, putting 3-5 full-resolution frames in-flight
+        // simultaneously (each holding a CVPixelBuffer + IOSurface + MPPImage).
+        // Stopping here ensures only the single captured frame exists in memory during analysis.
+        stopFrameProcessing()
+        currentPixelBuffer = nil
+
         classificationService.analyzeFrame(pixelBuffer: pixelBuffer, colorInfo: colorInfo)
     }
 
@@ -212,6 +222,8 @@ class CameraViewModel: NSObject {
                 frameCount = 0
                 lastFPSUpdateTime = currentTime
             }
+
+            logMemoryUsageIfNeeded()
 
             faceLandmarkerService?.detectLandmarksAsync(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
             segmentationService.processFrame(sampleBuffer: sampleBuffer, orientation: orientation, timeStamps: Int(currentTime * 1000))
@@ -363,6 +375,29 @@ class CameraViewModel: NSObject {
     }
 
     // MARK: - Private Methods
+
+    // MARK: Memory Diagnostics
+    private var memoryLogFrameCounter = 0
+
+    private func logMemoryUsageIfNeeded() {
+        memoryLogFrameCounter += 1
+        guard memoryLogFrameCounter % 60 == 0 else { return }
+
+        var info = task_vm_info_data_t()
+        var count = mach_msg_type_number_t(MemoryLayout<task_vm_info>.size / MemoryLayout<integer_t>.size)
+        let result = withUnsafeMutablePointer(to: &info) {
+            $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+                task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+            }
+        }
+        guard result == KERN_SUCCESS else { return }
+
+        let footprintMB = Double(info.phys_footprint) / 1_048_576
+        let limitMB = Double(ProcessInfo.processInfo.physicalMemory) / 1_048_576 * 0.5
+        LoggingService.info(String(format: "[MEMORY] %.1f MB used (device limit ~%.0f MB) | frame %d",
+                                   footprintMB, limitMB, memoryLogFrameCounter))
+    }
+
     private func configureSegmentationService() {
         guard let modelPath = InferenceConfigurationManager.sharedInstance.model.modelPath else {
             LoggingService.error("CVM: Failed to configure segmentation - model path is nil")
@@ -524,8 +559,12 @@ extension CameraViewModel: SegmentationServiceDelegate {
             strongSelf.delegate?.viewModel(strongSelf, didUpdateSegmentedBuffer: result.outputPixelBuffer)
             strongSelf.delegate?.viewModel(strongSelf, didUpdateColorInfo: result.colorInfo)
 
+            // Capture the pixel buffer into a local constant before dispatching to the
+            // background queue. Referencing strongSelf.currentPixelBuffer inside the
+            // async block would hold the property alive for the duration of quality
+            // evaluation — potentially overlapping with the next incoming frame.
             if let pBuffer = strongSelf.currentPixelBuffer {
-                strongSelf.backgroundQueue.async { // strongSelf is captured
+                strongSelf.backgroundQueue.async { // pBuffer is a local value capture, not a property reference
                     let imgSize = CGSize(width: CVPixelBufferGetWidth(pBuffer), height: CVPixelBufferGetHeight(pBuffer))
                     let qScore: FrameQualityService.QualityScore
                     if let landmarks = result.faceLandmarks, !landmarks.isEmpty {

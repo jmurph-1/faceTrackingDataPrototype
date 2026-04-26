@@ -42,14 +42,25 @@ class RootViewController: UIViewController {
     // Ensure the outlet is connected
     if tabBarContainerView == nil {
         print("RootVC ERROR: tabBarContainerView outlet is NOT connected!")
-        // Optionally, add a visual indicator like a red background to self.view
-        // self.view.backgroundColor = .red
-        return // Prevent further setup if outlet is missing
+        return
     }
 
     setupRefactoredCameraViewController()
     setupLandingPageViewController()
-    // tabBarContainerView.backgroundColor = .cyan // Optional: for debugging layout
+
+    NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(handleDismissResultsToLandingPage),
+        name: .dismissResultsToLandingPage,
+        object: nil
+    )
+  }
+
+  @objc private func handleDismissResultsToLandingPage() {
+    // Switch to landing page first (hidden under the modal), then dismiss — so the
+    // camera view is never briefly visible during the modal's dismissal animation.
+    showLandingPage()
+    dismiss(animated: true)
   }
 
   override var preferredStatusBarStyle: UIStatusBarStyle {
