@@ -11,6 +11,8 @@ struct PersonalizedSeasonView: View {
     @StateObject private var viewModel: PersonalizedSeasonViewModel
     @State private var selectedModule: String?
     @State private var showingDefaultView = false
+    @State private var isSaved = false
+    @State private var showSavedFeedback = false
 
     // Customizable colors for UI elements (similar to DefaultSeasonView)
     private let primaryColor: Color
@@ -82,6 +84,9 @@ struct PersonalizedSeasonView: View {
                 moduleColor: moduleColor
             )
         }
+        .onAppear {
+            isSaved = CoreDataManager.shared.fetchPersonalizedData(forId: viewModel.personalizedData.id) != nil
+        }
     }
 
     private func headerViewContent() -> some View {
@@ -99,6 +104,35 @@ struct PersonalizedSeasonView: View {
                 }
 
                 Spacer()
+
+                // Save button
+                Button(action: {
+                    if !isSaved {
+                        isSaved = viewModel.personalizedData.saveToCoreData()
+                        if isSaved {
+                            showSavedFeedback = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                showSavedFeedback = false
+                            }
+                        }
+                    }
+                }) {
+                    ZStack {
+                        Image(systemName: isSaved ? "checkmark.circle.fill" : "square.and.arrow.down")
+                            .font(.system(size: 20, weight: .light))
+                            .foregroundColor(isSaved ? .green : paletteWhite)
+                            .frame(width: 44, height: 44)
+                            .background(primaryColor.opacity(0.2))
+                            .clipShape(Circle())
+
+                        if showSavedFeedback {
+                            Text("Saved")
+                                .font(.caption2)
+                                .foregroundColor(.green)
+                                .offset(y: 28)
+                        }
+                    }
+                }
 
                 Button(action: {
                     NotificationCenter.default.post(name: .dismissResultsToLandingPage, object: nil)

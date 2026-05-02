@@ -103,6 +103,7 @@
 		523113692DED03C800FCFC91 /* SeasonDNARingChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */; };
 		5231136A2DED03C800FCFC91 /* EnhancedColorGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */; };
 		526DF6482F94676A00CB56B9 /* MockAnalysisResultFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DF6472F94676A00CB56B9 /* MockAnalysisResultFactory.swift */; };
+		526DF64A2FA5933A00CB56B9 /* SavedAnalysesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526DF6492FA5933A00CB56B9 /* SavedAnalysesView.swift */; };
 		52774D712E14BFFB00309149 /* MockPersonalizedSeasonGuide.md in Resources */ = {isa = PBXBuildFile; fileRef = 52774D702E14BFFA00309149 /* MockPersonalizedSeasonGuide.md */; };
 		52774D742E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */; };
 		52774D752E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */; };
@@ -255,6 +256,7 @@
 		523113672DED03C800FCFC91 /* EnhancedColorGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedColorGrid.swift; sourceTree = "<group>"; };
 		523113682DED03C800FCFC91 /* SeasonDNARingChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonDNARingChart.swift; sourceTree = "<group>"; };
 		526DF6472F94676A00CB56B9 /* MockAnalysisResultFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAnalysisResultFactory.swift; sourceTree = "<group>"; };
+		526DF6492FA5933A00CB56B9 /* SavedAnalysesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedAnalysesView.swift; sourceTree = "<group>"; };
 		52774D702E14BFFA00309149 /* MockPersonalizedSeasonGuide.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MockPersonalizedSeasonGuide.md; sourceTree = "<group>"; };
 		52774D722E14C01A00309149 /* DebugPersonalizedSeasonHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugPersonalizedSeasonHelper.swift; sourceTree = "<group>"; };
 		52774D732E14C01A00309149 /* MockPersonalizedSeasonDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersonalizedSeasonDataFactory.swift; sourceTree = "<group>"; };
@@ -525,6 +527,7 @@
 		BF6EBB7E2B1EB75B00CD13FB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				526DF6492FA5933A00CB56B9 /* SavedAnalysesView.swift */,
 				52774D802E4D847200309149 /* SeasonPaletteExplorerView.swift */,
 				52774D782E28823E00309149 /* MetallicColorDisplay.swift */,
 				52774D792E28823E00309149 /* PersonalizedMetalsGrid.swift */,
@@ -787,6 +790,7 @@
 				"",
 				"",
 				"",
+				"",
 			);
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -837,6 +841,7 @@
 				5231133B2DE0284D00FCFC91 /* ColorExtractor+Utils.swift in Sources */,
 				5222FDEA2DD40FBE00EF3C65 /* ColorConverters.swift in Sources */,
 				5222FDEB2DD40FBE00EF3C65 /* ConnectedComponentAnalysis.swift in Sources */,
+				526DF64A2FA5933A00CB56B9 /* SavedAnalysesView.swift in Sources */,
 				BF6EBB912B1EB75B00CD13FB /* ImageSegmenterService.swift in Sources */,
 				5222FE072DD4143200EF3C65 /* SeasonAnalysis.xcdatamodeld in Sources */,
 				523112A22DD5043900FCFC91 /* LoggingService.swift in Sources */,

@@ -101,6 +101,9 @@ class RootViewController: UIViewController {
         },
         onSubSeasonTapped: { [weak self] subSeasonName in
             self?.showDefaultSeasonView(for: subSeasonName)
+        },
+        onMyAnalysesTapped: { [weak self] in
+            self?.showSavedAnalyses()
         }
     )
 
@@ -155,6 +158,17 @@ class RootViewController: UIViewController {
       } else {
           self.present(hostingController, animated: true, completion: nil)
       }
+  }
+
+  private func showSavedAnalyses() {
+    let hostingController = UIHostingController(rootView: SavedAnalysesView())
+    hostingController.modalPresentationStyle = .pageSheet
+
+    var presenter: UIViewController = self
+    while let presented = presenter.presentedViewController {
+        presenter = presented
+    }
+    presenter.present(hostingController, animated: true)
   }
 
   private func showCameraView() {

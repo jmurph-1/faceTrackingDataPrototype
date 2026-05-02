@@ -35,4 +35,17 @@
         <attribute name="contrastLevel" optional="YES" attributeType="String"/>
         <attribute name="contrastDescription" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="PersonalizationResult" representedClassName="PersonalizationResult" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="createdDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="baseSeason" attributeType="String"/>
+        <attribute name="personalizedTagline" optional="YES" attributeType="String"/>
+        <attribute name="userCharacteristics" optional="YES" attributeType="String"/>
+        <attribute name="personalizedOverview" optional="YES" attributeType="String"/>
+        <attribute name="confidence" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="linkedAnalysisResultId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="fullPersonalizationData" optional="YES" attributeType="Binary"/>
+        <attribute name="emphasizedColorsData" optional="YES" attributeType="Binary"/>
+        <attribute name="colorsToAvoidData" optional="YES" attributeType="Binary"/>
+    </entity>
 </model> 

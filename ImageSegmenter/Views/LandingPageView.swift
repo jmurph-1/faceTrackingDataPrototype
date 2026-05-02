@@ -6,6 +6,7 @@ struct LandingPageView: View {
     @State private var animateBackground = false
     var onAnalyzeButtonTapped: () -> Void
     var onSubSeasonTapped: (String) -> Void
+    var onMyAnalysesTapped: () -> Void
 
     private struct MainSeasonDisplay: Identifiable {
         let id = UUID()
@@ -58,55 +59,102 @@ struct LandingPageView: View {
                     }
                     .frame(maxHeight: .infinity)
 
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            isPressed = true
+                    HStack(spacing: 16) {
+                        // My Analyses history button
+                        Button(action: {
+                            onMyAnalysesTapped()
+                        }) {
+                            Image(systemName: "clock.arrow.circlepath")
+                                .font(.title2)
+                                .foregroundColor(Color(white: 0.15))
+                                .padding(16)
                         }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                             isPressed = false
-                             onAnalyzeButtonTapped()
-                        }
-                    }) {
-                        Image(systemName: "camera.filters")
-                            .font(.title)
-                            .foregroundColor(Color(white: 0.15))
-                            .padding(16)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .background(
-                        Capsule().fill(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    Color(white: 0.95),
-                                    Color(white: 0.80),
-                                    Color(white: 0.70),
-                                    Color(white: 0.85)
-                                ]),
-                                startPoint: animate ? UnitPoint(x: 0.1, y: 0.1) : UnitPoint(x: 0.9, y: 0.9),
-                                endPoint: animate ? UnitPoint(x: 0.9, y: 0.9) : UnitPoint(x: 0.1, y: 0.1)
+                        .buttonStyle(PlainButtonStyle())
+                        .background(
+                            Capsule().fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color(white: 0.95),
+                                        Color(white: 0.80),
+                                        Color(white: 0.70),
+                                        Color(white: 0.85)
+                                    ]),
+                                    startPoint: animate ? UnitPoint(x: 0.1, y: 0.1) : UnitPoint(x: 0.9, y: 0.9),
+                                    endPoint: animate ? UnitPoint(x: 0.9, y: 0.9) : UnitPoint(x: 0.1, y: 0.1)
+                                )
+                            )
+                            .overlay(
+                                Capsule()
+                                    .strokeBorder(
+                                        LinearGradient(
+                                            gradient: Gradient(stops: [
+                                                .init(color: Color.white.opacity(0.7), location: 0),
+                                                .init(color: Color.white.opacity(0.2), location: 0.3),
+                                                .init(color: Color.clear, location: 0.5),
+                                                .init(color: Color.black.opacity(0.1), location: 0.7),
+                                                .init(color: Color.black.opacity(0.3), location: 1.0)
+                                            ]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1.5
+                                    )
                             )
                         )
-                        .overlay(
-                            Capsule()
-                                .strokeBorder(
-                                    LinearGradient(
-                                        gradient: Gradient(stops: [
-                                            .init(color: Color.white.opacity(0.7), location: 0),
-                                            .init(color: Color.white.opacity(0.2), location: 0.3),
-                                            .init(color: Color.clear, location: 0.5),
-                                            .init(color: Color.black.opacity(0.1), location: 0.7),
-                                            .init(color: Color.black.opacity(0.3), location: 1.0)
-                                        ]),
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 1.5
+                        .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 3)
+                        .accessibilityLabel("My Analyses")
+
+                        // Analyze button
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                isPressed = true
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                isPressed = false
+                                onAnalyzeButtonTapped()
+                            }
+                        }) {
+                            Image(systemName: "camera.filters")
+                                .font(.title)
+                                .foregroundColor(Color(white: 0.15))
+                                .padding(16)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .background(
+                            Capsule().fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color(white: 0.95),
+                                        Color(white: 0.80),
+                                        Color(white: 0.70),
+                                        Color(white: 0.85)
+                                    ]),
+                                    startPoint: animate ? UnitPoint(x: 0.1, y: 0.1) : UnitPoint(x: 0.9, y: 0.9),
+                                    endPoint: animate ? UnitPoint(x: 0.9, y: 0.9) : UnitPoint(x: 0.1, y: 0.1)
                                 )
+                            )
+                            .overlay(
+                                Capsule()
+                                    .strokeBorder(
+                                        LinearGradient(
+                                            gradient: Gradient(stops: [
+                                                .init(color: Color.white.opacity(0.7), location: 0),
+                                                .init(color: Color.white.opacity(0.2), location: 0.3),
+                                                .init(color: Color.clear, location: 0.5),
+                                                .init(color: Color.black.opacity(0.1), location: 0.7),
+                                                .init(color: Color.black.opacity(0.3), location: 1.0)
+                                            ]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1.5
+                                    )
+                            )
                         )
-                    )
-                    .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 3)
-                    .scaleEffect(isPressed ? 0.95 : 1.0)
-                    .accessibilityLabel("Analyze Your Colors")
+                        .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: 3)
+                        .scaleEffect(isPressed ? 0.95 : 1.0)
+                        .accessibilityLabel("Analyze Your Colors")
+                    }
                     .padding(.bottom, geometry.safeAreaInsets.bottom + 24)
                 }
             }

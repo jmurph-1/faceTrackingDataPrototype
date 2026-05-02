@@ -47,6 +47,7 @@ The colorAnalysisApp is an iOS mobile application built with Swift that provides
 - **ImageSegmenter/Views/AnalysisResultView.swift** - Displays user's color analysis results including contrast analysis
 - **ImageSegmenter/Views/FrameQualityIndicatorView.swift** - Visual indicator for frame capture quality
 - **ImageSegmenter/Views/SavedResultsView.swift** - Shows previously saved analysis results
+- **ImageSegmenter/Views/SavedAnalysesView.swift** - Shows previously saved personalized season analyses with tap-to-reopen and swipe-to-delete
 - **ImageSegmenter/Views/LandingPageView.swift** - Main landing page with season exploration
 - **ImageSegmenter/Views/DefaultSeasonView.swift** - Displays standard information for each season type
 - **ImageSegmenter/Views/PersonalizedSeasonView.swift** - Displays AI-generated personalized recommendations with DNA-enhanced seasonal analysis and styling advice
